@@ -37,12 +37,12 @@ export function VertragAufEinenBlick({ bewerber, fallbackText, eingebettet }: Pr
     <div className="grid sm:grid-cols-2 gap-3">
       {zeilen.map((z) => (
         <div key={z.label}>
-          <p className="text-[10px] text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+          <p className="text-bildunterschrift text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
             {z.label}
             {z.individuell && (
               <Badge
                 variant="outline"
-                className="text-[9px] h-4 px-1 border-primary/50 text-primary normal-case"
+                className="text-bildunterschrift h-4 px-1 border-primary/50 text-primary normal-case"
               >
                 individuell
               </Badge>

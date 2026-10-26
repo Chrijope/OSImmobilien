@@ -103,7 +103,7 @@ export function KlaerungErfassung({
           className="h-8 text-xs"
         />
       </div>
-      <p className="text-[10px] leading-snug text-muted-foreground">
+      <p className="text-bildunterschrift leading-snug text-muted-foreground">
         Der Text wird die Notiz des Follow-ups. Der Termin steht danach in der Übersicht des
         Profils und erscheint am Fälligkeitstag in der Inbox.
       </p>
@@ -182,7 +182,7 @@ export function UnterlagenErfassung({
           className="text-xs"
         />
       </div>
-      <p className="text-[10px] leading-snug text-muted-foreground">
+      <p className="text-bildunterschrift leading-snug text-muted-foreground">
         Beim Abschließen geht der Startfahrplan als PDF per Mail an ihn. Der Termin steht danach
         in der Übersicht des Profils und erscheint am Fälligkeitstag in der Inbox.
       </p>
@@ -451,7 +451,7 @@ export function AbschlussKnoepfe({
           {offenText}
         </p>
       )}
-      <p className="pt-1 text-[10px] leading-snug text-muted-foreground" data-testid="videocall-wirkung">
+      <p className="pt-1 text-bildunterschrift leading-snug text-muted-foreground" data-testid="videocall-wirkung">
         {wirkung.wirkung}
         {abgeschlossenAm ? ` Zuletzt abgeschlossen am ${abgeschlossenAm}.` : ""}
       </p>
@@ -487,7 +487,7 @@ export function GespraechBeendenKarte(props: {
 }) {
   return (
     <Card className="p-4 space-y-3" data-testid="videocall-beenden">
-      <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Gespräch beenden</p>
+      <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground">Gespräch beenden</p>
       <EntscheidungWahl
         erfassung={props.erfassung}
         canEdit={props.canEdit}

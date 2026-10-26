@@ -50,7 +50,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
               <p className="text-xs text-muted-foreground font-mono">
                 Fehler-ID: {this.state.errorId}
                 <br />
-                <span className="text-[10px]">
+                <span className="text-bildunterschrift">
                   Bitte teile diese ID dem Support mit.
                 </span>
               </p>

@@ -122,17 +122,17 @@ export function ZielplanungCard() {
                 <div className="space-y-1">
                   {setterRate != null && (
                     <div className="flex items-center justify-center gap-1 text-xs">
-                      <Badge variant="outline" className="text-[10px] px-1.5 py-0">Lead</Badge>
+                      <Badge variant="outline" className="text-bildunterschrift px-1.5 py-0">Lead</Badge>
                       <span className={unscharfKlasse("font-bold")}>{setterRate} %</span>
                     </div>
                   )}
                   {eigenRate != null && (
                     <div className="flex items-center justify-center gap-1 text-xs">
-                      <Badge variant="outline" className="text-[10px] px-1.5 py-0">Eigen</Badge>
+                      <Badge variant="outline" className="text-bildunterschrift px-1.5 py-0">Eigen</Badge>
                       <span className={unscharfKlasse("font-bold")}>{eigenRate} %</span>
                     </div>
                   )}
-                  <p className="text-[10px] text-muted-foreground pt-0.5">Provisionssätze</p>
+                  <p className="text-bildunterschrift text-muted-foreground pt-0.5">Provisionssätze</p>
                 </div>
               ) : (
                 <>
@@ -151,7 +151,7 @@ export function ZielplanungCard() {
             <span className={unscharfKlasse("font-medium")}>{stats.monthProgress} %</span>
           </div>
           <Progress value={Math.min(100, stats.monthProgress)} className="h-2" />
-          <p className={unscharfKlasse("text-[10px] text-muted-foreground mt-1")}>
+          <p className={unscharfKlasse("text-bildunterschrift text-muted-foreground mt-1")}>
             {isAnzahl
               ? `${stats.monatIst} von ${stats.monatAnzahl} Verkäufen beurkundet`
               : `${fmt(stats.monatIst)} von ${fmt(stats.monatVolumen)} beurkundet`}
@@ -170,7 +170,7 @@ export function ZielplanungCard() {
             <p className={unscharfKlasse("text-lg font-bold")}>{fmt(stats.jahresProvision)}</p>
           </div>
           <Progress value={Math.min(100, stats.yearProgress)} className="h-2 mt-2" />
-          <p className={unscharfKlasse("text-[10px] text-muted-foreground mt-1")}>
+          <p className={unscharfKlasse("text-bildunterschrift text-muted-foreground mt-1")}>
             {stats.yearProgress} % erreicht, {isAnzahl
               ? `${stats.jahresIst} von ${stats.jahresAnzahl} Verkäufen`
               : `${fmt(stats.jahresIst)} von ${fmt(stats.jahresVolumen)}`}

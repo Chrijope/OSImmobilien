@@ -104,7 +104,7 @@ export function ProvisionssatzBearbeiten({
             onChange={(e) => setLeadText(e.target.value)}
             disabled={!darfBearbeiten}
           />
-          <p className="text-[10px] text-muted-foreground">Für Leads, die OS Immobilien zuweist</p>
+          <p className="text-bildunterschrift text-muted-foreground">Für Leads, die OS Immobilien zuweist</p>
         </div>
         <div className="space-y-1">
           <Label htmlFor="profil-satz-eigen" className="text-xs text-muted-foreground">Eigen-Satz (%)</Label>
@@ -116,7 +116,7 @@ export function ProvisionssatzBearbeiten({
             onChange={(e) => setEigenText(e.target.value)}
             disabled={!darfBearbeiten}
           />
-          <p className="text-[10px] text-muted-foreground">Für Kontakte aus dem eigenen Netzwerk</p>
+          <p className="text-bildunterschrift text-muted-foreground">Für Kontakte aus dem eigenen Netzwerk</p>
         </div>
       </div>
       {darfBearbeiten ? (

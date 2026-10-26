@@ -65,7 +65,7 @@ export function BewerberKpiCard() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">            <CardTitle className="text-[13px] font-medium text-muted-foreground tracking-wide uppercase">Bewerbermanagement – KPIs</CardTitle>
           </div>
-          <Badge variant="outline" className="text-[9px]">
+          <Badge variant="outline" className="text-bildunterschrift">
             <span className={unscharfKlasse()}>{kpi.total}</span>&nbsp;gesamt
           </Badge>
         </div>
@@ -84,15 +84,15 @@ export function BewerberKpiCard() {
         <div className="grid grid-cols-3 gap-2 text-center pt-1 border-t border-border">
           <div>
             <p className={unscharfKlasse("text-sm font-bold text-foreground")}>{kpi.eingang}</p>
-            <p className="text-[10px] text-muted-foreground">Neu in Eingang</p>
+            <p className="text-bildunterschrift text-muted-foreground">Neu in Eingang</p>
           </div>
           <div>
             <p className={unscharfKlasse("text-sm font-bold text-foreground")}>{kpi.neuDieseWoche}</p>
-            <p className="text-[10px] text-muted-foreground">Neu (7 Tage)</p>
+            <p className="text-bildunterschrift text-muted-foreground">Neu (7 Tage)</p>
           </div>
           <div>
             <p className={unscharfKlasse("text-sm font-bold text-foreground")}>{kpi.conversion}%</p>
-            <p className="text-[10px] text-muted-foreground">Conversion</p>
+            <p className="text-bildunterschrift text-muted-foreground">Conversion</p>
           </div>
         </div>
 

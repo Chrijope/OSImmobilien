@@ -227,10 +227,10 @@ export default function AuditLog() {
                       className="w-full flex items-center justify-between gap-3 text-left"
                     >
                       <div className="flex items-center gap-2 min-w-0 flex-1">
-                        <Badge variant="secondary" className="text-[10px]">{r.entity}</Badge>
+                        <Badge variant="secondary" className="text-bildunterschrift">{r.entity}</Badge>
                         <span className="text-xs font-medium truncate">{r.action}</span>
                         {r.entity_id && (
-                          <span className="text-[10px] text-muted-foreground font-mono truncate">
+                          <span className="text-bildunterschrift text-muted-foreground font-mono truncate">
                             {r.entity_id.slice(0, 8)}…
                           </span>
                         )}
@@ -244,19 +244,19 @@ export default function AuditLog() {
                       <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
                         <div>
                           <div className="font-semibold mb-1">Vorher</div>
-                          <pre className="bg-muted/40 p-2 rounded text-[10px] overflow-auto max-h-64">
+                          <pre className="bg-muted/40 p-2 rounded text-bildunterschrift overflow-auto max-h-64">
                             {JSON.stringify(r.vorher ?? null, null, 2)}
                           </pre>
                         </div>
                         <div>
                           <div className="font-semibold mb-1">Nachher</div>
-                          <pre className="bg-muted/40 p-2 rounded text-[10px] overflow-auto max-h-64">
+                          <pre className="bg-muted/40 p-2 rounded text-bildunterschrift overflow-auto max-h-64">
                             {JSON.stringify(r.nachher ?? null, null, 2)}
                           </pre>
                         </div>
                         <div>
                           <div className="font-semibold mb-1">Meta</div>
-                          <pre className="bg-muted/40 p-2 rounded text-[10px] overflow-auto max-h-64">
+                          <pre className="bg-muted/40 p-2 rounded text-bildunterschrift overflow-auto max-h-64">
                             {JSON.stringify(r.meta ?? {}, null, 2)}
                           </pre>
                         </div>

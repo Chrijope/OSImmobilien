@@ -59,7 +59,7 @@ export function StandortCharts({ scores, pois, rendite, eigentumsquote }: Props)
           </ResponsiveContainer>
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
             <div className="text-3xl font-bold text-primary tabular-nums">{rendite.toFixed(2)} %</div>
-            <div className="text-[10px] text-muted-foreground">Skala 0 – {renditeMax} %</div>
+            <div className="text-bildunterschrift text-muted-foreground">Skala 0 – {renditeMax} %</div>
           </div>
         </div>
       </Card>

@@ -443,7 +443,7 @@
   font-size: 12px;
   line-height: 1.5;
 }
-.portal-ui[data-portal="kunde"] .portal-content :is([class~="text-[10px]"], [class~="text-[11px]"]) {
+.portal-ui[data-portal="kunde"] .portal-content :is([class~="text-[10px]"], [class~="text-[11px]"], [class~="text-bildunterschrift"]) {
   font-size: 11px;
 }
 /* The CRM's compact typography uses !important on shared Tailwind sizes.

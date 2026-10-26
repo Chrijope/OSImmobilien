@@ -315,7 +315,7 @@ export function EinheitFinanzen({ objekt, wohnung: w, heute = new Date(), kunden
       {st.gebaeudeanteilAngenommen && <p className="mt-1 text-xs text-muted-foreground">{kundenModus ? t.aufteilungAngenommen(prozent(st.gebaeudeanteilProzent, 0)) : `Aufteilung nicht am Objekt gepflegt, ${dez(st.gebaeudeanteilProzent, 0)} % Gebäudeanteil angenommen.`}</p>}
       <div className="mb-1 mt-3 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{t.abschreibung}</div>
       <Zeile label={t.bemessungsgrundlage} wert={eur0(st.afaBasis)} testId="kp-afa-basis" info={t.bemessungsgrundlageInfo} />
-      <Zeile label={<>{t.afaSatz}{afaAngepasst && <Badge variant="outline" className="ml-1.5 border-[hsl(var(--warning))]/40 bg-[hsl(var(--warning))]/10 px-1.5 py-0 text-[10px] text-[hsl(var(--warning))]" data-testid="afa-angepasst">{t.angepasst}</Badge>}</>} wert={prozent(st.afaProzent, 1)} testId="kp-afa-satz" />
+      <Zeile label={<>{t.afaSatz}{afaAngepasst && <Badge variant="outline" className="ml-1.5 border-[hsl(var(--warning))]/40 bg-[hsl(var(--warning))]/10 px-1.5 py-0 text-bildunterschrift text-[hsl(var(--warning))]" data-testid="afa-angepasst">{t.angepasst}</Badge>}</>} wert={prozent(st.afaProzent, 1)} testId="kp-afa-satz" />
       <Zeile label={t.afaJahr} wert={eur0(st.afaJahr)} testId="kp-afa-jahr" />
       {st.sonderAfaAktiv && <Zeile label={t.sonderAfaJahr(st.sonderAfaJahre)} wert={eur0(st.sonderAfaJahr)} testId="kp-sonderafa" />}
     </div>

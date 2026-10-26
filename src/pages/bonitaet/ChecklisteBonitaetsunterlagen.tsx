@@ -231,7 +231,7 @@ function DokumentGitter({ docs }: { docs: DocItem[] }) {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <h4 className="font-semibold text-sm text-foreground">{doc.name}</h4>
-                  <Badge variant={doc.optional ? "outline" : "secondary"} className="text-[10px]">
+                  <Badge variant={doc.optional ? "outline" : "secondary"} className="text-bildunterschrift">
                     {doc.optional ? "Falls vorhanden" : "Pflicht"}
                   </Badge>
                 </div>

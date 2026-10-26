@@ -27,17 +27,17 @@ export default function Lead24hRegel() {
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
           <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-4">
-            <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-600">Ideal</div>
+            <div className="text-bildunterschrift font-bold uppercase tracking-wider text-emerald-600">Ideal</div>
             <div className="text-2xl font-bold text-foreground mt-1">&lt; 1 Stunde</div>
             <p className="text-xs text-muted-foreground mt-1">Höchste Conversion. Der Lead ist mental noch im Thema.</p>
           </div>
           <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
-            <div className="text-[10px] font-bold uppercase tracking-wider text-amber-600">Gut</div>
+            <div className="text-bildunterschrift font-bold uppercase tracking-wider text-amber-600">Gut</div>
             <div className="text-2xl font-bold text-foreground mt-1">&lt; 6 Stunden</div>
             <p className="text-xs text-muted-foreground mt-1">Noch warm. Erwartungshaltung ist erfüllt.</p>
           </div>
           <div className="rounded-lg border border-red-500/30 bg-red-500/5 p-4">
-            <div className="text-[10px] font-bold uppercase tracking-wider text-red-600">Spätestens</div>
+            <div className="text-bildunterschrift font-bold uppercase tracking-wider text-red-600">Spätestens</div>
             <div className="text-2xl font-bold text-foreground mt-1">&lt; 24 Stunden</div>
             <p className="text-xs text-muted-foreground mt-1">Schmerzgrenze. Danach ist der Lead in der Regel kalt.</p>
           </div>
@@ -62,7 +62,7 @@ export default function Lead24hRegel() {
           Für Zeiten, in denen ein Anruf nicht passt, nutze die <strong>WhatsApp-Brücke</strong>:
         </p>
         <div className="bg-primary/5 border border-primary/20 rounded p-4 mt-3 text-sm">
-          <div className="text-[10px] font-bold uppercase tracking-wider text-primary mb-2">WhatsApp-Vorlage „Brücke"</div>
+          <div className="text-bildunterschrift font-bold uppercase tracking-wider text-primary mb-2">WhatsApp-Vorlage „Brücke"</div>
           <p className="italic text-foreground/90 whitespace-pre-line">
             „Hallo {`{Vorname}`}, hier ist {`{VP-Vorname}`} von OS Immobilien. Ich habe gerade deine Anfrage zur
             Kapitalanlage-Immobilie erhalten – vielen Dank für dein Interesse! Es ist jetzt etwas spät für einen Anruf,

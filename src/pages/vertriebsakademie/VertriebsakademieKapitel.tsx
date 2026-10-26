@@ -400,12 +400,12 @@ export function SectionBlock({ section, slug, kapitelNummer, kapitelTitel, landi
                     <div className="flex items-center gap-2 flex-wrap">
                       <div className={`text-sm font-medium ${done ? "line-through text-muted-foreground" : ""}`}>{u.titel}</div>
                       {isAdvanced && (
-                        <Badge className="text-[10px] gap-1 bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/40">
+                        <Badge className="text-bildunterschrift gap-1 bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/40">
                           <Gem className="h-3 w-3" /> Advanced Challenge
                         </Badge>
                       )}
                       {u.advanced && (
-                        <Badge variant="outline" className="text-[10px] gap-1 border-amber-500/40 text-amber-700 dark:text-amber-400">
+                        <Badge variant="outline" className="text-bildunterschrift gap-1 border-amber-500/40 text-amber-700 dark:text-amber-400">
                           Bonus-Aufgabe
                         </Badge>
                       )}
@@ -431,7 +431,7 @@ export function SectionBlock({ section, slug, kapitelNummer, kapitelTitel, landi
                             className="min-h-[90px] text-sm resize-y"
                           />
                         )}
-                        <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+                        <div className="flex items-center justify-between text-bildunterschrift text-muted-foreground">
                           <span>{chars}/{need} Zeichen · Antwort wird automatisch gespeichert &amp; für Coach sichtbar</span>
                           {chars >= need && <span className="text-emerald-600 dark:text-emerald-400 font-medium">✓ Freigeschaltet</span>}
                         </div>
@@ -618,10 +618,10 @@ export default function VertriebsakademieKapitel() {
 
         <div className="space-y-2">
           <div className="flex items-center gap-2 flex-wrap">
-            <Badge variant="outline" className="text-[10px]">Kapitel {kap.nummer}</Badge>
+            <Badge variant="outline" className="text-bildunterschrift">Kapitel {kap.nummer}</Badge>
             <span className="text-[11px] uppercase tracking-wide text-muted-foreground">{kap.kicker}</span>
             {kap.placeholder && (
-              <Badge className="text-[9px] bg-orange-500/15 text-orange-600 border-orange-500/30">
+              <Badge className="text-bildunterschrift bg-orange-500/15 text-orange-600 border-orange-500/30">
                 in Arbeit
               </Badge>
             )}
@@ -759,7 +759,7 @@ export default function VertriebsakademieKapitel() {
                           <div className="h-1 w-24 rounded-full bg-muted overflow-hidden">
                             <div className={`h-full transition-all ${secDone ? "bg-emerald-500" : "bg-primary"}`} style={{ width: `${secPct}%` }} />
                           </div>
-                          <span className="text-[10px] text-muted-foreground tabular-nums">{done}/{total}</span>
+                          <span className="text-bildunterschrift text-muted-foreground tabular-nums">{done}/{total}</span>
                         </div>
                       )}
                     </div>

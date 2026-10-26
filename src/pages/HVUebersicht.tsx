@@ -88,7 +88,7 @@ const HVUebersicht = () => {
                       <span>{f.titel}</span>
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-muted-foreground">{new Date(f.faelligAm).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}</span>
-                        <Badge variant={f.faelligAm < today ? "destructive" : "outline"} className="text-[10px]">
+                        <Badge variant={f.faelligAm < today ? "destructive" : "outline"} className="text-bildunterschrift">
                           {f.faelligAm < today ? "Überfällig" : "Bald fällig"}
                         </Badge>
                       </div>
@@ -157,7 +157,7 @@ const HVUebersicht = () => {
                     <p className="text-sm font-medium">{t.titel}</p>
                     <p className="text-xs text-muted-foreground">{t.objektName} · {t.wohneinheitName}</p>
                   </div>
-                  <Badge variant={t.prioritaet === "dringend" ? "destructive" : t.prioritaet === "hoch" ? "default" : "secondary"} className="text-[10px] shrink-0">
+                  <Badge variant={t.prioritaet === "dringend" ? "destructive" : t.prioritaet === "hoch" ? "default" : "secondary"} className="text-bildunterschrift shrink-0">
                     {t.prioritaet}
                   </Badge>
                 </div>
@@ -206,7 +206,7 @@ const HVUebersicht = () => {
                     <p className="text-sm font-medium">{d.firma}</p>
                     <p className="text-xs text-muted-foreground">{d.ansprechpartner}</p>
                   </div>
-                  <Badge variant="outline" className="text-[10px]">{d.typ}</Badge>
+                  <Badge variant="outline" className="text-bildunterschrift">{d.typ}</Badge>
                 </div>
               ))}
             </div>

@@ -239,7 +239,7 @@ export default function Videoraeume() {
                   <span className="truncate font-medium">
                     {raum.titel || (raum.art === "objektvorstellung" ? "Objektvorstellung" : "Beratungsgespräch")}
                   </span>
-                  <Badge variant={raum.status === "beendet" ? "secondary" : "outline"} className="text-[10px]">
+                  <Badge variant={raum.status === "beendet" ? "secondary" : "outline"} className="text-bildunterschrift">
                     {raum.status === "beendet" ? "beendet" : raum.status === "laufend" ? "läuft" : "offen"}
                   </Badge>
                 </div>

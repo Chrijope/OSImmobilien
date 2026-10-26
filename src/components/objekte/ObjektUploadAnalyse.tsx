@@ -432,7 +432,7 @@ export function ObjektUploadAnalyse({ draftKey, onAnalyseComplete, onAnalyzingCh
           </li>
         ))}
       </ul>
-      <p className="text-[10px] text-muted-foreground mt-1.5">
+      <p className="text-bildunterschrift text-muted-foreground mt-1.5">
         Die Angaben aus diesen Dokumenten fehlen in den übernommenen Daten. Bitte einzeln erneut hochladen oder von Hand nachtragen.
       </p>
     </div>
@@ -493,13 +493,13 @@ export function ObjektUploadAnalyse({ draftKey, onAnalyseComplete, onAnalyzingCh
                       <FileText className={`h-3.5 w-3.5 flex-shrink-0 ${slotFileList.length > 0 ? "text-primary" : "text-muted-foreground"}`} />
                       <span className="text-xs font-medium">{slot.label}</span>
                       {slotFileList.length > 0 && (
-                        <Badge variant="secondary" className="text-[9px] h-4 px-1.5">{slotFileList.length}</Badge>
+                        <Badge variant="secondary" className="text-bildunterschrift h-4 px-1.5">{slotFileList.length}</Badge>
                       )}
                     </div>
                     <Button
                       size="sm"
                       variant={slotFileList.length > 0 ? "outline" : "ghost"}
-                      className="h-6 text-[10px] gap-1 px-2"
+                      className="h-6 text-bildunterschrift gap-1 px-2"
                       disabled={isAnalyzing}
                       onClick={(e) => {
                         e.stopPropagation();
@@ -524,11 +524,11 @@ export function ObjektUploadAnalyse({ draftKey, onAnalyseComplete, onAnalyzingCh
                       }}
                     />
                   </div>
-                  <p className="text-[10px] text-muted-foreground">{slot.hint}</p>
+                  <p className="text-bildunterschrift text-muted-foreground">{slot.hint}</p>
                   {slotFileList.length > 0 && (
                     <div className="mt-1.5 space-y-0.5">
                       {slotFileList.map((file, index) => (
-                        <div key={`${slot.id}-${index}`} className="flex items-center justify-between text-[10px] py-0.5 px-2 rounded bg-background/60">
+                        <div key={`${slot.id}-${index}`} className="flex items-center justify-between text-bildunterschrift py-0.5 px-2 rounded bg-background/60">
                           <span className="truncate mr-2">{file.name}</span>
                           {!isAnalyzing && (
                             <button onClick={(e) => { e.stopPropagation(); removeSlotFile(slot.id, index); }} className="text-destructive flex-shrink-0">
@@ -558,13 +558,13 @@ export function ObjektUploadAnalyse({ draftKey, onAnalyseComplete, onAnalyzingCh
             <Upload className="h-6 w-6 text-muted-foreground" />
             <p className="text-xs text-muted-foreground">PDFs hier ablegen oder klicken</p>
             <div className="flex gap-2">
-              <Button size="sm" variant="outline" className="gap-1.5 text-[10px] h-7" disabled={isAnalyzing} onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}>
+              <Button size="sm" variant="outline" className="gap-1.5 text-bildunterschrift h-7" disabled={isAnalyzing} onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}>
                 <FileText className="h-3 w-3" /> Dateien
               </Button>
-              <Button size="sm" variant="outline" className="gap-1.5 text-[10px] h-7" disabled={isAnalyzing} onClick={(e) => { e.stopPropagation(); folderInputRef.current?.click(); }}>
+              <Button size="sm" variant="outline" className="gap-1.5 text-bildunterschrift h-7" disabled={isAnalyzing} onClick={(e) => { e.stopPropagation(); folderInputRef.current?.click(); }}>
                 <FolderOpen className="h-3 w-3" /> Ordner
               </Button>
-              <Button size="sm" variant="outline" className="gap-1.5 text-[10px] h-7" disabled={isAnalyzing} onClick={(e) => { e.stopPropagation(); excelInputRef.current?.click(); }}>
+              <Button size="sm" variant="outline" className="gap-1.5 text-bildunterschrift h-7" disabled={isAnalyzing} onClick={(e) => { e.stopPropagation(); excelInputRef.current?.click(); }}>
                 <FileText className="h-3 w-3" /> Excel-Liste
               </Button>
             </div>
@@ -637,7 +637,7 @@ export function ObjektUploadAnalyse({ draftKey, onAnalyseComplete, onAnalyzingCh
               </>
             )}
           </div>
-          <p className="text-[10px] text-muted-foreground mt-1">
+          <p className="text-bildunterschrift text-muted-foreground mt-1">
             Öffentliche Links werden automatisch nach PDFs durchsucht und importiert.
           </p>
         </div>
@@ -683,7 +683,7 @@ export function ObjektUploadAnalyse({ draftKey, onAnalyseComplete, onAnalyzingCh
             <ImageIcon className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
             <div>
               <p className="text-xs font-medium text-muted-foreground">Bilder & ergänzende Unterlagen</p>
-              <p className="text-[10px] text-muted-foreground mt-0.5">
+              <p className="text-bildunterschrift text-muted-foreground mt-0.5">
                 Objektbilder, Wohnungsfotos und wohnungsspezifische Unterlagen (z.B. Grundrisse einzelner Wohnungen)
                 werden in den Folgeseiten bei den jeweiligen Wohnungen hochgeladen.
               </p>
@@ -703,7 +703,7 @@ export function ObjektUploadAnalyse({ draftKey, onAnalyseComplete, onAnalyzingCh
               <p className="text-sm font-semibold">KI-Analyse läuft...</p>
               <p className="text-xs text-muted-foreground">{progressText}</p>
             </div>
-            <Badge variant="outline" className="text-[10px] border-primary/30 text-primary font-medium">
+            <Badge variant="outline" className="text-bildunterschrift border-primary/30 text-primary font-medium">
               {Math.round(progress)}%
             </Badge>
           </div>
@@ -714,7 +714,7 @@ export function ObjektUploadAnalyse({ draftKey, onAnalyseComplete, onAnalyzingCh
               ⚠️ Browser Tab: Bitte bleib während der Analyse in diesem Tab. Ein Tab-Wechsel kann dazu führen, dass die Analyse abgebrochen wird.
             </p>
           </div>
-          <p className="text-[10px] text-muted-foreground mt-2 text-center">
+          <p className="text-bildunterschrift text-muted-foreground mt-2 text-center">
             Die KI liest und analysiert alle Dokumente. Dies dauert meist 10–60 Sekunden je nach Anzahl der Dateien.
           </p>
         </Card>
@@ -754,7 +754,7 @@ export function ObjektUploadAnalyse({ draftKey, onAnalyseComplete, onAnalyzingCh
                 <p className="text-xs text-muted-foreground mt-0.5">
                   Die folgenden Daten wurden extrahiert und können in die Folgeseiten übernommen werden.
                 </p>
-              <p className="text-[10px] text-muted-foreground mt-1.5 bg-muted/40 rounded px-2 py-1">
+              <p className="text-bildunterschrift text-muted-foreground mt-1.5 bg-muted/40 rounded px-2 py-1">
                 ✅ Alle eingegebenen Daten in den Folgeseiten bleiben auch bei Tab-Wechsel gespeichert, bis das Objekt angelegt wurde.
               </p>
               </div>
@@ -767,7 +767,7 @@ export function ObjektUploadAnalyse({ draftKey, onAnalyseComplete, onAnalyzingCh
                 <p className="text-xs font-semibold mb-2">Erkannte Dokumente</p>
                 <div className="flex flex-wrap gap-1.5">
                   {result.erkannte_dokumente.map((doc, index) => (
-                    <Badge key={index} variant="outline" className="text-[10px] gap-1">
+                    <Badge key={index} variant="outline" className="text-bildunterschrift gap-1">
                       <FileText className="h-2.5 w-2.5" />
                       {DOC_TYPE_LABELS[doc.typ] || doc.typ}
                       <span className="text-muted-foreground">({doc.dateiname})</span>
@@ -818,7 +818,7 @@ export function ObjektUploadAnalyse({ draftKey, onAnalyseComplete, onAnalyzingCh
                           <td className="py-1.5 pr-3">{wohnung.kaufpreis ? fmtEur(wohnung.kaufpreis) : "–"}</td>
                           <td className="py-1.5 pr-3">{wohnung.kaltmiete ? fmtEur(wohnung.kaltmiete) : "–"}</td>
                           <td className="py-1.5">
-                            <Badge variant={wohnung.vermietet !== false ? "default" : "destructive"} className="text-[9px]">
+                            <Badge variant={wohnung.vermietet !== false ? "default" : "destructive"} className="text-bildunterschrift">
                               {wohnung.vermietet !== false ? "Vermietet" : "Leerstand"}
                             </Badge>
                           </td>
@@ -867,7 +867,7 @@ export function ObjektUploadAnalyse({ draftKey, onAnalyseComplete, onAnalyzingCh
           <Card className="p-3 bg-muted/30">
             <div className="flex items-start gap-2">
               <AlertCircle className="h-3.5 w-3.5 text-muted-foreground mt-0.5 flex-shrink-0" />
-              <p className="text-[10px] text-muted-foreground">
+              <p className="text-bildunterschrift text-muted-foreground">
                 Die KI-extrahierten Daten werden in die Folgeseiten übernommen. Bitte prüfe alle Angaben sorgfältig,
                 bevor du das Objekt final anlegst. Du kannst Werte jederzeit manuell anpassen.
               </p>
@@ -882,7 +882,7 @@ export function ObjektUploadAnalyse({ draftKey, onAnalyseComplete, onAnalyzingCh
 function SummaryItem({ label, value }: { label: string; value: string }) {
   return (
     <div className="bg-background rounded-lg p-2 border">
-      <p className="text-muted-foreground text-[10px]">{label}</p>
+      <p className="text-muted-foreground text-bildunterschrift">{label}</p>
       <p className="font-medium truncate">{value}</p>
     </div>
   );

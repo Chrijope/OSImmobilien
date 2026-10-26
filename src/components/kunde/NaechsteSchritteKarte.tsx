@@ -123,7 +123,7 @@ export function NaechsteSchritteKarte({ investments, isAdmin, onOpenInvestment, 
             </div>
             <h3 className="font-bold text-sm text-foreground">{titel}</h3>
             {!open && (
-              <Badge className="text-[10px] bg-primary text-primary-foreground ml-1">
+              <Badge className="text-bildunterschrift bg-primary text-primary-foreground ml-1">
                 {visible.length === 1 ? stufeLabel : `${visible.length} Investments`}
               </Badge>
             )}
@@ -175,7 +175,7 @@ export function NaechsteSchritteKarte({ investments, isAdmin, onOpenInvestment, 
           {/* Aktuelle Stufe */}
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs text-muted-foreground">Aktuelle Stufe:</span>
-            <Badge className="text-[10px] bg-primary text-primary-foreground">{stufeLabel}</Badge>
+            <Badge className="text-bildunterschrift bg-primary text-primary-foreground">{stufeLabel}</Badge>
             {active.objektTitel && (
               <span className="text-xs text-muted-foreground truncate">· {active.objektTitel}{active.weNr ? ` (WE ${active.weNr})` : ""}</span>
             )}
@@ -208,13 +208,13 @@ export function NaechsteSchritteKarte({ investments, isAdmin, onOpenInvestment, 
                   <ol className="space-y-1.5">
                     {guide.aktionen.map((a, idx) => (
                       <li key={idx} className="flex items-start gap-2 text-xs">
-                        <span className="flex-shrink-0 w-4 h-4 rounded-full bg-primary/15 text-primary text-[10px] font-bold flex items-center justify-center mt-0.5">
+                        <span className="flex-shrink-0 w-4 h-4 rounded-full bg-primary/15 text-primary text-bildunterschrift font-bold flex items-center justify-center mt-0.5">
                           {idx + 1}
                         </span>
                         <span className="text-foreground/90 flex-1">
                           {a.text}
                           {a.adminOnly && (
-                            <span className="ml-1.5 inline-flex items-center gap-0.5 text-[10px] text-amber-600 font-medium">
+                            <span className="ml-1.5 inline-flex items-center gap-0.5 text-bildunterschrift text-amber-600 font-medium">
                               <Lock className="h-2.5 w-2.5" /> Admin
                             </span>
                           )}

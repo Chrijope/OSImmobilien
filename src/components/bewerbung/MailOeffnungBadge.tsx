@@ -104,7 +104,7 @@ export function MailOeffnungBadge({
       <TooltipTrigger asChild>
         <span
           aria-label={kurz}
-          className={`inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[10px] leading-none ${
+          className={`inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-bildunterschrift leading-none ${
             /* emerald statt --success, siehe die Begruendung zum Kontrast in
                KennenlernMailVermerk.tsx. */
             geoeffnet

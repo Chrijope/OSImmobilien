@@ -38,7 +38,7 @@ export function FormProgress({ steps, current, onJump, eyebrow }: FormProgressPr
       <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-1 mb-3" data-testid="form-progress-kopf">
         <div className="min-w-0 max-w-full">
           {eyebrow && (
-            <div className="text-[10px] tracking-[0.16em] sm:tracking-[0.28em] uppercase text-muted-foreground font-medium mb-1.5 [overflow-wrap:anywhere]">
+            <div className="text-bildunterschrift tracking-[0.16em] sm:tracking-[0.28em] uppercase text-muted-foreground font-medium mb-1.5 [overflow-wrap:anywhere]">
               {eyebrow}
             </div>
           )}
@@ -95,7 +95,7 @@ export function FormProgress({ steps, current, onJump, eyebrow }: FormProgressPr
                 <span className={strich(linksSichtbar, i <= safe)} aria-hidden="true" />
                 <span
                   className={cn(
-                    "mx-1 h-5 w-5 shrink-0 rounded-full flex items-center justify-center text-[10px] font-semibold transition-all",
+                    "mx-1 h-5 w-5 shrink-0 rounded-full flex items-center justify-center text-bildunterschrift font-semibold transition-all",
                     isDone && "bg-primary text-primary-foreground",
                     isCurrent && "bg-primary text-primary-foreground ring-4 ring-primary/15",
                     !isDone && !isCurrent && "bg-muted text-muted-foreground",
@@ -107,7 +107,7 @@ export function FormProgress({ steps, current, onJump, eyebrow }: FormProgressPr
               </span>
               <span
                 className={cn(
-                  "px-1 text-[10px] leading-tight text-center truncate w-full hidden sm:block",
+                  "px-1 text-bildunterschrift leading-tight text-center truncate w-full hidden sm:block",
                   isCurrent ? "text-foreground font-medium" : "text-muted-foreground",
                 )}
               >

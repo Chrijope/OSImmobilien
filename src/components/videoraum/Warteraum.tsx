@@ -204,7 +204,7 @@ export function Schalter({
     >
       <span className="min-w-0">
         <span className="block text-[12.5px] text-white/60">{beschriftung}</span>
-        {hinweis && <span className="mt-0.5 block text-[10.5px] leading-snug text-white/30">{hinweis}</span>}
+        {hinweis && <span className="mt-0.5 block text-bildunterschrift leading-snug text-white/30">{hinweis}</span>}
       </span>
       <span
         aria-hidden

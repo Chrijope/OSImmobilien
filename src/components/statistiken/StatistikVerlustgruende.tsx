@@ -263,7 +263,7 @@ export function StatistikVerlustgruende({ kontakte }: { kontakte: KundeData[] })
                     </button>
                     {offen && (
                       <div className="mt-1.5 ml-4 space-y-1 border-l border-border pl-3">
-                        <p className="text-[10px] text-muted-foreground italic">{gr.bedeutung}</p>
+                        <p className="text-bildunterschrift text-muted-foreground italic">{gr.bedeutung}</p>
                         {gr.gruende.map((g) => (
                           <button
                             key={g.grundId}
@@ -284,7 +284,7 @@ export function StatistikVerlustgruende({ kontakte }: { kontakte: KundeData[] })
             </div>
           )}
           {data.unsicherZugeordnet > 0 && (
-            <p className="text-[10px] text-muted-foreground mt-2 italic">
+            <p className="text-bildunterschrift text-muted-foreground mt-2 italic">
               {data.unsicherZugeordnet} Leads stammen aus der Zeit vor dem festen Katalog und ließen
               sich nicht sicher zuordnen. Sie zählen unter „Sonstiges".
             </p>
@@ -297,7 +297,7 @@ export function StatistikVerlustgruende({ kontakte }: { kontakte: KundeData[] })
             <p className="text-[11px] uppercase tracking-wide text-muted-foreground mb-2 font-semibold flex items-center gap-2">
               Verlustquote pro Setter / VP
               <InfoTooltip text="Anteil verlorener Leads pro Person (Verloren ÷ Gesamt im Zeitraum). Nur Personen mit ≥ 3 Leads. 'Auffällig' (rot) = > 30 % UND deutlich über Team-Schnitt — verdient ein 1:1-Coaching-Gespräch." />
-              <span className="text-[10px] text-muted-foreground normal-case font-normal">
+              <span className="text-bildunterschrift text-muted-foreground normal-case font-normal">
                 Ø Team: {teamAvgQuote.toFixed(1)}%
               </span>
             </p>
@@ -324,7 +324,7 @@ export function StatistikVerlustgruende({ kontakte }: { kontakte: KundeData[] })
                         <td className="py-1.5 text-right text-muted-foreground tabular-nums">{p.verloren}</td>
                         <td className="py-1.5 text-right tabular-nums">
                           {auffaellig ? (
-                            <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
+                            <Badge variant="destructive" className="text-bildunterschrift px-1.5 py-0">
                               {p.quote.toFixed(0)}%
                             </Badge>
                           ) : (
@@ -336,7 +336,7 @@ export function StatistikVerlustgruende({ kontakte }: { kontakte: KundeData[] })
                   })}
                 </tbody>
               </table>
-              <p className="text-[10px] text-muted-foreground mt-2 italic">
+              <p className="text-bildunterschrift text-muted-foreground mt-2 italic">
                 Auffällig (rot) = mehr als 30% Verlust UND deutlich über Team-Durchschnitt. Mindestens 3 Leads pro Person.
               </p>
             </div>

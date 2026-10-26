@@ -99,7 +99,7 @@ export function UnterlagenDetailLayout({
 
         {quellen && quellen.length > 0 && (
           <Card className="p-6 bg-muted/30 border-dashed">
-            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-2">
+            <div className="text-bildunterschrift font-bold uppercase tracking-[0.2em] text-muted-foreground mb-2">
               Endnoten
             </div>
             <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
@@ -157,7 +157,7 @@ function MagazineCover({
 
         {/* Top stripe with issue line */}
         {(hero.issue || badge) && (
-          <div className="absolute top-0 inset-x-0 px-5 sm:px-8 py-4 flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.25em] text-white/70">
+          <div className="absolute top-0 inset-x-0 px-5 sm:px-8 py-4 flex items-center justify-between text-bildunterschrift font-semibold uppercase tracking-[0.25em] text-white/70">
             <span>{hero.issue || "OS Immobilien · Lead Playbook"}</span>
             {badge && <span className="hidden sm:inline">{badge}</span>}
           </div>
@@ -166,7 +166,7 @@ function MagazineCover({
         {/* Bottom content block */}
         <div className="absolute bottom-0 inset-x-0 p-5 sm:p-10">
           {hero.kicker && (
-            <div className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-amber-300 mb-3">
+            <div className="inline-flex items-center gap-2 text-bildunterschrift font-bold uppercase tracking-[0.3em] text-amber-300 mb-3">
               <span className="h-px w-6 bg-amber-300/70" />
               {hero.kicker}
             </div>
@@ -189,7 +189,7 @@ function MagazineCover({
         </div>
       </div>
       {hero.caption && (
-        <figcaption className="px-5 sm:px-8 py-3 bg-neutral-950 text-[10px] uppercase tracking-[0.2em] text-white/50 border-t border-white/10">
+        <figcaption className="px-5 sm:px-8 py-3 bg-neutral-950 text-bildunterschrift uppercase tracking-[0.2em] text-white/50 border-t border-white/10">
           {hero.caption}
         </figcaption>
       )}
@@ -201,7 +201,7 @@ function MagazineCover({
 export function SectionCard({ title, icon, children }: { title: string; icon?: ReactNode; children: ReactNode }) {
   return (
     <Card className="p-6 sm:p-8 border-l-[3px] border-l-primary/70">
-      <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.25em] text-muted-foreground mb-2">
+      <div className="flex items-center gap-2 text-bildunterschrift font-bold uppercase tracking-[0.25em] text-muted-foreground mb-2">
         {icon}
         <span>Kapitel</span>
       </div>
@@ -222,7 +222,7 @@ export function PullQuote({ children, author }: { children: ReactNode; author?: 
         „{children}"
       </blockquote>
       {author && (
-        <figcaption className="mt-3 text-[10px] font-bold uppercase tracking-[0.25em] text-muted-foreground">
+        <figcaption className="mt-3 text-bildunterschrift font-bold uppercase tracking-[0.25em] text-muted-foreground">
           — {author}
         </figcaption>
       )}
@@ -252,7 +252,7 @@ export function MagazineFigure({
       {(caption || credit) && (
         <figcaption className="px-4 py-3 bg-muted/40 text-xs text-muted-foreground flex items-start justify-between gap-3">
           {caption && <span className="italic">{caption}</span>}
-          {credit && <span className="text-[10px] uppercase tracking-[0.2em] shrink-0">{credit}</span>}
+          {credit && <span className="text-bildunterschrift uppercase tracking-[0.2em] shrink-0">{credit}</span>}
         </figcaption>
       )}
     </figure>
@@ -283,14 +283,14 @@ export function EinwandBlock({
         <p className="font-semibold text-foreground/90 italic">„{einwand}"</p>
       </div>
       {technik && (
-        <Badge variant="outline" className="text-[10px] border-primary/30 text-primary">
+        <Badge variant="outline" className="text-bildunterschrift border-primary/30 text-primary">
           Technik: {technik}
         </Badge>
       )}
       <p className="text-foreground/80">{antwort}</p>
       {beispiel && (
         <div className="bg-muted/40 border border-border rounded p-3 text-xs">
-          <span className="font-semibold text-muted-foreground uppercase tracking-wider text-[10px]">Beispiel: </span>
+          <span className="font-semibold text-muted-foreground uppercase tracking-wider text-bildunterschrift">Beispiel: </span>
           <span className="text-foreground/80">{beispiel}</span>
         </div>
       )}
@@ -343,7 +343,7 @@ export function TechnikCard({
       </ol>
       {beispiele && beispiele.length > 0 && (
         <div className="mt-3 pt-3 border-t border-border/60 space-y-2">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+          <p className="text-bildunterschrift font-semibold uppercase tracking-wider text-muted-foreground">
             Beispielsätze
           </p>
           {beispiele.map((b, i) => (
@@ -401,7 +401,7 @@ export function EinwandDropdownList({ items }: { items: EinwandItem[] }) {
             {isOpen && (
               <div className="px-4 pb-4 pt-1 space-y-2 border-t border-border/60">
                 {item.technik && (
-                  <Badge variant="outline" className="text-[10px] border-primary/30 text-primary mt-2">
+                  <Badge variant="outline" className="text-bildunterschrift border-primary/30 text-primary mt-2">
                     Technik: {item.technik}
                   </Badge>
                 )}
@@ -410,7 +410,7 @@ export function EinwandDropdownList({ items }: { items: EinwandItem[] }) {
                 </p>
                 {item.beispiel && (
                   <div className="bg-muted/40 border border-border rounded p-3 text-xs">
-                    <span className="font-semibold text-muted-foreground uppercase tracking-wider text-[10px]">
+                    <span className="font-semibold text-muted-foreground uppercase tracking-wider text-bildunterschrift">
                       Beispiel:{" "}
                     </span>
                     <span className="text-foreground/80">{item.beispiel}</span>

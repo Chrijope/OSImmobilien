@@ -131,7 +131,7 @@ export function MobileScanQRDialog({ open, onOpenChange, kontaktId, investmentId
             </div>
           )}
           {scanUrl && (
-            <p className="text-[10px] text-muted-foreground text-center max-w-[280px]">
+            <p className="text-bildunterschrift text-muted-foreground text-center max-w-[280px]">
               {t("portal.mobilescan.test_tip")}
             </p>
           )}

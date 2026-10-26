@@ -121,7 +121,7 @@ export default function Vertriebsakademie() {
                           <RouteIcon className="h-5 w-5" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                          <span className="text-bildunterschrift uppercase tracking-wide text-muted-foreground">
                             Ablaufplan
                           </span>
                           <h3 className="mt-1 text-base font-semibold leading-snug group-hover:text-primary transition-colors">

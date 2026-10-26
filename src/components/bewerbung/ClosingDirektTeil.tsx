@@ -374,7 +374,7 @@ export const ClosingDirektTeil = ({
               {sendetFahrplan ? "Wird versendet ..." : "Startfahrplan jetzt senden"}
             </Button>
             {b.paketUebersichtSentAt && (
-              <p className="text-[10px] text-emerald-600">
+              <p className="text-bildunterschrift text-emerald-600">
                 Zuletzt versendet am {new Date(b.paketUebersichtSentAt).toLocaleString("de-DE")}.
               </p>
             )}
@@ -406,7 +406,7 @@ export const ClosingDirektTeil = ({
               disabled={!canEdit || !fuDatum.trim()} onClick={followUpPlanen}>
               <CalendarClock className="h-3.5 w-3.5" /> Follow-up planen
             </Button>
-            <p className="text-[10px] text-muted-foreground">
+            <p className="text-bildunterschrift text-muted-foreground">
               Der Termin erscheint in der Übersicht des Bewerberprofils und in der Inbox, der
               Status wechselt auf <strong>Follow-Up</strong>. Zum Termin anrufen, nach der
               Entscheidung fragen und dann im Reiter Closing alles fertig machen.
@@ -575,7 +575,7 @@ export const ClosingDirektTeil = ({
               <Clock className="h-3.5 w-3.5" /> Auf Bedenkzeit setzen
             </Button>
           )}
-          <p className="text-[10px] text-muted-foreground">
+          <p className="text-bildunterschrift text-muted-foreground">
             Status wechselt auf <strong>Bedenkzeit</strong>, der Rückruf erscheint zur Wiedervorlage.
           </p>
         </div>
@@ -592,7 +592,7 @@ export const ClosingDirektTeil = ({
             disabled={!canEdit}
             placeholder="z. B. Kein Budget, falscher Zeitpunkt, anderes Angebot ..."
           />
-          <p className="text-[10px] text-muted-foreground">
+          <p className="text-bildunterschrift text-muted-foreground">
             Die Absage selbst läuft wie gewohnt über die Knöpfe in Punkt 9
             (C · Absage, inklusive wertschätzender Absage-Mail).
           </p>
@@ -604,7 +604,7 @@ export const ClosingDirektTeil = ({
           {/* Vertragsanschrift, dieselben Felder wie im ClosingTab */}
           <div className="rounded-lg border bg-muted/30 p-3 space-y-2">
             <div className="text-xs font-semibold">Vertragsanschrift</div>
-            <p className="text-[10px] text-muted-foreground">
+            <p className="text-bildunterschrift text-muted-foreground">
               Diese Anschrift steht später im Vertrag. Sie landet direkt im Reiter Closing.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -714,7 +714,7 @@ export const ClosingDirektTeil = ({
                   disabled={!canEdit}
                   placeholder={"Muster Vertriebs GmbH, München"}
                 />
-                <p className="text-[10px] text-muted-foreground">
+                <p className="text-bildunterschrift text-muted-foreground">
                   Landet im Bewerberprofil. Ob dafür die individuelle Vertragsfassung nötig ist,
                   entscheidet ihr im Reiter Closing.
                 </p>
@@ -804,7 +804,7 @@ export const ClosingDirektTeil = ({
             <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Teil 2 · Abschnitt {index + 1} von {CLOSING_DIREKT_ABSCHNITTE.length} · {abschnitt.titel}
             </span>
-            <span className="block text-[10px] text-muted-foreground">
+            <span className="block text-bildunterschrift text-muted-foreground">
               Folie: {abschnitt.folieTitel}
             </span>
           </label>

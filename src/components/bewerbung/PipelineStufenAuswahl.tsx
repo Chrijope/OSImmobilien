@@ -93,7 +93,7 @@ export function PipelineStufenAuswahl({
                 {stufe.anzahl}
               </div>
               <span
-                className={`mt-1 block text-[10px] leading-tight ${
+                className={`mt-1 block text-bildunterschrift leading-tight ${
                   istAktiv ? "text-foreground font-semibold" : "text-muted-foreground"
                 }`}
               >

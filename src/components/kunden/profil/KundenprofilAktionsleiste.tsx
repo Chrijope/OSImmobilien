@@ -170,7 +170,7 @@ const Symbolknopf = React.forwardRef<HTMLButtonElement, SymbolknopfProps>(
       >
         {icon}
       </span>
-      <span className="text-[10px] font-medium leading-tight text-muted-foreground group-hover:text-foreground">
+      <span className="text-bildunterschrift font-medium leading-tight text-muted-foreground group-hover:text-foreground">
         {wort}
       </span>
     </button>

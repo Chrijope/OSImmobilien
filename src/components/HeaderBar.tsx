@@ -685,7 +685,7 @@ export function HeaderBar() {
             <Button variant="ghost" size="icon" aria-label="Benachrichtigungen" className="relative">
               <Bell className="h-5 w-5 text-muted-foreground" />
               {unreadCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground flex items-center justify-center">
+                <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-destructive text-bildunterschrift font-bold text-destructive-foreground flex items-center justify-center">
                   {unreadCount}
                 </span>
               )}
@@ -697,7 +697,7 @@ export function HeaderBar() {
               <div className="flex items-center gap-2">
                 <h4 className="text-base font-semibold text-foreground">Benachrichtigungen</h4>
                 {unreadCount > 0 && (
-                  <Badge className="bg-destructive text-destructive-foreground text-[10px] px-1.5 h-5">
+                  <Badge className="bg-destructive text-destructive-foreground text-bildunterschrift px-1.5 h-5">
                     {unreadCount}
                   </Badge>
                 )}
@@ -995,7 +995,7 @@ export function HeaderBar() {
                     {eintrag.bereich!.abzeichen && (
                       <Badge
                         variant="outline"
-                        className="text-[10px] bg-yellow-100 text-yellow-800 border-yellow-300 py-0 px-1"
+                        className="text-bildunterschrift bg-yellow-100 text-yellow-800 border-yellow-300 py-0 px-1"
                       >
                         {eintrag.bereich!.abzeichen}
                       </Badge>

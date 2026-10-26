@@ -114,8 +114,8 @@ export default function Fristenueberwachung() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="font-semibold text-sm">{f.titel}</p>
-                    <Badge variant="outline" className="text-[10px]">{typLabels[f.typ] || f.typ}</Badge>
-                    <Badge variant={isOverdue ? "destructive" : f.prioritaet === "kritisch" ? "destructive" : "secondary"} className="text-[10px]">
+                    <Badge variant="outline" className="text-bildunterschrift">{typLabels[f.typ] || f.typ}</Badge>
+                    <Badge variant={isOverdue ? "destructive" : f.prioritaet === "kritisch" ? "destructive" : "secondary"} className="text-bildunterschrift">
                       {daysUntil(f.faelligAm)}
                     </Badge>
                   </div>

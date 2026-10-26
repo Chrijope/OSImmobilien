@@ -452,7 +452,7 @@ export default function Unterlagen() {
                           <span className="la-count-pill">{docCount}</span>
                         )}
                         {abschnitt.id === "leadarbeit" && isNewBadgeActive(SEEN_KEYS.leadArbeit) && (
-                          <Badge className="text-[9px] px-1.5 py-0 h-4 bg-emerald-500 text-white border-0 hover:bg-emerald-500 uppercase tracking-wide shrink-0">
+                          <Badge className="text-bildunterschrift px-1.5 py-0 h-4 bg-emerald-500 text-white border-0 hover:bg-emerald-500 uppercase tracking-wide shrink-0">
                             Neu
                           </Badge>
                         )}
@@ -548,18 +548,18 @@ export default function Unterlagen() {
                                     {label && (
                                       <Badge
                                         variant={dok.gesperrt ? (isAdmin ? "outline" : "secondary") : "secondary"}
-                                        className={`text-[10px] ${dok.gesperrt && isAdmin ? "border-orange-400 text-orange-600" : ""}`}
+                                        className={`text-bildunterschrift ${dok.gesperrt && isAdmin ? "border-orange-400 text-orange-600" : ""}`}
                                       >
                                         {label}
                                       </Badge>
                                     )}
                                     {dok.alt && (
-                                      <Badge variant="outline" className="text-[10px] border-amber-500/60 text-amber-600">
+                                      <Badge variant="outline" className="text-bildunterschrift border-amber-500/60 text-amber-600">
                                         Alt
                                       </Badge>
                                     )}
                                     {dok.nurAdmin && (
-                                      <Badge variant="outline" className="text-[10px] border-primary text-primary">
+                                      <Badge variant="outline" className="text-bildunterschrift border-primary text-primary">
                                         nur Admin
                                       </Badge>
                                     )}

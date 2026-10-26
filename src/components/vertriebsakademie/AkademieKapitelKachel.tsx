@@ -47,13 +47,13 @@ export function AkademieKapitelKachel({
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <Badge variant="outline" className="text-[10px]">Kapitel {k.nummer}</Badge>
-            <span className="text-[10px] uppercase tracking-wide text-muted-foreground truncate">{k.kicker}</span>
+            <Badge variant="outline" className="text-bildunterschrift">Kapitel {k.nummer}</Badge>
+            <span className="text-bildunterschrift uppercase tracking-wide text-muted-foreground truncate">{k.kicker}</span>
             {k.placeholder && (
-              <Badge className="text-[9px] bg-orange-500/15 text-orange-600 border-orange-500/30">in Arbeit</Badge>
+              <Badge className="text-bildunterschrift bg-orange-500/15 text-orange-600 border-orange-500/30">in Arbeit</Badge>
             )}
             {stats.isDone && (
-              <Badge className="text-[9px] bg-emerald-500/15 text-emerald-600 border-emerald-500/30 gap-1">
+              <Badge className="text-bildunterschrift bg-emerald-500/15 text-emerald-600 border-emerald-500/30 gap-1">
                 <CheckCircle2 className="h-3 w-3" /> fertig
               </Badge>
             )}

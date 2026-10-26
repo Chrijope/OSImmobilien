@@ -459,7 +459,7 @@ export default function WohnungDetail() {
                         <>
                           <button onClick={() => setWImgIdx(i => (i - 1 + wBilder.length) % wBilder.length)} className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 rounded-full p-1.5 hover:bg-background shadow"><ChevronLeft className="h-4 w-4" /></button>
                           <button onClick={() => setWImgIdx(i => (i + 1) % wBilder.length)} className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 rounded-full p-1.5 hover:bg-background shadow"><ChevronRight className="h-4 w-4" /></button>
-                          <div className="absolute bottom-2 right-2 bg-background/80 rounded px-1.5 py-0.5 text-[10px] font-medium">{(wImgIdx % wBilder.length) + 1} / {wBilder.length}</div>
+                          <div className="absolute bottom-2 right-2 bg-background/80 rounded px-1.5 py-0.5 text-bildunterschrift font-medium">{(wImgIdx % wBilder.length) + 1} / {wBilder.length}</div>
                         </>
                       )}
                       <button onClick={() => { setShowGallery({ title: `Wohnungsbilder – WE ${w.weNr}`, images: wBilder.map(img => ({ url: resolveImageUrl(img.url), alt: img.alt || "" })) }); setGalleryIdx(wImgIdx % wBilder.length); }}
@@ -475,7 +475,7 @@ export default function WohnungDetail() {
                               <LazyImage src={resolveImageUrl(img.url)} alt={img.alt} className="w-full h-full object-cover" wrapperClassName="w-full h-full" />
                             </button>
                             {isEditor && (
-                              <button className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground rounded-full w-4 h-4 text-[10px] flex items-center justify-center opacity-0 group-hover:opacity-100"
+                              <button className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground rounded-full w-4 h-4 text-bildunterschrift flex items-center justify-center opacity-0 group-hover:opacity-100"
                                 onClick={() => { if (!id) return; removeWohnungBild(id, w.id, img.id); reload(); }}>✕</button>
                             )}
                           </div>
@@ -515,7 +515,7 @@ export default function WohnungDetail() {
                       <>
                         {(tausendstel / 10).toLocaleString("de-DE", { maximumFractionDigits: 1 })} % = {fmt(sanierungAnteil)}
                         {useFlaeche ? (
-                          <span className="text-[10px] text-muted-foreground ml-1">
+                          <span className="text-bildunterschrift text-muted-foreground ml-1">
                             (bezogen auf {gesamtQm.toLocaleString("de-DE")} m² Gesamt)
                           </span>
                         ) : null}
@@ -539,14 +539,14 @@ export default function WohnungDetail() {
                       const signed = invs.some(inv => getRvSigned(inv.id));
                       if (pending) {
                         return (
-                          <Badge className="bg-[hsl(var(--warning))]/15 text-[hsl(var(--warning))] hover:bg-[hsl(var(--warning))]/15 text-[10px]">
+                          <Badge className="bg-[hsl(var(--warning))]/15 text-[hsl(var(--warning))] hover:bg-[hsl(var(--warning))]/15 text-bildunterschrift">
                             Warte auf Unterschrift von Kunde
                           </Badge>
                         );
                       }
                       if (signed) {
                         return (
-                          <Badge className="bg-[hsl(var(--success))]/15 text-[hsl(var(--success))] hover:bg-[hsl(var(--success))]/15 text-[10px]">
+                          <Badge className="bg-[hsl(var(--success))]/15 text-[hsl(var(--success))] hover:bg-[hsl(var(--success))]/15 text-bildunterschrift">
                             RV unterschrieben
                           </Badge>
                         );
@@ -641,7 +641,7 @@ export default function WohnungDetail() {
                           <Button size="sm" onClick={() => window.open(link, "_blank")} className="w-fit">
                             <FolderOpen className="h-3.5 w-3.5 mr-1.5" /> Objektunterlagen öffnen
                           </Button>
-                          <p className="text-[10px] text-muted-foreground break-all">{link}</p>
+                          <p className="text-bildunterschrift text-muted-foreground break-all">{link}</p>
                         </div>
                       );
                     }
@@ -684,7 +684,7 @@ export default function WohnungDetail() {
                               >
                                 {dok.name}
                               </button>
-                              <span className="ml-auto shrink-0 text-[10px] text-muted-foreground">{dok.herkunft}</span>
+                              <span className="ml-auto shrink-0 text-bildunterschrift text-muted-foreground">{dok.herkunft}</span>
                             </div>
                           ))}
                         </div>
@@ -750,7 +750,7 @@ export default function WohnungDetail() {
                           <Button size="sm" onClick={() => window.open(wLink, "_blank")} className="w-fit">
                             <FolderOpen className="h-3.5 w-3.5 mr-1.5" /> Wohnungsunterlagen öffnen
                           </Button>
-                          <p className="text-[10px] text-muted-foreground break-all">{wLink}</p>
+                          <p className="text-bildunterschrift text-muted-foreground break-all">{wLink}</p>
                         </div>
                       );
                     }
@@ -774,14 +774,14 @@ export default function WohnungDetail() {
                       const signed = invs.some(inv => getRvSigned(inv.id));
                       if (pending) {
                         return (
-                          <Badge className="bg-[hsl(var(--warning))]/15 text-[hsl(var(--warning))] hover:bg-[hsl(var(--warning))]/15 text-[10px]">
+                          <Badge className="bg-[hsl(var(--warning))]/15 text-[hsl(var(--warning))] hover:bg-[hsl(var(--warning))]/15 text-bildunterschrift">
                             Warte auf Unterschrift von Kunde
                           </Badge>
                         );
                       }
                       if (signed) {
                         return (
-                          <Badge className="bg-[hsl(var(--success))]/15 text-[hsl(var(--success))] hover:bg-[hsl(var(--success))]/15 text-[10px]">
+                          <Badge className="bg-[hsl(var(--success))]/15 text-[hsl(var(--success))] hover:bg-[hsl(var(--success))]/15 text-bildunterschrift">
                             RV unterschrieben
                           </Badge>
                         );

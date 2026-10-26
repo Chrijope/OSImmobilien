@@ -95,17 +95,17 @@ export function ChatTeilnehmerLeiste({
             <TooltipTrigger asChild>
               <Avatar className="h-6 w-6 border-2 border-card cursor-pointer">
                 {t.avatar ? <AvatarImage src={t.avatar} /> : null}
-                <AvatarFallback className={`${colorForName(t.name)} text-white text-[9px]`}>{t.initials}</AvatarFallback>
+                <AvatarFallback className={`${colorForName(t.name)} text-white text-bildunterschrift`}>{t.initials}</AvatarFallback>
               </Avatar>
             </TooltipTrigger>
             <TooltipContent>
               <p className="font-semibold text-xs">{t.name}</p>
-              <p className="text-[10px] text-muted-foreground">{t.role}</p>
+              <p className="text-bildunterschrift text-muted-foreground">{t.role}</p>
             </TooltipContent>
           </Tooltip>
         ))}
         {chat.teilnehmer.length > 4 && (
-          <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center text-[9px] border-2 border-card">
+          <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center text-bildunterschrift border-2 border-card">
             +{chat.teilnehmer.length - 4}
           </div>
         )}
@@ -128,7 +128,7 @@ export function ChatTeilnehmerLeiste({
           onClick={onMarkierte}
         >
           <Star className="h-4 w-4 text-amber-500 fill-current" />
-          <span className="absolute -top-0.5 -right-0.5 text-[9px] bg-amber-500 text-white rounded-full px-1 leading-4 min-w-4 text-center">
+          <span className="absolute -top-0.5 -right-0.5 text-bildunterschrift bg-amber-500 text-white rounded-full px-1 leading-4 min-w-4 text-center">
             {kennzahlen.markierte}
           </span>
         </Button>
@@ -141,7 +141,7 @@ export function ChatTeilnehmerLeiste({
           onClick={onDateien}
         >
           <Paperclip className="h-4 w-4" />
-          <span className="absolute -top-0.5 -right-0.5 text-[9px] bg-primary text-primary-foreground rounded-full px-1 leading-4 min-w-4 text-center">
+          <span className="absolute -top-0.5 -right-0.5 text-bildunterschrift bg-primary text-primary-foreground rounded-full px-1 leading-4 min-w-4 text-center">
             {kennzahlen.dateien}
           </span>
         </Button>
@@ -186,7 +186,7 @@ export function ChatTeilnehmerLeiste({
                   }
                 />
                 <Avatar className="h-8 w-8">
-                  <AvatarFallback className={`${colorForName(m.name)} text-white text-[10px]`}>{m.initials}</AvatarFallback>
+                  <AvatarFallback className={`${colorForName(m.name)} text-white text-bildunterschrift`}>{m.initials}</AvatarFallback>
                 </Avatar>
                 <div>
                   <p className="text-sm font-medium">{m.name}</p>

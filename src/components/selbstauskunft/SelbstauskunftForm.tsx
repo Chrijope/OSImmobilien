@@ -1031,7 +1031,7 @@ function UebernommenMarke() {
   const ausInvestment = useContext(VorbelegungHerkunft);
   const { sprache, t } = useSaText();
   return (
-    <span className="text-[10px] uppercase tracking-wide font-semibold text-accent-foreground bg-accent border border-dashed border-accent-foreground/50 rounded px-1 py-px">
+    <span className="text-bildunterschrift uppercase tracking-wide font-semibold text-accent-foreground bg-accent border border-dashed border-accent-foreground/50 rounded px-1 py-px">
       {t(SA_FELD_MARKE)}
       {ausInvestment !== null && (
         <span className="sr-only">. {saFeldMarkeErklaerungIn(ausInvestment, sprache)}</span>
@@ -1085,7 +1085,7 @@ function Field({ label, tooltip, children, className, required, error, hint, fil
         {required && !filled && (
           <>
             <span className="text-destructive font-bold leading-none">*</span>
-            <span className="text-[10px] uppercase tracking-wide font-semibold text-orange-500/90 bg-orange-500/10 border border-orange-400/40 rounded px-1 py-px">
+            <span className="text-bildunterschrift uppercase tracking-wide font-semibold text-orange-500/90 bg-orange-500/10 border border-orange-400/40 rounded px-1 py-px">
               {t("Pflicht")}
             </span>
           </>
@@ -1100,7 +1100,7 @@ function Field({ label, tooltip, children, className, required, error, hint, fil
         {children}
       </div>
       {hint && (
-        <p className="text-[10px] text-orange-400 mt-0.5 flex items-center gap-1">
+        <p className="text-bildunterschrift text-orange-400 mt-0.5 flex items-center gap-1">
           <Info className="h-3 w-3" /> {t(hint)}
         </p>
       )}
@@ -4120,7 +4120,7 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
                         <div className="bg-white p-1.5 rounded">
                           <QRCodeSVG value={mobileSigUrlP1} size={104} level="M" />
                         </div>
-                        <p className="text-[10px] text-muted-foreground text-center mt-2 leading-tight">
+                        <p className="text-bildunterschrift text-muted-foreground text-center mt-2 leading-tight">
                           {t("Scannen Sie den QR-Code, um bequem mit dem Finger am Handy zu unterschreiben.")}
                         </p>
                       </div>
@@ -4160,7 +4160,7 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
                         <div className="bg-white p-1.5 rounded">
                           <QRCodeSVG value={mobileSigUrlP2} size={104} level="M" />
                         </div>
-                        <p className="text-[10px] text-muted-foreground text-center mt-2 leading-tight">
+                        <p className="text-bildunterschrift text-muted-foreground text-center mt-2 leading-tight">
                           {t("Scannen Sie den QR-Code, um bequem mit dem Finger am Handy zu unterschreiben.")}
                         </p>
                       </div>
@@ -4202,10 +4202,10 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
                   {sending ? t("Wird gespeichert…") : t("Unterschreiben & einreichen")}
                 </Button>
 
-                <p className="text-[10px] text-muted-foreground text-center mt-2">
+                <p className="text-bildunterschrift text-muted-foreground text-center mt-2">
                   {t("Ihre Daten werden verschlüsselt übertragen und DSGVO-konform gespeichert.")}
                 </p>
-                <p className="text-[10px] font-medium text-foreground/75 text-center mt-1">
+                <p className="text-bildunterschrift font-medium text-foreground/75 text-center mt-1">
                   {t("Ihre elektronische Unterschrift ist rechtsverbindlich (einfache elektronische Signatur nach der eIDAS-Verordnung).")}
                 </p>
               </div>
@@ -4375,7 +4375,7 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
             <div className="mb-4 flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground bg-muted/40 border border-border/60 rounded-lg px-3 py-2">
               <span className="inline-flex items-center gap-1">
                 <span className="text-destructive font-bold">*</span>
-                <span className="uppercase tracking-wide font-semibold text-orange-500/90 bg-orange-500/10 border border-orange-400/40 rounded px-1 py-px text-[10px]">{t("Pflicht")}</span>
+                <span className="uppercase tracking-wide font-semibold text-orange-500/90 bg-orange-500/10 border border-orange-400/40 rounded px-1 py-px text-bildunterschrift">{t("Pflicht")}</span>
                 = {t("Pflichtfeld")}
               </span>
               <span className="hidden sm:inline">·</span>
@@ -4384,7 +4384,7 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
                 <>
                   <span className="hidden sm:inline">·</span>
                   <span className="inline-flex items-center gap-1">
-                    <span className="uppercase tracking-wide font-semibold text-accent-foreground bg-accent border border-dashed border-accent-foreground/50 rounded px-1 py-px text-[10px]">{t(SA_FELD_MARKE)}</span>
+                    <span className="uppercase tracking-wide font-semibold text-accent-foreground bg-accent border border-dashed border-accent-foreground/50 rounded px-1 py-px text-bildunterschrift">{t(SA_FELD_MARKE)}</span>
                     = {t(SA_LEGENDE_UEBERNOMMEN)}
                   </span>
                 </>
@@ -4494,7 +4494,7 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
         </div>
         <div className="flex items-center gap-2">
           {draftSaved && (
-            <span className="text-[10px] text-muted-foreground hidden sm:inline">
+            <span className="text-bildunterschrift text-muted-foreground hidden sm:inline">
               {t("Gespeichert: {datum}", {
                 datum: sprache === "en"
                   ? datumUhrzeitText(draftSaved, "en")

@@ -188,7 +188,7 @@ const ChatAnimation = () => {
             }`}>
               {m.from === "team" && <div className="mb-0.5 text-xs font-semibold text-primary">{m.name}</div>}
               <p>{m.text}</p>
-              <div className={`mt-1 text-[10px] ${m.from === "you" ? "text-primary-foreground/60" : "text-muted-foreground"}`}>{m.time}</div>
+              <div className={`mt-1 text-bildunterschrift ${m.from === "you" ? "text-primary-foreground/60" : "text-muted-foreground"}`}>{m.time}</div>
             </div>
           </div>
         ))}

@@ -215,7 +215,7 @@ export function SidebarRoleSelector() {
                   <>
                     <span className="truncate flex-1 text-left">{currentRole?.label}</span>
                     {(roleCounts[user.role] || 0) > 0 && (
-                      <Badge variant="destructive" className="h-5 min-w-[20px] px-1.5 text-[10px] font-semibold">
+                      <Badge variant="destructive" className="h-5 min-w-[20px] px-1.5 text-bildunterschrift font-semibold">
                         {(roleCounts[user.role] || 0) > 99 ? "99+" : roleCounts[user.role]}
                       </Badge>
                     )}
@@ -241,7 +241,7 @@ export function SidebarRoleSelector() {
                   )}
                   <span className="flex-1">{role.label}</span>
                   {(roleCounts[role.id] || 0) > 0 && (
-                    <Badge variant="destructive" className="h-5 min-w-[20px] px-1.5 text-[10px] font-semibold">
+                    <Badge variant="destructive" className="h-5 min-w-[20px] px-1.5 text-bildunterschrift font-semibold">
                       {(roleCounts[role.id] || 0) > 99 ? "99+" : roleCounts[role.id]}
                     </Badge>
                   )}
@@ -255,11 +255,11 @@ export function SidebarRoleSelector() {
       {/* Copyright – always visible */}
       <div className="px-3 py-2">
         {!collapsed ? (
-          <p className="text-[10px] text-sidebar-foreground/50 text-center">
+          <p className="text-bildunterschrift text-sidebar-foreground/50 text-center">
             © 2026 OS Immobilien Holding GmbH
           </p>
         ) : (
-          <p className="text-[10px] text-sidebar-foreground/50 text-center leading-tight">
+          <p className="text-bildunterschrift text-sidebar-foreground/50 text-center leading-tight">
             ©<br />2026
           </p>
         )}

@@ -112,7 +112,7 @@ export default function Einheitenspiegel() {
                 <span className="text-xs text-muted-foreground">{STATUS_CONFIG[status].label}</span>
               </div>
               <div className="text-2xl font-bold text-foreground">{stats[status]}</div>
-              <div className="text-[10px] text-muted-foreground">{stats.total > 0 ? Math.round((stats[status] / stats.total) * 100) : 0}%</div>
+              <div className="text-bildunterschrift text-muted-foreground">{stats.total > 0 ? Math.round((stats[status] / stats.total) * 100) : 0}%</div>
             </CardContent>
           </Card>
         ))}
@@ -120,7 +120,7 @@ export default function Einheitenspiegel() {
           <CardContent className="p-4">
             <div className="text-xs text-muted-foreground mb-1">Freies Volumen</div>
             <div className="text-lg font-bold text-foreground">{fmt(volumeFrei)}</div>
-            <div className="text-[10px] text-muted-foreground">von {fmt(volumeGesamt)}</div>
+            <div className="text-bildunterschrift text-muted-foreground">von {fmt(volumeGesamt)}</div>
           </CardContent>
         </Card>
       </div>
@@ -191,26 +191,26 @@ export default function Einheitenspiegel() {
                     <TableRow key={`${w.objektId}-${w.id}`}>
                       <TableCell>
                         <div className="flex items-center gap-1">
-                          <Badge variant="outline" className={`text-[10px] gap-1 ${statusCfg.bgClass}`}>
+                          <Badge variant="outline" className={`text-bildunterschrift gap-1 ${statusCfg.bgClass}`}>
                             {statusCfg.icon}
                             {displayStatus.label}
                           </Badge>
                           {(displayStatus.key === "notar_mit_gs" || displayStatus.key === "notar_ohne_gs") && (
-                            <span className="text-[9px] text-muted-foreground italic">nur intern</span>
+                            <span className="text-bildunterschrift text-muted-foreground italic">nur intern</span>
                           )}
                         </div>
                       </TableCell>
                       <TableCell className="font-medium text-sm">{w.weNr}</TableCell>
                       <TableCell>
                         <div className="text-xs">{w.objektTitel}</div>
-                        <div className="text-[10px] text-muted-foreground">{w.objektOrt}</div>
+                        <div className="text-bildunterschrift text-muted-foreground">{w.objektOrt}</div>
                       </TableCell>
                       <TableCell className="text-xs">{w.groesse} m²</TableCell>
                       <TableCell className="text-xs font-medium">{fmt(w.vkGesamt)}</TableCell>
                       <TableCell className="text-xs">{fmt(w.mieteGesamt)}/mtl.</TableCell>
                       <TableCell className="text-xs">{w.rendite.toFixed(2)}%</TableCell>
                       <TableCell>
-                        <Badge variant={(w as any).vermietet !== false ? "default" : "destructive"} className="text-[10px]">
+                        <Badge variant={(w as any).vermietet !== false ? "default" : "destructive"} className="text-bildunterschrift">
                           {(w as any).vermietet !== false ? "Vermietet" : "Leerstand"}
                         </Badge>
                       </TableCell>
@@ -222,7 +222,7 @@ export default function Einheitenspiegel() {
                                 {w.kundeName}
                               </button>
                               {w.beraterName && (
-                                <p className="text-[10px] text-muted-foreground">VP: {w.beraterName}</p>
+                                <p className="text-bildunterschrift text-muted-foreground">VP: {w.beraterName}</p>
                               )}
                             </div>
                           ) : (
@@ -232,7 +232,7 @@ export default function Einheitenspiegel() {
                       )}
                       <TableCell>
                         {days !== null && (
-                          <Badge variant="outline" className={`text-[9px] ${days <= 2 ? "border-destructive/50 text-destructive" : "border-warning/50 text-warning"}`}>
+                          <Badge variant="outline" className={`text-bildunterschrift ${days <= 2 ? "border-destructive/50 text-destructive" : "border-warning/50 text-warning"}`}>
                             {days <= 0 ? "Abgelaufen" : `${days} Tage`}
                           </Badge>
                         )}

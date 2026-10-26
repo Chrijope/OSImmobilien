@@ -63,7 +63,7 @@ function Auswahl({
   if (geraete.length === 0) return null;
   return (
     <div>
-      <label htmlFor={id} className="mb-1 block text-[10.5px] font-semibold uppercase tracking-wider text-white/40">
+      <label htmlFor={id} className="mb-1 block text-bildunterschrift font-semibold uppercase tracking-wider text-white/40">
         {label}
       </label>
       <select
@@ -167,7 +167,7 @@ export function GeraeteSchnellzugriff({
       </div>
 
       <div className="border-t border-white/10 pt-3">
-        <p className="mb-2 text-[10.5px] font-semibold uppercase tracking-wider text-white/40">
+        <p className="mb-2 text-bildunterschrift font-semibold uppercase tracking-wider text-white/40">
           {t.hintergrund}
         </p>
         <div className="flex flex-wrap gap-2">
@@ -214,7 +214,7 @@ export function GeraeteSchnellzugriff({
                 {bild.url ? (
                   <img src={bild.url} alt="" className="h-full w-full object-cover" />
                 ) : (
-                  <span className="flex h-full items-center justify-center text-[10px] text-white/40">{t.bild}</span>
+                  <span className="flex h-full items-center justify-center text-bildunterschrift text-white/40">{t.bild}</span>
                 )}
               </button>
             ))}

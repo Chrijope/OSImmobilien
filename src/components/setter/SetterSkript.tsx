@@ -509,7 +509,7 @@ export function SetterSkript({ kunde, onUpdate }: SetterSkriptProps) {
                 <TooltipTrigger asChild>
                   <button type="button" className="inline-flex items-center gap-1 rounded-full border border-amber-300 bg-amber-50 hover:bg-amber-100 hover:border-amber-400 transition-colors px-2 py-0.5 text-amber-700 dark:bg-amber-950/40 dark:border-amber-700 dark:text-amber-200 dark:hover:bg-amber-900/50" aria-label="Info E-Mail-Trigger">
                     <Info className="h-3.5 w-3.5" />
-                    <span className="text-[10px] font-semibold uppercase tracking-wide">Welche E-Mail?</span>
+                    <span className="text-bildunterschrift font-semibold uppercase tracking-wide">Welche E-Mail?</span>
                   </button>
                 </TooltipTrigger>
                 <TooltipContent side="right" className="max-w-sm text-xs leading-relaxed">
@@ -536,7 +536,7 @@ export function SetterSkript({ kunde, onUpdate }: SetterSkriptProps) {
                   className="w-full gap-1.5 border-slate-300 hover:bg-slate-100 hover:border-slate-400 text-xs h-9 pr-7"
                   onClick={handleNichtErreicht}
                 >
-                  <PhoneOff className="h-3.5 w-3.5 text-slate-500" /> Nicht erreicht {(kunde.nichtErreichtCount || 0) > 0 && <Badge variant="secondary" className="ml-1 text-[10px] px-1.5 py-0">{kunde.nichtErreichtCount}</Badge>}
+                  <PhoneOff className="h-3.5 w-3.5 text-slate-500" /> Nicht erreicht {(kunde.nichtErreichtCount || 0) > 0 && <Badge variant="secondary" className="ml-1 text-bildunterschrift px-1.5 py-0">{kunde.nichtErreichtCount}</Badge>}
                 </Button>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -692,7 +692,7 @@ export function SetterSkript({ kunde, onUpdate }: SetterSkriptProps) {
                 <UserCheck className={`h-4 w-4 shrink-0 ${istGewaehlt(u) ? "text-primary" : "text-muted-foreground"}`} />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium">{u.name}</p>
-                  {u.rolle && <p className="text-[10px] text-muted-foreground capitalize">{u.rolle}</p>}
+                  {u.rolle && <p className="text-bildunterschrift text-muted-foreground capitalize">{u.rolle}</p>}
                 </div>
                 {istGewaehlt(u) && (
                   <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
@@ -722,7 +722,7 @@ export function SetterSkript({ kunde, onUpdate }: SetterSkriptProps) {
             {/* Vertriebspartner ohne Buchungslink als Dropdown */}
             {beraterUsers.filter(u => !u.buchungslink && !(u as any).beratungslink).length > 0 && (
               <div className="pt-3 border-t">
-                <p className="text-[10px] text-muted-foreground mb-2">Weitere Vertriebspartner (ohne Buchungskalender):</p>
+                <p className="text-bildunterschrift text-muted-foreground mb-2">Weitere Vertriebspartner (ohne Buchungskalender):</p>
                 <Select
                   value={beraterUsers.find(u => !u.buchungslink && !(u as any).beratungslink && istGewaehlt(u))?.id || ""}
                   onValueChange={(uid) => {

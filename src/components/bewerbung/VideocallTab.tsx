@@ -393,7 +393,7 @@ export function VideocallTab({
 
           {antworten && folien.length > 0 && (
             <Card className="p-4">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">
+              <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground mb-2">
                 Die Folien dieses Termins
               </p>
               <ol className="space-y-1">
@@ -402,12 +402,12 @@ export function VideocallTab({
                     <span className="w-4 shrink-0 tabular-nums text-muted-foreground">{i + 1}</span>
                     <span className="leading-snug">
                       <span className="font-medium">{f.titel}</span>
-                      <span className="block text-[10px] text-muted-foreground">{f.kopfzeile}</span>
+                      <span className="block text-bildunterschrift text-muted-foreground">{f.kopfzeile}</span>
                     </span>
                   </li>
                 ))}
               </ol>
-              <p className="mt-2 text-[10px] leading-snug text-muted-foreground">
+              <p className="mt-2 text-bildunterschrift leading-snug text-muted-foreground">
                 Geführt wird in der Moderation. Diese Liste ist der Überblick, kein Bedienelement.
               </p>
             </Card>
@@ -417,7 +417,7 @@ export function VideocallTab({
         <aside className="space-y-4">
           {antworten && (
             <Card className="p-4" data-testid="videocall-kurzprofil">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">
+              <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground mb-2">
                 Kurzprofil, statt einer Punktzahl
               </p>
               <ul className="space-y-1.5">
@@ -426,7 +426,7 @@ export function VideocallTab({
                   return (
                     <li key={m.id} className="text-xs">
                       <span className="font-medium">{m.label}</span>
-                      <span className="ml-1.5 text-[10px] text-muted-foreground">
+                      <span className="ml-1.5 text-bildunterschrift text-muted-foreground">
                         {bestaetigt
                           ? "im Gespräch bestätigt"
                           : m.selbstauskunft === "erfuellt" ? "Selbstauskunft" : "offen"}

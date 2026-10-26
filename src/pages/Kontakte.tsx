@@ -274,9 +274,9 @@ export default function Kontakte() {
             <Button size="sm" variant="outline" className="gap-1" onClick={() => ["inhaber", "admin"].includes(user.role) ? setShowPowerdialer(!showPowerdialer) : null} disabled={!["inhaber", "admin"].includes(user.role)}>
               <Phone className="h-4 w-4" /> {showPowerdialer ? "Liste anzeigen" : "Powerdialer"}
               {["inhaber", "admin"].includes(user.role) ? (
-                <Badge variant="outline" className="text-[10px] ml-1 px-1.5 py-0 border-[hsl(var(--warning))] text-[hsl(var(--warning))] bg-[hsl(var(--warning))]/10">Entwurf</Badge>
+                <Badge variant="outline" className="text-bildunterschrift ml-1 px-1.5 py-0 border-[hsl(var(--warning))] text-[hsl(var(--warning))] bg-[hsl(var(--warning))]/10">Entwurf</Badge>
               ) : (
-                <Badge variant="outline" className="text-[10px] ml-1 px-1.5 py-0 border-muted-foreground text-muted-foreground">Bald verfügbar</Badge>
+                <Badge variant="outline" className="text-bildunterschrift ml-1 px-1.5 py-0 border-muted-foreground text-muted-foreground">Bald verfügbar</Badge>
               )}
             </Button>
             <Dialog open={dialogOpen} onOpenChange={(o) => { setDialogOpen(o); if (!o) { setFormErrors({}); } }}>
@@ -453,7 +453,7 @@ export default function Kontakte() {
                         <React.Fragment key={col.key}>
                           <TableCell>
                             {idx === 0 && isNew && (
-                              <Badge className="mr-2 align-middle text-[9px] px-1.5 py-0 h-4 bg-emerald-500 text-white border-0 hover:bg-emerald-500 uppercase tracking-wide">
+                              <Badge className="mr-2 align-middle text-bildunterschrift px-1.5 py-0 h-4 bg-emerald-500 text-white border-0 hover:bg-emerald-500 uppercase tracking-wide">
                                 Neu
                               </Badge>
                             )}

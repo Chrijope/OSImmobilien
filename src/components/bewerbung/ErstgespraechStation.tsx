@@ -46,7 +46,7 @@ function EinwandKlapp() {
             <span className="text-xs font-semibold text-amber-800 dark:text-amber-300">
               Einwandbehandlung ({ASSESSMENT_EINWAENDE.length} Einwände zum Aufklappen)
             </span>
-            <span className="ml-auto hidden text-[10px] text-amber-800/80 dark:text-amber-300/80 sm:inline">
+            <span className="ml-auto hidden text-bildunterschrift text-amber-800/80 dark:text-amber-300/80 sm:inline">
               in jedem Punkt erreichbar, Einwände kommen wann sie wollen
             </span>
           </button>
@@ -85,7 +85,7 @@ function PunktInhalt({
           {sprechtexte.map((t, i) => (
             <Script key={i}>„{fuellePlatzhalter(t, { vorname, beraterName })}"</Script>
           ))}
-          <p className="text-[10px] text-muted-foreground">
+          <p className="text-bildunterschrift text-muted-foreground">
             Platzhalter sind eingesetzt: Vorname aus dem Profil, Beratername aus deinem Konto.
           </p>
           <AssessmentFelder felder={station.felder ?? []} ctx={ctx} />
@@ -104,7 +104,7 @@ function PunktInhalt({
           <VorabZurStation station={station.nummer} vorwissen={vorwissen} />
           {sprechtexte.map((t, i) => <Script key={i}>„{t}"</Script>)}
           <AssessmentFelder felder={station.felder ?? []} ctx={ctx} />
-          <p className="text-[10px] text-muted-foreground">↑ Ziele und Einkommensziel werden mit der Übersicht synchronisiert</p>
+          <p className="text-bildunterschrift text-muted-foreground">↑ Ziele und Einkommensziel werden mit der Übersicht synchronisiert</p>
         </>
       );
     case "motivation":
@@ -113,7 +113,7 @@ function PunktInhalt({
           <VorabZurStation station={station.nummer} vorwissen={vorwissen} />
           {sprechtexte.map((t, i) => <Script key={i}>„{t}"</Script>)}
           <AssessmentFelder felder={station.felder ?? []} ctx={ctx} />
-          <p className="text-[10px] text-muted-foreground">↑ Motivation wird mit der Übersicht synchronisiert</p>
+          <p className="text-bildunterschrift text-muted-foreground">↑ Motivation wird mit der Übersicht synchronisiert</p>
         </>
       );
     case "werWirSind":
@@ -226,7 +226,7 @@ function PunktInhalt({
                 <Button size="sm" variant="destructive" onClick={onAbsage}>
                   <XCircle className="h-3.5 w-3.5 mr-1" /> C · Absage
                 </Button>
-                <span className="text-[10px] text-muted-foreground">
+                <span className="text-bildunterschrift text-muted-foreground">
                   Beide öffnen den bekannten Dialog (Datum und Notiz beziehungsweise Grund und Absage-Mail).
                 </span>
               </div>
@@ -318,16 +318,16 @@ export function ErstgespraechStation({
     <Card className="border-primary/40 ring-1 ring-primary/10 overflow-hidden" data-testid="erstgespraech-station" data-schritt={schritt.id}>
       <div className="flex flex-wrap items-start gap-3 border-b px-5 pt-4 pb-3">
         <div className="min-w-0">
-          <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-primary">{kicker}</div>
+          <div className="text-bildunterschrift font-bold uppercase tracking-[0.12em] text-primary">{kicker}</div>
           <h2 className="text-lg font-semibold leading-tight mt-0.5">{schritt.titel}</h2>
         </div>
         <div className="ml-auto flex flex-wrap items-center gap-1.5">
-          <Badge variant="outline" className="font-normal text-[10px] text-muted-foreground">{folieBadge}</Badge>
+          <Badge variant="outline" className="font-normal text-bildunterschrift text-muted-foreground">{folieBadge}</Badge>
           {schritt.art === "punkt" ? (
             felder.gesamt > 0 && (
               <Badge
                 variant="outline"
-                className={`font-normal text-[10px] ${felder.erfasst >= felder.gesamt ? "border-green-600/50 bg-green-50 text-green-800 dark:bg-green-500/10 dark:text-green-300" : "text-muted-foreground"}`}
+                className={`font-normal text-bildunterschrift ${felder.erfasst >= felder.gesamt ? "border-green-600/50 bg-green-50 text-green-800 dark:bg-green-500/10 dark:text-green-300" : "text-muted-foreground"}`}
                 data-testid="station-felder-badge"
               >
                 {felder.erfasst} von {felder.gesamt} Feldern erfasst
@@ -386,7 +386,7 @@ export function ErstgespraechStation({
           <ArrowLeft className="h-3.5 w-3.5 shrink-0" />
           {vorher ? `Zurück · ${schrittBezeichnung(vorher)}` : "Zurück"}
         </Button>
-        <span className="mx-auto text-center text-[10px] text-muted-foreground">{fussText}</span>
+        <span className="mx-auto text-center text-bildunterschrift text-muted-foreground">{fussText}</span>
         {nachher && (
           <Button size="sm" onClick={onWeiter} className="h-auto w-full gap-1.5 whitespace-normal py-2 text-left sm:w-auto" data-testid="station-weiter">
             Weiter · {schrittBezeichnung(nachher)}

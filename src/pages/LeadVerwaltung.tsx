@@ -851,7 +851,7 @@ export default function LeadVerwaltung() {
                       <LiegtSeitZelle erstelltAm={k.erstellt_am} />
                     </TableCell>
                     <TableCell>
-                      <Badge className={`text-[10px] ${LEAD_COLORS[k.leadTyp || ""] || "bg-muted text-muted-foreground"}`}>
+                      <Badge className={`text-bildunterschrift ${LEAD_COLORS[k.leadTyp || ""] || "bg-muted text-muted-foreground"}`}>
                         {LEAD_LABELS[k.leadTyp || ""] || k.leadTyp || "–"}
                       </Badge>
                     </TableCell>
@@ -866,7 +866,7 @@ export default function LeadVerwaltung() {
                           return (
                             <Badge
                               variant="destructive"
-                              className="self-start gap-1 text-[10px] font-bold uppercase tracking-wide animate-pulse"
+                              className="self-start gap-1 text-bildunterschrift font-bold uppercase tracking-wide animate-pulse"
                               title={tooltip}
                             >
                               <XCircle className="h-3 w-3" />
@@ -897,7 +897,7 @@ export default function LeadVerwaltung() {
                             <div className="flex flex-col items-start gap-0.5" title={titel}>
                               <Badge
                                 variant="outline"
-                                className="text-[9px] px-1.5 py-0 h-4 border-primary text-primary uppercase tracking-wide"
+                                className="text-bildunterschrift px-1.5 py-0 h-4 border-primary text-primary uppercase tracking-wide"
                               >
                                 Rückläufer
                               </Badge>
@@ -918,7 +918,7 @@ export default function LeadVerwaltung() {
                               !isItemSeen(SEEN_KEYS.leadVerwaltung, k.id) &&
                               (seenCutoff ? String(k.erstellt_am || "") > seenCutoff : false);
                             return isNew ? (
-                              <Badge className="text-[9px] px-1.5 py-0 h-4 bg-emerald-500 text-white border-0 hover:bg-emerald-500 uppercase tracking-wide">
+                              <Badge className="text-bildunterschrift px-1.5 py-0 h-4 bg-emerald-500 text-white border-0 hover:bg-emerald-500 uppercase tracking-wide">
                                 Neu
                               </Badge>
                             ) : null;
@@ -946,7 +946,7 @@ export default function LeadVerwaltung() {
                             <Badge
                               variant="outline"
                               title="Weder Telefonnummer noch E-Mail hinterlegt. Bitte im Profil ergaenzen."
-                              className="text-[9px] px-1.5 py-0 h-4 border-[hsl(var(--warning))] text-[hsl(var(--warning))] uppercase tracking-wide"
+                              className="text-bildunterschrift px-1.5 py-0 h-4 border-[hsl(var(--warning))] text-[hsl(var(--warning))] uppercase tracking-wide"
                             >
                               Kontaktdaten fehlen
                             </Badge>
@@ -1047,7 +1047,7 @@ export default function LeadVerwaltung() {
                 <p className="text-sm font-medium">{assignDialog.vorname} {assignDialog.nachname}</p>
                 <p className="text-xs text-muted-foreground">{assignDialog.email}</p>
                 <p className="text-xs text-muted-foreground">{normalizeTelefon(assignDialog.telefon)}</p>
-                <Badge className={`text-[10px] mt-1 ${LEAD_COLORS[assignDialog.leadTyp || ""] || ""}`}>
+                <Badge className={`text-bildunterschrift mt-1 ${LEAD_COLORS[assignDialog.leadTyp || ""] || ""}`}>
                   {LEAD_LABELS[assignDialog.leadTyp || ""] || assignDialog.leadTyp}
                 </Badge>
               </div>
@@ -1098,16 +1098,16 @@ export default function LeadVerwaltung() {
                 <div className="p-3 bg-primary/5 border border-primary/10 rounded-lg space-y-2">
                   <p className="text-xs font-semibold text-primary">Qualifizierungsfragen</p>
                   {assignDialog.qualZiel && (
-                    <div><p className="text-[10px] text-muted-foreground">Ziel</p><p className="text-xs">{assignDialog.qualZiel}</p></div>
+                    <div><p className="text-bildunterschrift text-muted-foreground">Ziel</p><p className="text-xs">{assignDialog.qualZiel}</p></div>
                   )}
                   {assignDialog.qualEinkommen && (
-                    <div><p className="text-[10px] text-muted-foreground">Einkommen</p><p className="text-xs">{assignDialog.qualEinkommen}</p></div>
+                    <div><p className="text-bildunterschrift text-muted-foreground">Einkommen</p><p className="text-xs">{assignDialog.qualEinkommen}</p></div>
                   )}
                   {assignDialog.qualEigenkapital && (
-                    <div><p className="text-[10px] text-muted-foreground">Eigenkapital</p><p className="text-xs">{assignDialog.qualEigenkapital}</p></div>
+                    <div><p className="text-bildunterschrift text-muted-foreground">Eigenkapital</p><p className="text-xs">{assignDialog.qualEigenkapital}</p></div>
                   )}
                   {assignDialog.qualBeruflicheSituation && (
-                    <div><p className="text-[10px] text-muted-foreground">Berufliche Situation</p><p className="text-xs">{assignDialog.qualBeruflicheSituation}</p></div>
+                    <div><p className="text-bildunterschrift text-muted-foreground">Berufliche Situation</p><p className="text-xs">{assignDialog.qualBeruflicheSituation}</p></div>
                   )}
                 </div>
               )}

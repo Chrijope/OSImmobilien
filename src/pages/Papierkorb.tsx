@@ -247,7 +247,7 @@ export default function Papierkorb() {
               <Trash2 className="h-4 w-4" />
               Gelöscht
               {kontakte.length > 0 && (
-                <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-[10px]">{kontakte.length}</Badge>
+                <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-bildunterschrift">{kontakte.length}</Badge>
               )}
             </TabsTrigger>
           )}
@@ -289,7 +289,7 @@ export default function Papierkorb() {
               <div>
                 <p className="text-xs text-muted-foreground uppercase tracking-wide">Bald Auto-Purge</p>
                 <p className="text-3xl font-bold mt-1 text-orange-500">{kpis.auslaufend}</p>
-                <p className="text-[10px] text-muted-foreground">Letzte 7 Tage vor Ablauf</p>
+                <p className="text-bildunterschrift text-muted-foreground">Letzte 7 Tage vor Ablauf</p>
               </div>
               <AlertTriangle className="h-8 w-8 text-orange-500/40" />
             </div>

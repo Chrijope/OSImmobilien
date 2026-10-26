@@ -254,7 +254,7 @@ export function FinanzierungspartnerDashboard() {
             <CardTitle className="text-sm flex items-center gap-2">
               <FileSignature className="h-4 w-4 text-[hsl(var(--warning))]" />
               Anstehende Finanzierungen (Vorschau aus Reservierung)
-              <Badge variant="secondary" className="ml-auto text-[10px]">
+              <Badge variant="secondary" className="ml-auto text-bildunterschrift">
                 {data.reserviert.length}
               </Badge>
             </CardTitle>
@@ -289,7 +289,7 @@ export function FinanzierungspartnerDashboard() {
                       )}
                     </p>
                   </div>
-                  <Badge variant={overdue ? "destructive" : "secondary"} className="text-[10px] shrink-0">
+                  <Badge variant={overdue ? "destructive" : "secondary"} className="text-bildunterschrift shrink-0">
                     <Clock className="h-3 w-3 mr-1" />
                     {days}d
                   </Badge>
@@ -305,7 +305,7 @@ export function FinanzierungspartnerDashboard() {
             <CardTitle className="text-sm flex items-center gap-2">
               <Banknote className="h-4 w-4 text-primary" />
               Aktuell in Finanzierung
-              <Badge variant="secondary" className="ml-auto text-[10px]">
+              <Badge variant="secondary" className="ml-auto text-bildunterschrift">
                 {data.inFinanzierung.length}
               </Badge>
             </CardTitle>
@@ -359,7 +359,7 @@ export function FinanzierungspartnerDashboard() {
               <TrendingUp className="h-4 w-4 text-primary" />
               Genehmigte Finanzierungen pro Monat (letzte 12 Monate)
             </CardTitle>
-            <Badge variant="secondary" className="text-[10px]">
+            <Badge variant="secondary" className="text-bildunterschrift">
               Notartermin = Finanzierung steht
             </Badge>
           </div>
@@ -373,8 +373,8 @@ export function FinanzierungspartnerDashboard() {
                   style={{ height: `${(m.count / maxMonthCount) * 100}%`, minHeight: m.count > 0 ? 4 : 0 }}
                   title={`${m.count} · ${formatCurrency(m.volumen)}`}
                 />
-                <span className="text-[10px] text-muted-foreground">{m.label}</span>
-                <span className="text-[10px] font-semibold">{m.count}</span>
+                <span className="text-bildunterschrift text-muted-foreground">{m.label}</span>
+                <span className="text-bildunterschrift font-semibold">{m.count}</span>
               </div>
             ))}
           </div>

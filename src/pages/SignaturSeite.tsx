@@ -953,7 +953,7 @@ export default function SignaturSeite() {
                         </div>
                       </>
                     )}
-                    <p className="text-[10px] text-muted-foreground mt-2">{t.vorschauFehlt}</p>
+                    <p className="text-bildunterschrift text-muted-foreground mt-2">{t.vorschauFehlt}</p>
                   </div>
                 ) : null}
 
@@ -1195,8 +1195,8 @@ export default function SignaturSeite() {
                 )}
               </Button>
 
-              <p className="text-[10px] text-muted-foreground text-center">{t.datenschutzFuss}</p>
-              <p className="text-[10px] font-medium text-foreground/75 text-center">{t.rechtsverbindlichFuss}</p>
+              <p className="text-bildunterschrift text-muted-foreground text-center">{t.datenschutzFuss}</p>
+              <p className="text-bildunterschrift font-medium text-foreground/75 text-center">{t.rechtsverbindlichFuss}</p>
             </Card>
             )}
             </>
@@ -1557,11 +1557,11 @@ function VertragSignaturen({
                   </span>
                   <span className="text-sm font-medium truncate">{d.name}</span>
                   {isHaupt ? (
-                    <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-semibold uppercase tracking-wide">
+                    <span className="inline-flex items-center gap-1 text-bildunterschrift px-2 py-0.5 rounded-full bg-primary/10 text-primary font-semibold uppercase tracking-wide">
                       Unterschrift
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground uppercase tracking-wide">
+                    <span className="inline-flex items-center gap-1 text-bildunterschrift px-2 py-0.5 rounded-full bg-muted text-muted-foreground uppercase tracking-wide">
                       Anlage
                     </span>
                   )}
@@ -1667,12 +1667,12 @@ function VertragSignaturen({
         )}
       </Button>
 
-      <p className="text-[10px] text-muted-foreground text-center">
+      <p className="text-bildunterschrift text-muted-foreground text-center">
         Ihre Unterschrift wird verschlüsselt übertragen und DSGVO-konform gespeichert.
         IP-Adresse und Zeitstempel werden als Nachweis protokolliert.
       </p>
       {/* Partner- und Bewerbervertraege duzen (Christian, 22.10.2026). */}
-      <p className="text-[10px] font-medium text-foreground/75 text-center">
+      <p className="text-bildunterschrift font-medium text-foreground/75 text-center">
         Deine elektronische Unterschrift ist rechtsverbindlich (einfache elektronische Signatur nach der eIDAS-Verordnung).
       </p>
     </Card>
@@ -1832,7 +1832,7 @@ function MobileSignatureCapture({
         )}
       </Button>
 
-      <p className="text-[10px] text-muted-foreground text-center">{texte.mobilFuss}</p>
+      <p className="text-bildunterschrift text-muted-foreground text-center">{texte.mobilFuss}</p>
     </Card>
   );
 }
@@ -2071,11 +2071,11 @@ function VertragKurzSignatur({
                 </span>
                 <span className="text-sm font-medium truncate">{d.name}</span>
                 {isHaupt ? (
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-semibold uppercase tracking-wide">
+                  <span className="text-bildunterschrift px-2 py-0.5 rounded-full bg-primary/10 text-primary font-semibold uppercase tracking-wide">
                     Unterschrift
                   </span>
                 ) : (
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground uppercase tracking-wide">
+                  <span className="text-bildunterschrift px-2 py-0.5 rounded-full bg-muted text-muted-foreground uppercase tracking-wide">
                     Anlage
                   </span>
                 )}
@@ -2148,10 +2148,10 @@ function VertragKurzSignatur({
         )}
       </Button>
 
-      <p className="text-[10px] text-muted-foreground text-center">
+      <p className="text-bildunterschrift text-muted-foreground text-center">
         Die Unterschrift wird verschlüsselt übertragen und DSGVO-konform gespeichert.
       </p>
-      <p className="text-[10px] font-medium text-foreground/75 text-center">
+      <p className="text-bildunterschrift font-medium text-foreground/75 text-center">
         Deine elektronische Unterschrift ist rechtsverbindlich (einfache elektronische Signatur nach der eIDAS-Verordnung).
       </p>
     </Card>

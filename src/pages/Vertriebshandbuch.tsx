@@ -306,10 +306,10 @@ export default function Vertriebshandbuch() {
                   title={stufe.automatik ? `Rückt von allein weiter: ${stufe.automatik}` : undefined}
                   className="rounded-lg border border-border px-2.5 py-2 text-left hover:border-primary hover:bg-muted/40 transition-colors min-w-[104px]"
                 >
-                  <span className="block text-[10px] text-muted-foreground tabular-nums">{i + 1}</span>
+                  <span className="block text-bildunterschrift text-muted-foreground tabular-nums">{i + 1}</span>
                   <span className="block text-xs font-medium leading-tight">{stufe.titel}</span>
                   {stufe.automatik && (
-                    <span className="mt-1 flex items-center gap-1 text-[10px] text-primary leading-tight">
+                    <span className="mt-1 flex items-center gap-1 text-bildunterschrift text-primary leading-tight">
                       <Zap className="h-2.5 w-2.5 shrink-0" /> automatisch
                     </span>
                   )}
@@ -339,7 +339,7 @@ export default function Vertriebshandbuch() {
                 className="w-full text-left rounded-lg border border-border px-4 py-3 hover:border-primary hover:bg-muted/40 transition-colors"
               >
                 <div className="flex items-center gap-2 flex-wrap mb-1">
-                  <Badge variant="outline" className="text-[10px]">{t.abschnitt.titel}</Badge>
+                  <Badge variant="outline" className="text-bildunterschrift">{t.abschnitt.titel}</Badge>
                   <span className="text-sm font-semibold">{t.block.titel}</span>
                 </div>
                 {t.block.frage && (

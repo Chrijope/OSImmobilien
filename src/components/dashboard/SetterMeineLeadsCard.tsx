@@ -77,27 +77,27 @@ export function SetterMeineLeadsCard() {
         <div className="rounded-lg border bg-muted/30 p-3 text-center">
           <UserCheck className="h-4 w-4 mx-auto text-primary mb-1" />
           <p className="text-xl font-bold">{stats.total}</p>
-          <p className="text-[10px] text-muted-foreground">Gesamt</p>
+          <p className="text-bildunterschrift text-muted-foreground">Gesamt</p>
         </div>
         <div className="rounded-lg border bg-muted/30 p-3 text-center">
           <Phone className="h-4 w-4 mx-auto text-amber-500 mb-1" />
           <p className="text-xl font-bold">{stats.neukunden}</p>
-          <p className="text-[10px] text-muted-foreground">Neukunden</p>
+          <p className="text-bildunterschrift text-muted-foreground">Neukunden</p>
         </div>
         <div className="rounded-lg border bg-muted/30 p-3 text-center">
           <Briefcase className="h-4 w-4 mx-auto text-blue-500 mb-1" />
           <p className="text-xl font-bold">{stats.abwicklung}</p>
-          <p className="text-[10px] text-muted-foreground">Abwicklung</p>
+          <p className="text-bildunterschrift text-muted-foreground">Abwicklung</p>
         </div>
         <div className="rounded-lg border bg-muted/30 p-3 text-center">
           <Home className="h-4 w-4 mx-auto text-emerald-500 mb-1" />
           <p className="text-xl font-bold">{stats.bestandskunden}</p>
-          <p className="text-[10px] text-muted-foreground">Bestandskunden</p>
+          <p className="text-bildunterschrift text-muted-foreground">Bestandskunden</p>
         </div>
         <div className="rounded-lg border bg-muted/30 p-3 text-center">
           <AlertTriangle className="h-4 w-4 mx-auto text-destructive mb-1" />
           <p className="text-xl font-bold">{stats.verloren}</p>
-          <p className="text-[10px] text-muted-foreground">Verloren</p>
+          <p className="text-bildunterschrift text-muted-foreground">Verloren</p>
         </div>
       </div>
 
@@ -122,9 +122,9 @@ export function SetterMeineLeadsCard() {
                     <span className="text-sm font-medium truncate">{tarnName(`${k.vorname ?? ""} ${k.nachname ?? ""}`.trim())}</span>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
-                    <Badge className="text-[9px] bg-primary/10 text-primary">{stufeLabel}</Badge>
+                    <Badge className="text-bildunterschrift bg-primary/10 text-primary">{stufeLabel}</Badge>
                     {k.verstecktBis && k.verstecktBis > new Date().toISOString() && (
-                      <Badge variant="outline" className="text-[9px] bg-orange-500/10 text-orange-600 border-orange-500/20">Wartezeit</Badge>
+                      <Badge variant="outline" className="text-bildunterschrift bg-orange-500/10 text-orange-600 border-orange-500/20">Wartezeit</Badge>
                     )}
                   </div>
                 </div>

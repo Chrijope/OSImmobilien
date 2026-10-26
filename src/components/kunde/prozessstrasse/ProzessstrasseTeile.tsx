@@ -64,7 +64,7 @@ export function StrassenKopf({ strasse }: { strasse: Strasse }) {
           {prozent}
           <span className="ml-0.5 text-[0.55em] font-medium text-muted-foreground">%</span>
         </p>
-        <p className="mt-1 text-[10px] font-medium uppercase tracking-[0.1em] text-muted-foreground">des Wegs</p>
+        <p className="mt-1 text-bildunterschrift font-medium uppercase tracking-[0.1em] text-muted-foreground">des Wegs</p>
       </div>
     </div>
   );
@@ -190,7 +190,7 @@ export function StationsName({ station, className }: { station: Station; classNa
 export function GrundschuldMarke({ hochgeladen }: { hochgeladen: boolean }) {
   return (
     <span
-      className="inline-flex items-center gap-1 rounded-full border border-dashed px-1.5 py-[1px] text-[10px] italic"
+      className="inline-flex items-center gap-1 rounded-full border border-dashed px-1.5 py-[1px] text-bildunterschrift italic"
       style={
         hochgeladen
           ? { color: ERLEDIGT, borderColor: "hsl(var(--ps-erledigt) / 0.45)", background: "hsl(var(--ps-erledigt) / 0.08)" }
@@ -199,7 +199,7 @@ export function GrundschuldMarke({ hochgeladen }: { hochgeladen: boolean }) {
       title="Nur intern sichtbar, wird nicht im Kundenportal angezeigt"
     >
       {hochgeladen ? "mit GS" : "ohne GS"}
-      <span className="not-italic text-[8px]" aria-hidden="true">🔒</span>
+      <span className="not-italic text-bildunterschrift" aria-hidden="true">🔒</span>
     </span>
   );
 }

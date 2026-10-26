@@ -515,7 +515,7 @@ export default function MieterDetail() {
                                   <td className="py-2 text-muted-foreground">{s.zaehlerNr}</td>
                                   <td className="py-2 text-right font-medium">{s.stand.toLocaleString("de-DE")} {t?.einheit}</td>
                                   <td className="py-2 text-muted-foreground">{new Date(s.ableseDatum).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}</td>
-                                  <td className="py-2"><Badge variant="outline" className="text-[10px]">{ANLASS_LABELS.find(a => a.value === s.anlass)?.label || s.anlass}</Badge></td>
+                                  <td className="py-2"><Badge variant="outline" className="text-bildunterschrift">{ANLASS_LABELS.find(a => a.value === s.anlass)?.label || s.anlass}</Badge></td>
                                 </tr>
                               );
                             })}
@@ -612,7 +612,7 @@ export default function MieterDetail() {
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
                                 <p className="font-medium text-sm truncate">{k.betreff}</p>
-                                <Badge variant="outline" className="text-[10px] shrink-0">{k.richtung === "eingehend" ? "↙" : k.richtung === "ausgehend" ? "↗" : "📌"} {RICHTUNG_LABELS.find(r => r.value === k.richtung)?.label}</Badge>
+                                <Badge variant="outline" className="text-bildunterschrift shrink-0">{k.richtung === "eingehend" ? "↙" : k.richtung === "ausgehend" ? "↗" : "📌"} {RICHTUNG_LABELS.find(r => r.value === k.richtung)?.label}</Badge>
                               </div>
                               <p className="text-xs text-muted-foreground">{new Date(k.datum).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })} · {typInfo?.label}</p>
                               {k.inhalt && <p className="text-sm mt-1 text-muted-foreground line-clamp-2">{k.inhalt}</p>}
@@ -767,7 +767,7 @@ export default function MieterDetail() {
                       }`}
                     >
                       <p className="text-xs font-bold">{mahnConfig[s].titel}</p>
-                      <p className="text-[10px] text-muted-foreground mt-0.5">Stufe {s}</p>
+                      <p className="text-bildunterschrift text-muted-foreground mt-0.5">Stufe {s}</p>
                     </button>
                   ))}
                 </div>
@@ -777,7 +777,7 @@ export default function MieterDetail() {
               <div>
                 <Label>Zahlungsfrist (Tage)</Label>
                 <Input type="number" value={mahnFrist} onChange={e => setMahnFrist(+e.target.value)} min={3} max={30} className="mt-1" />
-                <p className="text-[10px] text-muted-foreground mt-1">
+                <p className="text-bildunterschrift text-muted-foreground mt-1">
                   Frist bis: {new Date(Date.now() + mahnFrist * 86400000).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}
                 </p>
               </div>

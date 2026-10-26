@@ -39,8 +39,8 @@ export function UngeleseneZahl({
       aria-label={zahl === 1 ? t.ungelesenEins : mitWerten(t.ungelesenMehr, { zahl })}
       className={
         gross
-          ? "absolute right-1.5 top-1.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#E5372B] px-1 text-[10px] font-bold tabular-nums text-white"
-          : "absolute -right-1 -top-1 flex h-[16px] min-w-[16px] items-center justify-center rounded-full bg-[#E5372B] px-1 text-[9.5px] font-bold leading-none tabular-nums text-white"
+          ? "absolute right-1.5 top-1.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#E5372B] px-1 text-bildunterschrift font-bold tabular-nums text-white"
+          : "absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#E5372B] px-1 text-bildunterschrift font-bold leading-none tabular-nums text-white"
       }
     >
       {zahl > 99 ? "99+" : zahl}

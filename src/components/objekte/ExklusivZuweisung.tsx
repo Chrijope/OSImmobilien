@@ -69,7 +69,7 @@ function NutzerWahl({ kandidaten, gewaehlt, onWaehlen, onEntfernen, label, id }:
                 onMouseDown={(e) => { e.preventDefault(); onWaehlen(k); setSuche(""); }}
               >
                 <span className="font-medium">{k.name}</span>
-                <Badge variant="outline" className="text-[10px]">{rollenLabel(k.rolle)}</Badge>
+                <Badge variant="outline" className="text-bildunterschrift">{rollenLabel(k.rolle)}</Badge>
               </button>
             ))}
           </div>

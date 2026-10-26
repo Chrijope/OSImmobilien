@@ -51,7 +51,7 @@ function StatusBadge({ status }: { status: string }) {
     geschlossen: { label: "Geschlossen", cls: "bg-muted text-muted-foreground border-border" },
   };
   const s = map[status] || map.neu;
-  return <Badge variant="outline" className={`text-[10px] ${s.cls}`}>{s.label}</Badge>;
+  return <Badge variant="outline" className={`text-bildunterschrift ${s.cls}`}>{s.label}</Badge>;
 }
 
 type Step = "kategorie" | "details" | "fertig";
@@ -232,7 +232,7 @@ export default function SupportKontaktieren() {
                 }`}>
                   <p className="text-xs font-medium mb-1 opacity-70">{msg.absenderName}</p>
                   <p className="text-sm">{msg.inhalt}</p>
-                  <p className="text-[10px] opacity-50 mt-1">
+                  <p className="text-bildunterschrift opacity-50 mt-1">
                     {format(new Date(msg.timestamp), "dd.MM.yyyy HH:mm", { locale: de })}
                   </p>
                 </div>
@@ -473,7 +473,7 @@ export default function SupportKontaktieren() {
           <div data-ui="card" className="bg-card border rounded-lg overflow-hidden flex-1 flex flex-col min-h-0">
             <div className="px-3 py-2 border-b flex items-center justify-between">
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Meine Tickets</p>
-              <Badge variant="secondary" className="text-[10px] h-5">{userTickets.length}</Badge>
+              <Badge variant="secondary" className="text-bildunterschrift h-5">{userTickets.length}</Badge>
             </div>
             <div className="flex-1 overflow-y-auto">
               {userTickets.map(ticket => {
@@ -491,7 +491,7 @@ export default function SupportKontaktieren() {
                     <span className="text-xs font-mono text-muted-foreground">T-{ticket.nummer}</span>
                     <StatusBadge status={ticket.status} />
                     {neueAntwort && (
-                      <Badge className="text-[10px] h-5 ml-auto">Neue Antwort</Badge>
+                      <Badge className="text-bildunterschrift h-5 ml-auto">Neue Antwort</Badge>
                     )}
                   </div>
                   <p className={`text-sm truncate mt-0.5 ${neueAntwort ? "font-semibold" : ""}`}>{ticket.betreff}</p>

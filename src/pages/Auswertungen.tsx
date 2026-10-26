@@ -186,7 +186,7 @@ const Auswertungen = () => {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-3 gap-2 text-[10px] font-semibold text-muted-foreground uppercase mb-2 px-1">
+                    <div className="grid grid-cols-3 gap-2 text-bildunterschrift font-semibold text-muted-foreground uppercase mb-2 px-1">
                       <span>Pos.</span>
                       <span>Vertriebspartner</span>
                       <span className="text-right">Anzahl</span>
@@ -201,7 +201,7 @@ const Auswertungen = () => {
                         <span className="flex items-center gap-1">{posIcon(d.pos)}</span>
                         <span className={`font-medium ${d.ich ? "text-primary" : "text-foreground"} flex items-center gap-1.5`}>
                           {d.name}
-                          {d.ich && <Badge className="bg-primary text-primary-foreground text-[9px] px-1.5 h-4">Du</Badge>}
+                          {d.ich && <Badge className="bg-primary text-primary-foreground text-bildunterschrift px-1.5 h-4">Du</Badge>}
                         </span>
                         <span className={`text-right font-semibold ${d.ich ? "text-primary" : "text-foreground"}`}>
                           {d.wert}

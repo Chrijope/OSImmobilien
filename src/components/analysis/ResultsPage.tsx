@@ -290,7 +290,7 @@ function BeraterCard({
           </div>
         )}
         <div className="flex-1 min-w-0 text-center sm:text-left w-full">
-          <p className="text-[10px] sm:text-[11px] uppercase tracking-[0.22em] text-muted-foreground mb-1.5">
+          <p className="text-bildunterschrift sm:text-[11px] uppercase tracking-[0.22em] text-muted-foreground mb-1.5">
             {t.persoenlicherAnsprechpartner}
           </p>
           <p className="font-semibold text-foreground text-xl sm:text-2xl tracking-tight truncate">
@@ -765,7 +765,7 @@ const ResultsPage = ({ result: basisErgebnis, data, berater, onRestart, hideAdva
                       {formFehler && formFehler !== einwilligungFehltText && (
                         <p className="text-sm text-destructive text-center">{formFehler}</p>
                       )}
-                      <p className="text-[10px] text-muted-foreground/50 text-center">{t.vertraulich}</p>
+                      <p className="text-bildunterschrift text-muted-foreground/50 text-center">{t.vertraulich}</p>
                     </div>
                   </div>
                 )}

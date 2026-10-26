@@ -221,7 +221,7 @@ function Knopf({
       className={`flex h-[62px] ${gefahr ? "w-[86px]" : "w-16"} flex-col items-center justify-center gap-1.5 rounded-2xl border transition-colors enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40 ${grund}`}
     >
       {children}
-      <span className="text-[8.5px] font-semibold uppercase tracking-[0.05em] opacity-80">{label}</span>
+      <span className="text-bildunterschrift font-semibold uppercase tracking-[0.05em] opacity-80">{label}</span>
     </button>
   );
 }
@@ -293,7 +293,7 @@ function TeilnehmerKachel({
       ) : (
         <div className="flex h-full flex-col items-center justify-center gap-2 px-4 text-center">
           <Loader2 className={klein ? "h-4 w-4 animate-spin text-white/40" : "h-6 w-6 animate-spin text-white/40"} />
-          <p className={klein ? "text-[10.5px] leading-tight text-white/60" : "text-[13px] text-white/60"}>
+          <p className={klein ? "text-bildunterschrift leading-tight text-white/60" : "text-[13px] text-white/60"}>
             {mitWerten(t.warteAuf, { name: gegenstelle.name })}
           </p>
         </div>

@@ -599,7 +599,7 @@ export default function Nutzerverwaltung() {
                           value={formCustomRateSetter}
                           onChange={e => setFormCustomRateSetter(e.target.value)}
                         />
-                        <p className="text-[10px] text-muted-foreground">Für Leads, die OS Immobilien zuweist.</p>
+                        <p className="text-bildunterschrift text-muted-foreground">Für Leads, die OS Immobilien zuweist.</p>
                       </div>
                       <div className="space-y-1">
                         <Label htmlFor="einladung-satz-eigen" className="text-xs text-muted-foreground">Eigen-Satz (%) *</Label>
@@ -610,13 +610,13 @@ export default function Nutzerverwaltung() {
                           value={formCustomRateEigen}
                           onChange={e => setFormCustomRateEigen(e.target.value)}
                         />
-                        <p className="text-[10px] text-muted-foreground">Für Kontakte aus dem eigenen Netzwerk.</p>
+                        <p className="text-bildunterschrift text-muted-foreground">Für Kontakte aus dem eigenen Netzwerk.</p>
                       </div>
                     </div>
                     {!provisionssaetzeGueltig && (
                       <p className="text-[11px] text-destructive mt-2">{SATZ_UNGUELTIG_TEXT}</p>
                     )}
-                    <p className="text-[10px] text-muted-foreground mt-3">
+                    <p className="text-bildunterschrift text-muted-foreground mt-3">
                       Der Satz gilt ab sofort für neue Vorgänge. Ab der Reservierung wird er am Vorgang festgeschrieben; eine spätere Änderung wirkt dort nicht mehr.
                     </p>
                   </div>
@@ -726,7 +726,7 @@ export default function Nutzerverwaltung() {
               <PopoverTrigger asChild>
                 <Card className="cursor-pointer hover:border-primary/50 transition-colors">
                   <CardContent className="p-4 text-center">
-                    <p className="text-[10px] font-semibold text-muted-foreground tracking-wider uppercase">{kpi.label}</p>
+                    <p className="text-bildunterschrift font-semibold text-muted-foreground tracking-wider uppercase">{kpi.label}</p>
                     <p className="text-3xl font-bold mt-1">{kpi.value}</p>
                   </CardContent>
                 </Card>
@@ -742,13 +742,13 @@ export default function Nutzerverwaltung() {
                         <div key={u.id} className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-accent cursor-pointer" onClick={() => { setProfilNutzer(u); setProfilOpen(true); }}>
                           <Avatar className="h-6 w-6">
                             {u.avatarUrl && <AvatarImage src={u.avatarUrl} alt={`${u.vorname} ${u.nachname}`} />}
-                            <AvatarFallback className="text-[9px] bg-primary text-primary-foreground">
+                            <AvatarFallback className="text-bildunterschrift bg-primary text-primary-foreground">
                               {getInitials(u.vorname, u.nachname)}
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex-1 min-w-0">
                             <p className="text-xs font-medium truncate">{u.vorname} {u.nachname}</p>
-                            <p className="text-[10px] text-muted-foreground truncate">{u.rolle}</p>
+                            <p className="text-bildunterschrift text-muted-foreground truncate">{u.rolle}</p>
                           </div>
                         </div>
                       ))}
@@ -857,7 +857,7 @@ export default function Nutzerverwaltung() {
                             <DropdownMenuTrigger asChild>
                               <button className="flex items-center gap-1.5 cursor-pointer hover:opacity-80">
                                 <Badge variant="secondary">{n.rolle}</Badge>
-                                <span className="text-[10px] text-muted-foreground">+{n.rollen.length - 1}</span>
+                                <span className="text-bildunterschrift text-muted-foreground">+{n.rollen.length - 1}</span>
                               </button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="start" className="min-w-[160px]">

@@ -211,7 +211,7 @@ export default function VertriebsakademieAdmin() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-sm font-semibold">{r.name}</span>
-                        <Badge variant="outline" className="text-[10px]">{r.role}</Badge>
+                        <Badge variant="outline" className="text-bildunterschrift">{r.role}</Badge>
                         <span className="text-[11px] text-muted-foreground">{r.email}</span>
                       </div>
                       <div className="mt-2 flex items-center gap-3 text-[11px] text-muted-foreground">
@@ -270,9 +270,9 @@ export default function VertriebsakademieAdmin() {
                                   return (
                                     <div key={a.id} className={`rounded-md border bg-background p-3 ${a.erledigt ? "border-emerald-500/30" : ""}`}>
                                       <div className="flex items-center gap-2 flex-wrap text-[11px]">
-                                        <Badge variant="outline" className="text-[9px]">Kap. {kap?.nummer ?? "?"}</Badge>
+                                        <Badge variant="outline" className="text-bildunterschrift">Kap. {kap?.nummer ?? "?"}</Badge>
                                         <span className="font-medium">{a.uebung_titel || a.uebung_id}</span>
-                                        {a.erledigt && <Badge className="text-[9px] bg-emerald-500/15 text-emerald-600 border-emerald-500/30">erledigt · +{a.xp} XP</Badge>}
+                                        {a.erledigt && <Badge className="text-bildunterschrift bg-emerald-500/15 text-emerald-600 border-emerald-500/30">erledigt · +{a.xp} XP</Badge>}
                                         <span className="ml-auto text-muted-foreground">{new Date(a.updated_at).toLocaleString("de-DE")}</span>
                                       </div>
                                       {a.antwort ? (

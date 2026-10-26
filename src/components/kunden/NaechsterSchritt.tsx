@@ -63,7 +63,7 @@ export function NaechsterSchritt({
     <span
       // Die Bezeichnung kommt bei Meetings aus dem Freitext der Aktivitaet und
       // kann lang sein. Ohne Deckel zoege sie die ganze Spalte auseinander.
-      className={`flex items-center gap-0.5 max-w-[200px] text-[10px] font-normal text-primary ${className}`}
+      className={`flex items-center gap-0.5 max-w-[200px] text-bildunterschrift font-normal text-primary ${className}`}
       title={titel ? `${naechster.bezeichnung}: ${titel}` : naechster.bezeichnung}
     >
       <Symbol className="h-2.5 w-2.5 shrink-0" />

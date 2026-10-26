@@ -30,7 +30,7 @@ export function SelbstAbmeldungKarte({ bewerber }: { bewerber: Pick<Bewerber, "s
           </p>
           {grund ? (
             <div className="mt-2">
-              <p className="text-[10px] uppercase tracking-wider text-amber-700 dark:text-amber-300">Grund</p>
+              <p className="text-bildunterschrift uppercase tracking-wider text-amber-700 dark:text-amber-300">Grund</p>
               <p className="whitespace-pre-wrap text-sm text-amber-900 dark:text-amber-100">{grund}</p>
             </div>
           ) : (

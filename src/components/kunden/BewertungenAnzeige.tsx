@@ -57,7 +57,7 @@ export function BewertungenAnzeige({ kundeId }: Props) {
                 ))}
                 <span className="text-xs text-muted-foreground ml-2">{b.bewertung_gesamt}/5</span>
               </div>
-              <span className="text-[10px] text-muted-foreground">
+              <span className="text-bildunterschrift text-muted-foreground">
                 {new Date(b.erstellt_am).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}
               </span>
             </div>
@@ -70,7 +70,7 @@ export function BewertungenAnzeige({ kundeId }: Props) {
               <p className="text-xs text-muted-foreground italic mt-2 border-l-2 border-primary/30 pl-2">"{b.kommentar}"</p>
             )}
             {b.weiterempfehlung && (
-              <p className="text-[10px] text-[hsl(var(--success))] font-semibold mt-2">✓ Würde uns weiterempfehlen</p>
+              <p className="text-bildunterschrift text-[hsl(var(--success))] font-semibold mt-2">✓ Würde uns weiterempfehlen</p>
             )}
           </div>
         ))}

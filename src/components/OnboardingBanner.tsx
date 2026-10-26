@@ -306,7 +306,7 @@ export function OnboardingBanner({ onNavigateTab, liveSettings, liveAvatarUrl, l
                   </div>
                 )}
                 {done && (
-                  <span className="text-[10px] font-semibold text-green-600 dark:text-green-400 uppercase tracking-wide">
+                  <span className="text-bildunterschrift font-semibold text-green-600 dark:text-green-400 uppercase tracking-wide">
                     Erledigt
                   </span>
                 )}

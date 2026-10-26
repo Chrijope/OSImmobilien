@@ -83,14 +83,14 @@ export function TechnikErklaerung({
           <p className="text-foreground/90">{t.kurz}</p>
           {tiefe === "voll" && (
             <div>
-              <div className="text-[10px] uppercase tracking-wide text-muted-foreground mb-0.5">
+              <div className="text-bildunterschrift uppercase tracking-wide text-muted-foreground mb-0.5">
                 Warum sie wirkt
               </div>
               <p className="text-foreground/90">{t.prinzip}</p>
             </div>
           )}
           <div>
-            <div className="text-[10px] uppercase tracking-wide text-muted-foreground mb-0.5">
+            <div className="text-bildunterschrift uppercase tracking-wide text-muted-foreground mb-0.5">
               In drei Schritten
             </div>
             <ol className="list-decimal list-inside space-y-0.5 text-foreground/90">
@@ -98,7 +98,7 @@ export function TechnikErklaerung({
             </ol>
           </div>
           <div className="rounded border-l-2 border-primary/60 bg-primary/5 p-2">
-            <div className="text-[10px] uppercase tracking-wide text-muted-foreground mb-0.5">
+            <div className="text-bildunterschrift uppercase tracking-wide text-muted-foreground mb-0.5">
               So klingt es
             </div>
             <p className="text-foreground/90">{t.beispiel}</p>
@@ -238,13 +238,13 @@ export function EinwandAntwort({
 
       <div className="flex items-center gap-1.5 flex-wrap">
         {kat && (
-          <Badge variant="outline" className={`text-[10px] ${kat.farbe}`}>{kat.label}</Badge>
+          <Badge variant="outline" className={`text-bildunterschrift ${kat.farbe}`}>{kat.label}</Badge>
         )}
-        {technik && <Badge variant="secondary" className="text-[10px]">{technik}</Badge>}
+        {technik && <Badge variant="secondary" className="text-bildunterschrift">{technik}</Badge>}
       </div>
 
       <div className="rounded-md bg-muted/50 p-2.5">
-        <div className="text-[10px] uppercase tracking-wide text-muted-foreground mb-0.5">
+        <div className="text-bildunterschrift uppercase tracking-wide text-muted-foreground mb-0.5">
           Was er eigentlich meint
         </div>
         <div className="text-foreground/90">{eintrag.meintEigentlich}</div>
@@ -257,7 +257,7 @@ export function EinwandAntwort({
           !zeigeProfi && "text-base leading-relaxed",
         )}
       >
-        <div className="text-[10px] uppercase tracking-wide text-muted-foreground mb-0.5">
+        <div className="text-bildunterschrift uppercase tracking-wide text-muted-foreground mb-0.5">
           {zeigeProfi ? "Antwort" : "So antwortest du, ruhig vorlesen"}
         </div>
         <div className="whitespace-pre-line">{eintrag.antwortKurz}</div>
@@ -265,7 +265,7 @@ export function EinwandAntwort({
 
       {eintrag.nachfrage && (
         <div className="rounded-md border p-2.5">
-          <div className="text-[10px] uppercase tracking-wide text-muted-foreground mb-0.5">
+          <div className="text-bildunterschrift uppercase tracking-wide text-muted-foreground mb-0.5">
             Frag nach
           </div>
           <div className="text-foreground/90">„{eintrag.nachfrage}“</div>
@@ -279,7 +279,7 @@ export function EinwandAntwort({
       */}
       {!zeigeProfi && technikObjekt && (
         <div className="rounded-md border p-2.5">
-          <div className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">
+          <div className="text-bildunterschrift uppercase tracking-wide text-muted-foreground mb-1">
             So gehst du vor
           </div>
           <ol className="list-decimal list-inside space-y-0.5 text-xs text-foreground/90">
@@ -290,7 +290,7 @@ export function EinwandAntwort({
 
       {eintrag.antwortZahlen && (
         <div className="rounded-md border p-2.5">
-          <div className="text-[10px] uppercase tracking-wide text-muted-foreground mb-0.5">
+          <div className="text-bildunterschrift uppercase tracking-wide text-muted-foreground mb-0.5">
             Mit Zahlen
           </div>
           <div className="whitespace-pre-line text-foreground/90">{eintrag.antwortZahlen}</div>
@@ -300,7 +300,7 @@ export function EinwandAntwort({
       {/* Nach der Zustimmungsfrage schweigen, sagt das Handbuch. Deshalb steht sie für sich. */}
       {eintrag.zustimmung && (
         <div className="rounded-md border border-emerald-500/30 bg-emerald-500/5 p-2.5">
-          <div className="text-[10px] uppercase tracking-wide text-muted-foreground mb-0.5">
+          <div className="text-bildunterschrift uppercase tracking-wide text-muted-foreground mb-0.5">
             Zustimmungsfrage, danach schweigen
           </div>
           <div className="text-foreground/90">„{eintrag.zustimmung}“</div>
@@ -310,7 +310,7 @@ export function EinwandAntwort({
       {/* Die Geschichte trägt nur, wer sie frei erzählen kann. */}
       {zeigeProfi && eintrag.antwortStory && (
         <div className="rounded-md border p-2.5">
-          <div className="text-[10px] uppercase tracking-wide text-muted-foreground mb-0.5">
+          <div className="text-bildunterschrift uppercase tracking-wide text-muted-foreground mb-0.5">
             Als Geschichte
           </div>
           <div className="whitespace-pre-line text-foreground/90">{eintrag.antwortStory}</div>

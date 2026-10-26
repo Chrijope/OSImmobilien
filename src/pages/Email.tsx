@@ -381,7 +381,7 @@ const EmailSeite = () => {
                 {ordnerCounts[o.id] > 0 && (
                   <Badge
                     variant={o.id === "posteingang" && ordnerCounts[o.id] > 0 ? "destructive" : "secondary"}
-                    className="text-[10px] px-1.5 h-5"
+                    className="text-bildunterschrift px-1.5 h-5"
                   >
                     {ordnerCounts[o.id]}
                   </Badge>
@@ -393,7 +393,7 @@ const EmailSeite = () => {
             {imapFolders.length > 0 && (
               <>
                 <Separator className="my-2" />
-                <p className="text-[10px] uppercase tracking-wider text-muted-foreground px-3 py-1 font-semibold">
+                <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground px-3 py-1 font-semibold">
                   IMAP Ordner
                 </p>
                 {imapFolders
@@ -420,7 +420,7 @@ const EmailSeite = () => {
               </>
             )}
             {loadingFolders && (
-              <p className="text-[10px] text-muted-foreground px-3 py-2">Lade Ordner…</p>
+              <p className="text-bildunterschrift text-muted-foreground px-3 py-2">Lade Ordner…</p>
             )}
           </div>
 

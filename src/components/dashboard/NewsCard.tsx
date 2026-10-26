@@ -72,7 +72,7 @@ export function NewsCard() {
                   {item.text}
                 </p>
                 {item.isNew && (
-                  <Badge className="bg-primary text-primary-foreground text-[9px] px-1.5 py-0 h-4 flex-shrink-0">
+                  <Badge className="bg-primary text-primary-foreground text-bildunterschrift px-1.5 py-0 h-4 flex-shrink-0">
                     NEU
                   </Badge>
                 )}

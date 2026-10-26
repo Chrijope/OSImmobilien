@@ -537,10 +537,10 @@ export default function Chat() {
                     <span className="flex items-center gap-1.5">
                       {fb.label}
                       {fb.key === "ungelesen" && unreadTotal > 0 && (
-                        <Badge variant="secondary" className="text-[9px] px-1 py-0 bg-primary/20 text-primary">{unreadTotal}</Badge>
+                        <Badge variant="secondary" className="text-bildunterschrift px-1 py-0 bg-primary/20 text-primary">{unreadTotal}</Badge>
                       )}
                       {fb.key === "archiviert" && archivedCount > 0 && (
-                        <Badge variant="secondary" className="text-[9px] px-1 py-0 bg-muted-foreground/20 text-muted-foreground">{archivedCount}</Badge>
+                        <Badge variant="secondary" className="text-bildunterschrift px-1 py-0 bg-muted-foreground/20 text-muted-foreground">{archivedCount}</Badge>
                       )}
                     </span>
                   </SelectItem>
@@ -609,7 +609,7 @@ export default function Chat() {
                 <div key={chat.id}>
                 {trennerDavor && (
                   <div className="px-3 py-1 border-t border-b bg-muted/30">
-                    <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Weitere Chats</span>
+                    <span className="text-bildunterschrift uppercase tracking-wide text-muted-foreground">Weitere Chats</span>
                   </div>
                 )}
                 {/*
@@ -644,7 +644,7 @@ export default function Chat() {
                     <div className="flex items-center justify-between gap-1 min-w-0">
                       <div className="flex items-center gap-1.5 min-w-0">
                         {chat.angepinnt && <Pin className="h-3.5 w-3.5 text-red-500 shrink-0 fill-red-500" />}
-                        <Badge variant="outline" className={`text-[9px] px-1.5 py-0 shrink-0 ${chat.typ === "kundenkommunikation" ? "border-green-300 text-green-700 bg-green-50" : "border-blue-300 text-blue-700 bg-blue-50"}`}>
+                        <Badge variant="outline" className={`text-bildunterschrift px-1.5 py-0 shrink-0 ${chat.typ === "kundenkommunikation" ? "border-green-300 text-green-700 bg-green-50" : "border-blue-300 text-blue-700 bg-blue-50"}`}>
                           {chat.typ === "kundenkommunikation" ? "Kunde" : "Intern"}
                         </Badge>
                         <span className={`font-semibold text-sm truncate ${hasUnread ? "text-foreground" : ""} ${chat.archiviert ? "text-muted-foreground" : ""}`}>{chat.kundeName.replace(/\s*\(Intern\)\s*$/i, "")}</span>
@@ -658,13 +658,13 @@ export default function Chat() {
                           <span className="h-2.5 w-2.5 rounded-full bg-blue-500 shrink-0 inline-block" />
                         )}
                         {hasUnread && (
-                          <Badge className="text-[9px] px-1.5 py-0 shrink-0 bg-primary text-primary-foreground">{chatUnreadCount}</Badge>
+                          <Badge className="text-bildunterschrift px-1.5 py-0 shrink-0 bg-primary text-primary-foreground">{chatUnreadCount}</Badge>
                         )}
                         {chat.archiviert && <Archive className="h-3 w-3 text-muted-foreground shrink-0" />}
                         <Popover>
                           <PopoverTrigger asChild>
                             <span
-                              className="inline-flex items-center gap-0.5 text-[10px] text-muted-foreground bg-muted rounded-full px-1.5 py-0.5 cursor-pointer hover:bg-accent shrink-0"
+                              className="inline-flex items-center gap-0.5 text-bildunterschrift text-muted-foreground bg-muted rounded-full px-1.5 py-0.5 cursor-pointer hover:bg-accent shrink-0"
                               onClick={(e) => e.stopPropagation()}
                             >
                               <Users className="h-3 w-3" />
@@ -678,11 +678,11 @@ export default function Chat() {
                                 <div key={i} className="flex items-center gap-2">
                                   <Avatar className="h-6 w-6">
                                     {t.avatar ? <AvatarImage src={t.avatar} /> : null}
-                                    <AvatarFallback className={`${colorForName(t.name)} text-white text-[8px]`}>{t.initials}</AvatarFallback>
+                                    <AvatarFallback className={`${colorForName(t.name)} text-white text-bildunterschrift`}>{t.initials}</AvatarFallback>
                                   </Avatar>
                                   <div className="min-w-0 flex-1">
                                     <p className="text-xs font-medium truncate">{t.name}</p>
-                                    <p className="text-[10px] text-muted-foreground">{t.role}</p>
+                                    <p className="text-bildunterschrift text-muted-foreground">{t.role}</p>
                                   </div>
                                   {isAdmin && t.id !== chat.erstelltVon && t.id !== myId && !isKundenChat(chat) && !isParticipantAdmin(t.id) && (
                                     <button
@@ -797,7 +797,7 @@ export default function Chat() {
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
                       <h3 className="font-semibold text-sm truncate">{activeChat.kundeName.replace(/\s*\(Intern\)\s*$/i, "")}</h3>
-                      <Badge variant="outline" className={`text-[9px] px-1.5 py-0 shrink-0 ${activeChat.typ === "kundenkommunikation" ? "border-green-300 text-green-700 bg-green-50" : "border-blue-300 text-blue-700 bg-blue-50"}`}>
+                      <Badge variant="outline" className={`text-bildunterschrift px-1.5 py-0 shrink-0 ${activeChat.typ === "kundenkommunikation" ? "border-green-300 text-green-700 bg-green-50" : "border-blue-300 text-blue-700 bg-blue-50"}`}>
                         {activeChat.typ === "kundenkommunikation" ? "Kundenkommunikation" : "Interne Kommunikation"}
                       </Badge>
                       {activeChat.kundeId && (
@@ -938,7 +938,7 @@ export default function Chat() {
                     }}
                   />
                   <Avatar className="h-8 w-8">
-                    <AvatarFallback className={`${colorForName(member.name)} text-white text-[10px]`}>{member.initials}</AvatarFallback>
+                    <AvatarFallback className={`${colorForName(member.name)} text-white text-bildunterschrift`}>{member.initials}</AvatarFallback>
                   </Avatar>
                   <div>
                     <p className="text-sm font-medium">{member.name}</p>

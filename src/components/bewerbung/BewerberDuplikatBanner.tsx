@@ -217,8 +217,8 @@ export function BewerberDuplikatBanner({ bewerber, onMerged }: Props) {
                   <div className="space-y-1">
                     {gruppe.bewerber.map((b, idx) => (
                       <div key={b.id} className="flex items-center gap-3 text-xs rounded px-2 py-1 hover:bg-muted/50">
-                        {idx === 0 && <Badge variant="outline" className="text-[10px] border-primary/50 text-primary">Behalten</Badge>}
-                        {idx > 0 && <Badge variant="outline" className="text-[10px] border-destructive/50 text-destructive">Duplikat</Badge>}
+                        {idx === 0 && <Badge variant="outline" className="text-bildunterschrift border-primary/50 text-primary">Behalten</Badge>}
+                        {idx > 0 && <Badge variant="outline" className="text-bildunterschrift border-destructive/50 text-destructive">Duplikat</Badge>}
                         <span className="font-medium">{b.vorname} {b.nachname}</span>
                         {b.telefon && <span className="text-muted-foreground">{b.telefon}</span>}
                         {b.email && !isPlaceholderEmail(b.email.toLowerCase()) && <span className="text-muted-foreground">{b.email}</span>}

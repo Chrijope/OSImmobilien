@@ -303,7 +303,7 @@ export function KundenCard() {
                     <span className={unscharfKlasse("font-semibold text-foreground tabular-nums")}>{sch.wert}</span>
                   </span>
                 ))}
-                <span className="text-[10px] text-muted-foreground/70">
+                <span className="text-bildunterschrift text-muted-foreground/70">
                   Verhältnis der heutigen Bestände, keine Erfolgsquote
                 </span>
               </div>

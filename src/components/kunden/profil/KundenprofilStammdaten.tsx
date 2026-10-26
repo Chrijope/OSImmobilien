@@ -67,7 +67,7 @@ function anredeVorDemNamen(anrede: string | null | undefined): string | null {
  * 23.09.2026, dass alle gleich aussehen. Deshalb gibt es sie nur hier.
  */
 export function KundenprofilUeberschrift({ children }: { children: ReactNode }) {
-  return <h3 className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">{children}</h3>;
+  return <h3 className="text-bildunterschrift uppercase tracking-widest text-muted-foreground font-semibold">{children}</h3>;
 }
 
 /** Ein klappbarer Abschnitt; die Kopfzeile trägt auch eingeklappt Hinweis und Ampel. */
@@ -83,7 +83,7 @@ function KlappAbschnitt({ def, offen, onUmschalten }: { def: KundenprofilAbschni
   }
   return (
     <section className="kundenprofil-abschnitt" data-abschnitt={def.schluessel} data-offen={offen ? "true" : "false"}>
-      <h3 className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
+      <h3 className="text-bildunterschrift uppercase tracking-widest text-muted-foreground font-semibold">
         <button type="button" className="kundenprofil-abschnitt-kopf" aria-expanded={offen} aria-controls={inhaltId} onClick={onUmschalten}>
           <ChevronDown aria-hidden="true" className="kundenprofil-abschnitt-pfeil h-3.5 w-3.5 shrink-0" />
           <span className="min-w-0 flex-1 truncate">{def.titel}</span>

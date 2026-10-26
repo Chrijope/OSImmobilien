@@ -533,7 +533,7 @@ export function InvestmentRechner({
               <Slider value={[grundAnteilPct]} onValueChange={v => setGrundAnteilPct(v[0])} min={5} max={50} step={5} className="flex-1" />
               <span className="text-sm font-semibold w-24 text-right">{grundAnteilPct}% / {gebaeudeAnteilPct}%</span>
             </div>
-            <p className="text-[10px] text-muted-foreground mt-1">Grundstück / Gebäude – Nur der Gebäudeanteil ist steuerlich absetzbar</p>
+            <p className="text-bildunterschrift text-muted-foreground mt-1">Grundstück / Gebäude – Nur der Gebäudeanteil ist steuerlich absetzbar</p>
           </div>
           <div>
             <Label className="text-xs">AfA-Modell</Label>
@@ -558,7 +558,7 @@ export function InvestmentRechner({
             <Info className="h-4 w-4 text-[hsl(var(--info))] mt-0.5" />
             <div>
               <p className="text-xs font-medium">Restnutzungsdauer & AfA-Satz</p>
-              <p className="text-[10px] text-muted-foreground mb-2">
+              <p className="text-bildunterschrift text-muted-foreground mb-2">
                 {afaModell === "gutachten"
                   ? "Ein Gutachten kann die Restnutzungsdauer verkürzen und damit den jährlichen AfA-Satz erhöhen."
                   : "Pass die Restnutzungsdauer an, um den AfA-Satz individuell zu berechnen."}
@@ -610,12 +610,12 @@ export function InvestmentRechner({
           <div className="mt-4 flex items-center gap-2">
             <Popover>
               <PopoverTrigger asChild>
-                <button className="inline-flex items-center gap-1.5 text-[10px] text-muted-foreground hover:text-foreground transition-colors">
+                <button className="inline-flex items-center gap-1.5 text-bildunterschrift text-muted-foreground hover:text-foreground transition-colors">
                   <Info className="h-3.5 w-3.5" />
                   <span>Übernommene Werte aus Objektanlage</span>
                 </button>
               </PopoverTrigger>
-              <PopoverContent side="bottom" align="start" className="max-w-sm text-[10px] p-3">
+              <PopoverContent side="bottom" align="start" className="max-w-sm text-bildunterschrift p-3">
                 <p className="font-semibold text-xs mb-2">📋 Übernommene Werte</p>
                 <div className="grid grid-cols-2 gap-2">
                   {initialAfaModell && (
@@ -803,7 +803,7 @@ export function InvestmentRechner({
                           <span className="font-bold text-xs text-[hsl(var(--success))]">{fmt(erlaubteUmlage)}</span>
                         </div>
                         {umlageNach8Pct > maxUmlageDeckel && (
-                          <p className="text-[10px] text-[hsl(var(--warning))]">⚠ Deckelung greift – {fmt(umlageNach8Pct - maxUmlageDeckel)} weniger als nach {umlagePct}%-Regel</p>
+                          <p className="text-bildunterschrift text-[hsl(var(--warning))]">⚠ Deckelung greift – {fmt(umlageNach8Pct - maxUmlageDeckel)} weniger als nach {umlagePct}%-Regel</p>
                         )}
                       </div>
                     </div>
@@ -818,9 +818,9 @@ export function InvestmentRechner({
                           </PopoverTrigger>
                           <PopoverContent side="top" className="max-w-xs text-xs p-3">Aktuelle Kaltmiete pro Monat</PopoverContent>
                         </Popover>
-                        <p className="text-[10px] text-muted-foreground uppercase">Miete vorher</p>
+                        <p className="text-bildunterschrift text-muted-foreground uppercase">Miete vorher</p>
                         <p className="text-lg font-bold">{fmt(mieteMonat)}</p>
-                        <p className="text-[10px] text-muted-foreground">{qmMiete.toFixed(2)} €/m²</p>
+                        <p className="text-bildunterschrift text-muted-foreground">{qmMiete.toFixed(2)} €/m²</p>
                       </Card>
                       <Card className="p-3 text-center border-2 border-[hsl(var(--success))]/30 relative">
                         <Popover>
@@ -832,9 +832,9 @@ export function InvestmentRechner({
                             <p className="text-muted-foreground">Umlage = min({umlagePct}% × Sanierungskosten / 12, Deckel {deckelProQm} €/m²)</p>
                           </PopoverContent>
                         </Popover>
-                        <p className="text-[10px] text-muted-foreground uppercase">Miete nachher</p>
+                        <p className="text-bildunterschrift text-muted-foreground uppercase">Miete nachher</p>
                         <p className="text-lg font-bold text-[hsl(var(--success))]">{fmt(neueMiete)}</p>
-                        <p className="text-[10px] text-muted-foreground">{groesse > 0 ? (neueMiete / groesse).toFixed(2) : "0"} €/m²</p>
+                        <p className="text-bildunterschrift text-muted-foreground">{groesse > 0 ? (neueMiete / groesse).toFixed(2) : "0"} €/m²</p>
                       </Card>
                       <Card className="p-3 text-center border-2 border-muted relative">
                         <Popover>
@@ -843,9 +843,9 @@ export function InvestmentRechner({
                           </PopoverTrigger>
                           <PopoverContent side="top" className="max-w-xs text-xs p-3">= (Miete p.a. / Kaufpreis) × 100</PopoverContent>
                         </Popover>
-                        <p className="text-[10px] text-muted-foreground uppercase">Rendite vorher</p>
+                        <p className="text-bildunterschrift text-muted-foreground uppercase">Rendite vorher</p>
                         <p className="text-lg font-bold">{renditeVorher.toFixed(2)}%</p>
-                        <p className="text-[10px] text-muted-foreground">Bruttorendite</p>
+                        <p className="text-bildunterschrift text-muted-foreground">Bruttorendite</p>
                       </Card>
                       <Card className="p-3 text-center border-2 border-[hsl(var(--success))]/30 relative">
                         <Popover>
@@ -854,9 +854,9 @@ export function InvestmentRechner({
                           </PopoverTrigger>
                           <PopoverContent side="top" className="max-w-xs text-xs p-3">= (Neue Miete p.a. / Gesamtinvestition) × 100</PopoverContent>
                         </Popover>
-                        <p className="text-[10px] text-muted-foreground uppercase">Rendite nachher</p>
+                        <p className="text-bildunterschrift text-muted-foreground uppercase">Rendite nachher</p>
                         <p className="text-lg font-bold text-[hsl(var(--success))]">{renditeNachher.toFixed(2)}%</p>
-                        <p className="text-[10px] text-muted-foreground">inkl. Sanierung</p>
+                        <p className="text-bildunterschrift text-muted-foreground">inkl. Sanierung</p>
                       </Card>
                     </div>
 
@@ -945,13 +945,13 @@ export function InvestmentRechner({
                 <p className="mt-1 text-muted-foreground">Was du monatlich aus eigener Tasche zahlst, ohne Steuereffekt.</p>
               </PopoverContent>
             </Popover>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wide">
+            <p className="text-bildunterschrift text-muted-foreground uppercase tracking-wide">
               {(firstRow?.eigenbelastungVorSteuer || 0) >= 0 ? "Überschuss vor Steuer / Monat" : "Belastung vor Steuer / Monat"}
             </p>
             <p className={`text-2xl font-bold ${(firstRow?.eigenbelastungVorSteuer || 0) >= 0 ? "text-[hsl(var(--success))]" : "text-destructive"}`}>
               {(firstRow?.eigenbelastungVorSteuer || 0) > 0 ? "+" : ""}{fmt(Math.abs(firstRow?.eigenbelastungVorSteuer || 0))}
             </p>
-            <p className="text-[10px] text-muted-foreground">im 1. Jahr</p>
+            <p className="text-bildunterschrift text-muted-foreground">im 1. Jahr</p>
           </div>
           <div className="text-center relative">
             <Popover>
@@ -964,13 +964,13 @@ export function InvestmentRechner({
                 <p className="mt-1 text-muted-foreground">Deine tatsächliche monatliche Belastung nach Berücksichtigung der Steuerersparnis. Positiv = Überschuss.</p>
               </PopoverContent>
             </Popover>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wide">
+            <p className="text-bildunterschrift text-muted-foreground uppercase tracking-wide">
               {(firstRow?.eigenbelastungNachSteuer || 0) > 0 ? "Monatlicher Überschuss nach Steuer" : (firstRow?.eigenbelastungNachSteuer || 0) === 0 ? "Nach Steuer / Monat" : "Belastung nach Steuer / Monat"}
             </p>
             <p className={`text-2xl font-bold ${(firstRow?.eigenbelastungNachSteuer || 0) >= 0 ? "text-[hsl(var(--success))]" : "text-destructive"}`}>
               {(firstRow?.eigenbelastungNachSteuer || 0) > 0 ? "+" : ""}{fmt(Math.abs(firstRow?.eigenbelastungNachSteuer || 0))}
             </p>
-            <p className="text-[10px] text-muted-foreground">im 1. Jahr</p>
+            <p className="text-bildunterschrift text-muted-foreground">im 1. Jahr</p>
           </div>
           <div className="text-center relative">
             <Popover>
@@ -983,9 +983,9 @@ export function InvestmentRechner({
                 <p className="mt-1 text-muted-foreground">Summe der monatlichen Darlehensraten über alle Finanzierungstranchen.</p>
               </PopoverContent>
             </Popover>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Monatsrate</p>
+            <p className="text-bildunterschrift text-muted-foreground uppercase tracking-wide">Monatsrate</p>
             <p className="text-2xl font-bold">{fmt(monatsrate)}</p>
-            <p className="text-[10px] text-muted-foreground">Darlehensrate</p>
+            <p className="text-bildunterschrift text-muted-foreground">Darlehensrate</p>
           </div>
           <div className="text-center relative">
             <Popover>
@@ -998,9 +998,9 @@ export function InvestmentRechner({
                 <p className="mt-1 text-muted-foreground">Wie viel Prozent der Darlehensrate durch die Mieteinnahmen gedeckt werden.</p>
               </PopoverContent>
             </Popover>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Miete deckt</p>
+            <p className="text-bildunterschrift text-muted-foreground uppercase tracking-wide">Miete deckt</p>
             <p className="text-2xl font-bold">{monatsrate > 0 ? Math.round((mieteMonat / monatsrate) * 100) : 0}%</p>
-            <p className="text-[10px] text-muted-foreground">der Rate</p>
+            <p className="text-bildunterschrift text-muted-foreground">der Rate</p>
           </div>
         </div>
       </Card>
@@ -1023,7 +1023,7 @@ export function InvestmentRechner({
                 <p className="mt-1 text-muted-foreground">Der Anteil deiner Darlehensrate, der die Restschuld reduziert. Steigt jährlich (Annuitäteneffekt).</p>
               </PopoverContent>
             </Popover>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Tilgung / Jahr</p>
+            <p className="text-bildunterschrift text-muted-foreground uppercase tracking-wide">Tilgung / Jahr</p>
             <p className="text-lg font-bold">{fmt(firstRow?.tilgung || 0)}</p>
           </div>
           <div className="text-center relative">
@@ -1037,7 +1037,7 @@ export function InvestmentRechner({
                 <p className="mt-1 text-muted-foreground">Angenommene jährliche Wertsteigerung der Immobilie.</p>
               </PopoverContent>
             </Popover>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Wertsteigerung / Jahr</p>
+            <p className="text-bildunterschrift text-muted-foreground uppercase tracking-wide">Wertsteigerung / Jahr</p>
             <p className="text-lg font-bold">{fmt(firstRow?.wertsteigerungJahr || 0)}</p>
           </div>
           <div className="text-center relative">
@@ -1051,7 +1051,7 @@ export function InvestmentRechner({
                 <p className="mt-1 text-muted-foreground">Zeigt, wie viel Vermögen du jährlich durch die Immobilie aufbaust.</p>
               </PopoverContent>
             </Popover>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Vermögensaufbau / Jahr</p>
+            <p className="text-bildunterschrift text-muted-foreground uppercase tracking-wide">Vermögensaufbau / Jahr</p>
             <p className="text-lg font-bold text-[hsl(var(--success))]">{fmt(firstRow?.vermoegenAufbau || 0)}</p>
           </div>
           <div className="text-center relative">
@@ -1065,9 +1065,9 @@ export function InvestmentRechner({
                 <p className="mt-1 text-muted-foreground">Kumulierter Vermögenszuwachs aus Tilgung, Wertsteigerung und Cashflow.</p>
               </PopoverContent>
             </Popover>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Vermögen gesamt</p>
+            <p className="text-bildunterschrift text-muted-foreground uppercase tracking-wide">Vermögen gesamt</p>
             <p className="text-lg font-bold text-[hsl(var(--success))]">{fmt(lastRow?.vermoegenKumuliert || 0)}</p>
-            <p className="text-[10px] text-muted-foreground">nach {betrachtungszeitraum} Jahren</p>
+            <p className="text-bildunterschrift text-muted-foreground">nach {betrachtungszeitraum} Jahren</p>
           </div>
           <div className="text-center relative">
             <Popover>
@@ -1080,9 +1080,9 @@ export function InvestmentRechner({
                 <p className="mt-1 text-muted-foreground">Geschätzter Marktwert der Immobilie nach {betrachtungszeitraum} Jahren.</p>
               </PopoverContent>
             </Popover>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Immobilienwert</p>
+            <p className="text-bildunterschrift text-muted-foreground uppercase tracking-wide">Immobilienwert</p>
             <p className="text-lg font-bold">{fmt(lastRow?.immobilienWert || 0)}</p>
-            <p className="text-[10px] text-muted-foreground">nach {betrachtungszeitraum} Jahren</p>
+            <p className="text-bildunterschrift text-muted-foreground">nach {betrachtungszeitraum} Jahren</p>
           </div>
         </div>
       </Card>
@@ -1104,7 +1104,7 @@ export function InvestmentRechner({
           <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-2"><Calculator className="h-5 w-5 text-primary" /></div>
           <p className="text-xs text-muted-foreground">Erhaltungsaufwand / Jahr</p>
           <p className="text-lg font-bold">{fmt(afaSanierung)}</p>
-          <p className="text-[10px] text-muted-foreground">{fmt(sanierungAnteil)} ÷ {restnutzungsdauer} J.</p>
+          <p className="text-bildunterschrift text-muted-foreground">{fmt(sanierungAnteil)} ÷ {restnutzungsdauer} J.</p>
         </Card>
 
         {/* Energetische Mieterhöhung */}
@@ -1122,7 +1122,7 @@ export function InvestmentRechner({
           <div className="w-10 h-10 rounded-full bg-[hsl(var(--success))]/10 flex items-center justify-center mx-auto mb-2"><TrendingUp className="h-5 w-5 text-[hsl(var(--success))]" /></div>
           <p className="text-xs text-muted-foreground">Energetische Mieterhöhung</p>
           <p className="text-lg font-bold text-[hsl(var(--success))]">{sanierungAnteil > 0 ? `+${fmt(erlaubteUmlage)}/mtl.` : "–"}</p>
-          <p className="text-[10px] text-muted-foreground">{sanierungAnteil > 0 ? `Neue Miete: ${fmt(neueMiete)}` : "Keine Sanierung"}</p>
+          <p className="text-bildunterschrift text-muted-foreground">{sanierungAnteil > 0 ? `Neue Miete: ${fmt(neueMiete)}` : "Keine Sanierung"}</p>
         </Card>
 
         {/* Geplante Mieterhöhung */}
@@ -1140,7 +1140,7 @@ export function InvestmentRechner({
           <div className="w-10 h-10 rounded-full bg-[hsl(var(--info))]/10 flex items-center justify-center mx-auto mb-2"><Percent className="h-5 w-5 text-[hsl(var(--info))]" /></div>
           <p className="text-xs text-muted-foreground">Geplante Mieterhöhung</p>
           <p className="text-lg font-bold">{propNeueMiete ? fmt(propNeueMiete) : "–"}</p>
-          <p className="text-[10px] text-muted-foreground">{propMieterhoehungAb ? `ab ${new Date(propMieterhoehungAb).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}` : "Nicht hinterlegt"}</p>
+          <p className="text-bildunterschrift text-muted-foreground">{propMieterhoehungAb ? `ab ${new Date(propMieterhoehungAb).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}` : "Nicht hinterlegt"}</p>
         </Card>
       </div>
 
@@ -1160,7 +1160,7 @@ export function InvestmentRechner({
             <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-2"><Building2 className="h-5 w-5 text-primary" /></div>
             <p className="text-xs text-muted-foreground">AfA p.a. (inkl. Sanierung)</p>
             <p className="text-lg font-bold">{fmt(afaGesamt)}</p>
-            <p className="text-[10px] text-muted-foreground">{effektiverAfaSatz.toFixed(2)}% · {gebaeudeAnteilPct}% Gebäude</p>
+            <p className="text-bildunterschrift text-muted-foreground">{effektiverAfaSatz.toFixed(2)}% · {gebaeudeAnteilPct}% Gebäude</p>
           </Card>
           <Card className="p-4 text-center relative">
             <Popover>
@@ -1316,7 +1316,7 @@ export function InvestmentRechner({
       </Card>
 
       {/* Disclaimer repeat at bottom */}
-      <p className="text-[10px] text-muted-foreground text-center italic">
+      <p className="text-bildunterschrift text-muted-foreground text-center italic">
         ⚠️ Berechnetes Beispiel – Keine steuerliche Beratung. Alle Angaben ohne Gewähr.
       </p>
     </div>

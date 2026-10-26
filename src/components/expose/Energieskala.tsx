@@ -56,7 +56,7 @@ export function Energieskala({ klasse, kennwert, positionProzent, hinweis, pfeil
         // Im Exposé setzt premiumExpose.css den Rand von Absätzen auf null, deshalb der Abstand als Innenabstand.
         <p className={cn("text-xs text-muted-foreground", pfeil ? "pt-5" : "mt-2")}>{t.ohneKennwert}</p>
       )}
-      <div className={cn("flex justify-between text-[10px] text-muted-foreground", pfeil ? "mt-2" : "mt-1")}><span>0</span><span>50</span><span>100</span><span>150</span><span>200</span><span>250</span><span>{t.ueber300}</span></div>
+      <div className={cn("flex justify-between text-bildunterschrift text-muted-foreground", pfeil ? "mt-2" : "mt-1")}><span>0</span><span>50</span><span>100</span><span>150</span><span>200</span><span>250</span><span>{t.ueber300}</span></div>
       {hinweis && <p className="mt-2 text-xs text-muted-foreground">{hinweis}</p>}
     </div>
   );

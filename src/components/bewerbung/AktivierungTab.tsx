@@ -477,7 +477,7 @@ export function AktivierungTab({ bewerber: b, canEdit, currentUserName, currentU
           <div>
             <div className="flex items-center gap-2 flex-wrap">
               <h3 className="font-bold">1. Onboarding-Termin buchen</h3>
-              <span className="text-[10px] uppercase tracking-wider font-semibold rounded-full px-2 py-0.5 bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+              <span className="text-bildunterschrift uppercase tracking-wider font-semibold rounded-full px-2 py-0.5 bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
                 Aufgabe von HR
               </span>
             </div>
@@ -533,7 +533,7 @@ export function AktivierungTab({ bewerber: b, canEdit, currentUserName, currentU
                 disabled={!canEdit}
               />
               {b.onboardingTerminDatum && (
-                <p className="text-[10px] text-muted-foreground mt-0.5">{b.onboardingTerminDatum}</p>
+                <p className="text-bildunterschrift text-muted-foreground mt-0.5">{b.onboardingTerminDatum}</p>
               )}
             </div>
             <div>
@@ -547,7 +547,7 @@ export function AktivierungTab({ bewerber: b, canEdit, currentUserName, currentU
               />
             </div>
           </div>
-          <p className="text-[10px] text-muted-foreground">
+          <p className="text-bildunterschrift text-muted-foreground">
             Der Termin erscheint in der Zugangsdaten-Mail (Block 2) und in der Terminliste der Übersichtsseite.
           </p>
           {b.onboardingTerminDatum && !b.onboardingTerminGebucht && (
@@ -631,7 +631,7 @@ export function AktivierungTab({ bewerber: b, canEdit, currentUserName, currentU
                 disabled={!canEdit}
               />
               {persMail.trim() !== "" && !persMailGueltig && (
-                <p className="text-[10px] text-destructive mt-0.5">Die Adresse muss auf @os-immobilien.com enden.</p>
+                <p className="text-bildunterschrift text-destructive mt-0.5">Die Adresse muss auf @os-immobilien.com enden.</p>
               )}
             </div>
             <div>
@@ -644,7 +644,7 @@ export function AktivierungTab({ bewerber: b, canEdit, currentUserName, currentU
                 disabled={!canEdit}
                 autoComplete="off"
               />
-              <p className="text-[10px] text-muted-foreground mt-0.5">
+              <p className="text-bildunterschrift text-muted-foreground mt-0.5">
                 Wird nur für den Versand verwendet und nicht gespeichert.
               </p>
             </div>
@@ -674,7 +674,7 @@ export function AktivierungTab({ bewerber: b, canEdit, currentUserName, currentU
               </a>
             </Button>
           </div>
-          <p className="text-[10px] text-muted-foreground">
+          <p className="text-bildunterschrift text-muted-foreground">
             Die Mail geht an die private Adresse{b.email ? ` (${b.email})` : ""} und enthält Adresse, Passwort,
             die Postfach-Einrichtung (IMAP/SMTP), den Link zur Anleitung und den Onboarding-Termin aus Block 1.
             Die Anleitung öffnet sich ohne Anmeldung im CRM.
@@ -811,7 +811,7 @@ export function AktivierungTab({ bewerber: b, canEdit, currentUserName, currentU
               )
             )}
 
-            <p className="text-[10px] text-muted-foreground">
+            <p className="text-bildunterschrift text-muted-foreground">
               Der Partner tritt über den QR-Code der Community bei, die Untergruppen
               ordnest Du ihm in WhatsApp direkt zu.
             </p>

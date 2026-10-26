@@ -142,14 +142,14 @@ export function BewerberSterne({
           type="button"
           variant="ghost"
           size="sm"
-          className="h-6 px-1.5 text-[10px] text-muted-foreground"
+          className="h-6 px-1.5 text-bildunterschrift text-muted-foreground"
           onClick={() => onBewertung?.(0)}
         >
           Zurücknehmen
         </Button>
       )}
       {/* Der Gegensatz zum Vorab-Score, der in der Mitte gerechnet wird. */}
-      <span className="basis-full text-[10px] text-muted-foreground">Von Hand vergeben</span>
+      <span className="basis-full text-bildunterschrift text-muted-foreground">Von Hand vergeben</span>
     </div>
   );
 }
@@ -259,7 +259,7 @@ export function BewerberprofilPerson({
         {schnellaktionen && <div className="mb-5">{schnellaktionen}</div>}
 
         <div className="flex items-center justify-between gap-2">
-          <h3 className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">Kontaktdaten</h3>
+          <h3 className="text-bildunterschrift uppercase tracking-widest text-muted-foreground font-semibold">Kontaktdaten</h3>
           {canEdit && (
             <Button
               size="sm"
@@ -402,7 +402,7 @@ export function BewerberprofilPerson({
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                   {vorabScore}
                   {/* Der Gegensatz zu den Sternen darunter. */}
-                  <span className="basis-full text-[10px] text-muted-foreground">
+                  <span className="basis-full text-bildunterschrift text-muted-foreground">
                     Gerechnet aus dem eingereichten Bogen
                   </span>
                 </div>
@@ -445,7 +445,7 @@ export function BewerberprofilPerson({
       */}
       {b.partnerWerden ? (
         <Card className="bewerberprofil-personkarte mt-3" data-testid="bewerberprofil-partner-werden">
-          <h3 className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-1">
+          <h3 className="text-bildunterschrift uppercase tracking-widest text-muted-foreground font-semibold mb-1">
             Angaben aus „Partner werden“
           </h3>
           <div className="bewerberprofil-metafragen">
@@ -478,7 +478,7 @@ export function BewerberprofilPerson({
         </Card>
       ) : (
       <Card className="bewerberprofil-personkarte mt-3" data-testid="bewerberprofil-metafragen">
-        <h3 className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-1">
+        <h3 className="text-bildunterschrift uppercase tracking-widest text-muted-foreground font-semibold mb-1">
           Meta-Bewerbungsfragen
         </h3>
         <div className="bewerberprofil-metafragen">

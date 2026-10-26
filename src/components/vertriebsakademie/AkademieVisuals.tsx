@@ -25,7 +25,7 @@ function KpiRow({ items }: { items: AkademieKpi[] }) {
           key={i}
           className={`rounded-lg border p-3 ${KPI_STYLE[k.farbe ?? "primary"]} transition-transform hover:-translate-y-0.5`}
         >
-          <div className="text-[10px] font-semibold uppercase tracking-wide opacity-80">{k.label}</div>
+          <div className="text-bildunterschrift font-semibold uppercase tracking-wide opacity-80">{k.label}</div>
           <div className="mt-1 text-xl font-bold tabular-nums">{k.wert}</div>
           {k.hinweis && <div className="mt-0.5 text-[11px] text-muted-foreground">{k.hinweis}</div>}
         </div>
@@ -184,7 +184,7 @@ function DonutBlock({ d }: { d: AkademieDonut }) {
           {(d.zentrumLabel || d.zentrumWert) && (
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
               {d.zentrumWert && <div className="text-xl font-bold tabular-nums">{d.zentrumWert}</div>}
-              {d.zentrumLabel && <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{d.zentrumLabel}</div>}
+              {d.zentrumLabel && <div className="text-bildunterschrift uppercase tracking-wide text-muted-foreground">{d.zentrumLabel}</div>}
             </div>
           )}
         </div>
@@ -232,10 +232,10 @@ function TimelineBlock({ t }: { t: AkademieTimeline }) {
               <div className="flex items-center gap-2 flex-wrap">
                 <div className="text-sm font-medium">{s.label}</div>
                 {s.dauer && (
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground tabular-nums">{s.dauer}</span>
+                  <span className="text-bildunterschrift px-1.5 py-0.5 rounded bg-muted text-muted-foreground tabular-nums">{s.dauer}</span>
                 )}
                 {st && (
-                  <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${st.ring}`}>{st.label}</span>
+                  <span className={`text-bildunterschrift px-1.5 py-0.5 rounded font-medium ${st.ring}`}>{st.label}</span>
                 )}
               </div>
               {s.beschreibung && (
@@ -267,7 +267,7 @@ function VergleichBlock({ v }: { v: AkademieVergleich }) {
             <div className="flex items-center justify-between gap-2 mb-2">
               <div className="text-sm font-semibold">{opt.label}</div>
               {opt.badge && (
-                <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${idx === 1 ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground"}`}>{opt.badge}</span>
+                <span className={`text-bildunterschrift px-1.5 py-0.5 rounded font-medium ${idx === 1 ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground"}`}>{opt.badge}</span>
               )}
             </div>
             <ul className="space-y-1 text-xs">
@@ -304,7 +304,7 @@ export function AkademieVisualsBlock({ visuals, zeigeAdvanced }: { visuals: Akad
       {sichtbar.map((v, i) => (
         <div key={i} className={v.advanced ? "relative" : undefined}>
           {v.advanced && (
-            <div className="absolute -top-2 -right-2 z-10 text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded bg-amber-500 text-white shadow">
+            <div className="absolute -top-2 -right-2 z-10 text-bildunterschrift font-bold uppercase tracking-wide px-1.5 py-0.5 rounded bg-amber-500 text-white shadow">
               Profi
             </div>
           )}

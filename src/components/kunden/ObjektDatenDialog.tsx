@@ -790,7 +790,7 @@ export function ObjektDatenDialog({
                             <Trash2 className="h-3 w-3" />
                           </button>
                           {index === 0 && (
-                            <span className="absolute bottom-1 left-1 rounded bg-primary px-1.5 py-0.5 text-[9px] font-semibold text-primary-foreground">
+                            <span className="absolute bottom-1 left-1 rounded bg-primary px-1.5 py-0.5 text-bildunterschrift font-semibold text-primary-foreground">
                               Titelbild
                             </span>
                           )}

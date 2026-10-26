@@ -36,8 +36,8 @@ export function BelegungsAngaben({ anzeige, onKundeOeffnen, className }: {
       ) : (
         <p className="font-medium">{kundeName}</p>
       ))}
-      {partnerName && <p className="text-[10px] text-muted-foreground">VP: {partnerName}</p>}
-      {hinweis && <p className="text-[10px] text-muted-foreground">{hinweis}</p>}
+      {partnerName && <p className="text-bildunterschrift text-muted-foreground">VP: {partnerName}</p>}
+      {hinweis && <p className="text-bildunterschrift text-muted-foreground">{hinweis}</p>}
     </div>
   );
 }

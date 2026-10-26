@@ -552,7 +552,7 @@ export default function ObjektAkquise() {
             ))}
             <label className="h-24 w-24 border-2 border-dashed border-muted-foreground/30 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-primary/50 transition-colors">
               <Upload className="h-5 w-5 text-muted-foreground" />
-              <span className="text-[10px] text-muted-foreground mt-1">{uploading ? "..." : "Hochladen"}</span>
+              <span className="text-bildunterschrift text-muted-foreground mt-1">{uploading ? "..." : "Hochladen"}</span>
               <input type="file" accept={EINREICHUNG_BILDTYPEN} multiple onChange={handleImageUpload} className="hidden" disabled={uploading} />
             </label>
           </div>

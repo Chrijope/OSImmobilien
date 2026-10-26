@@ -74,7 +74,7 @@ export default function WissenswertDetail() {
                 className="p-4 hover:shadow-md hover:border-primary/30 transition-all cursor-pointer group h-full"
                 onClick={() => navigate(`/wissenswert/${prev.slug}`)}
               >
-                <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1 flex items-center gap-1">
+                <div className="text-bildunterschrift uppercase tracking-wider text-muted-foreground mb-1 flex items-center gap-1">
                   <ArrowLeft className="h-3 w-3" /> Vorheriger Artikel
                 </div>
                 <div className="text-sm font-semibold group-hover:text-primary leading-tight">
@@ -91,7 +91,7 @@ export default function WissenswertDetail() {
                 className="p-4 hover:shadow-md hover:border-primary/30 transition-all cursor-pointer group h-full text-right"
                 onClick={() => navigate(`/wissenswert/${next.slug}`)}
               >
-                <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1 flex items-center gap-1 justify-end">
+                <div className="text-bildunterschrift uppercase tracking-wider text-muted-foreground mb-1 flex items-center gap-1 justify-end">
                   Nächster Artikel <ArrowRight className="h-3 w-3" />
                 </div>
                 <div className="text-sm font-semibold group-hover:text-primary leading-tight">

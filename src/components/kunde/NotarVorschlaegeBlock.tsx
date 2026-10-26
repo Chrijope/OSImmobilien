@@ -102,7 +102,7 @@ export function NotarVorschlaegeBlock({ investmentId, onChange, toast }: Props) 
             Bestätigt am {new Date(bestaetigt.bestaetigtAm).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })}
           </p>
         </div>
-        <Badge className="bg-[hsl(var(--success))]/20 text-[hsl(var(--success))] border-0 text-[10px]">Bestätigt</Badge>
+        <Badge className="bg-[hsl(var(--success))]/20 text-[hsl(var(--success))] border-0 text-bildunterschrift">Bestätigt</Badge>
       </div>
 
       <div className="flex items-center gap-3 p-2.5 rounded-md bg-card border">
@@ -113,7 +113,7 @@ export function NotarVorschlaegeBlock({ investmentId, onChange, toast }: Props) 
           <p className="text-sm font-bold">{bestaetigt.datum || "Datum offen"}</p>
           {bestaetigt.uhrzeit && <p className="text-xs text-muted-foreground">{bestaetigt.uhrzeit} Uhr</p>}
         </div>
-        <Badge className="bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] border-0 text-[10px]">Vom Kunden gewählt</Badge>
+        <Badge className="bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] border-0 text-bildunterschrift">Vom Kunden gewählt</Badge>
       </div>
 
       <div className="mt-2.5 flex items-start gap-2 p-2.5 rounded-md bg-primary/5 border border-primary/20">
@@ -134,7 +134,7 @@ export function NotarVorschlaegeBlock({ investmentId, onChange, toast }: Props) 
           <p className="text-xs font-semibold">
             {bestaetigt ? "Neue Termin-Vorschläge (z. B. bei Verschiebung)" : "Termin-Vorschläge zur Kundenwahl"}
           </p>
-          <p className="text-[10px] text-muted-foreground">
+          <p className="text-bildunterschrift text-muted-foreground">
             Trag mehrere Termine ein. Sichtbar werden sie im Kundenportal erst, wenn du unten <strong>Notartermin im Kundenportal FREIGEBEN</strong> klickst.
           </p>
         </div>

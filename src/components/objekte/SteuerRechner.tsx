@@ -319,7 +319,7 @@ export function SteuerRechner({
           </div>
           <p className="text-xs text-muted-foreground">AfA p.a.</p>
           <p className="text-lg font-bold">{fmt(afaJahr)}</p>
-          <p className="text-[10px] text-muted-foreground">2% linear · {(1 - grundPct / 100) * 100}% Gebäudeanteil</p>
+          <p className="text-bildunterschrift text-muted-foreground">2% linear · {(1 - grundPct / 100) * 100}% Gebäudeanteil</p>
         </Card>
         <Card className="p-4 text-center">
           <div className="w-10 h-10 rounded-full bg-[hsl(var(--success))]/10 flex items-center justify-center mx-auto mb-2">
@@ -327,7 +327,7 @@ export function SteuerRechner({
           </div>
           <p className="text-xs text-muted-foreground">Steuerersparnis gesamt</p>
           <p className="text-lg font-bold text-[hsl(var(--success))]">{fmt(totalSteuerersparnis)}</p>
-          <p className="text-[10px] text-muted-foreground">über {betrachtungszeitraum} Jahre</p>
+          <p className="text-bildunterschrift text-muted-foreground">über {betrachtungszeitraum} Jahre</p>
         </Card>
         <Card className="p-4 text-center">
           <div className="w-10 h-10 rounded-full bg-[hsl(var(--info))]/10 flex items-center justify-center mx-auto mb-2">
@@ -335,7 +335,7 @@ export function SteuerRechner({
           </div>
           <p className="text-xs text-muted-foreground">Cashflow netto (gesamt)</p>
           <p className={`text-lg font-bold ${totalCashflow >= 0 ? "text-[hsl(var(--success))]" : "text-destructive"}`}>{fmt(totalCashflow)}</p>
-          <p className="text-[10px] text-muted-foreground">nach Steuern & Finanzierung</p>
+          <p className="text-bildunterschrift text-muted-foreground">nach Steuern & Finanzierung</p>
         </Card>
         <Card className="p-4 text-center border-2 border-[hsl(var(--warning))]/30 bg-[hsl(var(--warning))]/5">
           <div className="w-10 h-10 rounded-full bg-[hsl(var(--warning))]/10 flex items-center justify-center mx-auto mb-2">
@@ -343,7 +343,7 @@ export function SteuerRechner({
           </div>
           <p className="text-xs text-muted-foreground font-medium">Eigenbelastung / Monat</p>
           <p className="text-xl font-bold text-[hsl(var(--warning))]">{fmt(eigenbelastungJ1)}</p>
-          <p className="text-[10px] text-muted-foreground">nach Steuer (Jahr 1)</p>
+          <p className="text-bildunterschrift text-muted-foreground">nach Steuer (Jahr 1)</p>
         </Card>
         <Card className="p-4 text-center">
           <div className="w-10 h-10 rounded-full bg-[hsl(var(--warning))]/10 flex items-center justify-center mx-auto mb-2">
@@ -351,30 +351,30 @@ export function SteuerRechner({
           </div>
           <p className="text-xs text-muted-foreground">Ø Rendite nach Steuern</p>
           <p className="text-lg font-bold">{fmtPct(avgRendite)}</p>
-          <p className="text-[10px] text-muted-foreground">auf Eigenkapital</p>
+          <p className="text-bildunterschrift text-muted-foreground">auf Eigenkapital</p>
         </Card>
       </div>
 
       {/* Additional KPIs Row */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
         <div className="bg-muted/50 rounded-lg p-3 text-center">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Kaufpreis</p>
+          <p className="text-bildunterschrift text-muted-foreground uppercase tracking-wide">Kaufpreis</p>
           <p className="text-sm font-bold">{fmt(kaufpreis)}</p>
         </div>
         <div className="bg-muted/50 rounded-lg p-3 text-center">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Gesamtkosten</p>
+          <p className="text-bildunterschrift text-muted-foreground uppercase tracking-wide">Gesamtkosten</p>
           <p className="text-sm font-bold">{fmt(gesamtkosten)}</p>
         </div>
         <div className="bg-muted/50 rounded-lg p-3 text-center">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Darlehen</p>
+          <p className="text-bildunterschrift text-muted-foreground uppercase tracking-wide">Darlehen</p>
           <p className="text-sm font-bold">{fmt(darlehen)}</p>
         </div>
         <div className="bg-muted/50 rounded-lg p-3 text-center">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Restschuld (J{betrachtungszeitraum})</p>
+          <p className="text-bildunterschrift text-muted-foreground uppercase tracking-wide">Restschuld (J{betrachtungszeitraum})</p>
           <p className="text-sm font-bold">{fmt(lastRow?.restschuld || 0)}</p>
         </div>
         <div className="bg-muted/50 rounded-lg p-3 text-center">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Vermögensaufbau</p>
+          <p className="text-bildunterschrift text-muted-foreground uppercase tracking-wide">Vermögensaufbau</p>
           <p className="text-sm font-bold text-[hsl(var(--success))]">{fmt(lastRow?.vermoegenAufbau || 0)}</p>
         </div>
       </div>

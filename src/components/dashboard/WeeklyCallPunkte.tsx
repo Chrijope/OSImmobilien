@@ -102,7 +102,7 @@ export function WeeklyCallPunkte({
   if (punkte === null) {
     return (
       <div className="rounded-md border border-border/60 bg-muted/20 p-3 space-y-1">
-        <p className="text-[10px] uppercase tracking-wide font-semibold text-muted-foreground flex items-center gap-1.5">
+        <p className="text-bildunterschrift uppercase tracking-wide font-semibold text-muted-foreground flex items-center gap-1.5">
           <MessageSquarePlus className="h-3 w-3" /> Punkte für den Call · {beschriftung}
         </p>
         <p className="text-xs text-muted-foreground">Die Punkte für den Call sind gleich wieder da.</p>
@@ -166,10 +166,10 @@ export function WeeklyCallPunkte({
   return (
     <div className="rounded-md border border-border/60 bg-muted/20 p-3 space-y-3">
       <div className="flex items-center justify-between gap-2">
-        <p className="text-[10px] uppercase tracking-wide font-semibold text-muted-foreground flex items-center gap-1.5">
+        <p className="text-bildunterschrift uppercase tracking-wide font-semibold text-muted-foreground flex items-center gap-1.5">
           <MessageSquarePlus className="h-3 w-3" /> Punkte für den Call · {beschriftung}
         </p>
-        <Badge variant="secondary" className="text-[10px]">
+        <Badge variant="secondary" className="text-bildunterschrift">
           {offen === 0 ? "noch keine" : `${offen} offen`}
         </Badge>
       </div>
@@ -183,7 +183,7 @@ export function WeeklyCallPunkte({
           className="text-xs resize-none"
         />
         <div className="flex items-center justify-between gap-2">
-          <span className="text-[10px] text-muted-foreground">
+          <span className="text-bildunterschrift text-muted-foreground">
             {entwurf.length}/{PUNKT_MAX_ZEICHEN} Zeichen · alle Teilnehmer dieses Calls sehen ihn, aber ohne deinen Namen
           </span>
           <Button size="sm" className="h-7 text-xs" disabled={!entwurf.trim() || busy} onClick={() => void eintragen()}>
@@ -228,7 +228,7 @@ export function WeeklyCallPunkte({
                          * seine eigene ist, denn nur die laesst sich aendern
                          * und loeschen.
                          */}
-                        <span className="text-[9px] uppercase tracking-wide text-primary font-semibold mr-1">von mir</span>
+                        <span className="text-bildunterschrift uppercase tracking-wide text-primary font-semibold mr-1">von mir</span>
                         <button
                           type="button"
                           title="Ändern"
@@ -359,7 +359,7 @@ function ProtokollBlock({ termin }: { termin: string }) {
 
   return (
     <div className="rounded-md border border-dashed border-border/60 p-2.5 space-y-2">
-      <p className="text-[10px] uppercase tracking-wide font-semibold text-muted-foreground">
+      <p className="text-bildunterschrift uppercase tracking-wide font-semibold text-muted-foreground">
         Aufzeichnung und Unterlagen
       </p>
       <div className="flex gap-1.5">
@@ -391,7 +391,7 @@ function ProtokollBlock({ termin }: { termin: string }) {
           <Upload className="h-3 w-3 mr-1" /> Transkript oder Zusammenfassung
         </Button>
         {protokoll?.dokumentName && (
-          <span className="text-[10px] text-muted-foreground truncate">{protokoll.dokumentName}</span>
+          <span className="text-bildunterschrift text-muted-foreground truncate">{protokoll.dokumentName}</span>
         )}
       </div>
 
@@ -414,7 +414,7 @@ function ProtokollBlock({ termin }: { termin: string }) {
           <Paperclip className="h-3 w-3 mr-1" /> Weitere Dateien anhängen
         </Button>
         {anhaenge.length === 0 ? (
-          <p className="text-[10px] text-muted-foreground italic">Noch keine weiteren Dateien.</p>
+          <p className="text-bildunterschrift text-muted-foreground italic">Noch keine weiteren Dateien.</p>
         ) : (
           <ul className="space-y-1">
             {anhaenge.map((a) => (
@@ -535,12 +535,12 @@ function Rueckschau({
             <span className="font-semibold">
               {formatCallTermin(t.callTermin)}
               {t.laufend && (
-                <span className="ml-1.5 font-normal text-[10px] text-muted-foreground">
+                <span className="ml-1.5 font-normal text-bildunterschrift text-muted-foreground">
                   (anstehender Call)
                 </span>
               )}
             </span>
-            <span className="text-[10px] text-muted-foreground">
+            <span className="text-bildunterschrift text-muted-foreground">
               {t.anzahl} {t.anzahl === 1 ? "Punkt" : "Punkte"}
             </span>
           </button>

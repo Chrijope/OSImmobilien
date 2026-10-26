@@ -150,7 +150,7 @@ function KlickListe({
       <div className="flex items-baseline gap-1.5">
         <span aria-hidden className={`h-1.5 w-1.5 shrink-0 rounded-full ${punkt}`} />
         <p className="text-xs font-semibold">{titel}</p>
-        {hinweis && <p className="text-[10px] text-muted-foreground leading-snug">{hinweis}</p>}
+        {hinweis && <p className="text-bildunterschrift text-muted-foreground leading-snug">{hinweis}</p>}
       </div>
       {eintraege.length > 0 && (
         <ul className="space-y-1">
@@ -207,7 +207,7 @@ function GespraechsNotiz({
       <div className="flex items-baseline gap-1.5">
         <span aria-hidden className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary/60" />
         <p className="text-xs font-semibold">Notiz zum Gespräch</p>
-        <p className="text-[10px] text-muted-foreground leading-snug">Läuft über alle Folien mit.</p>
+        <p className="text-bildunterschrift text-muted-foreground leading-snug">Läuft über alle Folien mit.</p>
       </div>
       <Textarea
         value={text}
@@ -231,7 +231,7 @@ function GespraechsNotiz({
 export function FolienImpuls({ weg, bausteinId }: { weg: WegId; bausteinId: BausteinId }) {
   return (
     <div className="rounded-lg bg-muted/50 px-4 py-3">
-      <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+      <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground">
         Impuls, kein Sprechtext
       </p>
       <p className="mt-1 text-base leading-relaxed">{impulsFuer(weg, bausteinId)}</p>
@@ -322,13 +322,13 @@ function Vorbereitung({
               <div className="flex items-center gap-2">
                 <Badge
                   variant={m.selbstauskunft === "erfuellt" ? "default" : "outline"}
-                  className="h-5 text-[10px] font-normal"
+                  className="h-5 text-bildunterschrift font-normal"
                 >
                   {m.selbstauskunft === "erfuellt" ? "Selbstauskunft ✓" : "offen"}
                 </Badge>
                 <span className="font-medium">{m.label}</span>
                 {bestaetigt.has(m.id) && (
-                  <Badge className="h-5 bg-green-600 text-white hover:bg-green-600 text-[10px] font-normal">
+                  <Badge className="h-5 bg-green-600 text-white hover:bg-green-600 text-bildunterschrift font-normal">
                     im Gespräch bestätigt
                   </Badge>
                 )}
@@ -415,7 +415,7 @@ function Schrittliste({
   return (
     <div className="space-y-5">
       <div>
-        <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1.5">Ablauf</p>
+        <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground mb-1.5">Ablauf</p>
         <ol className="space-y-0.5">
           {folien.map((f, i) => {
             const erledigt = i < aktiv;
@@ -445,8 +445,8 @@ function Schrittliste({
       </div>
 
       <div>
-        <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Nicht gewählt</p>
-        <p className="text-[10px] text-muted-foreground leading-snug">
+        <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground">Nicht gewählt</p>
+        <p className="text-bildunterschrift text-muted-foreground leading-snug">
           Ein Klick schiebt eines ein, wenn eine Frage es verlangt.
         </p>
         <ul className="mt-1.5 flex flex-wrap gap-1">
@@ -462,7 +462,7 @@ function Schrittliste({
                 >
                   <Plus className="h-3 w-3 shrink-0" aria-hidden />
                   <span className="leading-snug">M{m.nummer} {m.kurz}</span>
-                  {wahl === "beiBedarf" && <span className="text-[9px] opacity-70">angeboten</span>}
+                  {wahl === "beiBedarf" && <span className="text-bildunterschrift opacity-70">angeboten</span>}
                 </button>
               </li>
             );
@@ -473,7 +473,7 @@ function Schrittliste({
         </ul>
         {zusatz.length > 0 && (
           <div className="mt-3">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Im Gespräch zugeschaltet</p>
+            <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground">Im Gespräch zugeschaltet</p>
             <ul className="mt-1 space-y-1">
               {zusatz.map((m) => (
                 <li key={m} className="flex items-center justify-between gap-2 text-xs">
@@ -928,7 +928,7 @@ export default function BewerberVideocallModeration() {
                 und deshalb ohne Suchen gefunden wird. */}
             <div className="space-y-5">
               <div>
-                <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+                <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground mb-1">
                   Seine Tagesordnung
                 </p>
                 <ul className="space-y-1">
@@ -948,10 +948,10 @@ export default function BewerberVideocallModeration() {
               </div>
 
               <div>
-                <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground">
                   Im Gespräch bestätigt
                 </p>
-                <p className="text-[10px] text-muted-foreground leading-snug mb-1">
+                <p className="text-bildunterschrift text-muted-foreground leading-snug mb-1">
                   Zu Beginn leer. Was hier steht, hast du gehört und nicht im Bogen gelesen.
                 </p>
                 <ul className="space-y-0.5">
@@ -1017,7 +1017,7 @@ export default function BewerberVideocallModeration() {
             Knopf in der Kopfzeile klappt sie weg, sobald es losgeht. */}
         {antworten && vorbereitungOffen && (
           <section className="border-t pt-4 space-y-3">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+            <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground">
               Vorbereitung, vor dem ersten Satz
             </p>
             <Vorbereitung antworten={antworten} erfassung={erfassung} vorname={vorname} />

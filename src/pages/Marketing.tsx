@@ -508,12 +508,12 @@ const Marketing = () => {
               <span className="text-sm font-semibold">Standorte Deutschland</span>
               <div className="ml-auto flex items-center gap-2">
                 {ohneKoordinaten > 0 && (
-                  <span className="text-[10px] text-muted-foreground">
+                  <span className="text-bildunterschrift text-muted-foreground">
                     {ohneKoordinaten} ohne Koordinaten, Adresse unvollständig
                   </span>
                 )}
                 {nichtGespeichert > 0 && (
-                  <span className="text-[10px] text-destructive">
+                  <span className="text-bildunterschrift text-destructive">
                     {nichtGespeichert} nicht gespeichert
                   </span>
                 )}
@@ -524,7 +524,7 @@ const Marketing = () => {
                     <span className="flex items-center gap-1.5">
                       {filteredStandorte.length} Einträge
                       <Loader2 className="h-3 w-3 animate-spin" />
-                      <span className="text-[10px] font-normal opacity-70">
+                      <span className="text-bildunterschrift font-normal opacity-70">
                         {offeneStandorte} werden ermittelt
                       </span>
                     </span>

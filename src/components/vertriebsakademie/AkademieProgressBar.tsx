@@ -34,7 +34,7 @@ export function AkademieProgressBar({ compact, showBackLink }: Props) {
             <BookOpen className="h-4 w-4" />
           </div>
           <div className="leading-tight">
-            <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Kapitel</div>
+            <div className="text-bildunterschrift uppercase tracking-wide text-muted-foreground">Kapitel</div>
             <div className="text-sm font-semibold tabular-nums">
               {g.doneKapitel}/{g.totalKapitel}
               {g.doneKapitel === g.totalKapitel && g.totalKapitel > 0 && (
@@ -64,7 +64,7 @@ export function AkademieProgressBar({ compact, showBackLink }: Props) {
             />
           </div>
           {teamAvg !== null && usersCount > 1 && (
-            <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground mt-1">
+            <div className="flex items-center gap-1.5 text-bildunterschrift text-muted-foreground mt-1">
               <Users className="h-3 w-3" />
               <span>Team-Ø: <span className="tabular-nums font-medium text-foreground">{teamAvg}%</span></span>
               {diff !== null && diff !== 0 && (

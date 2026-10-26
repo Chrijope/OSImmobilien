@@ -89,7 +89,7 @@ export default function HVKommunikation() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <p className="font-medium truncate">{k.betreff}</p>
-                        <Badge variant="outline" className="text-[10px] shrink-0">{k.richtung === "eingehend" ? "↙ Eingehend" : k.richtung === "ausgehend" ? "↗ Ausgehend" : "📌 Intern"}</Badge>
+                        <Badge variant="outline" className="text-bildunterschrift shrink-0">{k.richtung === "eingehend" ? "↙ Eingehend" : k.richtung === "ausgehend" ? "↗ Ausgehend" : "📌 Intern"}</Badge>
                       </div>
                       <p className="text-xs text-muted-foreground">{m ? `${m.vorname} ${m.nachname}` : k.mieterId} · {new Date(k.datum).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })} · {typInfo?.label}</p>
                       {k.inhalt && <p className="text-sm mt-1 text-muted-foreground line-clamp-2">{k.inhalt}</p>}

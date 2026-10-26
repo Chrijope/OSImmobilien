@@ -359,12 +359,12 @@ export default function MeineLeads() {
                       )}
                     </TableCell>
                     <TableCell>
-                      <Badge className="text-[10px] bg-primary/10 text-primary">
+                      <Badge className="text-bildunterschrift bg-primary/10 text-primary">
                         {stufeLabel}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className={`text-[10px] ${kategorieColor(kat)}`}>
+                      <Badge variant="outline" className={`text-bildunterschrift ${kategorieColor(kat)}`}>
                         {kat}
                       </Badge>
                     </TableCell>
@@ -387,7 +387,7 @@ export default function MeineLeads() {
                     </TableCell>
                     <TableCell>
                       {hidden ? (
-                        <Badge variant="outline" className="text-[10px] bg-orange-500/10 text-orange-600 border-orange-500/20 gap-1">
+                        <Badge variant="outline" className="text-bildunterschrift bg-orange-500/10 text-orange-600 border-orange-500/20 gap-1">
                           <Clock className="h-3 w-3" />
                           bis {hiddenUntil}
                         </Badge>

@@ -93,7 +93,7 @@ export function VorwissenKarte({
         Das hat {vorname || "der Bewerber"} vorab angegeben
       </h3>
       {eingereichtAm && (
-        <Badge variant="outline" className="bg-white font-normal text-[10px] text-muted-foreground">
+        <Badge variant="outline" className="bg-white font-normal text-bildunterschrift text-muted-foreground">
           ausgefüllt am {datumKurz(eingereichtAm)}
         </Badge>
       )}

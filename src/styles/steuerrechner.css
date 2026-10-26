@@ -237,6 +237,7 @@
      bewusst einen Pixel weniger als `text-xs`. Sie sind weit gesperrt
      gesetzt, und gesperrte Grossbuchstaben brauchen mehr Platz je Zeichen. */
   .steuer-mobil-gross.steuer-mobil-gross .text-\[10px\],
+  .steuer-mobil-gross.steuer-mobil-gross .text-bildunterschrift,
   .steuer-mobil-gross.steuer-mobil-gross .text-\[11px\] { font-size: 14px !important; line-height: 20px !important; }
 
   .steuer-mobil-gross.steuer-mobil-gross .text-xs { font-size: 15px !important; line-height: 22px !important; }

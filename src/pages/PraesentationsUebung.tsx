@@ -329,7 +329,7 @@ const nichts = () => { /* blank: nichts wird gespeichert */ };
 
 /** Die Abschnittsüberschrift der Moderation, wie in der Leiste. */
 function Abschnittstitel({ children }: { children: React.ReactNode }) {
-  return <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{children}</p>;
+  return <p className="text-bildunterschrift font-semibold uppercase tracking-wider text-muted-foreground">{children}</p>;
 }
 
 /**
@@ -360,7 +360,7 @@ function UebungsSkript({
     return (
       <div className="space-y-4" data-testid="uebungs-skript">
         <div className="min-w-0">
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+          <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground">
             {folie.nummerText} · {folie.kicker} · {folie.kopfzeile}
           </p>
           <h2 className="text-lg font-semibold leading-tight">{folie.titel}</h2>
@@ -453,7 +453,7 @@ function UebungsNotizen({
     <section className="space-y-2" data-testid="uebungs-notizen">
       <div className="flex items-baseline justify-between gap-2">
         <Abschnittstitel>Notizen</Abschnittstitel>
-        {bewerber && <span className="truncate text-[10px] text-muted-foreground">{bezug}</span>}
+        {bewerber && <span className="truncate text-bildunterschrift text-muted-foreground">{bezug}</span>}
       </div>
       {hinweis && <p className="text-[11px] leading-snug text-muted-foreground">{hinweis}</p>}
       <Textarea
@@ -468,7 +468,7 @@ function UebungsNotizen({
         className="min-h-[6rem] resize-y text-xs leading-relaxed"
       />
       <div className="flex items-center justify-between gap-2">
-        <span className="text-[10px] text-muted-foreground">{bewerber ? "Strg oder Cmd und Enter speichert." : ""}</span>
+        <span className="text-bildunterschrift text-muted-foreground">{bewerber ? "Strg oder Cmd und Enter speichert." : ""}</span>
         <Button size="sm" onClick={speichern} disabled={!kannSpeichern} data-testid="notiz-speichern">
           Notiz speichern
         </Button>
@@ -477,7 +477,7 @@ function UebungsNotizen({
         <ul className="max-h-64 space-y-2 overflow-y-auto border-t pt-2" data-testid="uebungs-notizliste">
           {notizen.map((n) => (
             <li key={n.id} className="text-xs">
-              <p className="text-[10px] text-muted-foreground">{notizDatum(n.datum)} · {n.autor}</p>
+              <p className="text-bildunterschrift text-muted-foreground">{notizDatum(n.datum)} · {n.autor}</p>
               <p className="whitespace-pre-wrap leading-snug">{n.text}</p>
             </li>
           ))}
@@ -894,7 +894,7 @@ function UebungInhalt({
               </Button>
             )}
             <div className="min-w-0 flex-1">
-              <p className="truncate text-[10px] uppercase tracking-wider text-muted-foreground">
+              <p className="truncate text-bildunterschrift uppercase tracking-wider text-muted-foreground">
                 Moderation · {titelZeile}{bewerberName ? ` · ${bewerberName}` : ""}
               </p>
               <p className="truncate text-sm font-semibold">
@@ -924,7 +924,7 @@ function UebungInhalt({
                       {neueGruppe && (
                         <>
                           {i > 0 && <DropdownMenuSeparator />}
-                          <DropdownMenuLabel className="text-[10px] uppercase tracking-wider text-muted-foreground">{d.gruppe}</DropdownMenuLabel>
+                          <DropdownMenuLabel className="text-bildunterschrift uppercase tracking-wider text-muted-foreground">{d.gruppe}</DropdownMenuLabel>
                         </>
                       )}
                       <DropdownMenuItem onSelect={() => setDruck(d.auftrag)}>{d.label}</DropdownMenuItem>

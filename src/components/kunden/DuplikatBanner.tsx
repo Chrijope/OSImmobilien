@@ -329,10 +329,10 @@ export function DuplikatBanner({ kontakte, onMerged }: Props) {
                         onClick={() => navigate(`/kunden/${k.id}`)}
                       >
                         {idx === 0 && (
-                          <Badge variant="outline" className="text-[10px] border-primary/50 text-primary">Behalten</Badge>
+                          <Badge variant="outline" className="text-bildunterschrift border-primary/50 text-primary">Behalten</Badge>
                         )}
                         {idx > 0 && (
-                          <Badge variant="outline" className="text-[10px] border-destructive/50 text-destructive">Papierkorb</Badge>
+                          <Badge variant="outline" className="text-bildunterschrift border-destructive/50 text-destructive">Papierkorb</Badge>
                         )}
                         <span className="font-medium">{k.vorname} {k.nachname}</span>
                         {k.telefon && <span className="text-muted-foreground">{k.telefon}</span>}

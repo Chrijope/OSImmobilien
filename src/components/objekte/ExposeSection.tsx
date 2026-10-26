@@ -323,11 +323,11 @@ export function ExposeSection({ objektId, objektTitel, isEditor, onPdfCreated, o
           </Badge>
         </div>
         {lastGenerated ? (
-          <p className="text-[10px] text-muted-foreground">
+          <p className="text-bildunterschrift text-muted-foreground">
             Zuletzt generiert: {new Date(lastGenerated).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })}
           </p>
         ) : uploadedExposeDocUrl && (
-          <p className="text-[10px] text-muted-foreground">Manuell hochgeladenes Exposé-PDF</p>
+          <p className="text-bildunterschrift text-muted-foreground">Manuell hochgeladenes Exposé-PDF</p>
         )}
         <div className="flex flex-wrap gap-2">
           <Button size="sm" variant="outline" className="text-xs" onClick={handleDownload}>
@@ -396,7 +396,7 @@ export function ExposeSection({ objektId, objektTitel, isEditor, onPdfCreated, o
                 <XCircle className="h-3.5 w-3.5 text-amber-500 flex-shrink-0" />
               )}
               <span className={item.ok ? "text-foreground" : "text-muted-foreground"}>{item.label}</span>
-              {!item.ok && <span className="text-[10px] text-amber-500 ml-auto">Fehlt</span>}
+              {!item.ok && <span className="text-bildunterschrift text-amber-500 ml-auto">Fehlt</span>}
             </div>
           ))}
         </div>

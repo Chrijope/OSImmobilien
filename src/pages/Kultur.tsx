@@ -133,7 +133,7 @@ export default function Kultur() {
                   <p className="text-sm text-muted-foreground">{s.text}</p>
                 </div>
                 {s.messbar && (
-                  <span className="text-[10px] uppercase tracking-wide text-muted-foreground border rounded-full px-2.5 py-1 shrink-0">
+                  <span className="text-bildunterschrift uppercase tracking-wide text-muted-foreground border rounded-full px-2.5 py-1 shrink-0">
                     im CRM messbar
                   </span>
                 )}

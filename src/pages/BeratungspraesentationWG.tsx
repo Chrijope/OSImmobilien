@@ -481,7 +481,7 @@ export default function BeratungspraesentationWG() {
               }`}
             >
               {isFeatured && (
-                <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 px-3 py-1 rounded-full bg-primary text-primary-foreground text-[10px] font-bold tracking-widest uppercase shadow-lg">
+                <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 px-3 py-1 rounded-full bg-primary text-primary-foreground text-bildunterschrift font-bold tracking-widest uppercase shadow-lg">
                   ★ Unser Fokus
                 </div>
               )}
@@ -827,7 +827,7 @@ export default function BeratungspraesentationWG() {
               {/* Kreis oben: Zeitaufwand */}
               <div className="absolute left-1/2 top-0 -translate-x-1/2 translate-y-2 w-28 h-28 md:w-36 md:h-36 rounded-full bg-card border-2 border-primary/40 flex flex-col items-center justify-center text-center px-3 shadow-xl ring-4 ring-background">
                 <div className="text-2xl md:text-3xl text-foreground leading-none mb-1.5">⚙</div>
-                <div className="text-[10px] md:text-[11px] text-muted-foreground leading-tight">
+                <div className="text-bildunterschrift md:text-[11px] text-muted-foreground leading-tight">
                   Verwaltung übernimmt<br/>OS Immobilien
                 </div>
               </div>
@@ -835,7 +835,7 @@ export default function BeratungspraesentationWG() {
               {/* Kreis links unten: Sicherheit */}
               <div className="absolute left-0 bottom-0 -translate-x-2 translate-y-2 w-28 h-28 md:w-36 md:h-36 rounded-full bg-card border-2 border-red-500/40 flex flex-col items-center justify-center text-center px-3 shadow-xl ring-4 ring-background">
                 <div className="text-2xl md:text-3xl font-bold text-red-500 leading-none mb-1.5">!!</div>
-                <div className="text-[10px] md:text-[11px] text-foreground leading-tight font-medium">
+                <div className="text-bildunterschrift md:text-[11px] text-foreground leading-tight font-medium">
                   Modernisierungs-<br/>kosten · Mietausfall
                 </div>
               </div>
@@ -843,7 +843,7 @@ export default function BeratungspraesentationWG() {
               {/* Kreis rechts unten: Rendite */}
               <div className="absolute right-0 bottom-0 translate-x-2 translate-y-2 w-28 h-28 md:w-36 md:h-36 rounded-full bg-card border-2 border-emerald-500/40 flex flex-col items-center justify-center text-center px-2 shadow-xl ring-4 ring-background">
                 <div className="text-2xl md:text-3xl font-bold text-emerald-500 leading-none mb-1.5">+</div>
-                <div className="text-[9px] md:text-[10px] text-foreground leading-tight font-medium">
+                <div className="text-bildunterschrift md:text-bildunterschrift text-foreground leading-tight font-medium">
                   Mieteinnahmen<br/>Wertsteigerung<br/>Steuervorteile
                 </div>
               </div>
@@ -935,7 +935,7 @@ export default function BeratungspraesentationWG() {
                   {/* Stats Strip */}
                   <div className="relative bg-foreground/70 text-background text-[11px] px-3 py-1.5">
                     Anfragen in 30 Tagen: <span className="font-bold">218</span> | Besucher in 30 Tagen: <span className="font-bold">1334</span>
-                    <div className="absolute top-0 right-0 bg-foreground/85 text-background text-[9px] px-3 py-0.5 rotate-[20deg] origin-top-right translate-x-2 translate-y-1 tracking-wider">
+                    <div className="absolute top-0 right-0 bg-foreground/85 text-background text-bildunterschrift px-3 py-0.5 rotate-[20deg] origin-top-right translate-x-2 translate-y-1 tracking-wider">
                       deaktiviert
                     </div>
                   </div>
@@ -962,7 +962,7 @@ export default function BeratungspraesentationWG() {
                 </div>
                 {/* CountUp Banner */}
                 <div className="px-4 pb-5 text-center">
-                  <div className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground font-semibold mb-1">
+                  <div className="text-bildunterschrift tracking-[0.25em] uppercase text-muted-foreground font-semibold mb-1">
                     Innerhalb von 72 Stunden
                   </div>
                   <CountUp end={218} className="text-4xl font-bold text-primary block leading-none" />

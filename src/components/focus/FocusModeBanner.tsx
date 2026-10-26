@@ -242,7 +242,7 @@ export function FocusModeBanner() {
           <div className="flex items-center gap-1.5 shrink-0">
             <Button size="sm" onClick={handleComplete} className="gap-1">
               <CheckCircle2 className="h-4 w-4" />
-              Erledigt <span className="opacity-70 text-[10px] ml-0.5">(E)</span>
+              Erledigt <span className="opacity-70 text-bildunterschrift ml-0.5">(E)</span>
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -251,7 +251,7 @@ export function FocusModeBanner() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => handlePostpone("plus1")}>+ 1 Tag <span className="ml-auto text-[10px] opacity-60">V</span></DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handlePostpone("plus1")}>+ 1 Tag <span className="ml-auto text-bildunterschrift opacity-60">V</span></DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handlePostpone("plus3")}>+ 3 Tage</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handlePostpone("nextWorkday")}>Nächster Werktag</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handlePostpone("plus7")}>+ 1 Woche</DropdownMenuItem>

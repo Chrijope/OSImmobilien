@@ -179,7 +179,7 @@ function Block({ block }: { block: FolienBlock }) {
             {block.schritte.map((s, i) => (
               <li key={i} className="flex gap-3 items-start">
                 <span
-                  className="shrink-0 rounded-md px-2 py-0.5 text-[10px] uppercase tracking-[0.12em] font-semibold"
+                  className="shrink-0 rounded-md px-2 py-0.5 text-bildunterschrift uppercase tracking-[0.12em] font-semibold"
                   style={{ background: "rgba(30,210,141,0.14)", color: AKZENT }}
                 >
                   {s.wer}
@@ -309,7 +309,7 @@ function Block({ block }: { block: FolienBlock }) {
           <div className="grid gap-3 sm:grid-cols-3">
             {block.tueren.map((t, i) => (
               <div key={i} className="rounded-lg p-3" style={{ background: "rgba(255,255,255,0.04)", border: RAND }}>
-                <p className="text-[10px] uppercase tracking-[0.18em] mb-1" style={{ color: GEDIMMTER }}>
+                <p className="text-bildunterschrift uppercase tracking-[0.18em] mb-1" style={{ color: GEDIMMTER }}>
                   Tür {i + 1}
                 </p>
                 <p className="text-sm font-semibold leading-snug mb-1">{t.titel}</p>
@@ -328,7 +328,7 @@ function Block({ block }: { block: FolienBlock }) {
             {block.stufen.map((s, i) => (
               <li key={i} className="flex gap-3 items-start">
                 <span
-                  className="shrink-0 rounded-md px-2 py-0.5 text-[10px] uppercase tracking-[0.12em] font-semibold"
+                  className="shrink-0 rounded-md px-2 py-0.5 text-bildunterschrift uppercase tracking-[0.12em] font-semibold"
                   style={{ background: "rgba(30,210,141,0.14)", color: AKZENT }}
                 >
                   {s.wann}

@@ -471,11 +471,11 @@ const Inbox = () => {
         >
           <div className="flex items-center gap-2">
             <p className={`text-sm font-medium ${overdue ? "text-destructive" : "text-foreground"}`}>{a.titel}</p>
-            <Badge variant={isUrgent ? "destructive" : "secondary"} className="text-[10px]">
+            <Badge variant={isUrgent ? "destructive" : "secondary"} className="text-bildunterschrift">
               {prioLabel}
             </Badge>
             {overdue && (
-              <Badge variant="destructive" className="text-[10px]">Überfällig</Badge>
+              <Badge variant="destructive" className="text-bildunterschrift">Überfällig</Badge>
             )}
           </div>
           <p className="text-xs text-muted-foreground">{a.beschreibung}</p>
@@ -518,7 +518,7 @@ const Inbox = () => {
         <div className="flex-1 min-w-0 cursor-pointer" onClick={() => navigate(`/kunden/${t.kundeId}`)}>
           <div className="flex items-center gap-2">
             <p className="text-sm font-medium text-foreground">{t.titel}</p>
-            <Badge variant="secondary" className="text-[10px]">
+            <Badge variant="secondary" className="text-bildunterschrift">
               {t.video ? "Videomeeting" : "Termin"}
             </Badge>
           </div>

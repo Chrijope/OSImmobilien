@@ -72,22 +72,22 @@ export function AftersalesBeratungCard({
           <h3 className="font-semibold text-sm">{titel}</h3>
         </div>
         {status === "gesperrt" && (
-          <Badge variant="outline" className="text-[10px]">
+          <Badge variant="outline" className="text-bildunterschrift">
             <Lock className="h-3 w-3 mr-1" /> Wird am Notartermin freigeschaltet
           </Badge>
         )}
         {status === "offen" && (
-          <Badge className="text-[10px] bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))] border-[hsl(var(--warning))]/30">
+          <Badge className="text-bildunterschrift bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))] border-[hsl(var(--warning))]/30">
             <Clock className="h-3 w-3 mr-1" /> Offen
           </Badge>
         )}
         {status === "wartet_auf_kunde" && (
-          <Badge className="text-[10px] bg-primary/10 text-primary border-primary/30">
+          <Badge className="text-bildunterschrift bg-primary/10 text-primary border-primary/30">
             <Clock className="h-3 w-3 mr-1" /> Wartet auf Kunde
           </Badge>
         )}
         {status === "abgeschlossen" && (
-          <Badge className="text-[10px] bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] border-[hsl(var(--success))]/30">
+          <Badge className="text-bildunterschrift bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] border-[hsl(var(--success))]/30">
             <CheckCircle2 className="h-3 w-3 mr-1" /> Abgeschlossen
           </Badge>
         )}
@@ -151,7 +151,7 @@ export function AftersalesBeratungCard({
               </Button>
             </div>
           )}
-          <p className="text-[10px] text-muted-foreground">
+          <p className="text-bildunterschrift text-muted-foreground">
             Wird automatisch im Kundenordner unter „Beratungsdokument" abgelegt und für den Kunden im Kundenportal sichtbar gemacht.
           </p>
         </div>

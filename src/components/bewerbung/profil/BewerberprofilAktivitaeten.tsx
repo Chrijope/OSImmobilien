@@ -247,7 +247,7 @@ export function BewerberprofilAktivitaeten({
                           <Badge
                             key={marke.text}
                             variant="outline"
-                            className={cn("text-[10px] px-1.5 py-0 font-medium", MARKE_KLASSE[marke.ton])}
+                            className={cn("text-bildunterschrift px-1.5 py-0 font-medium", MARKE_KLASSE[marke.ton])}
                           >
                             {marke.text}
                           </Badge>
@@ -265,7 +265,7 @@ export function BewerberprofilAktivitaeten({
           Der ehrliche Hinweis. Ohne ihn liest sich die Liste als vollständig,
           und genau das ist sie bei den Stufen nicht.
         */}
-        <p className="mt-3 border-t pt-3 text-[10px] leading-relaxed text-muted-foreground">
+        <p className="mt-3 border-t pt-3 text-bildunterschrift leading-relaxed text-muted-foreground">
           Stufenwechsel stehen nicht in der Liste. Gespeichert ist nur die aktuelle Pipelinestufe,
           nicht wann sie sich geändert hat. Gezeigt wird deshalb ausschließlich, was wirklich
           aufgezeichnet ist.
@@ -322,7 +322,7 @@ export function BewerberprofilAktivitaeten({
 
             {altNotiz && (
               <div className="rounded-md border border-dashed bg-muted/30 p-3 mt-2">
-                <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+                <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground mb-1">
                   Alte Notiz, ohne Autor und Zeitpunkt
                 </p>
                 <KundenprofilNotiz text={altNotiz} className="text-sm" />

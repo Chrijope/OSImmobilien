@@ -29,7 +29,7 @@ export function TerminAbgesagtBadge({ className = "" }: { className?: string }) 
   return (
     <Badge
       variant="outline"
-      className={`gap-1 text-[10px] font-medium border-rose-300 bg-rose-50 text-rose-800 dark:border-rose-700 dark:bg-rose-950 dark:text-rose-200 ${className}`}
+      className={`gap-1 text-bildunterschrift font-medium border-rose-300 bg-rose-50 text-rose-800 dark:border-rose-700 dark:bg-rose-950 dark:text-rose-200 ${className}`}
       title={satz}
       aria-label={satz}
     >

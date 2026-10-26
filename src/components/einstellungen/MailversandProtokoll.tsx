@@ -141,10 +141,10 @@ export function MailversandProtokoll() {
                 )}
               </div>
               <div className="text-right shrink-0">
-                <Badge variant={statusFarbe(e.status)} className="text-[10px]">
+                <Badge variant={statusFarbe(e.status)} className="text-bildunterschrift">
                   {STATUS_TEXT[e.status] || e.status}
                 </Badge>
-                <p className="text-[10px] text-muted-foreground mt-1">
+                <p className="text-bildunterschrift text-muted-foreground mt-1">
                   {new Date(e.created_at).toLocaleString("de-DE")}
                 </p>
               </div>

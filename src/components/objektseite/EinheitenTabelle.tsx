@@ -129,11 +129,11 @@ export function EinheitenTabelle({ wohnungen, onOeffnen, kontext, empfohleneIds,
 
       {passendeKunden && !kundenScores && (
         <div className="mb-2.5 flex flex-wrap gap-2" data-testid="passende-kunden-zaehler">
-          <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-px text-[10px] font-semibold text-primary">
+          <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-px text-bildunterschrift font-semibold text-primary">
             {passendeKunden.kundenMitTreffer === 1 ? "Für 1 Kunden passt mindestens eine Einheit" : `Für ${passendeKunden.kundenMitTreffer} Kunden passt mindestens eine Einheit`}
           </span>
           {passendeKunden.nichtBewertet > 0 && (
-            <span className="inline-flex items-center rounded-full bg-muted px-2 py-px text-[10px] font-semibold text-muted-foreground">
+            <span className="inline-flex items-center rounded-full bg-muted px-2 py-px text-bildunterschrift font-semibold text-muted-foreground">
               {passendeKunden.nichtBewertet === 1 ? "1 Kunde ohne vollständige Selbstauskunft nicht bewertet" : `${passendeKunden.nichtBewertet} Kunden ohne vollständige Selbstauskunft nicht bewertet`}
             </span>
           )}

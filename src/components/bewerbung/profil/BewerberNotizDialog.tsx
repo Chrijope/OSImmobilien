@@ -65,7 +65,7 @@ export function BewerberNotizDialog({
             }}
           />
           <div className="flex items-center justify-between gap-2">
-            <span className="text-[10px] text-muted-foreground">Tipp: ⌘/Strg + Enter zum Speichern</span>
+            <span className="text-bildunterschrift text-muted-foreground">Tipp: ⌘/Strg + Enter zum Speichern</span>
             <Button type="button" size="sm" onClick={speichern} disabled={!text.trim()}>
               Notiz speichern
             </Button>

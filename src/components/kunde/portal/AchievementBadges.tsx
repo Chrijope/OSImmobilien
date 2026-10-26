@@ -90,7 +90,7 @@ export function AchievementBadges({ pipelineStufe, className }: Props) {
                 </div>
                 <span
                   className={cn(
-                    "text-[10px] sm:text-[11px] text-center leading-tight w-full px-0.5 truncate",
+                    "text-bildunterschrift sm:text-[11px] text-center leading-tight w-full px-0.5 truncate",
                     isDone
                       ? "text-[hsl(var(--portal-badge-done-text))] font-medium"
                       : isCurrent

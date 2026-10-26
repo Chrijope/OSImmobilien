@@ -143,7 +143,7 @@ export function InvestmentBerechnungen({
                 <span className="min-w-0">
                   <span className="block truncate text-sm font-semibold">{b.name}</span>
                   <Kennzahlenzeile b={b} />
-                  <span className="block text-[10px] text-muted-foreground">
+                  <span className="block text-bildunterschrift text-muted-foreground">
                     Zuletzt geändert {formatDatum(b.geaendert_am)}
                     {namenVon(b.erstellt_von) ? ` · angelegt von ${namenVon(b.erstellt_von)}` : ""}
                   </span>

@@ -264,7 +264,7 @@ function ChallengeCard({
                   <button onClick={onDelete} className="text-muted-foreground hover:text-destructive"><Trash2 className="h-4 w-4" /></button>
                 </>
               )}
-              <Badge className="bg-success text-destructive-foreground text-[10px]">Aktiv</Badge>
+              <Badge className="bg-success text-destructive-foreground text-bildunterschrift">Aktiv</Badge>
               <CollapsibleTrigger>
                 {open ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
               </CollapsibleTrigger>
@@ -273,19 +273,19 @@ function ChallengeCard({
 
           <div className="grid grid-cols-4 gap-3 mt-4">
             <div className="bg-muted/50 rounded-lg p-3">
-              <p className="text-[10px] uppercase text-muted-foreground">Zeitraum</p>
+              <p className="text-bildunterschrift uppercase text-muted-foreground">Zeitraum</p>
               <p className="font-semibold text-sm text-foreground">{challenge.anzeigemonat}</p>
             </div>
             <div className="bg-muted/50 rounded-lg p-3">
-              <p className="text-[10px] uppercase text-muted-foreground">Ziel</p>
+              <p className="text-bildunterschrift uppercase text-muted-foreground">Ziel</p>
               <p className="font-semibold text-sm text-foreground">{challenge.zielwert} {challenge.einheit}</p>
             </div>
             <div className="bg-muted/50 rounded-lg p-3">
-              <p className="text-[10px] uppercase text-muted-foreground">Preis</p>
+              <p className="text-bildunterschrift uppercase text-muted-foreground">Preis</p>
               <p className="font-semibold text-sm text-foreground">{challenge.preis}</p>
             </div>
             <div className="bg-muted/50 rounded-lg p-3">
-              <p className="text-[10px] uppercase text-muted-foreground">Verbleibend</p>
+              <p className="text-bildunterschrift uppercase text-muted-foreground">Verbleibend</p>
               <p className="font-semibold text-sm text-foreground">{challenge.verbleibend}</p>
             </div>
           </div>
@@ -335,12 +335,12 @@ function ChallengeCard({
                     className={`flex items-center justify-between py-3 px-3 rounded-lg ${isHighlighted ? "bg-primary/10 ring-1 ring-primary/30" : ""} border-b border-border last:border-0`}>
                     <div className="flex items-center gap-3">
                       <span className="text-sm w-5 text-center">{posIcon(r.pos)}</span>
-                      <div className={`w-8 h-8 rounded-full ${r.color} flex items-center justify-center text-[10px] font-bold text-card`}>
+                      <div className={`w-8 h-8 rounded-full ${r.color} flex items-center justify-center text-bildunterschrift font-bold text-card`}>
                         {r.kuerzel}
                       </div>
                       <span className={`text-sm font-medium ${isHighlighted ? "text-primary font-semibold" : "text-foreground"} flex items-center gap-1.5`}>
                         {r.name}
-                        {isHighlighted && <Badge className="bg-primary text-primary-foreground text-[9px] px-1.5 h-4">{highlightPartner ? "Ausgewählt" : "Du"}</Badge>}
+                        {isHighlighted && <Badge className="bg-primary text-primary-foreground text-bildunterschrift px-1.5 h-4">{highlightPartner ? "Ausgewählt" : "Du"}</Badge>}
                       </span>
                     </div>
                     <div className="flex items-center gap-3">
@@ -593,7 +593,7 @@ const Wettbewerb = () => {
 
                 {/* Full ranking list */}
                 <div className="space-y-0">
-                  <div className="grid grid-cols-[40px_1fr_auto] gap-3 px-3 py-2 text-[10px] uppercase tracking-wider text-muted-foreground font-semibold border-b border-border">
+                  <div className="grid grid-cols-[40px_1fr_auto] gap-3 px-3 py-2 text-bildunterschrift uppercase tracking-wider text-muted-foreground font-semibold border-b border-border">
                     <span>Rang</span>
                     <span>Partner</span>
                     <span className="text-right">Gesamt</span>
@@ -606,17 +606,17 @@ const Wettbewerb = () => {
                         className={`grid grid-cols-[40px_1fr_auto] gap-3 items-center py-3 px-3 rounded-lg ${isHL ? "bg-primary/10 ring-1 ring-primary/30" : ""} border-b border-border last:border-0`}>
                         <span className="text-sm text-center font-semibold">{posIcon(pos)}</span>
                         <div className="flex items-center gap-3 min-w-0">
-                          <div className={`w-8 h-8 rounded-full ${r.color || "bg-muted-foreground"} flex items-center justify-center text-[10px] font-bold text-card flex-shrink-0`}>
+                          <div className={`w-8 h-8 rounded-full ${r.color || "bg-muted-foreground"} flex items-center justify-center text-bildunterschrift font-bold text-card flex-shrink-0`}>
                             {r.kuerzel}
                           </div>
                           <div className="min-w-0">
                             <span className={`text-sm font-medium ${isHL ? "text-primary font-semibold" : "text-foreground"} flex items-center gap-1.5`}>
                               {r.name}
-                              {isHL && <Badge className="bg-primary text-primary-foreground text-[9px] px-1.5 h-4">{highlightName ? "Ausgewählt" : "Du"}</Badge>}
+                              {isHL && <Badge className="bg-primary text-primary-foreground text-bildunterschrift px-1.5 h-4">{highlightName ? "Ausgewählt" : "Du"}</Badge>}
                             </span>
                             <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-0.5">
                               {r.details.map((d, di) => (
-                                <span key={di} className="text-[10px] text-muted-foreground">
+                                <span key={di} className="text-bildunterschrift text-muted-foreground">
                                   {d.challenge}: <strong>{d.wert}</strong> {d.einheit}
                                 </span>
                               ))}
@@ -652,7 +652,7 @@ const Wettbewerb = () => {
                         <span className="text-lg">{ch.icon}</span>
                         <div>
                           <p className="text-sm font-bold text-foreground">{ch.titel}</p>
-                          <p className="text-[10px] text-muted-foreground">{ch.anzeigemonat} · Ziel: {ch.zielwert} {ch.einheit}</p>
+                          <p className="text-bildunterschrift text-muted-foreground">{ch.anzeigemonat} · Ziel: {ch.zielwert} {ch.einheit}</p>
                         </div>
                       </div>
                       <div className="space-y-0">
@@ -664,7 +664,7 @@ const Wettbewerb = () => {
                               className={`flex items-center justify-between py-2.5 px-3 rounded-lg ${isHL ? "bg-primary/10 ring-1 ring-primary/30" : ""} border-b border-border last:border-0`}>
                               <div className="flex items-center gap-3">
                                 <span className="text-sm w-5 text-center font-semibold">{posIcon(pos)}</span>
-                                <div className={`w-7 h-7 rounded-full ${r.color} flex items-center justify-center text-[9px] font-bold text-card`}>
+                                <div className={`w-7 h-7 rounded-full ${r.color} flex items-center justify-center text-bildunterschrift font-bold text-card`}>
                                   {r.kuerzel}
                                 </div>
                                 <span className={`text-sm ${isHL ? "text-primary font-semibold" : "text-foreground"}`}>
@@ -673,7 +673,7 @@ const Wettbewerb = () => {
                               </div>
                               <div className="flex items-center gap-2">
                                 <span className="text-sm font-bold text-foreground">{r.wert}</span>
-                                <span className="text-[10px] text-muted-foreground">{ch.einheit}</span>
+                                <span className="text-bildunterschrift text-muted-foreground">{ch.einheit}</span>
                                 <div className="w-20 h-2 bg-muted rounded-full overflow-hidden">
                                   <div className={`h-full rounded-full ${isHL ? "bg-primary" : "bg-primary/60"}`} style={{ width: `${chRanking[0]?.wert ? (r.wert / chRanking[0].wert) * 100 : 0}%` }} />
                                 </div>
@@ -726,19 +726,19 @@ const Wettbewerb = () => {
                 </div>
                 <div className="grid grid-cols-4 gap-3 mt-3">
                   <div className="bg-muted/50 rounded-lg p-2">
-                    <p className="text-[10px] uppercase text-muted-foreground">Zeitraum</p>
+                    <p className="text-bildunterschrift uppercase text-muted-foreground">Zeitraum</p>
                     <p className="font-semibold text-xs text-foreground">{c.anzeigemonat}</p>
                   </div>
                   <div className="bg-muted/50 rounded-lg p-2">
-                    <p className="text-[10px] uppercase text-muted-foreground">Ziel</p>
+                    <p className="text-bildunterschrift uppercase text-muted-foreground">Ziel</p>
                     <p className="font-semibold text-xs text-foreground">{c.zielwert} {c.einheit}</p>
                   </div>
                   <div className="bg-muted/50 rounded-lg p-2">
-                    <p className="text-[10px] uppercase text-muted-foreground">Preis</p>
+                    <p className="text-bildunterschrift uppercase text-muted-foreground">Preis</p>
                     <p className="font-semibold text-xs text-foreground">{c.preis}</p>
                   </div>
                   <div className="bg-muted/50 rounded-lg p-2">
-                    <p className="text-[10px] uppercase text-muted-foreground">Dein Ergebnis</p>
+                    <p className="text-bildunterschrift uppercase text-muted-foreground">Dein Ergebnis</p>
                     <p className="font-semibold text-xs text-primary">{c.ergebnis}</p>
                   </div>
                 </div>

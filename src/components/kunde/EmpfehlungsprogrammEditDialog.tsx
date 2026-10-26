@@ -94,7 +94,7 @@ export function EmpfehlungsprogrammEditDialog({ programm, open, onOpenChange, on
               min={0}
               className="h-9 mt-1"
             />
-            <p className="text-[10px] text-muted-foreground mt-1">
+            <p className="text-bildunterschrift text-muted-foreground mt-1">
               {provisionsTyp === "prozent"
                 ? "Angabe in % vom Kaufpreis – z.B. 2 für 2%"
                 : "Angabe als fester Eurobetrag – z.B. 500 für 500€"}

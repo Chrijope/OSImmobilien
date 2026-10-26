@@ -289,7 +289,7 @@ export function SaPartialSignaturePill({ kontaktId, investmentId, fallbackSaData
               <Button
                 size="sm"
                 variant="outline"
-                className="h-6 px-2 text-[10px] gap-1 shrink-0"
+                className="h-6 px-2 text-bildunterschrift gap-1 shrink-0"
                 disabled={resending === p.person_type}
                 onClick={() => resend(p)}
               >
@@ -301,7 +301,7 @@ export function SaPartialSignaturePill({ kontaktId, investmentId, fallbackSaData
         })}
       </div>
       {total > 1 && (
-        <p className="text-[10px] text-muted-foreground leading-snug">
+        <p className="text-bildunterschrift text-muted-foreground leading-snug">
           Die Pipeline wechselt erst zu „Bonitätsunterlagen", wenn alle Personen unterschrieben haben.
         </p>
       )}

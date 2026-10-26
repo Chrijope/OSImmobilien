@@ -40,7 +40,7 @@ export function KennenlernbogenUebersicht({
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {gruppen.map((g) => (
         <div key={g.titel}>
-          <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+          <p className="text-bildunterschrift font-medium uppercase tracking-wider text-muted-foreground">
             {g.titel}
           </p>
           <dl className="mt-1.5 space-y-1">
@@ -143,11 +143,11 @@ export function KennenlernbogenKarte({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-2">
           <p className="text-sm font-semibold">Aus dem Kennenlernbogen</p>
-          <Badge variant="outline" className="h-5 text-[10px] font-normal text-muted-foreground">
+          <Badge variant="outline" className="h-5 text-bildunterschrift font-normal text-muted-foreground">
             {gespraechsDauerMinuten(antworten)} Minuten
           </Badge>
           {ausgefuelltAm && (
-            <Badge variant="outline" className="h-5 text-[10px] font-normal text-muted-foreground">
+            <Badge variant="outline" className="h-5 text-bildunterschrift font-normal text-muted-foreground">
               ausgefüllt am {ausgefuelltAm}
             </Badge>
           )}

@@ -64,7 +64,7 @@ export default function LeadErstkontakt() {
           verkauft, verliert den Lead.
         </p>
         <div className="bg-primary/5 border border-primary/20 rounded p-4 mt-3 text-sm">
-          <div className="text-[10px] font-bold uppercase tracking-wider text-primary mb-2">Zielsatz am Ende des Erstkontakts</div>
+          <div className="text-bildunterschrift font-bold uppercase tracking-wider text-primary mb-2">Zielsatz am Ende des Erstkontakts</div>
           <p className="italic">
             „Das passt sehr gut zusammen. Ich schlage vor, wir nehmen uns 60 Minuten Zeit, gehen deine Zahlen
             gemeinsam durch und ich zeige dir, wie eine konkrete Lösung für dich aussehen kann. Wie sieht es

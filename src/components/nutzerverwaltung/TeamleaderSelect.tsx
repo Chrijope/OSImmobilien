@@ -145,7 +145,7 @@ export function TeamleaderSelect({ userId, currentTeamleaderId, disabled, onSave
           </Button>
         )}
       </div>
-      <p className="text-[10px] text-muted-foreground">
+      <p className="text-bildunterschrift text-muted-foreground">
         Inhaber, Admins, Vertriebsleiter und Vertriebspartner können Teamleiter sein.
       </p>
     </div>

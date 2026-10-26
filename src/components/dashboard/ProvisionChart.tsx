@@ -158,19 +158,19 @@ export function ProvisionChart() {
             {!isAdmin && (setterRate != null || eigenRate != null) ? (
               <>
                 {setterRate != null && (
-                  <Badge variant="outline" className="text-[10px]">Lead: {setterRate} %</Badge>
+                  <Badge variant="outline" className="text-bildunterschrift">Lead: {setterRate} %</Badge>
                 )}
                 {eigenRate != null && (
-                  <Badge variant="outline" className="text-[10px]">Eigen: {eigenRate} %</Badge>
+                  <Badge variant="outline" className="text-bildunterschrift">Eigen: {eigenRate} %</Badge>
                 )}
               </>
             ) : !isAdmin ? (
-              <Badge variant="outline" className="text-[10px] text-destructive border-destructive/40">{KEIN_SATZ_TEXT}</Badge>
+              <Badge variant="outline" className="text-bildunterschrift text-destructive border-destructive/40">{KEIN_SATZ_TEXT}</Badge>
             ) : null}
             {ohneKaufpreis > 0 && (
               <Badge
                 variant="outline"
-                className="text-[10px] border-warning text-warning"
+                className="text-bildunterschrift border-warning text-warning"
                 title="Investments ab Reservierung ohne eingetragenen Kaufpreis fehlen in der Kurve."
               >
                 Kaufpreis fehlt: {ohneKaufpreis}

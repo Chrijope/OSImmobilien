@@ -104,7 +104,7 @@ export function UeberfaelligeFollowUpsCard() {
                 <div className="text-sm font-medium truncate">{tarnName(f.kundeName) || "Unbekannt"}</div>
                 <div className="text-xs text-muted-foreground truncate">{f.titel}</div>
               </div>
-              <Badge variant="destructive" className="gap-1 shrink-0 text-[10px]">
+              <Badge variant="destructive" className="gap-1 shrink-0 text-bildunterschrift">
                 <Clock className="h-3 w-3" /> {f.faelligAm}
               </Badge>
             </button>

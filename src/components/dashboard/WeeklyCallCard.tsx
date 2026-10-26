@@ -233,7 +233,7 @@ export function WeeklyCallCard() {
           to="/kultur"
           className="block rounded-md border border-primary/20 bg-primary/5 p-3 hover:border-primary/40 transition-colors"
         >
-          <p className="text-[10px] uppercase tracking-wide font-semibold text-primary flex items-center gap-1.5">
+          <p className="text-bildunterschrift uppercase tracking-wide font-semibold text-primary flex items-center gap-1.5">
             <Heart className="h-3 w-3" /> Wert der Woche
           </p>
           <p className="text-sm font-semibold mt-1">{wertDerWoche().titel}</p>

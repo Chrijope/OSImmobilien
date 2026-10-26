@@ -67,7 +67,7 @@ export function WettbewerbCard() {
                       <span className="text-base">{c.icon || "🏆"}</span>
                       <p className="text-sm font-semibold text-foreground truncate">{c.titel}</p>
                     </div>
-                    <Badge variant="outline" className="text-[9px] flex-shrink-0">
+                    <Badge variant="outline" className="text-bildunterschrift flex-shrink-0">
                       {c.anzeigemonat || "–"}
                     </Badge>
                   </div>
@@ -80,12 +80,12 @@ export function WettbewerbCard() {
                         const barH = isFirst ? "h-10" : i === 0 ? "h-7" : "h-5";
                         return (
                           <div key={r.pos} className="flex flex-col items-center" style={{ minWidth: 44 }}>
-                            <span className="text-[10px] mb-0.5">{posIcon(r.pos)}</span>
-                            <div className={`w-7 h-7 rounded-full ${r.color || "bg-muted-foreground"} flex items-center justify-center text-[9px] font-bold text-card`}>
+                            <span className="text-bildunterschrift mb-0.5">{posIcon(r.pos)}</span>
+                            <div className={`w-7 h-7 rounded-full ${r.color || "bg-muted-foreground"} flex items-center justify-center text-bildunterschrift font-bold text-card`}>
                               {r.kuerzel}
                             </div>
-                            <p className="text-[9px] font-medium text-foreground mt-0.5 truncate max-w-[50px] text-center">{r.name?.split(" ")[0]}</p>
-                            <p className="text-[8px] text-muted-foreground font-semibold">{r.wert} {einheit}</p>
+                            <p className="text-bildunterschrift font-medium text-foreground mt-0.5 truncate max-w-[50px] text-center">{r.name?.split(" ")[0]}</p>
+                            <p className="text-bildunterschrift text-muted-foreground font-semibold">{r.wert} {einheit}</p>
                             <div className={`${barH} w-10 rounded-t-md ${isFirst ? "bg-primary" : "bg-muted-foreground/20"} mt-0.5`} />
                           </div>
                         );
@@ -106,14 +106,14 @@ export function WettbewerbCard() {
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-semibold text-foreground">{myEntry.wert}/{zielwert} {einheit}</span>
-                        <Badge className="bg-primary text-primary-foreground text-[9px] h-4 px-1.5">#{myPos}</Badge>
+                        <Badge className="bg-primary text-primary-foreground text-bildunterschrift h-4 px-1.5">#{myPos}</Badge>
                       </div>
                     </div>
                   )}
 
                   {/* Progress */}
                   <div>
-                    <div className="flex justify-between text-[10px] text-muted-foreground mb-0.5">
+                    <div className="flex justify-between text-bildunterschrift text-muted-foreground mb-0.5">
                       <span>Fortschritt</span>
                       <span>{c.fortschritt || 0}%</span>
                     </div>

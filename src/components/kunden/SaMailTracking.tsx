@@ -160,7 +160,7 @@ export function SaMailTracking({
         </p>
         <div className="flex items-center gap-2">
           {standVon && (
-            <span className="text-[10px] text-muted-foreground">
+            <span className="text-bildunterschrift text-muted-foreground">
               Stand {standVon.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })} Uhr
             </span>
           )}
@@ -195,7 +195,7 @@ export function SaMailTracking({
             <p className="text-muted-foreground">{geklickt || "Noch nicht geöffnet"}</p>
           </div>
           {geklickt && (
-            <Badge className="ml-auto bg-green-500 text-white text-[10px] h-5">geöffnet</Badge>
+            <Badge className="ml-auto bg-green-500 text-white text-bildunterschrift h-5">geöffnet</Badge>
           )}
         </div>
       </div>
@@ -214,7 +214,7 @@ export function SaMailTracking({
         </div>
       )}
 
-      <p className="text-[10px] text-muted-foreground">
+      <p className="text-bildunterschrift text-muted-foreground">
         Hinweis: „Versendet" heißt, die Mail wurde dem Mailanbieter übergeben. „Link geöffnet" wird
         erfasst, sobald der Kunde die Selbstauskunft über den Knopf in der Mail aufruft. Ob die Mail
         gelesen wurde, messen wir nicht.

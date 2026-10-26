@@ -252,7 +252,7 @@ export function StatistikConversion({ kontakte }: { kontakte: any[] }) {
               <div key={d.stage} className="border border-border rounded-md p-3">
                 <p className="text-muted-foreground truncate">{d.stage}</p>
                 <p className="font-bold text-lg mt-1">{d.days != null ? `${d.days} T.` : "–"}</p>
-                <p className="text-muted-foreground text-[10px]">n = {d.n}</p>
+                <p className="text-muted-foreground text-bildunterschrift">n = {d.n}</p>
               </div>
             ))}
           </div>

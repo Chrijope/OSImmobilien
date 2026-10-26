@@ -415,8 +415,8 @@ export function EigenfinanzierungSection({ investmentId, kundeId, kundeName, ber
               <div className="flex items-start justify-between gap-2 mb-1.5">
                 <span className="min-w-0 text-xs font-medium [overflow-wrap:break-word]">Finanzierungsangebot (Bankzusage)</span>
                 {state.kundenAngebot
-                  ? <Badge variant="outline" className="shrink-0 whitespace-nowrap bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] border-[hsl(var(--success))]/30 text-[10px]">Hochgeladen</Badge>
-                  : <Badge variant="outline" className="shrink-0 whitespace-nowrap bg-destructive/10 text-destructive border-destructive/30 text-[10px]">Ausstehend</Badge>}
+                  ? <Badge variant="outline" className="shrink-0 whitespace-nowrap bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] border-[hsl(var(--success))]/30 text-bildunterschrift">Hochgeladen</Badge>
+                  : <Badge variant="outline" className="shrink-0 whitespace-nowrap bg-destructive/10 text-destructive border-destructive/30 text-bildunterschrift">Ausstehend</Badge>}
               </div>
               {state.kundenAngebot ? (
                 <div className="flex items-center justify-between gap-2">
@@ -454,8 +454,8 @@ export function EigenfinanzierungSection({ investmentId, kundeId, kundeName, ber
               <div className="flex items-start justify-between gap-2 mb-1.5">
                 <span className="min-w-0 text-xs font-medium [overflow-wrap:break-word]">Darlehensvertrag (unterschrieben)</span>
                 {darlehensvertraege.length > 0
-                  ? <Badge variant="outline" className="shrink-0 whitespace-nowrap bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] border-[hsl(var(--success))]/30 text-[10px]">{darlehensvertraege.length === 1 ? "Hochgeladen" : `${darlehensvertraege.length} hochgeladen`}</Badge>
-                  : <Badge variant="outline" className="shrink-0 whitespace-nowrap bg-destructive/10 text-destructive border-destructive/30 text-[10px]">Ausstehend</Badge>}
+                  ? <Badge variant="outline" className="shrink-0 whitespace-nowrap bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] border-[hsl(var(--success))]/30 text-bildunterschrift">{darlehensvertraege.length === 1 ? "Hochgeladen" : `${darlehensvertraege.length} hochgeladen`}</Badge>
+                  : <Badge variant="outline" className="shrink-0 whitespace-nowrap bg-destructive/10 text-destructive border-destructive/30 text-bildunterschrift">Ausstehend</Badge>}
               </div>
               {darlehensvertraege.length > 0 && (
                 <div className="space-y-2 mb-2">
@@ -513,7 +513,7 @@ export function EigenfinanzierungSection({ investmentId, kundeId, kundeName, ber
                     {/* Gleiche Überlegung wie oben bei den Kundenunterlagen. */}
                     <div className="flex items-start justify-between gap-2 mb-1.5">
                       <span className="min-w-0 text-xs font-medium [overflow-wrap:break-word]">{label}</span>
-                      {ang && <Badge variant="outline" className="shrink-0 whitespace-nowrap bg-primary/10 text-primary border-primary/30 text-[10px]">Hochgeladen</Badge>}
+                      {ang && <Badge variant="outline" className="shrink-0 whitespace-nowrap bg-primary/10 text-primary border-primary/30 text-bildunterschrift">Hochgeladen</Badge>}
                     </div>
                     {ang ? (
                       /* Wie bei den Kundenunterlagen: der Dateiname gibt nach, „Öffnen“ bleibt ganz. */

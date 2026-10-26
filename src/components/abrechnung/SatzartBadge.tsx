@@ -56,7 +56,7 @@ export function SatzartBadge({
         <TooltipTrigger asChild>
           <Badge
             variant="outline"
-            className={`gap-1 font-medium cursor-help whitespace-nowrap shrink-0 ${klein ? "h-4 px-1 text-[9px]" : "h-5 px-1.5 text-[10px]"} ${klasse}`}
+            className={`gap-1 font-medium cursor-help whitespace-nowrap shrink-0 ${klein ? "h-4 px-1 text-bildunterschrift" : "h-5 px-1.5 text-bildunterschrift"} ${klasse}`}
           >
             <Icon className={klein ? "h-2.5 w-2.5" : "h-3 w-3"} />
             {SATZART_LABEL[art]}

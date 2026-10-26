@@ -727,7 +727,7 @@ const Zielplanung = () => {
                 <p className="text-[11px] text-muted-foreground">aus zugewiesenen Leads</p>
               </div>
               <div className="rounded-lg border border-primary/30 bg-primary/5 p-3">
-                <p className="text-[10px] uppercase tracking-wider text-primary font-semibold">
+                <p className="text-bildunterschrift uppercase tracking-wider text-primary font-semibold">
                   Mischsatz
                 </p>
                 <p className={unscharfKlasse("text-sm font-semibold tabular-nums mt-2")}>{satzText}</p>
@@ -776,15 +776,15 @@ const Zielplanung = () => {
                 </Tabs>
               )}
               {ownLocked && !isViewingVp && (
-                <Badge variant="outline" className="text-[10px] gap-1">
+                <Badge variant="outline" className="text-bildunterschrift gap-1">
                   <Lock className="h-3 w-3" /> Vom Admin festgeschrieben
                 </Badge>
               )}
               {!admin && !ownLocked && (
-                <Badge variant="outline" className="text-[10px]">Selbst bearbeitbar</Badge>
+                <Badge variant="outline" className="text-bildunterschrift">Selbst bearbeitbar</Badge>
               )}
               {isViewingVp && (
-                <Badge className="text-[10px] gap-1">
+                <Badge className="text-bildunterschrift gap-1">
                   {vpIsLocked && <Lock className="h-3 w-3" />}
                   Bearbeitung: {selectedVpName}
                 </Badge>
@@ -814,7 +814,7 @@ const Zielplanung = () => {
                     <tr key={i} className={`border-b border-border/50 hover:bg-muted/30 ${isQuartalEnd ? "border-b-2 border-border" : ""}`}>
                       <td className="py-3 pr-4 font-medium flex items-center gap-2">
                         {MONATE[i]}
-                        {quartalLabel && <Badge variant="outline" className="text-[10px] px-1.5">{quartalLabel}</Badge>}
+                        {quartalLabel && <Badge variant="outline" className="text-bildunterschrift px-1.5">{quartalLabel}</Badge>}
                       </td>
                       {isAnzahl && (
                         <td data-label="Verkäufe" className="text-right px-2">

@@ -231,7 +231,7 @@ export function AlsTippgeberAnlegenButton({ kunde, investments, currentUser, onC
                 <div className="flex items-center gap-2 font-semibold text-sm">
                   <Gift className="h-4 w-4 text-amber-600" />
                   Empfehlungsprogramm freischalten (Kunde bleibt Kunde)
-                  {hasInvestment && <Badge variant="secondary" className="text-[10px]">Empfohlen</Badge>}
+                  {hasInvestment && <Badge variant="secondary" className="text-bildunterschrift">Empfohlen</Badge>}
                 </div>
                 <p className="text-xs text-muted-foreground">
                   Der Kontakt behält seinen Kundenstatus und sieht im Kundenportal eine Sektion,
@@ -259,7 +259,7 @@ export function AlsTippgeberAnlegenButton({ kunde, investments, currentUser, onC
                 <div className="flex items-center gap-2 font-semibold text-sm">
                   <Handshake className="h-4 w-4 text-cyan-600" />
                   Als reinen Tippgeber anlegen
-                  {!hasInvestment && <Badge variant="secondary" className="text-[10px]">Empfohlen</Badge>}
+                  {!hasInvestment && <Badge variant="secondary" className="text-bildunterschrift">Empfohlen</Badge>}
                 </div>
                 <p className="text-xs text-muted-foreground">
                   Der Kontakt wird aus der aktiven Pipeline genommen (bleibt in „Alle Kontakte" sichtbar)

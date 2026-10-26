@@ -76,7 +76,7 @@ export function AkademieHero({ suche }: {
               </defs>
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Fortschritt</div>
+              <div className="text-bildunterschrift uppercase tracking-wide text-muted-foreground">Fortschritt</div>
               <div className="text-2xl font-semibold tabular-nums">{g.overallPct}%</div>
             </div>
           </div>
@@ -156,7 +156,7 @@ function MiniStat({ icon, label, value }: { icon: React.ReactNode; label: string
     <div className="flex items-center gap-2 rounded-lg border bg-background/60 px-3 py-2 flex-1 md:flex-initial">
       <div className="shrink-0">{icon}</div>
       <div className="leading-tight min-w-0">
-        <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</div>
+        <div className="text-bildunterschrift uppercase tracking-wide text-muted-foreground">{label}</div>
         <div className="text-sm font-semibold tabular-nums">{value}</div>
       </div>
     </div>

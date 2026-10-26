@@ -436,7 +436,7 @@ export default function MobileScan() {
           <Button className="w-full h-12 text-base" onClick={() => setStarted(true)}>
             <Camera className="h-5 w-5 mr-2" /> {t.scanStarten}
           </Button>
-          <p className="text-[10px] text-muted-foreground text-center">
+          <p className="text-bildunterschrift text-muted-foreground text-center">
             {t.sicher}
           </p>
         </div>
@@ -476,7 +476,7 @@ export default function MobileScan() {
               {t.fehlenHinweis}
             </p>
           )}
-          <p className="text-[10px] text-muted-foreground">
+          <p className="text-bildunterschrift text-muted-foreground">
             {t.schliessenHinweis}
           </p>
         </Card>
@@ -528,12 +528,12 @@ export default function MobileScan() {
                     <div className="flex items-center gap-1.5">
                       <p className="min-w-0 text-sm font-medium break-words">{anzeige(doc)}</p>
                       {!done && (
-                        <span className="text-[9px] font-bold uppercase tracking-wide text-[hsl(var(--warning))] bg-[hsl(var(--warning))]/10 px-1.5 py-0.5 rounded shrink-0">
+                        <span className="text-bildunterschrift font-bold uppercase tracking-wide text-[hsl(var(--warning))] bg-[hsl(var(--warning))]/10 px-1.5 py-0.5 rounded shrink-0">
                           {t.pflicht}
                         </span>
                       )}
                     </div>
-                    {done && <p className="text-[10px] text-[hsl(var(--success))]">{t.hochgeladen}</p>}
+                    {done && <p className="text-bildunterschrift text-[hsl(var(--success))]">{t.hochgeladen}</p>}
                   </div>
                   <Camera className="h-4 w-4 text-muted-foreground" />
                 </button>
@@ -565,7 +565,7 @@ export default function MobileScan() {
           </button>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold truncate">{activeDoc && anzeige(activeDoc)}</p>
-            <p className="text-[10px] text-white/60">
+            <p className="text-bildunterschrift text-white/60">
               {mitText(t.naechsteAufnahme, {
                 seite: activeDoc && (activeDoc === "Personalausweis" || activeDoc === "Personalausweis Person 2")
                   ? pages.length === 0
@@ -577,7 +577,7 @@ export default function MobileScan() {
               })}
             </p>
           </div>
-          <Badge variant="secondary" className="text-[10px]">
+          <Badge variant="secondary" className="text-bildunterschrift">
             {seitenText(pages.length, t)}
           </Badge>
         </header>
@@ -629,7 +629,7 @@ export default function MobileScan() {
                     alt={mitText(t.seiteN, { zahl: idx + 1 })}
                     className="h-16 w-12 object-cover rounded border border-white/30"
                   />
-                  <span className="absolute bottom-0 left-0 right-0 bg-black/70 text-[9px] text-center text-white py-0.5 rounded-b">
+                  <span className="absolute bottom-0 left-0 right-0 bg-black/70 text-bildunterschrift text-center text-white py-0.5 rounded-b">
                     {idx + 1}
                   </span>
                   <button
@@ -697,7 +697,7 @@ export default function MobileScan() {
                   <CheckCircle2 className="h-5 w-5 text-primary-foreground" />
                 )}
                 {pages.length > 0 && !uploading && (
-                  <span className="absolute -top-1 -right-1 h-5 min-w-5 px-1 rounded-full bg-[hsl(var(--success))] text-[10px] font-bold text-white flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 h-5 min-w-5 px-1 rounded-full bg-[hsl(var(--success))] text-bildunterschrift font-bold text-white flex items-center justify-center">
                     {pages.length}
                   </span>
                 )}
@@ -706,7 +706,7 @@ export default function MobileScan() {
             </button>
           </div>
 
-          <p className="text-[10px] text-white/50 text-center">
+          <p className="text-bildunterschrift text-white/50 text-center">
             {t.pdfHinweisVor}<strong className="text-white/80">{t.inPruefung}</strong>{t.pdfHinweisNach}
           </p>
 
@@ -916,7 +916,7 @@ function PageEditor({ page, onCancel, onApply, t }: PageEditorProps) {
         <button onClick={onCancel} className="text-white" aria-label={t.schliessen}><X className="h-5 w-5" /></button>
         <div className="flex-1">
           <p className="text-sm font-semibold">{t.editorTitel}</p>
-          <p className="text-[10px] text-white/60">{t.editorUntertitel}</p>
+          <p className="text-bildunterschrift text-white/60">{t.editorUntertitel}</p>
         </div>
       </header>
 

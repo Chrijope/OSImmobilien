@@ -85,7 +85,7 @@ function Auswahl({
 }) {
   return (
     <label className="flex min-w-0 flex-col gap-1">
-      <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</span>
+      <span className="text-bildunterschrift font-semibold uppercase tracking-wider text-muted-foreground">{label}</span>
       <Select value={wert} onValueChange={onChange}>
         <SelectTrigger className={`h-8 text-xs ${breite}`}>
           <SelectValue />
@@ -153,7 +153,7 @@ export function BewerberFilterLeiste({
                     soll auffallen, sonst übersieht man am eingeklappten Kasten,
                     dass die Liste beschnitten ist. */}
                 {gesetzt && (
-                  <Badge className="px-1.5 text-[10px] font-semibold">{chips.length}</Badge>
+                  <Badge className="px-1.5 text-bildunterschrift font-semibold">{chips.length}</Badge>
                 )}
               </span>
               <ChevronDown
@@ -241,11 +241,11 @@ export function BewerberFilterLeiste({
           {filter.zeitraum === "eigen" && (
             <div className="mt-3 flex flex-wrap items-end gap-2">
               <label className="flex flex-col gap-1">
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Von</span>
+                <span className="text-bildunterschrift font-semibold uppercase tracking-wider text-muted-foreground">Von</span>
                 <DateInput ariaLabel="Eingegangen ab" value={filter.von} onChange={(v) => setze({ von: v })} />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Bis</span>
+                <span className="text-bildunterschrift font-semibold uppercase tracking-wider text-muted-foreground">Bis</span>
                 <DateInput ariaLabel="Eingegangen bis" value={filter.bis} onChange={(v) => setze({ bis: v })} />
               </label>
             </div>
@@ -258,7 +258,7 @@ export function BewerberFilterLeiste({
           {zaehlung.gezeigt} von {zaehlung.gesamt} Bewerbern
         </span>
         {chips.map((chip) => (
-          <Badge key={chip.feld} variant="secondary" className="gap-1 text-[10px] font-normal">
+          <Badge key={chip.feld} variant="secondary" className="gap-1 text-bildunterschrift font-normal">
             {chip.text}
             <button
               type="button"

@@ -46,7 +46,7 @@ export function VideocallMitschriftKarte({
 
   return (
     <Card className="p-4 space-y-3" data-testid="videocall-mitschrift">
-      <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+      <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground">
         Aus dem Gespräch
       </p>
 

@@ -13,6 +13,24 @@ export default {
       },
     },
     extend: {
+      /*
+       * Schriftstufen (A1, 26.10.2026), benannt nach Apples Textstilen, mit
+       * Zeilenhöhe und Gewicht. Gerechnet auf die Grundschrift von 90 %
+       * (index.css, 1rem = 14,4 px). Untergrenze 11 px, ein Wächtertest
+       * (src/styles/schriftgroessen.test.ts) verbietet kleinere neue Größen.
+       * `xs` steht deshalb auf 11 statt 10,8 px.
+       */
+      fontSize: {
+        xs: ["0.7639rem", { lineHeight: "1rem" }],
+        grosstitel: ["1.8056rem", { lineHeight: "1.2", fontWeight: "700" }], // 26 px
+        titel1: ["1.5278rem", { lineHeight: "1.25", fontWeight: "700" }], // 22 px
+        titel2: ["1.25rem", { lineHeight: "1.3", fontWeight: "600" }], // 18 px
+        ueberschrift: ["1.0417rem", { lineHeight: "1.35", fontWeight: "600" }], // 15 px
+        fliesstext: ["0.9028rem", { lineHeight: "1.45", fontWeight: "400" }], // 13 px
+        hinweis: ["0.8333rem", { lineHeight: "1.4", fontWeight: "400" }], // 12 px
+        fussnote: ["0.7986rem", { lineHeight: "1.35", fontWeight: "400" }], // 11.5 px
+        bildunterschrift: ["0.7639rem", { lineHeight: "1.35", fontWeight: "400" }], // 11 px
+      },
       // Eine Schrift fuer alles (Christian, 18.10.2026): Systemschrift, keine
       // Zierschrift. font-serif zeigt bewusst dieselbe Schrift.
       fontFamily: {

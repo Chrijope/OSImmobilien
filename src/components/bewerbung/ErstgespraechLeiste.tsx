@@ -37,7 +37,7 @@ function Chip({
   onClick?: () => void;
 }) {
   const kreis = (
-    <span className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-[11px] font-bold sm:h-4 sm:w-4 sm:text-[9px] ${KREIS[zustand]}`}>
+    <span className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-[11px] font-bold sm:h-4 sm:w-4 sm:text-bildunterschrift ${KREIS[zustand]}`}>
       {zustand === "erledigt" ? <Check className="h-3.5 w-3.5 sm:h-2.5 sm:w-2.5" strokeWidth={3} /> : schritt.nummer}
     </span>
   );
@@ -93,8 +93,8 @@ export function ErstgespraechLeiste({
           bliebe von 343px nach der 96px breiten Spalte zu wenig uebrig. */}
       <div className="flex flex-col items-stretch gap-1.5 sm:flex-row sm:items-center sm:gap-2">
         <div className="w-full shrink-0 sm:w-24 md:w-28">
-          <div className="text-[10px] font-semibold uppercase tracking-wider">Teil 1</div>
-          <div className="text-[10px] text-muted-foreground leading-tight">
+          <div className="text-bildunterschrift font-semibold uppercase tracking-wider">Teil 1</div>
+          <div className="text-bildunterschrift text-muted-foreground leading-tight">
             {teil1Fertig ? "erledigt, Punkt 10 entfällt" : `${TEIL_1_ANZAHL} Punkte · Vorqualifizierung`}
           </div>
         </div>
@@ -115,8 +115,8 @@ export function ErstgespraechLeiste({
 
       <div className="flex flex-col items-stretch gap-1.5 sm:flex-row sm:items-center sm:gap-2">
         <div className="w-full shrink-0 sm:w-24 md:w-28">
-          <div className="text-[10px] font-semibold uppercase tracking-wider">Teil 2</div>
-          <div className="text-[10px] text-muted-foreground leading-tight">
+          <div className="text-bildunterschrift font-semibold uppercase tracking-wider">Teil 2</div>
+          <div className="text-bildunterschrift text-muted-foreground leading-tight">
             {teil2An
               ? teil2Erledigt >= TEIL_2_ANZAHL
                 ? `erledigt, ${TEIL_2_ANZAHL} von ${TEIL_2_ANZAHL}`
@@ -146,7 +146,7 @@ export function ErstgespraechLeiste({
         )}
       </div>
 
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] text-muted-foreground">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-bildunterschrift text-muted-foreground">
         <span className="flex items-center gap-1"><i className="inline-block h-2.5 w-2.5 rounded-full bg-green-600" /> erledigt</span>
         <span className="flex items-center gap-1"><i className="inline-block h-2.5 w-2.5 rounded-full bg-primary" /> aktueller Schritt</span>
         <span className="flex items-center gap-1"><i className="inline-block h-2.5 w-2.5 rounded-full border-2 border-primary bg-background" /> angefangen, Felder offen</span>

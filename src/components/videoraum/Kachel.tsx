@@ -198,7 +198,7 @@ export function KameraAus({ text, klein = false }: { text: string; klein?: boole
     >
       <VideoOff className={klein ? "h-4 w-4 text-white/40" : "h-6 w-6 text-white/40"} />
       {/* Der Platz unten gehoert dem Namensschild, deshalb das `pb`. */}
-      <p className={klein ? "text-[10.5px] leading-tight text-white/60" : "text-[13px] text-white/60"}>{text}</p>
+      <p className={klein ? "text-bildunterschrift leading-tight text-white/60" : "text-[13px] text-white/60"}>{text}</p>
     </div>
   );
 }
@@ -390,7 +390,7 @@ export function BildHinweis({
         aria-hidden
         className={`${hinweis.dreht ? "animate-spin text-white/40" : "text-white/55"} ${klein ? "h-4 w-4" : "h-6 w-6"}`}
       />
-      <p className={klein ? "text-[10.5px] leading-tight text-white/60" : "text-[13px] text-white/70"}>{t[hinweis.text]}</p>
+      <p className={klein ? "text-bildunterschrift leading-tight text-white/60" : "text-[13px] text-white/70"}>{t[hinweis.text]}</p>
       {/* Der zweite Satz nur dort, wo Platz ist. In einer 149 Pixel breiten
           Kachel waere er drei Zeilen lang und ueberdeckte den Namen. */}
       {hinweis.zusatz && !klein && (
@@ -624,7 +624,7 @@ export function KachelFuss({
     <div
       data-pruefung="kachel-fuss"
       className={`absolute inset-x-0 bottom-0 z-10 flex items-center bg-gradient-to-t from-[#0B1119]/85 to-transparent ${
-        klein ? "gap-1 px-1.5 pb-1 pt-4 text-[10.5px]" : "gap-1.5 px-2.5 pb-1.5 pt-6 text-[12.5px]"
+        klein ? "gap-1 px-1.5 pb-1 pt-4 text-bildunterschrift" : "gap-1.5 px-2.5 pb-1.5 pt-6 text-[12.5px]"
       }`}
     >
       {!tonAn && (
@@ -717,7 +717,7 @@ export function KleineKachel({
         </>
       ) : (
         <div className="flex h-full items-center justify-center px-2 text-center">
-          <p className="text-[10.5px] leading-tight text-white/60">{`Warte auf ${name}…`}</p>
+          <p className="text-bildunterschrift leading-tight text-white/60">{`Warte auf ${name}…`}</p>
         </div>
       )}
       {stream && <KachelFuss name={name} tonAn={stand.tonAn} klein />}

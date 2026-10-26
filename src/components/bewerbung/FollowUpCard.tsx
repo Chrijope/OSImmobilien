@@ -70,7 +70,7 @@ export function FollowUpCard({
     <Card className="p-4" data-testid="follow-up-karte">
       <div className="flex items-center gap-2 mb-2">
         <CalendarClock className="h-4 w-4 text-blue-500" />
-        <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+        <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground">
           Follow-Up{hatFollowUp || rueckruf ? "" : " (optional)"}
         </p>
       </div>
@@ -124,23 +124,23 @@ export function FollowUpCard({
                   <Pencil className="h-3 w-3" /> Bearbeiten
                 </Button>
               )}
-              <p className="text-[10px] text-muted-foreground mt-1">Gepflegt im Reiter Closing, Karte Entscheidung.</p>
+              <p className="text-bildunterschrift text-muted-foreground mt-1">Gepflegt im Reiter Closing, Karte Entscheidung.</p>
             </div>
           )}
         </div>
       ) : canEdit ? (
         <div className="grid grid-cols-1 gap-2" data-testid="follow-up-formular">
           <div>
-            <Label className="text-[10px]">Datum (TT.MM.JJJJ)</Label>
+            <Label className="text-bildunterschrift">Datum (TT.MM.JJJJ)</Label>
             <DateInput value={datum} onChange={setDatum} />
           </div>
           <div>
-            <Label className="text-[10px]" htmlFor="follow-up-uhrzeit">Uhrzeit (optional)</Label>
+            <Label className="text-bildunterschrift" htmlFor="follow-up-uhrzeit">Uhrzeit (optional)</Label>
             <Input id="follow-up-uhrzeit" type="time" value={uhrzeit} onChange={(e) => setUhrzeit(e.target.value)} />
           </div>
           {datum && (
             <div>
-              <Label className="text-[10px]" htmlFor="follow-up-notiz">Notiz (optional)</Label>
+              <Label className="text-bildunterschrift" htmlFor="follow-up-notiz">Notiz (optional)</Label>
               <Textarea
                 id="follow-up-notiz"
                 value={notiz}
@@ -174,7 +174,7 @@ export function FollowUpCard({
         <p className="text-sm text-muted-foreground italic">Kein Follow-Up gesetzt</p>
       )}
 
-      <p className="text-[10px] text-muted-foreground mt-2">
+      <p className="text-bildunterschrift text-muted-foreground mt-2">
         Erscheint am Tag in deiner Inbox. Ein Rückruf aus der Bedenkzeit (Reiter Closing) erscheint hier auf dieselbe Weise.
       </p>
     </Card>

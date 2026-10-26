@@ -399,7 +399,7 @@ export function SuchFeld() {
           className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground min-w-0"
         />
         {!suche && (
-          <kbd className="hidden md:inline text-[10px] font-medium text-muted-foreground/70 border border-border/60 rounded px-1 py-0.5">
+          <kbd className="hidden md:inline text-bildunterschrift font-medium text-muted-foreground/70 border border-border/60 rounded px-1 py-0.5">
             ⌘K
           </kbd>
         )}

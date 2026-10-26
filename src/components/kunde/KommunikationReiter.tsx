@@ -280,7 +280,7 @@ export function KommunikationReiter({
                       <Badge
                         variant="secondary"
                         className={cn(
-                          "text-[10px] px-1.5 py-0 h-5 shrink-0",
+                          "text-bildunterschrift px-1.5 py-0 h-5 shrink-0",
                           istAktiv ? "bg-primary-foreground text-primary" : "bg-primary text-primary-foreground",
                         )}
                       >
@@ -310,7 +310,7 @@ export function KommunikationReiter({
             {laufendesInvestment ? (
               <div className="mt-1.5 space-y-1.5">
                 <p className="text-sm font-medium">Investment {laufendesInvestment.nummer}</p>
-                <Badge variant="outline" className="text-[10px]">
+                <Badge variant="outline" className="text-bildunterschrift">
                   {stufenFilterLabel(laufendesInvestment.pipelineStufe)}
                 </Badge>
                 <Button
@@ -365,11 +365,11 @@ export function KommunikationReiter({
               {kundenchatOffen ? `Kundenchat, mit ${kundeName}` : "Interner Chat, nur Team"}
             </h3>
             {kundenchatOffen ? (
-              <Badge variant="outline" className="shrink-0 text-[10px] px-1.5 py-0 border-green-300 text-green-700 bg-green-50">
+              <Badge variant="outline" className="shrink-0 text-bildunterschrift px-1.5 py-0 border-green-300 text-green-700 bg-green-50">
                 Für den Kunden sichtbar
               </Badge>
             ) : (
-              <Badge variant="outline" className="shrink-0 text-[10px] px-1.5 py-0 border-blue-300 text-blue-700 bg-blue-50">
+              <Badge variant="outline" className="shrink-0 text-bildunterschrift px-1.5 py-0 border-blue-300 text-blue-700 bg-blue-50">
                 Der Kunde sieht das nicht
               </Badge>
             )}

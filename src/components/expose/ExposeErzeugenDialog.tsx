@@ -442,7 +442,7 @@ export function ExposeErzeugenDialog({
                     <button key={k.id} type="button" onClick={() => { kundeWaehlen(k.id); setSuche(""); }}
                       className={cn("flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-sm hover:bg-muted", kundeId === k.id && "bg-accent")}>
                       <span className="min-w-0 break-words" data-testid="expose-kunde-name">{k.name}</span>
-                      {k.hatSelbstauskunft && <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wide text-primary">Selbstauskunft</span>}
+                      {k.hatSelbstauskunft && <span className="shrink-0 text-bildunterschrift font-semibold uppercase tracking-wide text-primary">Selbstauskunft</span>}
                     </button>
                   ))}
                 </div>

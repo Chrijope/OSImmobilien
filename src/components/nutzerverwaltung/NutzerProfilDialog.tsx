@@ -319,11 +319,11 @@ export default function NutzerProfilDialog({ nutzer, open, onOpenChange, onSaved
           <div className="flex flex-col items-end gap-1.5">
             <Badge variant="secondary">{nutzer.rolle}</Badge>
             {onboardingComplete ? (
-              <Badge className="bg-green-500/10 text-green-600 border-green-500/30 text-[10px]">
+              <Badge className="bg-green-500/10 text-green-600 border-green-500/30 text-bildunterschrift">
                 <CheckCircle2 className="h-3 w-3 mr-1" /> Onboarding abgeschlossen
               </Badge>
             ) : (
-              <Badge variant="outline" className="text-[10px] border-warning text-warning">
+              <Badge variant="outline" className="text-bildunterschrift border-warning text-warning">
                 <Clock className="h-3 w-3 mr-1" /> Onboarding ausstehend
               </Badge>
             )}
@@ -427,10 +427,10 @@ export default function NutzerProfilDialog({ nutzer, open, onOpenChange, onSaved
                                 )}
                                 <span className={`text-sm ${effectivelyAllowed ? "" : "text-muted-foreground"}`}>{item.label}</span>
                                 {allowedByRole && (
-                                  <Badge variant="outline" className="text-[10px] h-4 px-1">Rolle</Badge>
+                                  <Badge variant="outline" className="text-bildunterschrift h-4 px-1">Rolle</Badge>
                                 )}
                                 {customGranted && !allowedByRole && (
-                                  <Badge variant="outline" className="text-[10px] h-4 px-1 border-green-500 text-green-600">Manuell</Badge>
+                                  <Badge variant="outline" className="text-bildunterschrift h-4 px-1 border-green-500 text-green-600">Manuell</Badge>
                                 )}
                               </div>
                               {!allowedByRole && (
@@ -486,7 +486,7 @@ export default function NutzerProfilDialog({ nutzer, open, onOpenChange, onSaved
                       { label: "Ort", value: settings.profil?.plz ? `${settings.profil.plz} ${settings.profil.ort || ""}` : undefined },
                     ].map(f => (
                       <div key={f.label}>
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{f.label}</p>
+                        <p className="text-bildunterschrift text-muted-foreground uppercase tracking-wider">{f.label}</p>
                         <p className="text-sm font-medium text-foreground">{f.value || <span className="text-muted-foreground italic">Nicht hinterlegt</span>}</p>
                       </div>
                     ))}
@@ -506,7 +506,7 @@ export default function NutzerProfilDialog({ nutzer, open, onOpenChange, onSaved
                       { label: "Registergericht", value: settings.gewerbedaten?.registergericht },
                     ].map(f => (
                       <div key={f.label}>
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{f.label}</p>
+                        <p className="text-bildunterschrift text-muted-foreground uppercase tracking-wider">{f.label}</p>
                         <p className="text-sm font-medium text-foreground">{f.value || <span className="text-muted-foreground italic">Nicht hinterlegt</span>}</p>
                       </div>
                     ))}
@@ -528,7 +528,7 @@ export default function NutzerProfilDialog({ nutzer, open, onOpenChange, onSaved
                       { label: "Bank", value: settings.steuerBank?.bankname },
                     ].map(f => (
                       <div key={f.label}>
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{f.label}</p>
+                        <p className="text-bildunterschrift text-muted-foreground uppercase tracking-wider">{f.label}</p>
                         <p className="text-sm font-medium text-foreground">{f.value || <span className="text-muted-foreground italic">Nicht hinterlegt</span>}</p>
                       </div>
                     ))}
@@ -562,13 +562,13 @@ export default function NutzerProfilDialog({ nutzer, open, onOpenChange, onSaved
                       {statusIcon[doc.status as keyof typeof statusIcon] || statusIcon.fehlt}
                       <div>
                         <p className="text-sm font-medium text-foreground">{doc.name || doc.dateiname || `Unterlage ${i + 1}`}</p>
-                        <p className="text-[10px] text-muted-foreground">
+                        <p className="text-bildunterschrift text-muted-foreground">
                           {doc.beschreibung || ""} · Status: {statusLabel[doc.status] || "Unbekannt"}
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge variant="outline" className={`text-[10px] ${
+                      <Badge variant="outline" className={`text-bildunterschrift ${
                         doc.status === "freigegeben" ? "border-green-500 text-green-600" :
                         doc.status === "pruefung" ? "border-warning text-warning" :
                         "border-destructive text-destructive"
@@ -642,9 +642,9 @@ export default function NutzerProfilDialog({ nutzer, open, onOpenChange, onSaved
                     <div key={ev.id} className="border rounded-lg p-3 text-xs space-y-1">
                       <div className="flex items-center justify-between gap-2 flex-wrap">
                         <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="text-[10px]">{ev.action}</Badge>
-                          <Badge variant="secondary" className="text-[10px]">{ev.entity}</Badge>
-                          <Badge variant="outline" className={`text-[10px] ${isActor ? "border-primary text-primary" : "border-warning text-warning"}`}>
+                          <Badge variant="outline" className="text-bildunterschrift">{ev.action}</Badge>
+                          <Badge variant="secondary" className="text-bildunterschrift">{ev.entity}</Badge>
+                          <Badge variant="outline" className={`text-bildunterschrift ${isActor ? "border-primary text-primary" : "border-warning text-warning"}`}>
                             {isActor ? "als Auslöser" : "betroffen"}
                           </Badge>
                         </div>
@@ -659,17 +659,17 @@ export default function NutzerProfilDialog({ nutzer, open, onOpenChange, onSaved
                         <details className="mt-1">
                           <summary className="cursor-pointer text-muted-foreground hover:text-foreground">Details</summary>
                           {ev.vorher && (
-                            <pre className="mt-1 p-2 bg-muted/50 rounded text-[10px] overflow-x-auto">
+                            <pre className="mt-1 p-2 bg-muted/50 rounded text-bildunterschrift overflow-x-auto">
 vorher: {JSON.stringify(ev.vorher, null, 2)}
                             </pre>
                           )}
                           {ev.nachher && (
-                            <pre className="mt-1 p-2 bg-muted/50 rounded text-[10px] overflow-x-auto">
+                            <pre className="mt-1 p-2 bg-muted/50 rounded text-bildunterschrift overflow-x-auto">
 nachher: {JSON.stringify(ev.nachher, null, 2)}
                             </pre>
                           )}
                           {ev.meta && Object.keys(ev.meta).length > 0 && (
-                            <pre className="mt-1 p-2 bg-muted/50 rounded text-[10px] overflow-x-auto">
+                            <pre className="mt-1 p-2 bg-muted/50 rounded text-bildunterschrift overflow-x-auto">
 meta: {JSON.stringify(ev.meta, null, 2)}
                             </pre>
                           )}

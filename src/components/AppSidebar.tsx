@@ -230,7 +230,7 @@ function NavGroup({
                 {!collapsed && (
                   <>
                     <span className="flex-1">{item.title}</span>
-                    <Badge className="ml-auto shrink-0 text-[7px] leading-none px-1 py-0.5 h-3.5 bg-orange-500/15 text-orange-500 border border-orange-500/30 hover:bg-orange-500/20 font-semibold uppercase tracking-wide rounded">
+                    <Badge className="ml-auto shrink-0 text-bildunterschrift leading-none px-1 py-0.5 h-3.5 bg-orange-500/15 text-orange-500 border border-orange-500/30 hover:bg-orange-500/20 font-semibold uppercase tracking-wide rounded">
                       Entwurf
                     </Badge>
                   </>
@@ -247,7 +247,7 @@ function NavGroup({
             {!collapsed && (
               <>
                 <span className="flex-1">{item.title}</span>
-                <Badge className="ml-auto shrink-0 text-[7px] leading-none px-1 py-0.5 h-3.5 bg-muted text-muted-foreground border border-border hover:bg-muted font-semibold uppercase tracking-wide rounded">
+                <Badge className="ml-auto shrink-0 text-bildunterschrift leading-none px-1 py-0.5 h-3.5 bg-muted text-muted-foreground border border-border hover:bg-muted font-semibold uppercase tracking-wide rounded">
                   Bald verfügbar
                 </Badge>
               </>
@@ -347,19 +347,19 @@ function NavGroup({
               <SidebarInfoTooltip itemKey={item.url} text={item.tooltip} />
             )}
             {item.badgeCount != null && item.badgeCount > 0 && (
-              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-5 bg-primary text-primary-foreground">
+              <Badge variant="secondary" className="text-bildunterschrift px-1.5 py-0 h-5 bg-primary text-primary-foreground">
                 {item.badgeCount}
               </Badge>
             )}
             {item.newBadge && (
-              <Badge className="text-[9px] px-1.5 py-0 h-4 bg-emerald-500 text-white border-0 hover:bg-emerald-500 uppercase tracking-wide">
+              <Badge className="text-bildunterschrift px-1.5 py-0 h-4 bg-emerald-500 text-white border-0 hover:bg-emerald-500 uppercase tracking-wide">
                 Neu
               </Badge>
             )}
             {item.adminBadge && (
               <Badge
                 variant="outline"
-                className="text-[9px] px-1.5 py-0 h-4 border-primary/40 bg-primary/10 text-primary uppercase tracking-wide"
+                className="text-bildunterschrift px-1.5 py-0 h-4 border-primary/40 bg-primary/10 text-primary uppercase tracking-wide"
               >
                 Admin
               </Badge>

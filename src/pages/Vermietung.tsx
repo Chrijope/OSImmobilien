@@ -62,7 +62,7 @@ const VermietungPage = () => {
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <p className="font-semibold">{v.objektName} – {v.wohneinheitName}</p>
-                      <Badge className="text-[10px]" style={{ backgroundColor: stufeConfig?.color, color: "white" }}>
+                      <Badge className="text-bildunterschrift" style={{ backgroundColor: stufeConfig?.color, color: "white" }}>
                         {stufeConfig?.label}
                       </Badge>
                     </div>

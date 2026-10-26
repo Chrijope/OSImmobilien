@@ -24,7 +24,7 @@ export function PerMailAbgemeldetBadge({ bewerber }: { bewerber: Pick<Bewerber, 
   return (
     <Badge
       variant="outline"
-      className="gap-1 border-amber-300 bg-amber-50 text-[10px] font-medium text-amber-800 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-200"
+      className="gap-1 border-amber-300 bg-amber-50 text-bildunterschrift font-medium text-amber-800 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-200"
       title={titel}
     >
       <MailX className="h-3 w-3" aria-hidden />

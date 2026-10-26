@@ -80,7 +80,7 @@ export default function LeadWarmVsKalt() {
           <li>Empfehlung über bestehenden Kunden</li>
         </ul>
         <div className="bg-emerald-500/5 border border-emerald-500/20 rounded p-4 mt-3 text-sm">
-          <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 mb-1 flex items-center gap-1">
+          <div className="text-bildunterschrift font-bold uppercase tracking-wider text-emerald-600 mb-1 flex items-center gap-1">
             <Phone className="h-3 w-3" /> Aktion
           </div>
           <p><strong>Sofort anrufen.</strong> Idealerweise innerhalb von 1 Stunde. Diese Leads erwarten den Anruf.</p>
@@ -94,7 +94,7 @@ export default function LeadWarmVsKalt() {
           schlechter durch.
         </p>
         <div className="bg-blue-500/5 border border-blue-500/20 rounded p-4 mt-3 text-sm">
-          <div className="text-[10px] font-bold uppercase tracking-wider text-blue-600 mb-1 flex items-center gap-1">
+          <div className="text-bildunterschrift font-bold uppercase tracking-wider text-blue-600 mb-1 flex items-center gap-1">
             <MessageSquare className="h-3 w-3" /> Aktion
           </div>
           <p>

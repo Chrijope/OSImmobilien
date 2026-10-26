@@ -146,7 +146,7 @@ const Bonitaetsrechner = () => {
             className="mt-1 bg-muted/50"
           />
           {hinweis?.[i] && (
-            <p className="text-[10px] text-orange-400 mt-0.5 flex items-center gap-1">
+            <p className="text-bildunterschrift text-orange-400 mt-0.5 flex items-center gap-1">
               <Info className="h-3 w-3" /> {hinweis[i]}
             </p>
           )}
@@ -186,7 +186,7 @@ const Bonitaetsrechner = () => {
                 onChange={e => setEk1(parseFloat(e.target.value) || 0)}
                 className="mt-1 bg-muted/50"
               />
-              <p className="text-[10px] text-muted-foreground mt-0.5 flex items-center gap-1">
+              <p className="text-bildunterschrift text-muted-foreground mt-0.5 flex items-center gap-1">
                 <Info className="h-3 w-3" /> Wird nur zum Investitionsrahmen addiert, nicht zum monatlichen Überschuss.
               </p>
             </div>
@@ -223,7 +223,7 @@ const Bonitaetsrechner = () => {
                 onChange={e => setEk2(parseFloat(e.target.value) || 0)}
                 className="mt-1 bg-muted/50"
               />
-              <p className="text-[10px] text-muted-foreground mt-0.5 flex items-center gap-1">
+              <p className="text-bildunterschrift text-muted-foreground mt-0.5 flex items-center gap-1">
                 <Info className="h-3 w-3" /> Wird nur zum Investitionsrahmen addiert, nicht zum monatlichen Überschuss.
               </p>
             </div>

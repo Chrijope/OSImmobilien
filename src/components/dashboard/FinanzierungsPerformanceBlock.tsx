@@ -170,7 +170,7 @@ export function FinanzierungsPerformanceBlock({ title = "Finanzierungs-Performan
             <Banknote className="h-4 w-4 text-primary" />
             {title}
           </CardTitle>
-          <Badge variant="secondary" className="text-[10px]">
+          <Badge variant="secondary" className="text-bildunterschrift">
             Haupt-KPI: Finanzierung → Notar
           </Badge>
         </div>
@@ -199,7 +199,7 @@ export function FinanzierungsPerformanceBlock({ title = "Finanzierungs-Performan
               <p className="text-[11px] text-muted-foreground leading-tight mt-0.5">
                 Reservierung → Finanzierung
               </p>
-              <p className="text-[10px] text-muted-foreground">
+              <p className="text-bildunterschrift text-muted-foreground">
                 {data.reserviertCount} offene Res.
               </p>
             </div>
@@ -236,7 +236,7 @@ export function FinanzierungsPerformanceBlock({ title = "Finanzierungs-Performan
         </div>
 
         {(data.avgTageRvAngebot === null || data.avgTageAngebotVertrag === null) && (
-          <p className="text-[10px] text-muted-foreground italic">
+          <p className="text-bildunterschrift text-muted-foreground italic">
             Hinweis: Ø-Tage werden aus Pipeline-Zeitstempeln abgeleitet — fehlende Werte
             erscheinen als „—", sobald genug Daten vorliegen.
           </p>
@@ -266,7 +266,7 @@ function KpiTile({
         <Icon className={`h-4 w-4 shrink-0 ${danger ? "text-destructive" : "text-muted-foreground"}`} />
       </div>
       <p className="text-[11px] font-medium mt-1 leading-tight">{label}</p>
-      {sub && <p className="text-[10px] text-muted-foreground leading-tight">{sub}</p>}
+      {sub && <p className="text-bildunterschrift text-muted-foreground leading-tight">{sub}</p>}
     </div>
   );
 }

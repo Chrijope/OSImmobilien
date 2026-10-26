@@ -391,7 +391,7 @@ function Tile({ icon: Icon, label, value, good, bad, highlight }: { icon: any; l
     : "";
   return (
     <Card className="p-3 flex flex-col gap-1 hover:border-primary/40 transition-colors">
-      <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wide text-muted-foreground">
+      <div className="flex items-center gap-1.5 text-bildunterschrift uppercase tracking-wide text-muted-foreground">
         <Icon className="h-3 w-3" /> <span className="truncate">{label}</span>
       </div>
       <div className={`text-base font-semibold tabular-nums ${colorCls}`}>{value}</div>

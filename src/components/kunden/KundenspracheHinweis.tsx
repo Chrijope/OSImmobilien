@@ -58,7 +58,7 @@ function Kuerzel({ sprache, className }: { sprache: Sprache; className?: string 
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded border border-primary/40 px-1 text-[10px] font-semibold uppercase leading-4 tracking-wide text-primary align-middle",
+        "inline-flex items-center rounded border border-primary/40 px-1 text-bildunterschrift font-semibold uppercase leading-4 tracking-wide text-primary align-middle",
         className,
       )}
       title="Kundensprache Englisch"

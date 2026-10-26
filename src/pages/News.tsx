@@ -466,19 +466,19 @@ function NewsDialog({
             </div>
             {form.zielrollen.length > 0 && (
               <div className="flex items-center gap-2">
-                <p className="text-[10px] text-muted-foreground">
+                <p className="text-bildunterschrift text-muted-foreground">
                   {form.zielrollen.length} Rolle(n) ausgewählt
                 </p>
-                <button className="text-[10px] text-primary hover:underline" onClick={() => setForm(prev => ({ ...prev, zielrollen: [] }))}>
+                <button className="text-bildunterschrift text-primary hover:underline" onClick={() => setForm(prev => ({ ...prev, zielrollen: [] }))}>
                   Alle abwählen
                 </button>
-                <button className="text-[10px] text-primary hover:underline" onClick={() => setForm(prev => ({ ...prev, zielrollen: TARGETABLE_ROLES.map(r => r.id) }))}>
+                <button className="text-bildunterschrift text-primary hover:underline" onClick={() => setForm(prev => ({ ...prev, zielrollen: TARGETABLE_ROLES.map(r => r.id) }))}>
                   Alle auswählen
                 </button>
               </div>
             )}
             {form.zielrollen.length === 0 && (
-              <p className="text-[10px] text-muted-foreground">News wird für alle Nutzerrollen angezeigt</p>
+              <p className="text-bildunterschrift text-muted-foreground">News wird für alle Nutzerrollen angezeigt</p>
             )}
           </div>
         </div>

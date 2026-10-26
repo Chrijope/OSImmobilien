@@ -10,7 +10,7 @@ export function ProvisionssatzBadges({ userId }: { userId?: string | null }) {
   const { lead, eigen } = provisionssaetze(userId);
   if (lead === null && eigen === null) return <SatzartBadge art="fehlt" klein />;
   if (lead === eigen) {
-    return <Badge variant="outline" className="text-[10px] px-1.5 py-0 font-bold">{formatSatzProzent(lead!)}</Badge>;
+    return <Badge variant="outline" className="text-bildunterschrift px-1.5 py-0 font-bold">{formatSatzProzent(lead!)}</Badge>;
   }
   return (
     <div className="flex items-center gap-1.5 flex-wrap">

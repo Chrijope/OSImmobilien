@@ -118,9 +118,9 @@ const HVTicketsPage = () => {
                     <div className="flex items-center gap-2">
                       <Icon className={`h-4 w-4 ${t.prioritaet === "dringend" ? "text-red-500" : "text-muted-foreground"}`} />
                       <p className="font-semibold text-sm">{t.titel}</p>
-                      <Badge variant={sc.variant} className="text-[10px]">{sc.label}</Badge>
-                      <Badge variant={t.prioritaet === "dringend" ? "destructive" : "outline"} className="text-[10px]">{t.prioritaet}</Badge>
-                      <Badge variant="outline" className="text-[10px]">{HV_KATEGORIEN.find(k => k.value === t.kategorie)?.label}</Badge>
+                      <Badge variant={sc.variant} className="text-bildunterschrift">{sc.label}</Badge>
+                      <Badge variant={t.prioritaet === "dringend" ? "destructive" : "outline"} className="text-bildunterschrift">{t.prioritaet}</Badge>
+                      <Badge variant="outline" className="text-bildunterschrift">{HV_KATEGORIEN.find(k => k.value === t.kategorie)?.label}</Badge>
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">{t.beschreibung}</p>
                     <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">

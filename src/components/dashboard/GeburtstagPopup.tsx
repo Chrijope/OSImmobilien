@@ -168,7 +168,7 @@ export function GeburtstagPopup() {
                 <p className="truncate text-xs text-muted-foreground">{e.bezeichnung}</p>
               </div>
               {e.quelle === "kunde" && (
-                <span className="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary">
+                <span className="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-bildunterschrift font-semibold uppercase tracking-wider text-primary">
                   Kunde
                 </span>
               )}

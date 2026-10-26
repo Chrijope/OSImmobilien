@@ -410,7 +410,7 @@ const ErstgespraechsTabBestehend = ({
               ist entfernt. */}
           {canEdit && (
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[10px] text-muted-foreground">
+              <span className="text-bildunterschrift text-muted-foreground">
                 {abgeschlossen ? `Gespeichert ${uhrzeitKurz(skript.durchgefuehrtAm)} Uhr` : "Autosave läuft"}
               </span>
               {/* „Moderation öffnen" führt bei jedem Bewerber, alt wie neu, in
@@ -472,7 +472,7 @@ const ErstgespraechsTabBestehend = ({
             {naechsterSchrittText(schritt, nachher, closingDirektAn, entscheidung)}
           </span>
         </div>
-        <p className="text-[10px] text-muted-foreground">
+        <p className="text-bildunterschrift text-muted-foreground">
           Grundton: authentisch, freundlich, bestimmt. Zweck ist die Vorqualifizierung in beide Richtungen,
           geclosed wird im Folgetermin oder direkt in Teil 2.
         </p>
@@ -569,7 +569,7 @@ const ErstgespraechsTabBestehend = ({
         <aside className="space-y-4">
           {/* Zwischenstand, live aus den Feldern */}
           <Card className="p-4" data-testid="erstgespraech-zwischenstand">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">Zwischenstand</p>
+            <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground mb-2">Zwischenstand</p>
             <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-[11px]">
               <dt className="text-muted-foreground">Score</dt>
               <dd className="text-right font-medium">
@@ -631,18 +631,18 @@ const ErstgespraechsTabBestehend = ({
 
           {/* Wo wir stehen */}
           <Card className="p-4" data-testid="erstgespraech-wo-wir-stehen">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">Wo wir stehen</p>
+            <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground mb-2">Wo wir stehen</p>
             <ol className="space-y-0.5">
               {teil1Fertig ? (
                 <li>
                   <button type="button" onClick={() => springe(punktId(9))}
                     className="flex w-full items-start gap-2 rounded px-1 py-1 text-left text-xs hover:bg-muted">
-                    <span className={`mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border text-[9px] ${LISTE_KREIS.erledigt}`}>
+                    <span className={`mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border text-bildunterschrift ${LISTE_KREIS.erledigt}`}>
                       <Check className="h-2.5 w-2.5" strokeWidth={3} />
                     </span>
                     <span>
                       <span className="font-medium">Teil 1 · Punkt 1 bis 9 erledigt</span>
-                      <span className="block text-[10px] text-muted-foreground">Punkt 10 entfällt, Teil 2 läuft. Klick öffnet die Punkte.</span>
+                      <span className="block text-bildunterschrift text-muted-foreground">Punkt 10 entfällt, Teil 2 läuft. Klick öffnet die Punkte.</span>
                     </span>
                   </button>
                 </li>
@@ -662,7 +662,7 @@ const ErstgespraechsTabBestehend = ({
                           z === "aktuell" ? "bg-primary/10 text-primary font-semibold" : entfaellt ? "opacity-50" : "hover:bg-muted"
                         }`}
                       >
-                        <span className={`inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border text-[9px] ${LISTE_KREIS[z]}`}>
+                        <span className={`inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border text-bildunterschrift ${LISTE_KREIS[z]}`}>
                           {z === "erledigt" ? <Check className="h-2.5 w-2.5" strokeWidth={3} /> : p.nummer}
                         </span>
                         <span className={`truncate ${entfaellt ? "line-through" : ""}`}>{schrittBezeichnung(p)}</span>
@@ -673,7 +673,7 @@ const ErstgespraechsTabBestehend = ({
               )}
               {closingDirektAn && (
                 <>
-                  <li className="pt-2 mt-1 border-t text-[10px] font-bold uppercase tracking-wider text-primary px-1">
+                  <li className="pt-2 mt-1 border-t text-bildunterschrift font-bold uppercase tracking-wider text-primary px-1">
                     Teil 2 · Closing direkt
                   </li>
                   {abschnitte.map((s) => {
@@ -689,7 +689,7 @@ const ErstgespraechsTabBestehend = ({
                             z === "aktuell" ? "bg-primary/10 text-primary font-semibold" : "hover:bg-muted"
                           }`}
                         >
-                          <span className={`inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border text-[9px] ${LISTE_KREIS[z]}`}>
+                          <span className={`inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border text-bildunterschrift ${LISTE_KREIS[z]}`}>
                             {z === "erledigt" ? <Check className="h-2.5 w-2.5" strokeWidth={3} /> : s.nummer}
                           </span>
                           <span className="truncate">{schrittBezeichnung(s)}</span>
@@ -705,7 +705,7 @@ const ErstgespraechsTabBestehend = ({
           {/* Gespräch beenden: dieselben Knöpfe und dieselbe Logik wie bisher */}
           {canEdit && (
             <Card className="p-4 space-y-2" data-testid="erstgespraech-beenden">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">Gespräch beenden</p>
+              <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground mb-2">Gespräch beenden</p>
               {abgeschlossen ? (
                 <Button size="sm" onClick={handleAbschliessen} className="w-full h-auto py-2 whitespace-normal bg-green-600 hover:bg-green-700 text-white">
                   <CheckCircle2 className="h-3.5 w-3.5 mr-1 shrink-0" />
@@ -735,7 +735,7 @@ const ErstgespraechsTabBestehend = ({
                 onClick={() => { setRejectMode("abgelehnt"); setShowRejectDialog(true); }}>
                 <XCircle className="h-3.5 w-3.5 mr-1 shrink-0" /> Abgelehnt
               </Button>
-              <p className="text-[10px] text-muted-foreground leading-snug pt-1">
+              <p className="text-bildunterschrift text-muted-foreground leading-snug pt-1">
                 {abgeschlossen
                   ? "Erneutes Abschließen erzeugt die KI-Zusammenfassung neu, etwa wenn nachträglich Notizen ergänzt wurden. Kein Interesse und Abgelehnt bleiben erreichbar."
                   : closingDirektAn
@@ -747,11 +747,11 @@ const ErstgespraechsTabBestehend = ({
 
           {closingDirektAn && entscheidung === "ja" && onWeiterZuClosing && (
             <Card className="p-4 space-y-2 border-green-600/40" data-testid="erstgespraech-naechster-reiter">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Nächster Reiter</p>
+              <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground">Nächster Reiter</p>
               <Button size="sm" onClick={onWeiterZuClosing} className="w-full bg-green-600 hover:bg-green-700 text-white gap-1.5">
                 Weiter im Reiter Closing <ArrowRight className="h-3.5 w-3.5" />
               </Button>
-              <p className="text-[10px] text-muted-foreground leading-snug">
+              <p className="text-bildunterschrift text-muted-foreground leading-snug">
                 Vertrag erzeugen und senden, Adressen prüfen, Startfahrplan optional.
               </p>
             </Card>

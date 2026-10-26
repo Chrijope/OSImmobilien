@@ -430,12 +430,12 @@ const Kalender = () => {
                     </span>
                     <div className="space-y-0.5 mt-0.5 overflow-hidden">
                       {dayEvents.slice(0, 2).map((ev) => (
-                        <div key={ev.id} className={`text-[10px] leading-tight truncate rounded px-1 py-px ${farbeFuer(ev)}`}>
+                        <div key={ev.id} className={`text-bildunterschrift leading-tight truncate rounded px-1 py-px ${farbeFuer(ev)}`}>
                           {ev.titel}
                         </div>
                       ))}
                       {dayEvents.length > 2 && (
-                        <span className="text-[10px] text-muted-foreground">+{dayEvents.length - 2}</span>
+                        <span className="text-bildunterschrift text-muted-foreground">+{dayEvents.length - 2}</span>
                       )}
                     </div>
                   </button>
@@ -467,7 +467,7 @@ const Kalender = () => {
                       {dayEvents.map((ev) => (
                         <div key={ev.id} className={`text-[11px] leading-tight rounded px-1.5 py-1 ${farbeFuer(ev)}`}>
                           <div className="font-medium truncate">{ev.titel}</div>
-                          <div className="text-[10px] opacity-70">{formatTime(ev)}</div>
+                          <div className="text-bildunterschrift opacity-70">{formatTime(ev)}</div>
                         </div>
                       ))}
                     </div>
@@ -524,7 +524,7 @@ const Kalender = () => {
                     <div className="flex items-start justify-between gap-2">
                       <p className="text-sm font-medium leading-tight">{ev.titel}</p>
                       <span
-                        className={`text-[10px] px-1.5 py-0.5 rounded-full shrink-0 ${
+                        className={`text-bildunterschrift px-1.5 py-0.5 rounded-full shrink-0 ${
                           ev.quelle === "crm"
                             ? "bg-primary/15 text-primary"
                             : ev.quelle === "buchung"

@@ -206,7 +206,7 @@ function Kpi({
   return (
     <div className={`rounded-lg border p-3 text-center ${accent ? "border-primary/40 bg-primary/5" : "border-border"}`}>
       <div className="flex items-center justify-between mb-1">
-        <span className="text-[10px] text-muted-foreground uppercase tracking-wider">{label}</span>
+        <span className="text-bildunterschrift text-muted-foreground uppercase tracking-wider">{label}</span>
         <Icon className={`h-3.5 w-3.5 ${accent ? "text-primary" : "text-muted-foreground"}`} />
       </div>
       <div className={`text-lg font-bold tabular-nums ${accent ? "text-primary" : ""}`}>{value}</div>

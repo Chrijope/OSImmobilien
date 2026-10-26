@@ -194,7 +194,7 @@ export function EinwandBibliothekMerged() {
                       {t.kurz}
                     </span>
                     {dazu.length > 0 && (
-                      <Badge variant="secondary" className="ml-auto mr-2 text-[10px] shrink-0">
+                      <Badge variant="secondary" className="ml-auto mr-2 text-bildunterschrift shrink-0">
                         {dazu.length}
                       </Badge>
                     )}
@@ -205,7 +205,7 @@ export function EinwandBibliothekMerged() {
 
                   {zeigeProfi && (
                     <div>
-                      <div className="text-[10px] uppercase tracking-wide text-muted-foreground mb-0.5">
+                      <div className="text-bildunterschrift uppercase tracking-wide text-muted-foreground mb-0.5">
                         Warum sie wirkt
                       </div>
                       <p className="text-sm text-foreground/90">{t.prinzip}</p>
@@ -214,7 +214,7 @@ export function EinwandBibliothekMerged() {
 
                   <div className="grid gap-2.5 sm:grid-cols-2">
                     <div>
-                      <div className="text-[10px] uppercase tracking-wide text-muted-foreground mb-0.5">
+                      <div className="text-bildunterschrift uppercase tracking-wide text-muted-foreground mb-0.5">
                         In drei Schritten
                       </div>
                       <ol className="list-decimal list-inside space-y-0.5 text-sm text-foreground/90">
@@ -222,7 +222,7 @@ export function EinwandBibliothekMerged() {
                       </ol>
                     </div>
                     <div className="rounded border-l-2 border-primary/60 bg-primary/5 p-2">
-                      <div className="text-[10px] uppercase tracking-wide text-muted-foreground mb-0.5">
+                      <div className="text-bildunterschrift uppercase tracking-wide text-muted-foreground mb-0.5">
                         So klingt es
                       </div>
                       <p className="text-sm text-foreground/90">{t.beispiel}</p>
@@ -237,7 +237,7 @@ export function EinwandBibliothekMerged() {
                   )}
                   {dazu.length > 0 && (
                     <div className="pt-1">
-                      <div className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">
+                      <div className="text-bildunterschrift uppercase tracking-wide text-muted-foreground mb-1">
                         Einwände, bei denen sie greift
                       </div>
                       <div className="flex flex-wrap gap-1.5">

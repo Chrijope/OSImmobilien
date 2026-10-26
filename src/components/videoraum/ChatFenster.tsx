@@ -167,7 +167,7 @@ function Beitrag({ beitrag, du }: { beitrag: ChatBeitrag; du: string }) {
             : "bg-white/[0.07] text-white"
         }`}
       >
-        <p className="mb-0.5 flex items-baseline gap-2 text-[10.5px] font-semibold uppercase tracking-[0.05em] text-white/45">
+        <p className="mb-0.5 flex items-baseline gap-2 text-bildunterschrift font-semibold uppercase tracking-[0.05em] text-white/45">
           <span className="min-w-0 truncate">{beitrag.eigen ? du : beitrag.name}</span>
           <span className="shrink-0 tabular-nums font-normal normal-case tracking-normal">
             {chatUhrzeit(beitrag.zeit)}

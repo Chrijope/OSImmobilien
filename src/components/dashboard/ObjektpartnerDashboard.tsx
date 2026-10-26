@@ -122,7 +122,7 @@ function ObjektUebersicht({ objekte }: { objekte: ObjektData[] }) {
                 </div>
                 <Badge
                   variant={obj.sichtbar ? "default" : "secondary"}
-                  className="shrink-0 text-[10px]"
+                  className="shrink-0 text-bildunterschrift"
                 >
                   {obj.sichtbar ? "Sichtbar" : "Unsichtbar"}
                 </Badge>

@@ -157,7 +157,7 @@ export function ClosingTerminKarte({
     <Card className="p-4">
       <div className="flex items-center gap-2 mb-2">
         <CalendarClock className="h-4 w-4 text-primary" />
-        <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Videocall Termin</p>
+        <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground">Videocall Termin</p>
       </div>
       {gebuchtText ? (
         <p className="text-sm font-semibold mt-1" data-testid="videocall-termin-gebucht">
@@ -167,7 +167,7 @@ export function ClosingTerminKarte({
         <div className="mt-1 space-y-1" data-testid="videocall-termin-abgesagt">
           <p className="text-sm font-semibold line-through decoration-1">📅 {abgesagtText}</p>
           <TerminAbgesagtBadge />
-          <p className="text-[10px] leading-relaxed text-muted-foreground">
+          <p className="text-bildunterschrift leading-relaxed text-muted-foreground">
             Er bleibt im Closing. Trag unten einen neuen Termin ein oder lade ihn noch einmal zur
             Buchung ein.
           </p>
@@ -184,7 +184,7 @@ export function ClosingTerminKarte({
             Platzhalter für den ungesetzten Termin bleibt unverändert stehen.
           */}
           {!b.closingTerminDatum && !canEdit && (
-            <p className="text-[10px] text-muted-foreground mt-1">Noch kein Termin vereinbart</p>
+            <p className="text-bildunterschrift text-muted-foreground mt-1">Noch kein Termin vereinbart</p>
           )}
         </>
       )}
@@ -197,7 +197,7 @@ export function ClosingTerminKarte({
                   Kartenbreite und schneiden sonst ab. */}
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 <div>
-                  <Label htmlFor={`closing-datum-${b.id}`} className="text-[10px]">Datum</Label>
+                  <Label htmlFor={`closing-datum-${b.id}`} className="text-bildunterschrift">Datum</Label>
                   <Input
                     id={`closing-datum-${b.id}`}
                     type="date"
@@ -211,7 +211,7 @@ export function ClosingTerminKarte({
                   />
                 </div>
                 <div>
-                  <Label htmlFor={`closing-uhrzeit-${b.id}`} className="text-[10px]">Uhrzeit</Label>
+                  <Label htmlFor={`closing-uhrzeit-${b.id}`} className="text-bildunterschrift">Uhrzeit</Label>
                   <Input
                     id={`closing-uhrzeit-${b.id}`}
                     type="time"
@@ -222,16 +222,16 @@ export function ClosingTerminKarte({
                 </div>
               </div>
               {vergangen && (
-                <p className="text-[10px] text-amber-700 dark:text-amber-400">
+                <p className="text-bildunterschrift text-amber-700 dark:text-amber-400">
                   Der Termin liegt in der Vergangenheit.
                 </p>
               )}
               {!vollstaendig ? (
-                <p className="text-[10px] text-muted-foreground">
+                <p className="text-bildunterschrift text-muted-foreground">
                   Erst mit Datum und Uhrzeit kann gespeichert werden, dann springt der Status auf <strong>Closing</strong>.
                 </p>
               ) : (
-                <p className="text-[10px] text-muted-foreground">
+                <p className="text-bildunterschrift text-muted-foreground">
                   Für einen Termin, den du selbst vereinbart hast, etwa außerhalb unseres Videoraums.
                   Bucht der Bewerber selbst, steht er hier von allein.
                 </p>

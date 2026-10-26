@@ -26,7 +26,7 @@ export function DifferenzAusStrukturKarte({ userId }: { userId: string }) {
             <div className="flex items-center justify-between">
               <span className="font-medium">{monatLabel(b.monat)}</span>
               <span className="flex items-center gap-2">
-                <Badge variant="outline" className="text-[10px]">{STATUS[b.status] ?? b.status}</Badge>
+                <Badge variant="outline" className="text-bildunterschrift">{STATUS[b.status] ?? b.status}</Badge>
                 <span className="font-semibold text-primary tabular-nums">{eur(b.summeOverridesErhalten)}</span>
               </span>
             </div>

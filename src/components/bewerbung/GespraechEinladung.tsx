@@ -226,11 +226,11 @@ export function GespraechEinladung({
       <div className="flex flex-wrap items-center gap-2">
         <p className="text-sm font-semibold">Einladung zur Terminbuchung</p>
         {gebucht ? (
-          <Badge className="bg-green-600 text-white text-[10px] hover:bg-green-600">Termin steht</Badge>
+          <Badge className="bg-green-600 text-white text-bildunterschrift hover:bg-green-600">Termin steht</Badge>
         ) : eingeladenAm ? (
-          <Badge variant="outline" className="text-[10px]">Eingeladen, noch kein Termin</Badge>
+          <Badge variant="outline" className="text-bildunterschrift">Eingeladen, noch kein Termin</Badge>
         ) : (
-          <Badge variant="outline" className="text-[10px] text-muted-foreground">Noch nicht eingeladen</Badge>
+          <Badge variant="outline" className="text-bildunterschrift text-muted-foreground">Noch nicht eingeladen</Badge>
         )}
         {/*
           Ob die Einladung geöffnet wurde. Steht neben dem Stand und nicht
@@ -314,11 +314,11 @@ export function GespraechEinladung({
           )}
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <Label className="text-[10px]">Datum</Label>
+              <Label className="text-bildunterschrift">Datum</Label>
               <DateInput ariaLabel="Datum des Kennenlerngesprächs" value={datum} onChange={setDatum} />
             </div>
             <div>
-              <Label className="text-[10px]">Uhrzeit</Label>
+              <Label className="text-bildunterschrift">Uhrzeit</Label>
               <Input
                 type="time"
                 aria-label="Uhrzeit des Kennenlerngesprächs"

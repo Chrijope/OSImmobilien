@@ -409,7 +409,7 @@ export function ObjektEmpfehlungen({ kunde, inv, minRahmen, maxRahmen, userRole,
                   <div className="flex items-center justify-between gap-3 sm:flex-col sm:items-end sm:justify-center sm:gap-1">
                     <div className="text-right">
                       <p className="text-sm font-bold">{eur0(k.kaufpreis)}</p>
-                      <p className="text-[10px] text-muted-foreground">
+                      <p className="text-bildunterschrift text-muted-foreground">
                         {k.stellplatz > 0 ? `mit Stellplatz ${eur0(k.stellplatz)}, ` : ""}gesamt {eur0(k.gesamtkosten)}
                       </p>
                     </div>
@@ -509,17 +509,17 @@ export function ObjektEmpfehlungen({ kunde, inv, minRahmen, maxRahmen, userRole,
                   <div className="shrink-0 text-right">
                     <div className="flex justify-end gap-1">
                       {e.global ? (
-                        <Badge variant="outline" className="text-[10px]">Gesamtobjekt</Badge>
+                        <Badge variant="outline" className="text-bildunterschrift">Gesamtobjekt</Badge>
                       ) : (
-                        <Badge variant="outline" className="text-[10px]">{e.einheiten.length} frei</Badge>
+                        <Badge variant="outline" className="text-bildunterschrift">{e.einheiten.length} frei</Badge>
                       )}
                       {passt && (
-                        <Badge className="bg-primary/10 text-[10px] text-primary hover:bg-primary/10">
+                        <Badge className="bg-primary/10 text-bildunterschrift text-primary hover:bg-primary/10">
                           {e.global ? "passt" : `${e.anzahlPassend} passend`}
                         </Badge>
                       )}
                     </div>
-                    <p className="mt-0.5 text-[10px] text-muted-foreground">{spanneText(e.preisVon, e.preisBis) || "Preis fehlt"}</p>
+                    <p className="mt-0.5 text-bildunterschrift text-muted-foreground">{spanneText(e.preisVon, e.preisBis) || "Preis fehlt"}</p>
                   </div>
                 </button>
               );
@@ -527,7 +527,7 @@ export function ObjektEmpfehlungen({ kunde, inv, minRahmen, maxRahmen, userRole,
           </div>
         )}
         {gesamtlisteOffen && wirksameSortierung === "score" && (
-          <p className="text-[10px] text-muted-foreground">
+          <p className="text-bildunterschrift text-muted-foreground">
             Sortiert nach dem besten Score je Objekt. Objekte ohne passende Einheit stehen danach, untereinander nach Entfernung.
           </p>
         )}

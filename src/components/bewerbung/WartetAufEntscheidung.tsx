@@ -123,7 +123,7 @@ export function WartetAufEntscheidungBadge({
   if (!punkt) return null;
   const { Symbol } = punkt;
   return (
-    <Badge variant="outline" className={`gap-1 text-[10px] font-medium ${punkt.farbe}`} title={punkt.lang}>
+    <Badge variant="outline" className={`gap-1 text-bildunterschrift font-medium ${punkt.farbe}`} title={punkt.lang}>
       <Symbol className="h-3 w-3" aria-hidden />
       {punkt.kurz}
     </Badge>

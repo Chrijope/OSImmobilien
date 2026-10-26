@@ -313,7 +313,7 @@ export function KontakteFilterLeiste({
                   soll auffallen, sonst übersieht man am zugeklappten Kasten,
                   dass die Liste beschnitten ist. */}
               {anzahlGesetzt > 0 && (
-                <span className="ml-0.5 rounded-full bg-primary px-1.5 py-0.5 text-[10px] leading-none text-primary-foreground">
+                <span className="ml-0.5 rounded-full bg-primary px-1.5 py-0.5 text-bildunterschrift leading-none text-primary-foreground">
                   {anzahlGesetzt}
                 </span>
               )}
@@ -459,7 +459,7 @@ export function KontakteFilterLeiste({
                   <span className="text-xs font-medium">
                     {werte.kategorie === "alle" ? "Alle" : werte.kategorie}
                   </span>
-                  <span className="text-[10px] text-muted-foreground">
+                  <span className="text-bildunterschrift text-muted-foreground">
                     ({kategorieCounts[werte.kategorie] ?? 0})
                   </span>
                   <ChevronDown className="h-3.5 w-3.5 opacity-60" aria-hidden />
@@ -476,7 +476,7 @@ export function KontakteFilterLeiste({
                     }`}
                   >
                     <span>{cat === "alle" ? "Alle" : cat}</span>
-                    <span className="text-[10px] text-muted-foreground">{kategorieCounts[cat] ?? 0}</span>
+                    <span className="text-bildunterschrift text-muted-foreground">{kategorieCounts[cat] ?? 0}</span>
                   </button>
                 ))}
               </PopoverContent>
@@ -521,7 +521,7 @@ export function KontakteFilterLeiste({
                         }`}
                       >
                         <span className="truncate">{s.label}</span>
-                        <span className={`ml-1 text-[10px] ${aktiv ? "opacity-80" : "opacity-60"}`}>
+                        <span className={`ml-1 text-bildunterschrift ${aktiv ? "opacity-80" : "opacity-60"}`}>
                           {stufenCounts[s.key] || 0}
                         </span>
                       </button>

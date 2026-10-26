@@ -21,7 +21,7 @@ export function PartnerLogo({ marke, rolle, satz }: { marke: string; rolle: stri
         {/* Bezeichnung und Logo stehen in einer Zeile, damit beide Karten
             denselben Blockaufbau haben und der Strich auf gleicher Höhe liegt. */}
         <div className="flex h-8 items-center gap-3">
-          <p className="whitespace-nowrap text-[10px] uppercase tracking-[0.18em] text-muted-foreground font-semibold">{rolle}</p>
+          <p className="whitespace-nowrap text-bildunterschrift uppercase tracking-[0.18em] text-muted-foreground font-semibold">{rolle}</p>
           {logo && (
             <img
               src={logo.src}

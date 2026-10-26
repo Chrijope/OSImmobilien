@@ -430,11 +430,11 @@ export default function TeampartnerProfil() {
                 <p>🕐 Login: {member.letzterLogin}</p>
                 {!member.istTippgeber && (
                   onboardingComplete ? (
-                    <Badge className="bg-green-500/10 text-green-600 border-green-500/30 text-[10px]">
+                    <Badge className="bg-green-500/10 text-green-600 border-green-500/30 text-bildunterschrift">
                       <CheckCircle2 className="h-3 w-3 mr-1" /> Onboarding ✓
                     </Badge>
                   ) : (
-                    <Badge variant="outline" className="text-[10px] border-orange-400 text-orange-500">
+                    <Badge variant="outline" className="text-bildunterschrift border-orange-400 text-orange-500">
                       <Clock className="h-3 w-3 mr-1" /> Onboarding ausstehend
                     </Badge>
                   )
@@ -764,10 +764,10 @@ export default function TeampartnerProfil() {
                                 )}
                                 <span className={`text-sm ${effectivelyAllowed ? "" : "text-muted-foreground"}`}>{item.label}</span>
                                 {allowedByRole && (
-                                  <Badge variant="outline" className="text-[10px] h-4 px-1">Rolle</Badge>
+                                  <Badge variant="outline" className="text-bildunterschrift h-4 px-1">Rolle</Badge>
                                 )}
                                 {customGranted && !allowedByRole && (
-                                  <Badge variant="outline" className="text-[10px] h-4 px-1 border-green-500 text-green-600">Manuell</Badge>
+                                  <Badge variant="outline" className="text-bildunterschrift h-4 px-1 border-green-500 text-green-600">Manuell</Badge>
                                 )}
                               </div>
                               {!allowedByRole && (
@@ -825,9 +825,9 @@ export default function TeampartnerProfil() {
                       <details key={e.id} className="py-2 group">
                         <summary className="flex items-center justify-between gap-3 cursor-pointer list-none">
                           <div className="flex items-center gap-2 min-w-0 flex-1">
-                            <Badge variant="secondary" className="text-[10px]">{e.entity}</Badge>
+                            <Badge variant="secondary" className="text-bildunterschrift">{e.entity}</Badge>
                             <span className="text-xs font-medium truncate">{e.action}</span>
-                            <span className="text-[10px] text-muted-foreground truncate">
+                            <span className="text-bildunterschrift text-muted-foreground truncate">
                               {e.actor === id ? "als Akteur" : "betroffen"}
                             </span>
                             {(() => {
@@ -838,7 +838,7 @@ export default function TeampartnerProfil() {
                               if (typeof src.custom_provision_rate_eigen === "number") parts.push(`Eigen ${src.custom_provision_rate_eigen}%`);
                               if (typeof src.provision_locked === "boolean") parts.push(src.provision_locked ? "🔒 gesperrt" : "🔓 entsperrt");
                               return parts.length > 0 ? (
-                                <span className="text-[10px] text-foreground/80 truncate hidden md:inline">
+                                <span className="text-bildunterschrift text-foreground/80 truncate hidden md:inline">
                                   {parts.join(" · ")}
                                 </span>
                               ) : null;

@@ -256,7 +256,7 @@ export default function VideocallEinstellungen() {
         title="Videocall-Einstellungen"
         subtitle="Dein Auftritt, deine Geräte und dein Hintergrund im Videoraum."
       >
-        <Badge variant="outline" className="border-primary/40 bg-primary/10 text-[10px] uppercase tracking-wide text-primary">
+        <Badge variant="outline" className="border-primary/40 bg-primary/10 text-bildunterschrift uppercase tracking-wide text-primary">
           Persönlich
         </Badge>
       </PageHeader>

@@ -69,11 +69,11 @@ function LeistenKnopf({
       className={`relative flex h-[62px] w-16 flex-col items-center justify-center gap-1.5 rounded-2xl border transition-colors hover:brightness-110 ${grund}`}
     >
       {children}
-      <span className="text-[8.5px] font-semibold uppercase tracking-[0.05em] opacity-80">{label}</span>
+      <span className="text-bildunterschrift font-semibold uppercase tracking-[0.05em] opacity-80">{label}</span>
       {zahl != null && zahl > 0 && (
         <span
           data-pruefung={`leiste-zahl-${kennung}`}
-          className="absolute right-1.5 top-1.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-white/15 px-1 text-[10px] font-bold tabular-nums text-white/80"
+          className="absolute right-1.5 top-1.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-white/15 px-1 text-bildunterschrift font-bold tabular-nums text-white/80"
         >
           {zahl > 99 ? "99+" : zahl}
         </span>

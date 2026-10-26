@@ -183,7 +183,7 @@ export default function FollowUp() {
                         <React.Fragment key={col.key}>
                           <TableCell>
                             {idx === 0 && isNew && (
-                              <Badge className="mr-2 align-middle text-[9px] px-1.5 py-0 h-4 bg-emerald-500 text-white border-0 hover:bg-emerald-500 uppercase tracking-wide">
+                              <Badge className="mr-2 align-middle text-bildunterschrift px-1.5 py-0 h-4 bg-emerald-500 text-white border-0 hover:bg-emerald-500 uppercase tracking-wide">
                                 Neu
                               </Badge>
                             )}

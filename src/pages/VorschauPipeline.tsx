@@ -174,9 +174,9 @@ export default function VorschauPipeline() {
                         onDragStart={(e) => inv && e.dataTransfer.setData("text/plain", `${inv.id}|${k.kunde.vorname} ${k.kunde.nachname}`)}
                       >
                         <div className="font-medium">{k.kunde.vorname} {k.kunde.nachname}</div>
-                        {inv && <Badge variant="secondary" className="text-[10px] mt-1">Investment {inv.nummer}</Badge>}
+                        {inv && <Badge variant="secondary" className="text-bildunterschrift mt-1">Investment {inv.nummer}</Badge>}
                         {istAusgeblendeteStufe(k.stufe) && (
-                          <div className="text-[10px] mt-1 text-[hsl(var(--warning))]">Alte Stufe {label(k.stufe)}, weiter über die Finanzierung</div>
+                          <div className="text-bildunterschrift mt-1 text-[hsl(var(--warning))]">Alte Stufe {label(k.stufe)}, weiter über die Finanzierung</div>
                         )}
                       </Card>
                     );

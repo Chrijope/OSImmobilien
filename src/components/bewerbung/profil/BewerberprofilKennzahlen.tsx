@@ -30,11 +30,11 @@ export function BewerberprofilKennzahlen({
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4" data-testid="bewerberprofil-kennzahlen">
       <Card className="p-3.5 min-w-0">
-        <h3 className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">Nächste Aktion</h3>
+        <h3 className="text-bildunterschrift uppercase tracking-wide text-muted-foreground font-semibold">Nächste Aktion</h3>
         <p className="text-sm font-semibold mt-1 break-words">{naechsteAktionText(b, ereignisse)}</p>
       </Card>
       <Card className="p-3.5 min-w-0">
-        <h3 className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">Nächster Termin</h3>
+        <h3 className="text-bildunterschrift uppercase tracking-wide text-muted-foreground font-semibold">Nächster Termin</h3>
         {termin ? (
           <>
             <p className="text-sm font-semibold mt-1 break-words">
@@ -48,7 +48,7 @@ export function BewerberprofilKennzahlen({
         )}
       </Card>
       <Card className="p-3.5 min-w-0">
-        <h3 className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">Zuletzt passiert</h3>
+        <h3 className="text-bildunterschrift uppercase tracking-wide text-muted-foreground font-semibold">Zuletzt passiert</h3>
         {letzte ? (
           <>
             <p className="text-sm font-semibold mt-1 break-words">{letzte.titel}</p>

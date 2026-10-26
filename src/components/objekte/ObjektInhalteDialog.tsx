@@ -168,7 +168,7 @@ export function ObjektInhalteDialog() {
                 {texte.map((v) => v.art === "unklar" ? (
                   <TableRow key={v.inhalt.adresse}>
                     <TableCell className="text-xs">{v.inhalt.adresse}</TableCell>
-                    <TableCell colSpan={3}><Badge variant="destructive" className="text-[10px]">unklar</Badge> <span className="text-xs">{v.grund}</span></TableCell>
+                    <TableCell colSpan={3}><Badge variant="destructive" className="text-bildunterschrift">unklar</Badge> <span className="text-xs">{v.grund}</span></TableCell>
                   </TableRow>
                 ) : v.felder.map((f, i) => (
                   <TableRow key={`${v.objektId}-${f.feld}`}>
@@ -185,7 +185,7 @@ export function ObjektInhalteDialog() {
                     )}
                     <TableCell className="align-top text-xs">
                       {FELD_NAME[f.feld]}
-                      {f.gleich ? <Badge variant="secondary" className="ml-1 text-[10px]">gleich</Badge> : f.gepflegt ? <Badge variant="outline" className="ml-1 text-[10px]">von Hand</Badge> : null}
+                      {f.gleich ? <Badge variant="secondary" className="ml-1 text-bildunterschrift">gleich</Badge> : f.gepflegt ? <Badge variant="outline" className="ml-1 text-bildunterschrift">von Hand</Badge> : null}
                     </TableCell>
                     <TableCell className="align-top text-xs text-muted-foreground">{kurz(f.vorher)}</TableCell>
                     <TableCell className="align-top text-xs">{kurz(f.nachher)}</TableCell>
@@ -231,9 +231,9 @@ export function ObjektInhalteDialog() {
                       <TableCell className="text-xs">{z.datei.pfad.split("/").slice(-3).join("/")}</TableCell>
                       <TableCell className="text-xs">{bildZiel(z)}</TableCell>
                       <TableCell>
-                        {z.art === "unklar" ? <Badge variant="destructive" className="text-[10px]">unklar</Badge>
-                          : "schonDa" in z && z.schonDa ? <Badge variant="secondary" className="text-[10px]">schon da</Badge>
-                            : <Badge variant="outline" className="text-[10px]">bereit</Badge>}
+                        {z.art === "unklar" ? <Badge variant="destructive" className="text-bildunterschrift">unklar</Badge>
+                          : "schonDa" in z && z.schonDa ? <Badge variant="secondary" className="text-bildunterschrift">schon da</Badge>
+                            : <Badge variant="outline" className="text-bildunterschrift">bereit</Badge>}
                       </TableCell>
                     </TableRow>
                   ))}

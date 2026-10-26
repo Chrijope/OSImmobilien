@@ -112,7 +112,7 @@ export default function IpAllowlistManager() {
               <div className="flex items-center gap-2">
                 <Badge variant="secondary" className="font-mono text-[11px]">{ip}</Badge>
                 {myIp && (ip === myIp || (ip.endsWith("*") && myIp.startsWith(ip.slice(0,-1)))) && (
-                  <Badge variant="outline" className="text-[10px]">deine IP</Badge>
+                  <Badge variant="outline" className="text-bildunterschrift">deine IP</Badge>
                 )}
               </div>
               <Button size="sm" variant="ghost" onClick={() => removeIp(ip)} disabled={saving}>

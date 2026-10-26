@@ -270,7 +270,7 @@ export function BewerberSchnellaktionen({
           {canEdit ? (
             <div className="space-y-3">
               <div>
-                <Label className="text-[10px]">Datum (TT.MM.JJJJ)</Label>
+                <Label className="text-bildunterschrift">Datum (TT.MM.JJJJ)</Label>
                 <DateInput
                   value={b.erstgespraechDatum || ""}
                   onChange={(v) => onFeld("erstgespraechDatum" as keyof Bewerber, v)}
@@ -278,7 +278,7 @@ export function BewerberSchnellaktionen({
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <Label className="text-[10px]">Uhrzeit</Label>
+                  <Label className="text-bildunterschrift">Uhrzeit</Label>
                   <Input
                     type="time"
                     aria-label="Uhrzeit des Erstgesprächs"
@@ -287,7 +287,7 @@ export function BewerberSchnellaktionen({
                   />
                 </div>
                 <div>
-                  <Label className="text-[10px]">Vertriebspartner</Label>
+                  <Label className="text-bildunterschrift">Vertriebspartner</Label>
                   <Input
                     aria-label="Vertriebspartner im Erstgespräch"
                     value={b.erstgespraechBerater || beraterName}

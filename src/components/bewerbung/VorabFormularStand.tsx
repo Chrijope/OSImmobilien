@@ -143,7 +143,7 @@ export function VorabFormularStand({ bewerbungId }: { bewerbungId: string }) {
                 {stand.kennenlernen ? "Kennenlernen ausgefüllt" : "Vorab-Formular ausgefüllt"}
               </p>
               {stand.am && (
-                <Badge variant="outline" className="text-[10px]">am {datum(stand.am)}</Badge>
+                <Badge variant="outline" className="text-bildunterschrift">am {datum(stand.am)}</Badge>
               )}
               <ErinnerungHinweis />
             </div>

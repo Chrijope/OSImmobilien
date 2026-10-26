@@ -90,7 +90,7 @@ export function ZahlenDatenFaktenGrid({
         <>
           {fmt(w.mieteGesamt)}
           {hatGeplanteErhoehung?.(w) && (
-            <span className="text-[10px] text-[hsl(var(--success))] ml-1">
+            <span className="text-bildunterschrift text-[hsl(var(--success))] ml-1">
               → {fmt(w.neueMiete!)} ab {w.mieterhoehungAb}
             </span>
           )}

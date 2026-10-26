@@ -74,7 +74,7 @@ export function BeraterSearchSelect({ value, onChange, filterByRole }: BeraterSe
         <div className="flex flex-wrap gap-1">
           <Badge
             variant={roleFilter === null ? "default" : "outline"}
-            className="text-[10px] cursor-pointer"
+            className="text-bildunterschrift cursor-pointer"
             onClick={() => setRoleFilter(null)}
           >
             Alle
@@ -83,7 +83,7 @@ export function BeraterSearchSelect({ value, onChange, filterByRole }: BeraterSe
             <Badge
               key={role}
               variant={roleFilter === role ? "default" : "outline"}
-              className="text-[10px] cursor-pointer"
+              className="text-bildunterschrift cursor-pointer"
               onClick={() => setRoleFilter(roleFilter === role ? null : role)}
             >
               {rollenLabel(role || "")}
@@ -110,7 +110,7 @@ export function BeraterSearchSelect({ value, onChange, filterByRole }: BeraterSe
           >
             <span>{u.name}</span>
             {displayRole && (
-              <span className="text-[10px] text-muted-foreground">{rollenLabel(displayRole, u.rollenVariante)}</span>
+              <span className="text-bildunterschrift text-muted-foreground">{rollenLabel(displayRole, u.rollenVariante)}</span>
             )}
           </button>
           );

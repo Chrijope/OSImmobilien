@@ -915,7 +915,7 @@ export default function ObjektDetail() {
                               className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 rounded-full p-1.5 hover:bg-background shadow">
                               <ChevronRight className="h-4 w-4" />
                             </button>
-                            <div className="absolute bottom-2 right-2 bg-background/80 rounded px-1.5 py-0.5 text-[10px] font-medium">
+                            <div className="absolute bottom-2 right-2 bg-background/80 rounded px-1.5 py-0.5 text-bildunterschrift font-medium">
                               {(wImgIdx % wBilder.length) + 1} / {wBilder.length}
                             </div>
                           </>
@@ -929,7 +929,7 @@ export default function ObjektDetail() {
                                 <LazyImage src={resolveImageUrl(img.url)} alt={img.alt} className="w-full h-full object-cover" wrapperClassName="w-full h-full" />
                               </button>
                               {isEditor && (
-                                <button className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground rounded-full w-4 h-4 text-[10px] flex items-center justify-center opacity-0 group-hover:opacity-100"
+                                <button className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground rounded-full w-4 h-4 text-bildunterschrift flex items-center justify-center opacity-0 group-hover:opacity-100"
                                   onClick={() => { if (!id) return; removeWohnungBild(id, w.id, img.id); reload(); const updated = getObjektById(id)?.wohnungen.find(wu => wu.id === w.id); if (updated) setSelectedWohnung(updated); }}>✕</button>
                               )}
                             </div>
@@ -979,14 +979,14 @@ export default function ObjektDetail() {
                         const signed = invs.some(inv => getRvSigned(inv.id));
                         if (pending) {
                           return (
-                            <Badge className="bg-[hsl(var(--warning))]/15 text-[hsl(var(--warning))] hover:bg-[hsl(var(--warning))]/15 text-[10px]">
+                            <Badge className="bg-[hsl(var(--warning))]/15 text-[hsl(var(--warning))] hover:bg-[hsl(var(--warning))]/15 text-bildunterschrift">
                               Warte auf Unterschrift des Kunden
                             </Badge>
                           );
                         }
                         if (signed) {
                           return (
-                            <Badge className="bg-[hsl(var(--success))]/15 text-[hsl(var(--success))] hover:bg-[hsl(var(--success))]/15 text-[10px]">
+                            <Badge className="bg-[hsl(var(--success))]/15 text-[hsl(var(--success))] hover:bg-[hsl(var(--success))]/15 text-bildunterschrift">
                               RV unterschrieben
                             </Badge>
                           );
@@ -1117,7 +1117,7 @@ export default function ObjektDetail() {
                             <Button size="sm" onClick={() => window.open(wLink, "_blank")} className="w-fit">
                               <FolderOpen className="h-3.5 w-3.5 mr-1.5" /> Wohnungsunterlagen öffnen
                             </Button>
-                            <p className="text-[10px] text-muted-foreground break-all">{wLink}</p>
+                            <p className="text-bildunterschrift text-muted-foreground break-all">{wLink}</p>
                           </div>
                         );
                       }
@@ -1178,7 +1178,7 @@ export default function ObjektDetail() {
                                     }} />
                                   </label>
                                 ) : (
-                                  <Badge variant="outline" className="text-[10px] text-muted-foreground">Fehlt</Badge>
+                                  <Badge variant="outline" className="text-bildunterschrift text-muted-foreground">Fehlt</Badge>
                                 )}
                                 {isEditor && (
                                   <button className="text-destructive opacity-0 group-hover:opacity-100 transition-opacity h-7 w-7 flex items-center justify-center"
@@ -1542,7 +1542,7 @@ export default function ObjektDetail() {
                             {label}
                           </Button>
                           {isEditor && dok.typ === "custom" && (
-                            <button className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground rounded-full w-4 h-4 text-[10px] flex items-center justify-center opacity-0 group-hover:opacity-100" onClick={e => { e.stopPropagation(); handleDeleteDoc(dok.id); }}>✕</button>
+                            <button className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground rounded-full w-4 h-4 text-bildunterschrift flex items-center justify-center opacity-0 group-hover:opacity-100" onClick={e => { e.stopPropagation(); handleDeleteDoc(dok.id); }}>✕</button>
                           )}
                         </div>
                       );
@@ -1583,7 +1583,7 @@ export default function ObjektDetail() {
             <div className="flex items-center gap-2 flex-wrap">
               <h3 className="font-bold">Wohnungsübersicht ({wohnungenReady ? objekt.wohnungen.length : "…"})</h3>
               {passendeKunden && (
-                <Badge className="bg-primary/10 text-[10px] text-primary hover:bg-primary/10" data-testid="passende-kunden-zaehler">
+                <Badge className="bg-primary/10 text-bildunterschrift text-primary hover:bg-primary/10" data-testid="passende-kunden-zaehler">
                   {passendeKunden.kundenMitTreffer === 1 ? "Für 1 Kunden passt mindestens eine Einheit" : `Für ${passendeKunden.kundenMitTreffer} Kunden passt mindestens eine Einheit`}
                 </Badge>
               )}
@@ -1591,7 +1591,7 @@ export default function ObjektDetail() {
                 // `wohneinheitenGesamt` wurde nie gespeichert; die Zahl steht in `meta.einheitenImHaus`.
                 const wge = Number((objekt.meta as any)?.einheitenImHaus) || (objekt.globalDaten as any)?.wohneinheitenGesamt || 0;
                 if (wge > 0 && wge > objekt.wohnungen.length) {
-                  return <Badge variant="outline" className="text-[10px]">{objekt.wohnungen.length} von {wge} Einheiten im Vertrieb</Badge>;
+                  return <Badge variant="outline" className="text-bildunterschrift">{objekt.wohnungen.length} von {wge} Einheiten im Vertrieb</Badge>;
                 }
                 return null;
               })()}
@@ -1701,13 +1701,13 @@ export default function ObjektDetail() {
                         {w.weNr}
                         {/* VP sees "Exklusiv" badge on their assigned units */}
                         {!isEditor && w.exklusivNutzer && w.exklusivNutzer.length > 0 && authUser?.id && w.exklusivNutzer.includes(authUser.id) && (
-                          <Badge className="text-[9px] bg-primary/10 text-primary border-primary/30 px-1 py-0" variant="outline">Exklusiv</Badge>
+                          <Badge className="text-bildunterschrift bg-primary/10 text-primary border-primary/30 px-1 py-0" variant="outline">Exklusiv</Badge>
                         )}
                         {/* Admin sees assigned VP names */}
                         {["admin", "inhaber"].includes(user.role) && w.exklusivNutzer && w.exklusivNutzer.length > 0 && (() => {
                           const allUsers = loadAllUsers();
                           const names = w.exklusivNutzer.map(uid => allUsers.find(u => u.id === uid)?.name || "?").join(", ");
-                          return <Badge className="text-[9px] bg-primary/10 text-primary border-primary/30 px-1 py-0" variant="outline" title={names}>🔒 {names}</Badge>;
+                          return <Badge className="text-bildunterschrift bg-primary/10 text-primary border-primary/30 px-1 py-0" variant="outline" title={names}>🔒 {names}</Badge>;
                         })()}
                       </div>
                     </TableCell>
@@ -1720,7 +1720,7 @@ export default function ObjektDetail() {
                       <div className="flex flex-col">
                         <span>{fmt(w.mieteGesamt)}</span>
                         {hatGeplanteErhoehung(w) && (
-                          <span className="text-[9px] text-[hsl(var(--success))]">→ {fmt(w.neueMiete!)} ab {w.mieterhoehungAb}</span>
+                          <span className="text-bildunterschrift text-[hsl(var(--success))]">→ {fmt(w.neueMiete!)} ab {w.mieterhoehungAb}</span>
                         )}
                       </div>
                     </TableCell>
@@ -1729,12 +1729,12 @@ export default function ObjektDetail() {
                     <TableCell>
                       <div className="flex flex-col leading-tight">
                         <span className="text-xs">{fmt(getHausgeldMonatForWohnung(objekt, w))}/mtl.</span>
-                        <span className="text-[10px] text-muted-foreground">davon n.u. {fmt(getHausgeldNichtUmlegbarForWohnung(objekt, w))}</span>
+                        <span className="text-bildunterschrift text-muted-foreground">davon n.u. {fmt(getHausgeldNichtUmlegbarForWohnung(objekt, w))}</span>
                       </div>
                     </TableCell>
                     {objekt.sanierungskosten ? <TableCell><span className="text-xs">{(tausendstel / 10).toLocaleString("de-DE", { maximumFractionDigits: 1 })} % = {fmt(sanierungAnteil)}</span></TableCell> : null}
                     <TableCell>
-                      <Badge variant={w.vermietet !== false ? "default" : "destructive"} className="text-[10px]">
+                      <Badge variant={w.vermietet !== false ? "default" : "destructive"} className="text-bildunterschrift">
                         {w.vermietet !== false ? "Vermietet" : "Leerstand"}
                       </Badge>
                     </TableCell>
@@ -1780,7 +1780,7 @@ export default function ObjektDetail() {
                               />
                             )}
                             {!isOther && rvPending && (
-                              <Badge className="bg-[hsl(var(--warning))]/15 text-[hsl(var(--warning))] hover:bg-[hsl(var(--warning))]/15 text-[9px] w-fit">
+                              <Badge className="bg-[hsl(var(--warning))]/15 text-[hsl(var(--warning))] hover:bg-[hsl(var(--warning))]/15 text-bildunterschrift w-fit">
                                 Warte auf Unterschrift
                               </Badge>
                             )}
@@ -1806,7 +1806,7 @@ export default function ObjektDetail() {
                               </span>
                             )}
                             {w.beraterName && (
-                              <p className="text-[10px] text-muted-foreground">VP: {w.beraterName}</p>
+                              <p className="text-bildunterschrift text-muted-foreground">VP: {w.beraterName}</p>
                             )}
                           </div>
                         ) : (
@@ -1817,11 +1817,11 @@ export default function ObjektDetail() {
                     <TableCell onClick={e => e.stopPropagation()}>
                       {w.status === "frei" && einheitImAngebot(w) && kundeIdFromUrl && darfReservieren(user.role) && !istGlobalobjekt(objekt) && (() => {
                         if (vormerkungBlockiert(w, kundeIdFromUrl)) {
-                          return <span className="text-[10px] text-muted-foreground">Vorgemerkt bis {uhrzeit(w.vorgemerktBis)} Uhr</span>;
+                          return <span className="text-bildunterschrift text-muted-foreground">Vorgemerkt bis {uhrzeit(w.vorgemerktBis)} Uhr</span>;
                         }
                         const saOk = investmentIdFromUrl ? darfReservierungStarten(investmentIdFromUrl) : false;
                         if (!saOk) {
-                          return <span className="text-[10px] text-[hsl(var(--warning))]">SA-Unterschrift fehlt</span>;
+                          return <span className="text-bildunterschrift text-[hsl(var(--warning))]">SA-Unterschrift fehlt</span>;
                         }
                         return (
                           <Button size="sm" variant="outline" className="text-xs h-7" onClick={() => handleKundeReservieren(w.id)}>
@@ -2024,7 +2024,7 @@ export default function ObjektDetail() {
                     }
                   }} />
                 </label>
-                <div className="text-[10px] text-muted-foreground text-center">oder</div>
+                <div className="text-bildunterschrift text-muted-foreground text-center">oder</div>
                 <Input value={pendingDocFile ? "" : newDoc.url} onChange={e => { setPendingDocFile(null); setNewDoc(p => ({ ...p, url: e.target.value })); }} placeholder="https://..." className="h-8" />
               </div>
             </div>
@@ -2170,7 +2170,7 @@ export default function ObjektDetail() {
               <div>
                 <Label className="text-xs">Status</Label>
                 <p className="text-sm font-medium py-1.5 px-2">{(ew.status ?? showEditWohnung?.status ?? "frei") === "verkauft" ? "Verkauft" : (ew.status ?? showEditWohnung?.status ?? "frei") === "reserviert" ? "Reserviert" : "Frei"}</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">{["admin", "inhaber"].includes(user.role) ? "Status direkt in der Wohnungsübersicht-Tabelle änderbar" : "Status wird automatisch durch Reservierung/Notartermin gesetzt"}</p>
+                <p className="text-bildunterschrift text-muted-foreground mt-0.5">{["admin", "inhaber"].includes(user.role) ? "Status direkt in der Wohnungsübersicht-Tabelle änderbar" : "Status wird automatisch durch Reservierung/Notartermin gesetzt"}</p>
               </div>
             </div>
             <Button onClick={handleSaveEditWohnung}>Speichern</Button>
@@ -2352,7 +2352,7 @@ export default function ObjektDetail() {
                         className="rounded"
                       />
                       <span>{u.name}</span>
-                      {u.rolle && <Badge variant="outline" className="text-[10px] ml-auto">{u.rolle}</Badge>}
+                      {u.rolle && <Badge variant="outline" className="text-bildunterschrift ml-auto">{u.rolle}</Badge>}
                     </label>
                   ));
               })()}

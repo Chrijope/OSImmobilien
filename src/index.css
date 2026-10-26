@@ -1394,7 +1394,8 @@
 
   /* Make all badges inside library quieter */
   .library-apple .la-section [class*="badge"],
-  .library-apple .la-section .text-\[10px\] {
+  .library-apple .la-section .text-\[10px\],
+  .library-apple .la-section .text-bildunterschrift {
     letter-spacing: 0.02em;
   }
 

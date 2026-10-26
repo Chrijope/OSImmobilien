@@ -83,7 +83,7 @@ export function KennzahlenZeile({ partnerId }: { partnerId: string }) {
         {stufen.map(([label, wert, titel]) => (
           <div key={label} title={`${label}: ${titel}`} className="rounded bg-muted/60 px-1 py-0.5">
             <div className="font-semibold tabular-nums">{wert}</div>
-            <div className="text-[10px] text-muted-foreground">{label}</div>
+            <div className="text-bildunterschrift text-muted-foreground">{label}</div>
           </div>
         ))}
       </div>

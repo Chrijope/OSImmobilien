@@ -47,7 +47,7 @@ function Frame({ url, children }: { url: string; children: React.ReactNode }) {
         <span className="h-2 w-2 rounded-full bg-red-400/70" />
         <span className="h-2 w-2 rounded-full bg-yellow-400/70" />
         <span className="h-2 w-2 rounded-full bg-green-400/70" />
-        <span className="ml-3 text-[9px] font-mono text-muted-foreground/80 tracking-wider truncate">{url}</span>
+        <span className="ml-3 text-bildunterschrift font-mono text-muted-foreground/80 tracking-wider truncate">{url}</span>
       </div>
       <div className="p-3">
         <svg viewBox="0 0 240 120" className="w-full h-24 md:h-28">{children}</svg>

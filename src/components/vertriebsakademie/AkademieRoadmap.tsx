@@ -47,10 +47,10 @@ export function AkademieRoadmap() {
                   >
                     {isDone ? <Check className="h-5 w-5" /> : isCurrent ? <PlayCircle className="h-5 w-5" /> : idx > (currentIdx === -1 ? items.length : currentIdx) ? <Lock className="h-3.5 w-3.5" /> : <span>{it.k.nummer}</span>}
                   </div>
-                  <div className="text-[10px] font-medium text-center leading-tight text-muted-foreground group-hover:text-foreground line-clamp-2">
+                  <div className="text-bildunterschrift font-medium text-center leading-tight text-muted-foreground group-hover:text-foreground line-clamp-2">
                     {it.k.titel}
                   </div>
-                  <div className="text-[9px] tabular-nums text-muted-foreground">{it.stats.pct}%</div>
+                  <div className="text-bildunterschrift tabular-nums text-muted-foreground">{it.stats.pct}%</div>
                 </Link>
                 {!isLast && (
                   <div

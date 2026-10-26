@@ -145,7 +145,7 @@ export default function ErgebnisFreischalten({ result, data, berater, onFreigesc
               { label: t.kennzahlMehrNetto, wert: `+${eur(mehrNetto)}` },
             ].map((k) => (
               <div key={k.label} className="rounded-xl bg-muted/60 p-3">
-                <p className="text-[10px] text-muted-foreground leading-tight">{k.label}</p>
+                <p className="text-bildunterschrift text-muted-foreground leading-tight">{k.label}</p>
                 <p className="text-base font-bold mt-1 blur-[7px] select-none">{k.wert}</p>
               </div>
             ))}

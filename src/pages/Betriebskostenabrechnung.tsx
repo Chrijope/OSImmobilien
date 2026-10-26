@@ -86,7 +86,7 @@ export default function BetriebskostenabrechnungPage() {
                         {selectedBKA.kostenarten.map(k => (
                           <tr key={k.id} className="border-b border-border/50">
                             <td className="py-1.5">{k.bezeichnung}</td>
-                            <td className="py-1.5"><Badge variant="outline" className="text-[10px]">{k.verteilerschluessel}</Badge></td>
+                            <td className="py-1.5"><Badge variant="outline" className="text-bildunterschrift">{k.verteilerschluessel}</Badge></td>
                             <td className="py-1.5 text-right font-medium">{k.betrag.toLocaleString("de-DE")} €</td>
                           </tr>
                         ))}

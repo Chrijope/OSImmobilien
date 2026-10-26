@@ -72,7 +72,7 @@ const KNOPF = "h-10 gap-1 px-2 text-xs sm:h-8";
 
 function ArtMarke({ e }: { e: GesendetesExpose }) {
   return (
-    <Badge variant="outline" className="text-[10px] text-muted-foreground" data-testid="kundenlink-art-marke">
+    <Badge variant="outline" className="text-bildunterschrift text-muted-foreground" data-testid="kundenlink-art-marke">
       {kundenlinkArtName(e.art)}
     </Badge>
   );
@@ -80,9 +80,9 @@ function ArtMarke({ e }: { e: GesendetesExpose }) {
 
 function StatusMarke({ e }: { e: GesendetesExpose }) {
   const status = exposeLinkStatus(e);
-  if (status === "zurueckgezogen") return <Badge variant="outline" className="text-[10px] text-muted-foreground">Zurückgezogen</Badge>;
-  if (status === "abgelaufen") return <Badge variant="outline" className="border-warning/40 text-[10px] text-warning">Abgelaufen</Badge>;
-  return <Badge variant="outline" className="border-primary/30 text-[10px] text-primary">Aktiv</Badge>;
+  if (status === "zurueckgezogen") return <Badge variant="outline" className="text-bildunterschrift text-muted-foreground">Zurückgezogen</Badge>;
+  if (status === "abgelaufen") return <Badge variant="outline" className="border-warning/40 text-bildunterschrift text-warning">Abgelaufen</Badge>;
+  return <Badge variant="outline" className="border-primary/30 text-bildunterschrift text-primary">Aktiv</Badge>;
 }
 
 export function GesendeteExposes({ kontaktId, investmentId, kundeName, anfangsOffen = false }: GesendeteExposesProps) {

@@ -60,8 +60,8 @@ export function HausverwaltungKpiCard() {
               <CardTitle className="text-sm font-semibold flex items-center justify-between">
                 <span className="flex items-center gap-2"><Building2 className="h-4 w-4" /> Hausverwaltung – Überblick</span>
                 <div className="flex items-center gap-2">
-                  <Badge className="bg-orange-100 text-orange-700 border-orange-200 text-[10px]">Entwurf</Badge>
-                  {dringend > 0 && <Badge variant="destructive" className="text-[10px]">{dringend} dringend</Badge>}
+                  <Badge className="bg-orange-100 text-orange-700 border-orange-200 text-bildunterschrift">Entwurf</Badge>
+                  {dringend > 0 && <Badge variant="destructive" className="text-bildunterschrift">{dringend} dringend</Badge>}
                   <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
                 </div>
               </CardTitle>
@@ -89,7 +89,7 @@ export function HausverwaltungKpiCard() {
                 <kpi.icon className={`h-4 w-4 ${kpi.color} shrink-0`} />
                 <div className="min-w-0">
                   <p className="text-sm font-bold leading-none truncate">{kpi.value}</p>
-                  <p className="text-[10px] text-muted-foreground truncate">{kpi.label}</p>
+                  <p className="text-bildunterschrift text-muted-foreground truncate">{kpi.label}</p>
                 </div>
               </div>
             ))}
@@ -102,21 +102,21 @@ export function HausverwaltungKpiCard() {
                 <div className="flex items-center gap-2 p-2 rounded-lg bg-destructive/10 text-destructive text-xs">
                   <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
                   <span className="font-medium">{dringend} dringende(s) Ticket(s)</span>
-                  <button onClick={() => navigate("/hv-tickets")} className="ml-auto underline text-[10px]">Anzeigen</button>
+                  <button onClick={() => navigate("/hv-tickets")} className="ml-auto underline text-bildunterschrift">Anzeigen</button>
                 </div>
               )}
               {ueberfaelligeZahlungen > 0 && (
                 <div className="flex items-center gap-2 p-2 rounded-lg bg-destructive/10 text-destructive text-xs">
                   <CreditCard className="h-3.5 w-3.5 shrink-0" />
                   <span className="font-medium">{ueberfaelligeZahlungen} überfällige Zahlung(en)</span>
-                  <button onClick={() => navigate("/mieter")} className="ml-auto underline text-[10px]">Anzeigen</button>
+                  <button onClick={() => navigate("/mieter")} className="ml-auto underline text-bildunterschrift">Anzeigen</button>
                 </div>
               )}
               {kautionOffen > 0 && (
                 <div className="flex items-center gap-2 p-2 rounded-lg bg-orange-500/10 text-orange-600 text-xs">
                   <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
                   <span className="font-medium">{kautionOffen} Kaution(en) ausstehend</span>
-                  <button onClick={() => navigate("/mieter")} className="ml-auto underline text-[10px]">Anzeigen</button>
+                  <button onClick={() => navigate("/mieter")} className="ml-auto underline text-bildunterschrift">Anzeigen</button>
                 </div>
               )}
             </div>
@@ -130,12 +130,12 @@ export function HausverwaltungKpiCard() {
                 {tickets.filter(t => t.status !== "erledigt").slice(0, 4).map(t => (
                   <div key={t.id} className="flex items-center justify-between gap-1">
                     <span className="text-xs truncate">{t.titel}</span>
-                    <Badge variant={t.prioritaet === "dringend" ? "destructive" : "secondary"} className="text-[9px] shrink-0">{t.prioritaet}</Badge>
+                    <Badge variant={t.prioritaet === "dringend" ? "destructive" : "secondary"} className="text-bildunterschrift shrink-0">{t.prioritaet}</Badge>
                   </div>
                 ))}
                 {offeneTickets === 0 && <p className="text-xs text-muted-foreground">Keine offenen Tickets</p>}
               </div>
-              <button onClick={() => navigate("/hv-tickets")} className="text-[10px] text-primary hover:underline mt-1.5">Alle Tickets →</button>
+              <button onClick={() => navigate("/hv-tickets")} className="text-bildunterschrift text-primary hover:underline mt-1.5">Alle Tickets →</button>
             </div>
             <div>
               <p className="text-xs font-semibold mb-2 text-muted-foreground">Vermietungs-Pipeline</p>
@@ -154,7 +154,7 @@ export function HausverwaltungKpiCard() {
                   );
                 })}
               </div>
-              <button onClick={() => navigate("/vermietung")} className="text-[10px] text-primary hover:underline mt-1.5">Vermietung →</button>
+              <button onClick={() => navigate("/vermietung")} className="text-bildunterschrift text-primary hover:underline mt-1.5">Vermietung →</button>
             </div>
           </div>
 
@@ -169,7 +169,7 @@ export function HausverwaltungKpiCard() {
                     <span className="text-muted-foreground">{new Date(m.mietvertragEnde).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}</span>
                   </div>
                 ))}
-                {auslaufend.length > 3 && <p className="text-[10px] text-muted-foreground">+{auslaufend.length - 3} weitere</p>}
+                {auslaufend.length > 3 && <p className="text-bildunterschrift text-muted-foreground">+{auslaufend.length - 3} weitere</p>}
               </div>
             </div>
           )}
@@ -183,7 +183,7 @@ export function HausverwaltungKpiCard() {
               { label: "Dienstleister", url: "/dienstleister" },
               { label: "HV-Statistiken", url: "/hv-statistiken" },
             ].map(link => (
-              <button key={link.url} onClick={() => navigate(link.url)} className="text-[10px] px-2 py-1 rounded-md bg-muted hover:bg-accent text-foreground transition-colors">
+              <button key={link.url} onClick={() => navigate(link.url)} className="text-bildunterschrift px-2 py-1 rounded-md bg-muted hover:bg-accent text-foreground transition-colors">
                 {link.label}
               </button>
             ))}
@@ -302,7 +302,7 @@ export function HausverwaltungKpiCard() {
                     <p className="text-sm font-medium">{t.titel}</p>
                     <p className="text-xs text-muted-foreground">{t.objektName} · {t.wohneinheitName}</p>
                   </div>
-                  <Badge variant={t.prioritaet === "dringend" ? "destructive" : t.prioritaet === "hoch" ? "default" : "secondary"} className="text-[10px] shrink-0">
+                  <Badge variant={t.prioritaet === "dringend" ? "destructive" : t.prioritaet === "hoch" ? "default" : "secondary"} className="text-bildunterschrift shrink-0">
                     {t.prioritaet}
                   </Badge>
                 </div>
@@ -348,7 +348,7 @@ export function HausverwaltungKpiCard() {
                     <p className="text-sm font-medium">{d.firma}</p>
                     <p className="text-xs text-muted-foreground">{d.ansprechpartner}</p>
                   </div>
-                  <Badge variant="outline" className="text-[10px]">{d.typ}</Badge>
+                  <Badge variant="outline" className="text-bildunterschrift">{d.typ}</Badge>
                 </div>
               ))}
             </div>

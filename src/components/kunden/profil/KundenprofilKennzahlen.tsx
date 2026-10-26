@@ -205,7 +205,7 @@ export function KundenprofilKennzahlen({
             <span className="min-w-0 flex-1">
               {naechste ? (
                 <>
-                  <Badge variant="outline" className="text-[10px] px-1.5 py-0 font-normal">{aktionArtLabel(naechste.art)}</Badge>
+                  <Badge variant="outline" className="text-bildunterschrift px-1.5 py-0 font-normal">{aktionArtLabel(naechste.art)}</Badge>
                   <span className="block text-sm font-semibold mt-1">{naechste.titel}</span>
                 </>
               ) : (
@@ -251,11 +251,11 @@ export function KundenprofilKennzahlen({
                         <span className={cn(aktion.ueberfaellig && "text-destructive font-medium")}>
                           {aktionFaelligkeitText(aktion)}
                         </span>
-                        <Badge variant="outline" className="text-[10px] px-1.5 py-0 font-normal">
+                        <Badge variant="outline" className="text-bildunterschrift px-1.5 py-0 font-normal">
                           {aktionArtLabel(aktion.art)}
                         </Badge>
                         {(aktion.art === "aufgabe" || aktion.art === "follow_up") && (
-                          <Badge variant="outline" className="text-[10px] px-1.5 py-0 font-normal">
+                          <Badge variant="outline" className="text-bildunterschrift px-1.5 py-0 font-normal">
                             {aktionPrioritaetLabel(aktion.prioritaet)}
                           </Badge>
                         )}

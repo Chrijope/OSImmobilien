@@ -466,7 +466,7 @@ export function AfaRechnerEmbed({
                 <SelectTrigger className="h-8 mt-1"><SelectValue /></SelectTrigger>
                 <SelectContent>{OBJEKTART_GND.map(o => <SelectItem key={o.value} value={o.label}>{o.label} · GND {o.gnd}J</SelectItem>)}</SelectContent>
               </Select>
-              <p className="text-[10px] text-muted-foreground mt-1">Bestimmt die Gesamtnutzungsdauer (GND) für die RND-Formel.</p>
+              <p className="text-bildunterschrift text-muted-foreground mt-1">Bestimmt die Gesamtnutzungsdauer (GND) für die RND-Formel.</p>
             </div>
           </div>
         </Card>
@@ -536,10 +536,10 @@ export function AfaRechnerEmbed({
                 </SelectContent>
               </Select>
               {!bundeslandManuallyEdited && plz && bundeslandFromPlz(plz) && (
-                <p className="text-[10px] text-muted-foreground mt-1">Automatisch aus PLZ {plz} ermittelt – manuell änderbar.</p>
+                <p className="text-bildunterschrift text-muted-foreground mt-1">Automatisch aus PLZ {plz} ermittelt – manuell änderbar.</p>
               )}
               {bundeslandManuallyEdited && (
-                <button type="button" className="text-[10px] text-primary hover:underline mt-1" onClick={() => { setBundeslandManuallyEdited(false); const d = bundeslandFromPlz(plz); if (d) { setBundesland(d); setNebenkostenManuallyEdited(false); } }}>
+                <button type="button" className="text-bildunterschrift text-primary hover:underline mt-1" onClick={() => { setBundeslandManuallyEdited(false); const d = bundeslandFromPlz(plz); if (d) { setBundesland(d); setNebenkostenManuallyEdited(false); } }}>
                   Auf automatische Ermittlung aus PLZ zurücksetzen
                 </button>
               )}
@@ -570,11 +570,11 @@ export function AfaRechnerEmbed({
                   className="h-8 mt-1"
                 />
                 {nebenkostenPctManuell > 0 ? (
-                  <p className="text-[10px] text-primary mt-1">
+                  <p className="text-bildunterschrift text-primary mt-1">
                     Manueller Satz aktiv: {nebenkostenPctManuell.toLocaleString("de-DE")}% – Bundesland-Satz wird ignoriert.
                   </p>
                 ) : (
-                  <p className="text-[10px] text-muted-foreground mt-1">Leer lassen, um den Bundesland-Satz zu verwenden.</p>
+                  <p className="text-bildunterschrift text-muted-foreground mt-1">Leer lassen, um den Bundesland-Satz zu verwenden.</p>
                 )}
               </div>
             </div>
@@ -633,7 +633,7 @@ export function AfaRechnerEmbed({
                       ))}
                     </SelectContent>
                   </Select>
-                  <p className="text-[10px] text-muted-foreground mt-1">§82b EStDV – Wahlrecht 1–5 Jahre.</p>
+                  <p className="text-bildunterschrift text-muted-foreground mt-1">§82b EStDV – Wahlrecht 1–5 Jahre.</p>
                 </div>
               )}
             </div>
@@ -659,7 +659,7 @@ export function AfaRechnerEmbed({
                 onChange={e => setBodenAnteilPct(Math.max(0, Math.min(100, Number(e.target.value) || 0)))}
                 className="h-8 mt-1"
               />
-              <p className="text-[10px] text-muted-foreground mt-1">
+              <p className="text-bildunterschrift text-muted-foreground mt-1">
                 Pauschaler Anteil des Grundstücks am Kaufpreis. Der Wert ist eine Annahme und keine Ableitung aus dem
                 Bodenrichtwert. In gefragten Lagen liegt er bei einer Eigentumswohnung oft deutlich über 20 %. Ein zu
                 niedriger Ansatz vergrößert den Gebäudeanteil und damit die ausgewiesene AfA.
@@ -668,7 +668,7 @@ export function AfaRechnerEmbed({
             <div className="bg-muted/50 rounded-lg p-3">
               <p className="text-xs text-muted-foreground">Bodenwert gesamt</p>
               <p className="text-lg font-bold">{fmtFull(ergebnis.bodenwertGesamt)}</p>
-              <p className="text-[10px] text-muted-foreground">{fmtFull(kaufpreis)} × {bodenAnteilPct.toLocaleString("de-DE")} %</p>
+              <p className="text-bildunterschrift text-muted-foreground">{fmtFull(kaufpreis)} × {bodenAnteilPct.toLocaleString("de-DE")} %</p>
             </div>
           </div>
         </Card>
@@ -724,7 +724,7 @@ export function AfaRechnerEmbed({
                 placeholder="z. B. 2020"
                 className="h-8 mt-1"
               />
-              <p className="text-[10px] text-muted-foreground mt-1">Wird als fiktives Baujahr für die RND-Berechnung herangezogen.</p>
+              <p className="text-bildunterschrift text-muted-foreground mt-1">Wird als fiktives Baujahr für die RND-Berechnung herangezogen.</p>
             </div>
             <div className="md:col-span-2">
               <Label className="text-xs">Umfang der Kernsanierung</Label>
@@ -843,7 +843,7 @@ export function AfaRechnerEmbed({
             const punkte = option ? Math.round(el.maxPunkte * option.faktor) : 0;
             return (
               <div key={el.key} className="flex items-center gap-3">
-                <div className="flex-1 min-w-0"><p className="text-sm truncate">{el.label}</p><p className="text-[10px] text-muted-foreground">max. {el.maxPunkte} Punkte</p></div>
+                <div className="flex-1 min-w-0"><p className="text-sm truncate">{el.label}</p><p className="text-bildunterschrift text-muted-foreground">max. {el.maxPunkte} Punkte</p></div>
                 <Select value={zeitraum} onValueChange={v => setModZeitraeume(prev => ({ ...prev, [el.key]: v }))}><SelectTrigger className="w-48 h-8"><SelectValue /></SelectTrigger><SelectContent>{ZEITRAUM_OPTIONEN.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent></Select>
                 <Badge variant="outline" className="w-10 justify-center text-xs">{punkte}</Badge>
               </div>
@@ -1013,22 +1013,22 @@ export function AfaRechnerEmbed({
           </div>
         )}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-muted/50 rounded-lg p-4 text-center"><p className="text-[10px] uppercase text-muted-foreground mb-1">Gebäudeanteil</p><p className="text-lg font-bold">{fmt(ergebnis.gebaeudewert)}</p><p className="text-sm text-primary font-semibold">{ergebnis.gebaeudePct.toFixed(1)}%</p></div>
-          <div className="bg-muted/50 rounded-lg p-4 text-center"><p className="text-[10px] uppercase text-muted-foreground mb-1">Bodenanteil</p><p className="text-lg font-bold">{fmt(ergebnis.bodenwertGesamt)}</p><p className="text-sm text-primary font-semibold">{ergebnis.bodenPct.toFixed(1)}%</p></div>
-          <div className="bg-primary/5 border-2 border-primary/20 rounded-lg p-4 text-center"><p className="text-[10px] uppercase text-muted-foreground mb-1">Restnutzungsdauer</p><p className="text-2xl font-bold text-primary">{ergebnis.rnd > 0 ? `${ergebnis.rnd} Jahre` : "–"}</p><p className="text-[10px] text-muted-foreground">{afaModus === "gutachten" ? "lt. Gutachten" : ergebnis.baujahrBekannt ? `Mod.-Punkte: ${ergebnis.modPunkte}` : "Baujahr fehlt"}</p></div>
-          <div className="bg-primary/5 border-2 border-primary/20 rounded-lg p-4 text-center"><p className="text-[10px] uppercase text-muted-foreground mb-1">AfA-Satz</p><p className="text-2xl font-bold text-primary">{ergebnis.afaSatz > 0 ? `${ergebnis.afaSatz.toFixed(2)} %` : "–"}</p><p className="text-[10px] text-muted-foreground">{ergebnis.afaSatz <= 0 ? "Baujahr fehlt" : ergebnis.untergrenze.untergrenzeGreift ? `gesetzlicher Mindestsatz (${ergebnis.untergrenze.gesetzlich.satz.toLocaleString("de-DE")} %)` : `= 100 / ${ergebnis.rnd}`}</p></div>
+          <div className="bg-muted/50 rounded-lg p-4 text-center"><p className="text-bildunterschrift uppercase text-muted-foreground mb-1">Gebäudeanteil</p><p className="text-lg font-bold">{fmt(ergebnis.gebaeudewert)}</p><p className="text-sm text-primary font-semibold">{ergebnis.gebaeudePct.toFixed(1)}%</p></div>
+          <div className="bg-muted/50 rounded-lg p-4 text-center"><p className="text-bildunterschrift uppercase text-muted-foreground mb-1">Bodenanteil</p><p className="text-lg font-bold">{fmt(ergebnis.bodenwertGesamt)}</p><p className="text-sm text-primary font-semibold">{ergebnis.bodenPct.toFixed(1)}%</p></div>
+          <div className="bg-primary/5 border-2 border-primary/20 rounded-lg p-4 text-center"><p className="text-bildunterschrift uppercase text-muted-foreground mb-1">Restnutzungsdauer</p><p className="text-2xl font-bold text-primary">{ergebnis.rnd > 0 ? `${ergebnis.rnd} Jahre` : "–"}</p><p className="text-bildunterschrift text-muted-foreground">{afaModus === "gutachten" ? "lt. Gutachten" : ergebnis.baujahrBekannt ? `Mod.-Punkte: ${ergebnis.modPunkte}` : "Baujahr fehlt"}</p></div>
+          <div className="bg-primary/5 border-2 border-primary/20 rounded-lg p-4 text-center"><p className="text-bildunterschrift uppercase text-muted-foreground mb-1">AfA-Satz</p><p className="text-2xl font-bold text-primary">{ergebnis.afaSatz > 0 ? `${ergebnis.afaSatz.toFixed(2)} %` : "–"}</p><p className="text-bildunterschrift text-muted-foreground">{ergebnis.afaSatz <= 0 ? "Baujahr fehlt" : ergebnis.untergrenze.untergrenzeGreift ? `gesetzlicher Mindestsatz (${ergebnis.untergrenze.gesetzlich.satz.toLocaleString("de-DE")} %)` : `= 100 / ${ergebnis.rnd}`}</p></div>
         </div>
         {afaModus === "berechnen" && (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
             <div className="bg-muted/50 rounded-lg p-4 text-center">
-              <p className="text-[10px] uppercase text-muted-foreground mb-1">Effektives Baujahr</p>
+              <p className="text-bildunterschrift uppercase text-muted-foreground mb-1">Effektives Baujahr</p>
               <p className="text-lg font-bold">{ergebnis.baujahrBekannt ? ergebnis.effektivesBaujahr : "–"}</p>
-              <p className="text-[10px] text-muted-foreground">{!ergebnis.baujahrBekannt ? "noch nicht eingetragen" : kernsanierungAktiv && kernsanierungJahr ? "Kernsanierungsjahr" : "Original-Baujahr"}</p>
+              <p className="text-bildunterschrift text-muted-foreground">{!ergebnis.baujahrBekannt ? "noch nicht eingetragen" : kernsanierungAktiv && kernsanierungJahr ? "Kernsanierungsjahr" : "Original-Baujahr"}</p>
             </div>
             <div className="bg-muted/50 rounded-lg p-4 text-center">
-              <p className="text-[10px] uppercase text-muted-foreground mb-1">Relatives Gebäudealter</p>
+              <p className="text-bildunterschrift uppercase text-muted-foreground mb-1">Relatives Gebäudealter</p>
               <p className="text-lg font-bold">{ergebnis.baujahrBekannt ? `${ergebnis.rndErgebnis.relativesAlter.toFixed(0)} %` : "–"}</p>
-              <p className="text-[10px] text-muted-foreground">
+              <p className="text-bildunterschrift text-muted-foreground">
                 {!ergebnis.baujahrBekannt
                   ? "Baujahr eintragen"
                   : ergebnis.rndErgebnis.unterSchwelle
@@ -1037,17 +1037,17 @@ export function AfaRechnerEmbed({
               </p>
             </div>
             <div className="bg-muted/50 rounded-lg p-4 text-center">
-              <p className="text-[10px] uppercase text-muted-foreground mb-1">Gesamtnutzungsdauer (GND)</p>
+              <p className="text-bildunterschrift uppercase text-muted-foreground mb-1">Gesamtnutzungsdauer (GND)</p>
               <p className="text-lg font-bold">{ergebnis.gnd} Jahre</p>
-              <p className="text-[10px] text-muted-foreground">{objektart}</p>
+              <p className="text-bildunterschrift text-muted-foreground">{objektart}</p>
             </div>
           </div>
         )}
         <Separator className="my-4" />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-muted/50 rounded-lg p-4"><p className="text-[10px] uppercase text-muted-foreground mb-1">Steuerlich absetzbar (Gebäude)</p><p className="text-lg font-bold">{fmt(ergebnis.steuerlichGebaeude)}</p></div>
-          <div className="bg-muted/50 rounded-lg p-4"><p className="text-[10px] uppercase text-muted-foreground mb-1">Absetzbarer NK-Anteil</p><p className="text-lg font-bold">{fmt(ergebnis.steuerlichNK)}</p></div>
-          <div className="bg-[hsl(var(--success))]/5 border border-[hsl(var(--success))]/20 rounded-lg p-4"><p className="text-[10px] uppercase text-muted-foreground mb-1">AfA p.a.</p><p className="text-lg font-bold text-[hsl(var(--success))]">{fmt(ergebnis.afaBetragPa)}</p><p className="text-[10px] text-muted-foreground">= {ergebnis.afaSatz.toFixed(2)}% von {fmt(ergebnis.afaBemessungsgrundlage)}</p></div>
+          <div className="bg-muted/50 rounded-lg p-4"><p className="text-bildunterschrift uppercase text-muted-foreground mb-1">Steuerlich absetzbar (Gebäude)</p><p className="text-lg font-bold">{fmt(ergebnis.steuerlichGebaeude)}</p></div>
+          <div className="bg-muted/50 rounded-lg p-4"><p className="text-bildunterschrift uppercase text-muted-foreground mb-1">Absetzbarer NK-Anteil</p><p className="text-lg font-bold">{fmt(ergebnis.steuerlichNK)}</p></div>
+          <div className="bg-[hsl(var(--success))]/5 border border-[hsl(var(--success))]/20 rounded-lg p-4"><p className="text-bildunterschrift uppercase text-muted-foreground mb-1">AfA p.a.</p><p className="text-lg font-bold text-[hsl(var(--success))]">{fmt(ergebnis.afaBetragPa)}</p><p className="text-bildunterschrift text-muted-foreground">= {ergebnis.afaSatz.toFixed(2)}% von {fmt(ergebnis.afaBemessungsgrundlage)}</p></div>
         </div>
       </Card>
 

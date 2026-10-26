@@ -186,7 +186,7 @@ export function Zeitauswahl({
                       abgeschnitten. Silbentrennung nach `<html lang>`, notfalls
                       Umbruch im Wort.
                     */}
-                    <div className="mb-1.5 hyphens-auto break-words text-[10px] font-bold uppercase tracking-[0.12em] text-white/30">
+                    <div className="mb-1.5 hyphens-auto break-words text-bildunterschrift font-bold uppercase tracking-[0.12em] text-white/30">
                       {abschnitt.name}
                     </div>
                     <div className="flex flex-col gap-1.5">

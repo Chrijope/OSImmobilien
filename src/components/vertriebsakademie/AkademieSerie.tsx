@@ -32,7 +32,7 @@ function Tagesreihe({ serie }: { serie: VaSerie }) {
               i === serie.letzteTage.length - 1 && !t.aktiv && "ring-2 ring-primary/30",
             )}
           />
-          <span className="text-[9px] leading-none text-muted-foreground">{wochentag(t.tag)}</span>
+          <span className="text-bildunterschrift leading-none text-muted-foreground">{wochentag(t.tag)}</span>
         </div>
       ))}
     </div>

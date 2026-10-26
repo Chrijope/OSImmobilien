@@ -2585,7 +2585,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
           <Input type="number" step={opts.step ?? "1"} value={(w[feld] as number | undefined) || ""} placeholder={opts.platzhalter}
             onChange={e => onChange(feld, parseFloat(e.target.value) || 0)} className="h-8" />
         )}
-        {opts.hinweis && <p className="text-[10px] text-muted-foreground mt-0.5">{opts.hinweis}</p>}
+        {opts.hinweis && <p className="text-bildunterschrift text-muted-foreground mt-0.5">{opts.hinweis}</p>}
       </div>
     );
     const teile = hausgeldTeile(w);
@@ -2633,7 +2633,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
           <div>
             <Label className="text-xs">Interne Highlights dieser Einheit (ein Punkt je Zeile)</Label>
             <Textarea rows={2} value={(w.interneHighlightsHand || []).join("\n")} onChange={e => onChange("interneHighlightsHand", e.target.value ? e.target.value.split("\n") : [])} />
-            <p className="text-[10px] text-muted-foreground mt-0.5">Nur intern, auf der Einheitenseite vor den Highlights des Objekts.</p>
+            <p className="text-bildunterschrift text-muted-foreground mt-0.5">Nur intern, auf der Einheitenseite vor den Highlights des Objekts.</p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {zahl("moebelPreis", "Davon Möbel im Kaufpreis (€)", { euro: true })}
@@ -2660,7 +2660,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
         <div>
           <Label className="text-xs">{w.vermietet === false ? "Marktübliche Miete mtl. (€) *" : "Miete mtl. (€) *"}</Label>
           <EuroInput value={w.mieteGesamt || 0} onChange={v => onChange("mieteGesamt", v)} className="h-8" />
-          {w.vermietet === false && <p className="text-[10px] text-[hsl(var(--warning))] mt-0.5">Leerstand – marktübliche Miete eingeben</p>}
+          {w.vermietet === false && <p className="text-bildunterschrift text-[hsl(var(--warning))] mt-0.5">Leerstand – marktübliche Miete eingeben</p>}
         </div>
         <div><Label className="text-xs">Rendite (%)</Label><Input type="number" step="0.01" value={w.rendite || ""} onChange={e => onChange("rendite", parseFloat(e.target.value) || 0)} className="h-8" /></div>
       </div>
@@ -2704,7 +2704,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
         <div className="col-span-2">
           <Label className="text-xs">Rücklage Wohnung (€)</Label>
           <EuroInput value={(w as any).ruecklageWohnung || 0} onChange={v => onChange("ruecklageWohnung", v)} className="h-8" />
-          <p className="text-[10px] text-muted-foreground mt-1">Aktueller Stand der Instandhaltungsrücklage dieser Wohnung. Wird auf der Wohnungsseite angezeigt, wenn &gt; 0.</p>
+          <p className="text-bildunterschrift text-muted-foreground mt-1">Aktueller Stand der Instandhaltungsrücklage dieser Wohnung. Wird auf der Wohnungsseite angezeigt, wenn &gt; 0.</p>
         </div>
       </div>
       {/* Geplante Mieterhöhung */}
@@ -2712,7 +2712,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
         <p className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
           <TrendingUp className="h-3.5 w-3.5" /> Geplante Mieterhöhung
           {w.neueMiete && w.mieterhoehungAb && (
-            <Badge variant="outline" className="text-[9px] ml-1 text-[hsl(var(--success))] border-[hsl(var(--success))]/30">Hinterlegt</Badge>
+            <Badge variant="outline" className="text-bildunterschrift ml-1 text-[hsl(var(--success))] border-[hsl(var(--success))]/30">Hinterlegt</Badge>
           )}
         </p>
         <div className="grid grid-cols-2 gap-3">
@@ -2726,12 +2726,12 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
           </div>
         </div>
         {w.neueMiete && w.mieterhoehungAb && w.mieteGesamt ? (
-          <p className="text-[10px] text-muted-foreground">
+          <p className="text-bildunterschrift text-muted-foreground">
             Erhöhung von {w.mieteGesamt.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} € auf {(w.neueMiete || 0).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} € ab {w.mieterhoehungAb} 
             ({((((w.neueMiete || 0) - w.mieteGesamt) / w.mieteGesamt) * 100).toFixed(1)}% Steigerung)
           </p>
         ) : (
-          <p className="text-[10px] text-muted-foreground">Optional – leer lassen wenn keine Erhöhung geplant</p>
+          <p className="text-bildunterschrift text-muted-foreground">Optional – leer lassen wenn keine Erhöhung geplant</p>
         )}
       </div>
       {renderEinheitZusatzfelder(w, onChange)}
@@ -2741,7 +2741,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
       {wohnungId && (
         <div className="pt-3 border-t mt-3">
           <p className="text-xs font-semibold text-muted-foreground mb-2 flex items-center gap-1"><FileText className="h-3 w-3" /> Wohnungsunterlagen</p>
-          <Label className="text-[10px]">Link zu den Wohnungsunterlagen (z.B. Cloud-Ordner)</Label>
+          <Label className="text-bildunterschrift">Link zu den Wohnungsunterlagen (z.B. Cloud-Ordner)</Label>
           <Input
             type="url"
             value={(w as any).unterlagenLink || ""}
@@ -2752,7 +2752,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
           {/* Wohnungsbilder Upload */}
           <div className="pt-3 border-t mt-3">
             <p className="text-xs font-semibold text-muted-foreground mb-1 flex items-center gap-1"><ImagePlus className="h-3 w-3" /> Wohnungsbilder</p>
-            <p className="text-[10px] text-muted-foreground mb-2">
+            <p className="text-bildunterschrift text-muted-foreground mb-2">
               Das erste Bild ist das Titelbild der Einheit{isEinzelwohnung ? " und das Kachelbild in der Objektübersicht" : ""}. Stern und Pfeile ändern die Reihenfolge.
             </p>
             {(wohnungBilder[wohnungId] || []).length > 0 && (() => {
@@ -2764,7 +2764,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
                   {bilder.map((bild, idx) => (
                     <div key={bild.id} className={`relative group w-24 h-24 rounded-lg overflow-hidden border-2 ${bild.id === titelId ? "border-primary" : "border-border"}`}>
                       <img src={bild.url} alt={bild.alt} className="w-full h-full object-cover" />
-                      {bild.id === titelId && <Badge className="absolute bottom-1 left-1 text-[8px] bg-primary">Titelbild</Badge>}
+                      {bild.id === titelId && <Badge className="absolute bottom-1 left-1 text-bildunterschrift bg-primary">Titelbild</Badge>}
                       <BildSteuerung
                         index={idx}
                         anzahl={bilder.length}
@@ -2792,7 +2792,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
             >
               <input type="file" accept="image/*,.heic,.heif,.avif" multiple className="hidden" onChange={e => { if (e.target.files) handleWohnungImageUpload(wohnungId, e.target.files); }} />
               <ImagePlus className="h-5 w-5" />
-              <span className="text-[10px]">JPEG/PNG-Bilder hochladen oder hierher ziehen</span>
+              <span className="text-bildunterschrift">JPEG/PNG-Bilder hochladen oder hierher ziehen</span>
             </label>
           </div>
         </div>
@@ -3489,7 +3489,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
                 {/* Finanzen */}
                 <div>
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Finanzdaten</p>
-                  <p className="text-[10px] text-muted-foreground mb-2">💡 Verkaufspreis, qm-Preis und Gesamtfläche werden automatisch ineinander umgerechnet.</p>
+                  <p className="text-bildunterschrift text-muted-foreground mb-2">💡 Verkaufspreis, qm-Preis und Gesamtfläche werden automatisch ineinander umgerechnet.</p>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                      <div><Label className="text-xs">Verkaufspreis gesamt (€) *</Label><EuroInput value={globalDaten.verkaufspreis} onChange={v => updateGlobal("verkaufspreis", v)} className="h-8" /></div>
                      <div><Label className="text-xs">Verkaufspreis pro m² (€)</Label><EuroInput value={globalDaten.qmPreis ?? 0} onChange={v => updateGlobal("qmPreis", v)} className="h-8" /></div>
@@ -3586,13 +3586,13 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
                                   verkauft: { label: "Verkauft", cls: "bg-[hsl(0,100%,50%)]/10 text-[hsl(0,100%,50%)] border-[hsl(0,100%,50%)]/30" },
                                 };
                                 const c = cfg[s] || cfg.frei;
-                                return <Badge variant="outline" className={`text-[10px] ${c.cls}`}>{c.label}</Badge>;
+                                return <Badge variant="outline" className={`text-bildunterschrift ${c.cls}`}>{c.label}</Badge>;
                               })()}
-                              <Badge variant={w.vermietet !== false ? "default" : "destructive"} className="text-[10px]">
+                              <Badge variant={w.vermietet !== false ? "default" : "destructive"} className="text-bildunterschrift">
                                 {w.vermietet !== false ? "Vermietet" : "Leerstand"}
                               </Badge>
-                              {docCount > 0 && <Badge variant="outline" className="text-[10px] gap-1"><FileText className="h-2.5 w-2.5" />{docCount} Dok.</Badge>}
-                              {(wohnungBilder[wId] || []).length > 0 && <Badge variant="outline" className="text-[10px] gap-1"><ImagePlus className="h-2.5 w-2.5" />{(wohnungBilder[wId] || []).length} Bild(er)</Badge>}
+                              {docCount > 0 && <Badge variant="outline" className="text-bildunterschrift gap-1"><FileText className="h-2.5 w-2.5" />{docCount} Dok.</Badge>}
+                              {(wohnungBilder[wId] || []).length > 0 && <Badge variant="outline" className="text-bildunterschrift gap-1"><ImagePlus className="h-2.5 w-2.5" />{(wohnungBilder[wId] || []).length} Bild(er)</Badge>}
                             </div>
                             <div className="flex items-center gap-1">
                               <Button variant="ghost" size="icon" aria-label="Bearbeiten" className="h-7 w-7" onClick={() => startEdit(i)}><Pencil className="h-3 w-3" /></Button>
@@ -3676,29 +3676,29 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
                         if (isGlobalObjekt) updateGlobal("hausgeldMonat", v);
                         markDirty();
                       }} className="h-8" />
-                      <p className="text-[10px] text-muted-foreground mt-1">Brutto-Hausgeld der Einheit/des Objekts (umlagefähig + nicht umlagefähig).</p>
+                      <p className="text-bildunterschrift text-muted-foreground mt-1">Brutto-Hausgeld der Einheit/des Objekts (umlagefähig + nicht umlagefähig).</p>
                     </div>
                     <div>
                       <Label className="text-xs">Hausgeld nicht umlagefähig (%)</Label>
                       <Input type="number" step="1" min={0} max={100} value={kalkHausgeldNuP || ""} onChange={e => { setKalkHausgeldNuP(parseFloat(e.target.value) || 0); markDirty(); }} className="h-8" disabled={kalkHausgeldNuEuro > 0} />
                       {kalkHausgeldNuEuro > 0 && (
-                        <p className="text-[10px] text-muted-foreground mt-1">Überschrieben durch EUR-Wert.</p>
+                        <p className="text-bildunterschrift text-muted-foreground mt-1">Überschrieben durch EUR-Wert.</p>
                       )}
                     </div>
                     <div>
                       <Label className="text-xs">Hausgeld nicht umlegbar (€/Monat)</Label>
                       <EuroInput value={kalkHausgeldNuEuro} onChange={v => { setKalkHausgeldNuEuro(v); markDirty(); }} className="h-8" />
-                      <p className="text-[10px] text-muted-foreground mt-1">Wenn &gt; 0, überschreibt diesen Wert die %-Berechnung.</p>
+                      <p className="text-bildunterschrift text-muted-foreground mt-1">Wenn &gt; 0, überschreibt diesen Wert die %-Berechnung.</p>
                     </div>
                     <div>
                       <Label className="text-xs">Rücklage WEG (€)</Label>
                       <EuroInput value={ruecklageWeg} onChange={v => { setRuecklageWeg(v); markDirty(); }} className="h-8" />
-                      <p className="text-[10px] text-muted-foreground mt-1">Aktueller Stand der Instandhaltungsrücklage der gesamten WEG. Wird auf der Objektseite angezeigt, wenn &gt; 0.</p>
+                      <p className="text-bildunterschrift text-muted-foreground mt-1">Aktueller Stand der Instandhaltungsrücklage der gesamten WEG. Wird auf der Objektseite angezeigt, wenn &gt; 0.</p>
                     </div>
                     <div>
                       <Label className="text-xs">Garantierte Erstvermietung (kalt) (€)</Label>
                       <EuroInput value={garantierteErstvermietungKalt} onChange={v => { setGarantierteErstvermietungKalt(v); markDirty(); }} className="h-8" />
-                      <p className="text-[10px] text-muted-foreground mt-1">Garantierte Erstvermietung kalt. Wird auf der Wohnungsseite angezeigt, wenn &gt; 0.</p>
+                      <p className="text-bildunterschrift text-muted-foreground mt-1">Garantierte Erstvermietung kalt. Wird auf der Wohnungsseite angezeigt, wenn &gt; 0.</p>
                     </div>
                     <div>
                       <Label className="text-xs">SEV / Monat (€)</Label>
@@ -3707,7 +3707,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
                     <div>
                       <Label className="text-xs">Kaufnebenkosten (%)</Label>
                       <Input type="number" step="0.5" min={0} value={globalDaten.kaufnebenkosten || ""} onChange={e => updateGlobal("kaufnebenkosten", parseFloat(e.target.value) || 0)} className="h-8" />
-                      <p className="text-[10px] text-muted-foreground mt-1">Grunderwerbsteuer, Notar, Grundbuch. Leer lassen: Satz nach Bundesland aus der Postleitzahl. Vorbelegung für Investmentrechner und Exposé.</p>
+                      <p className="text-bildunterschrift text-muted-foreground mt-1">Grunderwerbsteuer, Notar, Grundbuch. Leer lassen: Satz nach Bundesland aus der Postleitzahl. Vorbelegung für Investmentrechner und Exposé.</p>
                     </div>
                     <div>
                       <Label className="text-xs">Mietausfall (%)</Label>
@@ -3742,7 +3742,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
                            />
                          )}
                        </div>
-                       <p className="text-[10px] text-muted-foreground mt-1">
+                       <p className="text-bildunterschrift text-muted-foreground mt-1">
                          {kalkInstandhaltungMode === "qm"
                            ? "Petersche Formel: 8–15 €/m² · Standard 10 €"
                            : "Branchenüblich 0,5–1,5 % vom Gebäudewert · Standard 1,0 %"}
@@ -3778,7 +3778,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
                     className="h-9 text-sm"
                   />
                   {objektUnterlagenLink && (
-                    <p className="text-[10px] text-muted-foreground">Auf der {isEinzelwohnung ? "Einheitsseite" : "Objektseite"} erscheint ein Knopf „Objektunterlagen öffnen", der diesen Link aufruft.</p>
+                    <p className="text-bildunterschrift text-muted-foreground">Auf der {isEinzelwohnung ? "Einheitsseite" : "Objektseite"} erscheint ein Knopf „Objektunterlagen öffnen", der diesen Link aufruft.</p>
                   )}
                 </div>
                 {regeln.objektDokumente && (
@@ -3796,17 +3796,17 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
                             <div className="min-w-0">
                               <p className="truncate text-sm font-medium">{doc.name}</p>
                               {dateiname ? (
-                                <p className={`truncate text-[10px] ${hatDatei ? "text-muted-foreground" : "text-[hsl(var(--warning))]"}`}>
+                                <p className={`truncate text-bildunterschrift ${hatDatei ? "text-muted-foreground" : "text-[hsl(var(--warning))]"}`}>
                                   {dateiname}{hatDatei ? "" : " · nur erkannt, Datei fehlt noch"}
                                 </p>
                               ) : (
-                                <p className="text-[10px] text-muted-foreground">Noch nichts hochgeladen</p>
+                                <p className="text-bildunterschrift text-muted-foreground">Noch nichts hochgeladen</p>
                               )}
                             </div>
                           </div>
                           <div className="flex shrink-0 items-center gap-2">
                             {hatDatei && (
-                              <Badge variant="outline" className="text-[10px] text-[hsl(var(--success))] border-[hsl(var(--success))]/30">Vorhanden</Badge>
+                              <Badge variant="outline" className="text-bildunterschrift text-[hsl(var(--success))] border-[hsl(var(--success))]/30">Vorhanden</Badge>
                             )}
                             <label className="cursor-pointer">
                               <input
@@ -3960,7 +3960,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
                         >
                           <span className="text-xs font-semibold">
                             WE {w.weNr || idx + 1}{w.lage ? ` – ${w.lage}` : ""}
-                            {anzahl > 0 && <Badge variant="outline" className="ml-2 text-[10px] gap-1"><FileText className="h-2.5 w-2.5" />{anzahl}</Badge>}
+                            {anzahl > 0 && <Badge variant="outline" className="ml-2 text-bildunterschrift gap-1"><FileText className="h-2.5 w-2.5" />{anzahl}</Badge>}
                           </span>
                           {offen ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
                         </button>
@@ -3968,7 +3968,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
                         {offen && (
                           <div className="space-y-2 pt-1">
                             <div>
-                              <Label className="text-[10px]">Sammel-Link zu den Wohnungsunterlagen</Label>
+                              <Label className="text-bildunterschrift">Sammel-Link zu den Wohnungsunterlagen</Label>
                               <Input
                                 type="url"
                                 value={w.unterlagenLink || ""}
@@ -3990,7 +3990,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
                                     <FileText className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
                                     <div className="min-w-0">
                                       <p className="truncate text-xs font-medium">{doc.name}</p>
-                                      <p className="truncate text-[10px] text-muted-foreground">{dateiname || "Noch nichts hochgeladen"}</p>
+                                      <p className="truncate text-bildunterschrift text-muted-foreground">{dateiname || "Noch nichts hochgeladen"}</p>
                                     </div>
                                   </div>
                                   <div className="flex shrink-0 items-center gap-2">
@@ -4001,7 +4001,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
                                         className="hidden"
                                         onChange={e => { const f = e.target.files?.[0]; if (f) handleWohnungDocUpload(wId, doc.id, f); e.target.value = ""; }}
                                       />
-                                      <Badge variant="outline" className="cursor-pointer text-[10px] hover:bg-muted"><Upload className="mr-1 h-2.5 w-2.5" /> PDF</Badge>
+                                      <Badge variant="outline" className="cursor-pointer text-bildunterschrift hover:bg-muted"><Upload className="mr-1 h-2.5 w-2.5" /> PDF</Badge>
                                     </label>
                                     {dateiname && (
                                       <Button variant="ghost" size="icon" aria-label="Entfernen" className="h-6 w-6 text-destructive" onClick={() => removeWohnungDoc(wId, doc.id)}>
@@ -4020,7 +4020,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
                                     <div className="flex min-w-0 items-center gap-2">
                                       <FileText className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
                                       <span className="truncate text-xs">{cd.name}</span>
-                                      <span className="truncate text-[10px] text-muted-foreground">({cd.filename || "bereits gespeichert"})</span>
+                                      <span className="truncate text-bildunterschrift text-muted-foreground">({cd.filename || "bereits gespeichert"})</span>
                                     </div>
                                     <Button variant="ghost" size="icon" aria-label="Löschen" className="h-6 w-6 text-destructive" onClick={() => removeCustomWohnungDoc(wId, cd.id)}>
                                       <Trash2 className="h-3 w-3" />
@@ -4032,7 +4032,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
 
                             <div className="flex items-end gap-2">
                               <div className="flex-1">
-                                <Label className="text-[10px]">Weitere Unterlage, Titel</Label>
+                                <Label className="text-bildunterschrift">Weitere Unterlage, Titel</Label>
                                 <Input
                                   value={newCustomWohnungDocName[wId] || ""}
                                   onChange={e => { const v = e.target.value; setNewCustomWohnungDocName(prev => ({ ...prev, [wId]: v })); }}
@@ -4071,14 +4071,14 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
               {/* Objektbilder Upload */}
               <div>
                 <Label className="text-xs font-semibold">{regeln.medienZiel === "einheit" ? "Bilder der Wohnung" : "Objektbilder"}</Label>
-                <p className="text-[10px] text-muted-foreground mt-1 mb-2">
+                <p className="text-bildunterschrift text-muted-foreground mt-1 mb-2">
                   {regeln.medienZiel === "einheit"
                     ? "Diese Bilder gehören zur Wohnung und erscheinen auf der Einheitsseite. Eine eigene Objektseite gibt es bei einer Einzelwohnung nicht."
                     : "Bilder des Gebäudes: Außenansicht, Treppenhaus, Umgebung. Sie erscheinen auf der Objektseite."}
                 </p>
-                <p className="text-[10px] text-muted-foreground mb-2">Das erste Bild ist das Titelbild. Mit dem Stern machst du ein anderes Bild zum Titelbild, mit den Pfeilen änderst du die Reihenfolge.</p>
+                <p className="text-bildunterschrift text-muted-foreground mb-2">Das erste Bild ist das Titelbild. Mit dem Stern machst du ein anderes Bild zum Titelbild, mit den Pfeilen änderst du die Reihenfolge.</p>
                 {regeln.wohnungBilder && regeln.medienZiel === "objekt" && (
-                  <p className="text-[10px] text-muted-foreground mb-2">
+                  <p className="text-bildunterschrift text-muted-foreground mb-2">
                     Bilder einzelner Einheiten gehören nicht hierher, sondern in den Schritt „{isGlobalObjekt ? "Einheiten" : "Wohnungen"}“, direkt bei der jeweiligen Einheit.
                   </p>
                 )}
@@ -4098,7 +4098,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
                     <div key={img.id} className="relative group rounded-lg overflow-hidden border aspect-video">
                       <img src={img.url} alt={img.alt} className="w-full h-full object-cover" />
                       {idx === 0 && (
-                        <Badge className="absolute bottom-1 left-1 text-[8px] bg-primary">Titelbild</Badge>
+                        <Badge className="absolute bottom-1 left-1 text-bildunterschrift bg-primary">Titelbild</Badge>
                       )}
                       <BildSteuerung
                         index={idx}
@@ -4110,7 +4110,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
                   ))}
                   <div className="border-2 border-dashed rounded-lg aspect-video flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-primary/50 hover:bg-muted/30 transition-colors" onClick={() => slideshowRef.current?.click()}>
                     <ImagePlus className="h-5 w-5 text-muted-foreground" />
-                    <p className="text-[10px] text-muted-foreground">Bilder hinzufügen</p>
+                    <p className="text-bildunterschrift text-muted-foreground">Bilder hinzufügen</p>
                   </div>
                 </div>
               </div>
@@ -4255,7 +4255,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
                             className="flex w-full items-center justify-between mb-2 text-left hover:text-primary transition-colors"
                           >
                             <span className="text-xs font-semibold underline-offset-2 hover:underline">{sec.titel} →</span>
-                            <span className="text-[10px] text-muted-foreground">{secOk}/{sec.felder.length}</span>
+                            <span className="text-bildunterschrift text-muted-foreground">{secOk}/{sec.felder.length}</span>
                           </button>
                           <ul className="space-y-1">
                             {sec.felder.map(f => (

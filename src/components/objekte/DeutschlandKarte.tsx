@@ -97,7 +97,7 @@ export function DeutschlandKarte({ objekte, onSelect, mitAdressliste = true }: P
         <h3 className="font-semibold text-sm">Objektstandorte in Deutschland</h3>
         <div className="ml-auto flex items-center gap-2">
           {ohneKoordinaten.length > 0 && (
-            <span className="text-[10px] text-muted-foreground">
+            <span className="text-bildunterschrift text-muted-foreground">
               {ohneKoordinaten.length} ohne Koordinaten, Lage noch nicht gemessen
             </span>
           )}

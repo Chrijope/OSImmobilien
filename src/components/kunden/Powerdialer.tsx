@@ -158,7 +158,7 @@ export function Powerdialer({ kontakte, onClose }: PowerdialerProps) {
               <div>
                 <p className="text-lg font-semibold">{current.anrede} {current.vorname} {current.nachname}</p>
                 {current.leadTyp && (
-                  <Badge className="text-[10px] mt-1 bg-blue-500/10 text-blue-600">
+                  <Badge className="text-bildunterschrift mt-1 bg-blue-500/10 text-blue-600">
                     {current.leadTyp === "meta" ? "Funnel Lead" : current.leadTyp === "google" ? "Google Ad" : current.leadTyp}
                   </Badge>
                 )}
@@ -237,7 +237,7 @@ export function Powerdialer({ kontakte, onClose }: PowerdialerProps) {
                   <StickyNote className="h-3.5 w-3.5 text-primary" />
                   <Label className="text-xs font-semibold">Setter-Gesprächsnotizen</Label>
                 </div>
-                <p className="text-[10px] text-muted-foreground mb-1">Wird mit der Kundenseite synchronisiert und dem Closer/Vertriebspartner angezeigt.</p>
+                <p className="text-bildunterschrift text-muted-foreground mb-1">Wird mit der Kundenseite synchronisiert und dem Closer/Vertriebspartner angezeigt.</p>
                 <Textarea
                   placeholder="Wichtige Beobachtungen, Einwände, Persönlichkeitstyp, Stimmung..."
                   value={setterNotizen}
@@ -272,9 +272,9 @@ export function Powerdialer({ kontakte, onClose }: PowerdialerProps) {
                   <div key={i} className="border rounded p-2 space-y-1">
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium">{log.name}</span>
-                      <span className="text-[10px] text-muted-foreground">{log.time}</span>
+                      <span className="text-bildunterschrift text-muted-foreground">{log.time}</span>
                     </div>
-                    <Badge className={`text-[10px] ${opt?.color || ""}`}>
+                    <Badge className={`text-bildunterschrift ${opt?.color || ""}`}>
                       {opt?.label || log.result}
                     </Badge>
                     {log.notes && <p className="text-xs text-muted-foreground">{log.notes}</p>}
@@ -288,7 +288,7 @@ export function Powerdialer({ kontakte, onClose }: PowerdialerProps) {
 
       {/* Info Banner */}
       <div className="bg-muted/30 border-t px-4 py-2">
-        <p className="text-[10px] text-muted-foreground">
+        <p className="text-bildunterschrift text-muted-foreground">
           💡 Für Browser-Telefonie (VoIP/WebRTC) wird ein Anbieter wie Twilio benötigt. Aktuell: Click-to-Call über Telefon-App.
         </p>
       </div>

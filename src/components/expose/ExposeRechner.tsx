@@ -20,7 +20,7 @@ export function HerkunftChip({ art }: { art?: "selbstauskunft" | "objekt" }) {
   const t = exposeRechnerTexte(useAnzeigeSprache());
   if (!art) return null;
   return (
-    <Badge variant="outline" className="ml-1.5 border-primary/30 bg-accent px-1.5 py-0 text-[10px] font-semibold text-primary" data-testid="herkunft-chip">
+    <Badge variant="outline" className="ml-1.5 border-primary/30 bg-accent px-1.5 py-0 text-bildunterschrift font-semibold text-primary" data-testid="herkunft-chip">
       {art === "selbstauskunft" ? t.herkunftSelbstauskunft : t.herkunftObjekt}
     </Badge>
   );

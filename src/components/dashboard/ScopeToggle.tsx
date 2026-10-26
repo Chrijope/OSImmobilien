@@ -32,7 +32,7 @@ export function ScopeToggle({
           type="button"
           onClick={() => onChange(opt.value)}
           className={cn(
-            "px-2 py-0.5 text-[10px] font-medium rounded-sm transition-colors tabular-nums",
+            "px-2 py-0.5 text-bildunterschrift font-medium rounded-sm transition-colors tabular-nums",
             value === opt.value
               ? "bg-background text-foreground shadow-sm"
               : "text-muted-foreground hover:text-foreground",

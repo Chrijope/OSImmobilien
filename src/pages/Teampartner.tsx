@@ -270,7 +270,7 @@ function StrukturKarte({
             aus.
           */}
           {knoten.ohneTeamleiter && (
-            <p className="mt-1 inline-block rounded border border-border px-1.5 py-px text-[10px] leading-tight text-muted-foreground">
+            <p className="mt-1 inline-block rounded border border-border px-1.5 py-px text-bildunterschrift leading-tight text-muted-foreground">
               Ohne Teamleiter
             </p>
           )}
@@ -448,7 +448,7 @@ function KinderReihe({
 /** Beschriftung einer festen Ebene, zum Beispiel "C-Level". */
 function EbenenSchild({ text }: { text: string }) {
   return (
-    <span className="rounded-full border border-border bg-background px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+    <span className="rounded-full border border-border bg-background px-2.5 py-0.5 text-bildunterschrift font-medium uppercase tracking-wider text-muted-foreground">
       {text}
     </span>
   );
@@ -1724,7 +1724,7 @@ export default function Teampartner() {
                         <div className="flex flex-wrap gap-1">
                           {n.alleRollen && n.alleRollen.length > 1 ? (
                             n.alleRollen.map((r, i) => (
-                              <Badge key={i} className={`${r.color} text-[10px] px-1.5 py-0`} variant="secondary">{r.label}</Badge>
+                              <Badge key={i} className={`${r.color} text-bildunterschrift px-1.5 py-0`} variant="secondary">{r.label}</Badge>
                             ))
                           ) : (
                             <Badge className={n.rolleColor} variant="secondary">{n.rolle}</Badge>
@@ -1803,7 +1803,7 @@ export default function Teampartner() {
                       <TableCell className="text-sm">{t.telefon}</TableCell>
                       <TableCell>
                         {t.portalAktiv ? (
-                          <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 text-[10px]">
+                          <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 text-bildunterschrift">
                             <ShieldCheck className="h-3 w-3 mr-1" /> Login aktiv
                           </Badge>
                         ) : (

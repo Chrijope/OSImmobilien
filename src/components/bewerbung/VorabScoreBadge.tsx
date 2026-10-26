@@ -132,7 +132,7 @@ export function VorabScoreBadge({ score, className = "" }: { score: VorabScore; 
   return (
     <Badge
       variant="outline"
-      className={`gap-1.5 bg-background text-[10px] font-semibold whitespace-nowrap ${AMPEL_TEXT[score.einstufung]} ${className}`}
+      className={`gap-1.5 bg-background text-bildunterschrift font-semibold whitespace-nowrap ${AMPEL_TEXT[score.einstufung]} ${className}`}
       title={`${VORAB_EINSTUFUNG_LABELS[score.einstufung]}: ${score.begruendung}\n${HERKUNFT_TITEL[score.herkunft]}. ${HERKUNFT_SATZ[score.herkunft]}`}
       data-testid="vorab-score-badge"
       data-einstufung={score.einstufung}
@@ -267,9 +267,9 @@ export function VorabScoreSpaltenkopf() {
 export function VorabScoreZeile({ score }: { score: VorabScore }) {
   return (
     <div className="flex flex-wrap items-center gap-1.5" data-testid="vorab-score-zeile">
-      <span className="text-[10px] uppercase tracking-wider text-muted-foreground mr-1">Vorab-Score</span>
+      <span className="text-bildunterschrift uppercase tracking-wider text-muted-foreground mr-1">Vorab-Score</span>
       <VorabScoreBadge score={score} />
-      <Badge variant="outline" className="text-[10px]">{VORAB_EINSTUFUNG_LABELS[score.einstufung]}</Badge>
+      <Badge variant="outline" className="text-bildunterschrift">{VORAB_EINSTUFUNG_LABELS[score.einstufung]}</Badge>
       <span className="text-[11px] text-muted-foreground">{score.begruendung}</span>
       <InfoTooltip text={VORAB_SCORE_ERKLAERUNG} size={12} />
     </div>
@@ -348,7 +348,7 @@ export function VorabScoreAbzeichen({ score }: { score: VorabScore }) {
         </button>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-[min(320px,calc(100vw-32px))] p-3">
-        <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Vorab-Score</p>
+        <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground">Vorab-Score</p>
         <p className="text-sm font-semibold">
           {score.punkte} von 100 · {VORAB_EINSTUFUNG_LABELS[score.einstufung]}
         </p>
@@ -388,7 +388,7 @@ export function VorabScoreAbzeichen({ score }: { score: VorabScore }) {
           <VorabScoreAufschluesselung score={score} />
         </div>
 
-        <p className="mt-2 border-t pt-2 text-[10px] leading-relaxed text-muted-foreground">
+        <p className="mt-2 border-t pt-2 text-bildunterschrift leading-relaxed text-muted-foreground">
           {VORAB_SCORE_ERKLAERUNG}
         </p>
       </PopoverContent>
@@ -412,7 +412,7 @@ export function VorabScoreAufschluesselung({ score }: { score: VorabScore }) {
   return (
     <div className="space-y-2" data-testid="vorab-score-aufschluesselung">
       <div className="flex items-baseline justify-between gap-2">
-        <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+        <span className="text-bildunterschrift uppercase tracking-wider text-muted-foreground">
           Woraus sich die {score.punkte} ergeben
         </span>
         <span className="text-[11px] text-muted-foreground">

@@ -40,7 +40,7 @@ export function VideocallNotizKarte({
   return (
     <Card className="p-4 space-y-2" data-testid="videocall-notiz-eingabe">
       <div>
-        <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+        <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground">
           Notizen zum Gespräch
         </p>
         <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">

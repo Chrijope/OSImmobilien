@@ -157,9 +157,9 @@ export function ExposeZuordnenDialog() {
                     <TableCell className="text-xs">{z.datei.name}</TableCell>
                     <TableCell className="text-xs">{ziel(z)}</TableCell>
                     <TableCell>
-                      {z.art === "unklar" ? <Badge variant="destructive" className="text-[10px]">unklar</Badge>
-                        : "schonDa" in z && z.schonDa ? <Badge variant="secondary" className="text-[10px]">schon da</Badge>
-                          : <Badge variant="outline" className="text-[10px]">bereit</Badge>}
+                      {z.art === "unklar" ? <Badge variant="destructive" className="text-bildunterschrift">unklar</Badge>
+                        : "schonDa" in z && z.schonDa ? <Badge variant="secondary" className="text-bildunterschrift">schon da</Badge>
+                          : <Badge variant="outline" className="text-bildunterschrift">bereit</Badge>}
                     </TableCell>
                   </TableRow>
                 ))}

@@ -596,9 +596,9 @@ export default function Objekte() {
               */}
             {(obj.badge || neuSeitAm !== null || canEdit(user.role)) && (
               <div className="absolute top-2 left-12 right-2 z-10 flex items-center justify-end gap-1.5">
-                {neuKennzeichen("text-[10px] px-2")}
+                {neuKennzeichen("text-bildunterschrift px-2")}
                 {obj.badge && (
-                  <Badge className="min-w-0 bg-primary text-primary-foreground text-[10px] px-2 shadow-md max-w-[66%]" title={obj.badge}>
+                  <Badge className="min-w-0 bg-primary text-primary-foreground text-bildunterschrift px-2 shadow-md max-w-[66%]" title={obj.badge}>
                     <span className="truncate">{obj.badge}</span>
                   </Badge>
                 )}
@@ -623,7 +623,7 @@ export default function Objekte() {
             )}
             {sternKnopf("absolute top-2 left-2 h-[40px] w-[40px] sm:h-8 sm:w-8")}
             {obj.exklusivPartner && obj.exklusivPartner.length > 0 && (
-              <Badge variant="outline" className="absolute top-12 left-2 bg-background/80 text-[10px] border-[hsl(var(--warning))] text-[hsl(var(--warning))]">
+              <Badge variant="outline" className="absolute top-12 left-2 bg-background/80 text-bildunterschrift border-[hsl(var(--warning))] text-[hsl(var(--warning))]">
                 🔒 Exklusiv{canEdit(user.role) ? `: ${obj.exklusivPartner.join(", ")}` : ""}
               </Badge>
             )}
@@ -672,9 +672,9 @@ export default function Objekte() {
               */}
             {(obj.badge || neuSeitAm !== null) && (
               <div className="absolute top-1 left-12 right-1 flex items-center justify-end gap-1 sm:left-9">
-                {neuKennzeichen("text-[10px] px-1.5")}
+                {neuKennzeichen("text-bildunterschrift px-1.5")}
                 {obj.badge && (
-                  <Badge className="min-w-0 max-w-full bg-primary text-primary-foreground text-[10px] px-1.5 shadow-md" title={obj.badge}>
+                  <Badge className="min-w-0 max-w-full bg-primary text-primary-foreground text-bildunterschrift px-1.5 shadow-md" title={obj.badge}>
                     <span className="truncate">{obj.badge}</span>
                   </Badge>
                 )}
@@ -682,7 +682,7 @@ export default function Objekte() {
             )}
             {sternKnopf("absolute top-1 left-1 h-[40px] w-[40px] sm:h-7 sm:w-7")}
             {canEdit(user.role) && (
-              <Badge variant={obj.sichtbar ? "default" : "destructive"} className={`absolute bottom-1 left-1 text-[10px] ${obj.sichtbar ? "bg-green-500 hover:bg-green-600 text-white" : ""}`}>
+              <Badge variant={obj.sichtbar ? "default" : "destructive"} className={`absolute bottom-1 left-1 text-bildunterschrift ${obj.sichtbar ? "bg-green-500 hover:bg-green-600 text-white" : ""}`}>
                 {sichtbarText}
               </Badge>
             )}
@@ -706,7 +706,7 @@ export default function Objekte() {
            <h3 className={`font-bold text-sm leading-tight line-clamp-2 ${viewMode === "grid" ? "min-h-[2.5rem]" : ""}`}>{obj.titel}</h3>
            {passung && gewaehlterKunde && (
              (passung.get(obj.id) || 0) > 0
-               ? <Badge className="w-fit text-[10px]">{passung.get(obj.id)} passend für {gewaehlterKunde.name}</Badge>
+               ? <Badge className="w-fit text-bildunterschrift">{passung.get(obj.id)} passend für {gewaehlterKunde.name}</Badge>
                : <span className="text-[11px] text-muted-foreground">nichts im Rahmen von {gewaehlterKunde.name}</span>
            )}
            {wohnungenReady && (stats.preisVon > 0 || stats.preisBis > 0) ? (
@@ -716,7 +716,7 @@ export default function Objekte() {
            ) : (viewMode === "grid" && <p className="min-h-[1.25rem]">&nbsp;</p>)}
            <p className={`text-xs text-muted-foreground line-clamp-1 ${viewMode === "grid" ? "min-h-[1rem]" : ""}`}>{obj.plz} {obj.ort}, {obj.adresse}</p>
           {isAdmin(user.role) && (
-            <p className="text-[10px] text-muted-foreground/60">
+            <p className="text-bildunterschrift text-muted-foreground/60">
               Angelegt am {new Date(obj.erstellt_am).toLocaleDateString("de-DE")}
             </p>
           )}
@@ -743,34 +743,34 @@ export default function Objekte() {
                 <div className="space-y-2 pt-2">
                   <div className={`${viewMode === "list" ? "flex flex-wrap items-center gap-x-5 gap-y-1" : "grid grid-cols-2 gap-x-3 gap-y-1.5"} text-xs text-muted-foreground`}>
                     {(zVon > 0 || zBis > 0) && (
-                      <div className="flex items-center gap-1"><BedDouble className="h-3 w-3" /><span className="text-[10px] text-muted-foreground/70">Zimmer</span><span>{rangeNum(zVon, zBis, " Zi.")}</span></div>
+                      <div className="flex items-center gap-1"><BedDouble className="h-3 w-3" /><span className="text-bildunterschrift text-muted-foreground/70">Zimmer</span><span>{rangeNum(zVon, zBis, " Zi.")}</span></div>
                     )}
                     {baujahr > 0 && (
-                      <div className="flex items-center gap-1"><CalendarDays className="h-3 w-3" /><span className="text-[10px] text-muted-foreground/70">Baujahr</span><span>{baujahr}</span></div>
+                      <div className="flex items-center gap-1"><CalendarDays className="h-3 w-3" /><span className="text-bildunterschrift text-muted-foreground/70">Baujahr</span><span>{baujahr}</span></div>
                     )}
                     {(stats.groesseVon > 0 || stats.groesseBis > 0) && (
-                      <div className="flex items-center gap-1"><Ruler className="h-3 w-3" /><span className="text-[10px] text-muted-foreground/70">Größe</span><span>{rangeNum(stats.groesseVon, stats.groesseBis, " m²")}</span></div>
+                      <div className="flex items-center gap-1"><Ruler className="h-3 w-3" /><span className="text-bildunterschrift text-muted-foreground/70">Größe</span><span>{rangeNum(stats.groesseVon, stats.groesseBis, " m²")}</span></div>
                     )}
                     {(mqVon > 0 || mqBis > 0) && (
-                      <div className="flex items-center gap-1"><Home className="h-3 w-3" /><span className="text-[10px] text-muted-foreground/70">Kaltmiete</span><span>{rangeCur(mqVon, mqBis)}/m²</span></div>
+                      <div className="flex items-center gap-1"><Home className="h-3 w-3" /><span className="text-bildunterschrift text-muted-foreground/70">Kaltmiete</span><span>{rangeCur(mqVon, mqBis)}/m²</span></div>
                     )}
                     {(stats.renditeVon > 0 || stats.renditeBis > 0) && (
-                      <div className="flex items-center gap-1"><TrendingUp className="h-3 w-3" /><span className="text-[10px] text-muted-foreground/70">Bruttorendite</span><span>{stats.renditeVon.toFixed(2)} %{stats.renditeBis !== stats.renditeVon ? ` – ${stats.renditeBis.toFixed(2)} %` : ""}</span></div>
+                      <div className="flex items-center gap-1"><TrendingUp className="h-3 w-3" /><span className="text-bildunterschrift text-muted-foreground/70">Bruttorendite</span><span>{stats.renditeVon.toFixed(2)} %{stats.renditeBis !== stats.renditeVon ? ` – ${stats.renditeBis.toFixed(2)} %` : ""}</span></div>
                     )}
                     {Number(obj.afaDaten?.afaSatz) > 0 && (
-                      <div className="flex items-center gap-1"><TrendingUp className="h-3 w-3" /><span className="text-[10px] text-muted-foreground/70">AfA</span><span>{Number(obj.afaDaten!.afaSatz).toFixed(2).replace(".", ",")} %</span></div>
+                      <div className="flex items-center gap-1"><TrendingUp className="h-3 w-3" /><span className="text-bildunterschrift text-muted-foreground/70">AfA</span><span>{Number(obj.afaDaten!.afaSatz).toFixed(2).replace(".", ",")} %</span></div>
                     )}
                   </div>
                   {(bauzustand || anlageklasse || obj.konzept || canEdit(user.role)) && (
                     <div className="flex flex-wrap items-center gap-1.5 pt-1">
                       {bauzustand && (
-                        <Badge variant="outline" className="text-[10px] gap-1"><Hammer className="h-3 w-3" />{bauzustand}</Badge>
+                        <Badge variant="outline" className="text-bildunterschrift gap-1"><Hammer className="h-3 w-3" />{bauzustand}</Badge>
                       )}
                       {anlageklasse && (
-                        <Badge variant="secondary" className="text-[10px] gap-1"><Tag className="h-3 w-3" />{anlageklasse}</Badge>
+                        <Badge variant="secondary" className="text-bildunterschrift gap-1"><Tag className="h-3 w-3" />{anlageklasse}</Badge>
                       )}
                       {obj.konzept && (
-                        <Badge variant="outline" className="text-[10px] gap-1" title="Konzept"><Target className="h-3 w-3" />{konzeptLabel(obj.konzept)}</Badge>
+                        <Badge variant="outline" className="text-bildunterschrift gap-1" title="Konzept"><Target className="h-3 w-3" />{konzeptLabel(obj.konzept)}</Badge>
                       )}
                       {canEdit(user.role) && viewMode === "grid" && (
                         <button
@@ -874,7 +874,7 @@ export default function Objekte() {
                             <TableCell className="text-xs">{fmt(w.vkGesamt)}</TableCell>
                             <TableCell className="text-xs">{w.rendite.toFixed(2)} %</TableCell>
                             <TableCell>
-                              <Badge variant={w.vermietet !== false ? "default" : "destructive"} className="text-[10px]">
+                              <Badge variant={w.vermietet !== false ? "default" : "destructive"} className="text-bildunterschrift">
                                 {w.vermietet !== false ? "Vermietet" : "Leerstand"}
                               </Badge>
                             </TableCell>
@@ -886,7 +886,7 @@ export default function Objekte() {
                                   variant="outline"
                                   data-testid="status-kennzeichen"
                                   title="Der Status kommt automatisch aus Investagon."
-                                  className={`text-[10px] ${w.status === "frei" ? "border-green-600/40 text-green-600" : w.status === "reserviert" ? "border-blue-600/40 text-blue-600" : "text-muted-foreground"}`}
+                                  className={`text-bildunterschrift ${w.status === "frei" ? "border-green-600/40 text-green-600" : w.status === "reserviert" ? "border-blue-600/40 text-blue-600" : "text-muted-foreground"}`}
                                 >
                                   {belegungsText(w)}
                                 </Badge>
@@ -1076,11 +1076,11 @@ export default function Objekte() {
         <Card className="p-3">
           <div className="flex flex-wrap items-end gap-2">
             <div className="flex-1 min-w-[180px]">
-              <label className="text-[10px] uppercase tracking-wide text-muted-foreground">Adresse / PLZ / Ort</label>
+              <label className="text-bildunterschrift uppercase tracking-wide text-muted-foreground">Adresse / PLZ / Ort</label>
               <Input value={fAdresse} onChange={(e) => setFAdresse(e.target.value)} placeholder="z.B. Leipzig" className="h-[40px] sm:h-9" />
             </div>
             <div className="min-w-[160px]">
-              <label className="text-[10px] uppercase tracking-wide text-muted-foreground">Bauzustand</label>
+              <label className="text-bildunterschrift uppercase tracking-wide text-muted-foreground">Bauzustand</label>
               <Select value={fBauzustand} onValueChange={setFBauzustand}>
                 <SelectTrigger className="h-[40px] sm:h-9"><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -1098,7 +1098,7 @@ export default function Objekte() {
               </Select>
             </div>
             <div className="min-w-[180px]">
-              <label className="text-[10px] uppercase tracking-wide text-muted-foreground">Anlageklasse</label>
+              <label className="text-bildunterschrift uppercase tracking-wide text-muted-foreground">Anlageklasse</label>
               <Select value={fAnlageklasse} onValueChange={setFAnlageklasse}>
                 <SelectTrigger className="h-[40px] sm:h-9"><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -1121,7 +1121,7 @@ export default function Objekte() {
             </div>
             {darfFuerKunde && (
               <div className="min-w-[200px]">
-                <label className="text-[10px] uppercase tracking-wide text-muted-foreground">Für Kunde</label>
+                <label className="text-bildunterschrift uppercase tracking-wide text-muted-foreground">Für Kunde</label>
                 <Select value={fKunde} onValueChange={(v) => { setFKunde(v); if (v === "keiner") setFNurPassend(false); }}>
                   <SelectTrigger className="h-[40px] sm:h-9" aria-label="Für Kunde"><SelectValue /></SelectTrigger>
                   <SelectContent>
@@ -1146,28 +1146,28 @@ export default function Objekte() {
           {showMore && (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3 pt-3 border-t">
               <div>
-                <label className="text-[10px] uppercase tracking-wide text-muted-foreground">Kaufpreis (€)</label>
+                <label className="text-bildunterschrift uppercase tracking-wide text-muted-foreground">Kaufpreis (€)</label>
                 <div className="flex gap-1">
                   <Input type="number" value={fKpMin} onChange={(e) => setFKpMin(e.target.value)} placeholder="von" className="h-9" />
                   <Input type="number" value={fKpMax} onChange={(e) => setFKpMax(e.target.value)} placeholder="bis" className="h-9" />
                 </div>
               </div>
               <div>
-                <label className="text-[10px] uppercase tracking-wide text-muted-foreground">Bruttorendite (%)</label>
+                <label className="text-bildunterschrift uppercase tracking-wide text-muted-foreground">Bruttorendite (%)</label>
                 <div className="flex gap-1">
                   <Input type="text" value={fBrMin} onChange={(e) => setFBrMin(e.target.value)} placeholder="von" className="h-9" />
                   <Input type="text" value={fBrMax} onChange={(e) => setFBrMax(e.target.value)} placeholder="bis" className="h-9" />
                 </div>
               </div>
               <div>
-                <label className="text-[10px] uppercase tracking-wide text-muted-foreground">Größe (m²)</label>
+                <label className="text-bildunterschrift uppercase tracking-wide text-muted-foreground">Größe (m²)</label>
                 <div className="flex gap-1">
                   <Input type="number" value={fGrMin} onChange={(e) => setFGrMin(e.target.value)} placeholder="von" className="h-9" />
                   <Input type="number" value={fGrMax} onChange={(e) => setFGrMax(e.target.value)} placeholder="bis" className="h-9" />
                 </div>
               </div>
               <div>
-                <label className="text-[10px] uppercase tracking-wide text-muted-foreground">Baujahr</label>
+                <label className="text-bildunterschrift uppercase tracking-wide text-muted-foreground">Baujahr</label>
                 <div className="flex gap-1">
                   <Input type="number" value={fBjMin} onChange={(e) => setFBjMin(e.target.value)} placeholder="von" className="h-9" />
                   <Input type="number" value={fBjMax} onChange={(e) => setFBjMax(e.target.value)} placeholder="bis" className="h-9" />
@@ -1175,7 +1175,7 @@ export default function Objekte() {
               </div>
               {canFilterByObjStatus(user.role) && (
                 <div>
-                  <label className="text-[10px] uppercase tracking-wide text-muted-foreground">Objektstatus</label>
+                  <label className="text-bildunterschrift uppercase tracking-wide text-muted-foreground">Objektstatus</label>
                   <Select value={fObjStatus} onValueChange={setFObjStatus}>
                     <SelectTrigger className="h-[40px] sm:h-9"><SelectValue /></SelectTrigger>
                     <SelectContent>
@@ -1187,11 +1187,11 @@ export default function Objekte() {
                 </div>
               )}
               <div>
-                <label className="text-[10px] uppercase tracking-wide text-muted-foreground" htmlFor="filter-aufwand">Eigenaufwand je Monat bis (€)</label>
+                <label className="text-bildunterschrift uppercase tracking-wide text-muted-foreground" htmlFor="filter-aufwand">Eigenaufwand je Monat bis (€)</label>
                 <Input id="filter-aufwand" value={fAufwandBis} onChange={(e) => setFAufwandBis(e.target.value)} inputMode="numeric" placeholder="z.B. 200" className="h-[40px] sm:h-9" />
               </div>
               <div className="col-span-2">
-                <span className="text-[10px] uppercase tracking-wide text-muted-foreground">AfA-Art</span>
+                <span className="text-bildunterschrift uppercase tracking-wide text-muted-foreground">AfA-Art</span>
                 <div className="flex flex-wrap gap-1 pt-1">
                   {(Object.keys(AFA_ART_LABEL) as AfaArt[]).map((art) => (
                     <Button key={art} type="button" size="sm" variant={anlegerFilter.afaArten.has(art) ? "default" : "outline"} className="h-[40px] sm:h-8" aria-pressed={anlegerFilter.afaArten.has(art)} onClick={() => afaArtUmschalten(art)}>

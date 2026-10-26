@@ -91,7 +91,7 @@ export function InactivityAmpel({
         Text gar nicht erst angezeigt.
       */}
       {showLabel && (
-        <span className={`text-[10px] leading-tight min-w-0 ${textKlasse}`}>{kurztext || titel}</span>
+        <span className={`text-bildunterschrift leading-tight min-w-0 ${textKlasse}`}>{kurztext || titel}</span>
       )}
       <Tooltip>
         <TooltipTrigger asChild>

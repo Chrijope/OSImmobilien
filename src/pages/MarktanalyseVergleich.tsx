@@ -222,7 +222,7 @@ export default function MarktanalyseVergleich() {
                 {standorte.map((s) => (
                   <th key={s.id} className="text-right py-3 px-2 font-semibold min-w-[110px]">
                     <Link to={`/marktanalyse/${s.id}`} className="hover:underline">{s.name}</Link>
-                    <div className="text-[10px] font-normal text-muted-foreground">{s.bundesland}</div>
+                    <div className="text-bildunterschrift font-normal text-muted-foreground">{s.bundesland}</div>
                   </th>
                 ))}
               </tr>

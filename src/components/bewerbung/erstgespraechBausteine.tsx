@@ -92,7 +92,7 @@ export const VorabRahmen = ({ status, children }: { status: VorabStatus; childre
     <div className={stil?.box}>
       {children}
       {stil && (
-        <p className={`mt-1 flex items-center gap-1 text-[10px] ${stil.text}`}>
+        <p className={`mt-1 flex items-center gap-1 text-bildunterschrift ${stil.text}`}>
           <ClipboardList className="h-3 w-3 shrink-0" />
           {vorabEtikett(status)}
         </p>
@@ -296,7 +296,7 @@ export function PfadAuswahl({ ctx }: { ctx: FelderKontext }) {
                 <div className="text-sm font-semibold flex items-center gap-1.5">
                   {p.label}
                   {aktiv && stark?.id === p.id && pfade.length > 1 && (
-                    <Badge variant="secondary" className="text-[9px] px-1 py-0">stärkster Pfad</Badge>
+                    <Badge variant="secondary" className="text-bildunterschrift px-1 py-0">stärkster Pfad</Badge>
                   )}
                 </div>
                 <div className="text-[11px] text-muted-foreground mt-0.5">{p.beschreibung}</div>
@@ -315,7 +315,7 @@ export function PfadAuswahl({ ctx }: { ctx: FelderKontext }) {
             <div className="text-xs font-semibold flex items-center gap-2">
               Pfad {p.label}
               {stark?.id === p.id && pfade.length > 1 && (
-                <Badge variant="secondary" className="text-[9px] px-1 py-0">stärkster Pfad</Badge>
+                <Badge variant="secondary" className="text-bildunterschrift px-1 py-0">stärkster Pfad</Badge>
               )}
             </div>
             <Script>„{p.sprechtext}"</Script>
@@ -390,7 +390,7 @@ export function EinschaetzungBlock({
           ))}
           <span className="ml-2 text-sm font-medium">{eindruck}/5</span>
         </div>
-        <p className="text-[10px] text-muted-foreground">↑ wird mit Übersicht synchronisiert</p>
+        <p className="text-bildunterschrift text-muted-foreground">↑ wird mit Übersicht synchronisiert</p>
       </div>
 
       <div className="rounded-lg border p-3 space-y-2">
@@ -402,7 +402,7 @@ export function EinschaetzungBlock({
             {EMPFEHLUNG_LABELS[score.empfehlung]}
           </Badge>
           {score.uebersteuert && (
-            <Badge variant="outline" className="text-[10px]">übersteuert, automatisch: {score.empfehlungAuto}</Badge>
+            <Badge variant="outline" className="text-bildunterschrift">übersteuert, automatisch: {score.empfehlungAuto}</Badge>
           )}
         </div>
         <p className="text-xs text-muted-foreground">{score.begruendung}</p>
@@ -492,7 +492,7 @@ export function TerminBuchung({
               const [y, m, d] = e.target.value.split("-");
               setClosingDatum(d && m && y ? `${d}.${m}.${y}` : "");
             }} disabled={!canEdit} />
-          {closingDatum && <p className="text-[10px] text-muted-foreground mt-0.5">{closingDatum}</p>}
+          {closingDatum && <p className="text-bildunterschrift text-muted-foreground mt-0.5">{closingDatum}</p>}
         </div>
         <div>
           <Label className="text-xs">Uhrzeit</Label>
@@ -500,7 +500,7 @@ export function TerminBuchung({
             onChange={(e) => setClosingUhrzeit(e.target.value)} disabled={!canEdit} />
         </div>
       </div>
-      <p className="text-[10px] text-muted-foreground">
+      <p className="text-bildunterschrift text-muted-foreground">
         ↑ Sobald Datum und Uhrzeit gesetzt sind, springt der Status beim Abschließen automatisch auf <strong>Closing</strong>.
       </p>
     </>
@@ -535,7 +535,7 @@ export function ZusammenfassungKarte({
               {mitClosing ? "KI-Zusammenfassung Erstgespräch und Closing" : "KI-Zusammenfassung Erstgespräch"}
             </span>
             {skript.zusammenfassungAm && (
-              <span className="text-[10px] text-muted-foreground">
+              <span className="text-bildunterschrift text-muted-foreground">
                 · {new Date(skript.zusammenfassungAm).toLocaleDateString("de-DE")}
               </span>
             )}
@@ -605,7 +605,7 @@ export function FollowUpDialog({
                   const [y, m, d] = e.target.value.split("-");
                   setDatum(d && m && y ? `${d}.${m}.${y}` : "");
                 }} />
-              {datum && <p className="text-[10px] text-muted-foreground mt-0.5">{datum}</p>}
+              {datum && <p className="text-bildunterschrift text-muted-foreground mt-0.5">{datum}</p>}
             </div>
             <div>
               <Label className="text-xs" htmlFor="follow-up-dialog-uhrzeit">Uhrzeit (optional)</Label>

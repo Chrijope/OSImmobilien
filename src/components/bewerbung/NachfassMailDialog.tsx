@@ -206,9 +206,9 @@ export function NachfassMailDialog({
               )}
 
               <section className="rounded-lg border bg-muted/30 p-4">
-                <p className="mb-1 text-[10px] uppercase tracking-wider text-muted-foreground">Betreff</p>
+                <p className="mb-1 text-bildunterschrift uppercase tracking-wider text-muted-foreground">Betreff</p>
                 <p className="mb-3 text-sm font-semibold">{vorschau.betreff}</p>
-                <p className="mb-1 text-[10px] uppercase tracking-wider text-muted-foreground">Text (Vorname wird je Empfänger eingesetzt)</p>
+                <p className="mb-1 text-bildunterschrift uppercase tracking-wider text-muted-foreground">Text (Vorname wird je Empfänger eingesetzt)</p>
                 <div className="space-y-2 text-sm leading-relaxed">
                   {nachfassMailAlsText("Max").map((absatz, i) => (
                     <p key={i} className={absatz.startsWith("[") ? "font-medium text-primary" : ""}>{absatz}</p>
@@ -218,7 +218,7 @@ export function NachfassMailDialog({
 
               {vorschau.empfaenger.length > 0 && (
                 <section>
-                  <p className="mb-1 text-[10px] uppercase tracking-wider text-muted-foreground">Empfänger</p>
+                  <p className="mb-1 text-bildunterschrift uppercase tracking-wider text-muted-foreground">Empfänger</p>
                   <ul className="max-h-40 divide-y overflow-y-auto rounded-lg border text-sm">
                     {vorschau.empfaenger.map((e) => (
                       <li key={e.id} className="flex items-center justify-between gap-3 px-3 py-1.5">
@@ -232,12 +232,12 @@ export function NachfassMailDialog({
 
               {vorschau.ausgeschlossen.length > 0 && (
                 <section>
-                  <p className="mb-1 text-[10px] uppercase tracking-wider text-muted-foreground">Übersprungen</p>
+                  <p className="mb-1 text-bildunterschrift uppercase tracking-wider text-muted-foreground">Übersprungen</p>
                   <ul className="max-h-40 divide-y overflow-y-auto rounded-lg border text-sm">
                     {vorschau.ausgeschlossen.map((a) => (
                       <li key={a.id} className="flex items-center justify-between gap-3 px-3 py-1.5">
                         <span className="truncate">{a.name}</span>
-                        <Badge variant="outline" className="shrink-0 text-[10px]">
+                        <Badge variant="outline" className="shrink-0 text-bildunterschrift">
                           {a.grund === "Mail schon erhalten" && a.am
                             ? `${a.grund} am ${new Date(a.am).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}`
                             : a.grund}

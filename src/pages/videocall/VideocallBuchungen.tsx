@@ -735,7 +735,7 @@ export default function VideocallBuchungen() {
         title="Buchungskalender"
         subtitle="Deine Terminarten, deine Zeiten und dein Buchungslink. Für freigegebene Mitarbeitende."
       >
-        <Badge variant="outline" className="border-primary/40 bg-primary/10 text-[10px] uppercase tracking-wide text-primary">
+        <Badge variant="outline" className="border-primary/40 bg-primary/10 text-bildunterschrift uppercase tracking-wide text-primary">
           Persönlich
         </Badge>
       </PageHeader>
@@ -785,7 +785,7 @@ export default function VideocallBuchungen() {
                       {sch.fertig ? (
                         <CheckCircle2 className="h-4 w-4 shrink-0 text-[hsl(var(--success))]" />
                       ) : (
-                        <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-primary/50 text-[10px] font-semibold text-primary">
+                        <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-primary/50 text-bildunterschrift font-semibold text-primary">
                           {i + 1}
                         </span>
                       )}
@@ -828,8 +828,8 @@ export default function VideocallBuchungen() {
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="truncate font-medium">{art.bezeichnung}</span>
-                        <Badge variant="secondary" className="text-[10px]">{ANLASS_TEXT[art.anlass]}</Badge>
-                        {!art.oeffentlich && <Badge variant="outline" className="text-[10px]">nur persönlich</Badge>}
+                        <Badge variant="secondary" className="text-bildunterschrift">{ANLASS_TEXT[art.anlass]}</Badge>
+                        {!art.oeffentlich && <Badge variant="outline" className="text-bildunterschrift">nur persönlich</Badge>}
                       </div>
                       <p className="mt-0.5 text-xs text-muted-foreground">
                         {art.dauer_minuten} Minuten
@@ -1105,7 +1105,7 @@ export default function VideocallBuchungen() {
                         {b.quelle === "offen" ? " · offener Link" : b.quelle === "persoenlich" ? " · persönlicher Link" : ""}
                       </p>
                     </div>
-                    <Badge variant={b.status === "abgesagt" ? "secondary" : "outline"} className="text-[10px]">
+                    <Badge variant={b.status === "abgesagt" ? "secondary" : "outline"} className="text-bildunterschrift">
                       {b.status}
                     </Badge>
                     {/*

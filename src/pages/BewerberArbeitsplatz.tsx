@@ -961,7 +961,7 @@ export function BewerberArbeitsplatz({ ablauf }: { ablauf: BewerberAblauf }) {
                           placeholder="PLZ Ort"
                         />
                         {zerlegeRechnungsadresse(b.rechnungsAdresse).ust && (
-                          <p className="text-[10px] text-muted-foreground">{zerlegeRechnungsadresse(b.rechnungsAdresse).ust}</p>
+                          <p className="text-bildunterschrift text-muted-foreground">{zerlegeRechnungsadresse(b.rechnungsAdresse).ust}</p>
                         )}
                       </div>
                     ) : b.rechnungsAdresse ? (
@@ -989,18 +989,18 @@ export function BewerberArbeitsplatz({ ablauf }: { ablauf: BewerberAblauf }) {
                       <div className="mt-3 border-t pt-3">
                         <div className="flex items-center gap-2 mb-1">
                           <CalendarClock className="h-4 w-4 text-primary" />
-                          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Onboarding-Termin</p>
+                          <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground">Onboarding-Termin</p>
                         </div>
                         <p className="text-sm font-semibold">
                           📅 {formatDatum(b.onboardingTerminDatum)}
                           {b.onboardingTerminUhrzeit && ` · ${b.onboardingTerminUhrzeit} Uhr`}
                         </p>
                         {b.onboardingTerminDatum && !b.onboardingTerminGebucht ? (
-                          <p className="text-[10px] text-amber-700 dark:text-amber-400 font-medium mt-1">
+                          <p className="text-bildunterschrift text-amber-700 dark:text-amber-400 font-medium mt-1">
                             Noch nicht als über den Buchungskalender eingebucht bestätigt
                           </p>
                         ) : (
-                          <p className="text-[10px] text-muted-foreground mt-1">Wird im Reiter „Aktivierung" gesetzt</p>
+                          <p className="text-bildunterschrift text-muted-foreground mt-1">Wird im Reiter „Aktivierung" gesetzt</p>
                         )}
                       </div>
                     }
@@ -1115,7 +1115,7 @@ export function BewerberArbeitsplatz({ ablauf }: { ablauf: BewerberAblauf }) {
                 {PIPELINE_STUFEN.map((stufe, i) => (
                   <div key={stufe} className="flex-1 text-center min-w-0">
                     <div className={`h-2.5 rounded-full ${i <= currentIdx ? PIPELINE_COLORS[stufe] : "bg-muted"}`} />
-                    <span className="text-[10px] text-muted-foreground mt-1 block truncate">{stufeLabel(stufe)}</span>
+                    <span className="text-bildunterschrift text-muted-foreground mt-1 block truncate">{stufeLabel(stufe)}</span>
                   </div>
                 ))}
               </div>
@@ -1124,7 +1124,7 @@ export function BewerberArbeitsplatz({ ablauf }: { ablauf: BewerberAblauf }) {
           <Tabs value={detailTab} onValueChange={setDetailTab}>
             {/* Mobile: Dropdown */}
             <div className="sm:hidden">
-              <Label className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1 block">Bewerberprozess</Label>
+              <Label className="text-bildunterschrift uppercase tracking-wider text-muted-foreground mb-1 block">Bewerberprozess</Label>
               <Select value={detailTab} onValueChange={setDetailTab}>
                 <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -1157,15 +1157,15 @@ export function BewerberArbeitsplatz({ ablauf }: { ablauf: BewerberAblauf }) {
                 return (
                   <TabsTrigger key={t} value={valueMap[t] || t.toLowerCase()} className="rounded-none border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent px-3 py-2 text-sm">
                     {t}
-                    {t === "Dokumente" && (b.dokumente || []).length > 0 && <Badge className="ml-1 bg-primary text-primary-foreground text-[9px] px-1 py-0">{(b.dokumente || []).length}</Badge>}
+                    {t === "Dokumente" && (b.dokumente || []).length > 0 && <Badge className="ml-1 bg-primary text-primary-foreground text-bildunterschrift px-1 py-0">{(b.dokumente || []).length}</Badge>}
                     {/* Grün heißt: Erstgespräch abgeschlossen (Zeitstempel durchgefuehrtAm),
                         dieselbe Regel wie der Einstieg "nur Teil 2" im Reiter Closing.
                         Vorher hing das Häkchen am Closing-Termin. */}
-                    {t === ablauf.gespraechLabel && istTeil1Abgeschlossen(b.erstgespraechSkript) && <Badge className="ml-1 bg-green-500 text-white text-[9px] px-1 py-0">✓</Badge>}
-                    {t === "Closing" && b.paketwahl && <Badge className="ml-1 bg-green-500 text-white text-[9px] px-1 py-0">✓</Badge>}
-                    {t === "Vertrag" && b.vertragStatus === "unterschrieben" && <Badge className="ml-1 bg-green-500 text-white text-[9px] px-1 py-0">✓</Badge>}
-                    {t === "Rechnung" && b.rechnungBezahltAm && <Badge className="ml-1 bg-green-500 text-white text-[9px] px-1 py-0">✓</Badge>}
-                    {t === "Aktivierung" && b.aktivAm && <Badge className="ml-1 bg-green-500 text-white text-[9px] px-1 py-0">✓</Badge>}
+                    {t === ablauf.gespraechLabel && istTeil1Abgeschlossen(b.erstgespraechSkript) && <Badge className="ml-1 bg-green-500 text-white text-bildunterschrift px-1 py-0">✓</Badge>}
+                    {t === "Closing" && b.paketwahl && <Badge className="ml-1 bg-green-500 text-white text-bildunterschrift px-1 py-0">✓</Badge>}
+                    {t === "Vertrag" && b.vertragStatus === "unterschrieben" && <Badge className="ml-1 bg-green-500 text-white text-bildunterschrift px-1 py-0">✓</Badge>}
+                    {t === "Rechnung" && b.rechnungBezahltAm && <Badge className="ml-1 bg-green-500 text-white text-bildunterschrift px-1 py-0">✓</Badge>}
+                    {t === "Aktivierung" && b.aktivAm && <Badge className="ml-1 bg-green-500 text-white text-bildunterschrift px-1 py-0">✓</Badge>}
                   </TabsTrigger>
                 );
               })}
@@ -1256,7 +1256,7 @@ export function BewerberArbeitsplatz({ ablauf }: { ablauf: BewerberAblauf }) {
                           <Sparkles className="h-4 w-4 text-primary" />
                           <span className="font-semibold">KI-Zusammenfassung Erstgespräch</span>
                           {b.erstgespraechSkript.zusammenfassungAm && (
-                            <span className="text-[10px] text-muted-foreground font-normal">
+                            <span className="text-bildunterschrift text-muted-foreground font-normal">
                               · {new Date(b.erstgespraechSkript.zusammenfassungAm).toLocaleDateString("de-DE")}
                             </span>
                           )}
@@ -1293,20 +1293,20 @@ export function BewerberArbeitsplatz({ ablauf }: { ablauf: BewerberAblauf }) {
                   : "bg-red-600 text-white";
                 return (
                   <div className="flex flex-wrap items-center gap-1.5">
-                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground mr-1">Assessment</span>
+                    <span className="text-bildunterschrift uppercase tracking-wider text-muted-foreground mr-1">Assessment</span>
                     {pfadNamen.length > 0 ? (
                       pfadNamen.map((n) => (
-                        <Badge key={n} variant={stark && n === stark.label ? "default" : "outline"} className="text-[10px]">
+                        <Badge key={n} variant={stark && n === stark.label ? "default" : "outline"} className="text-bildunterschrift">
                           {n}
                         </Badge>
                       ))
                     ) : (
-                      <Badge variant="outline" className="text-[10px]">Profil-Weiche offen</Badge>
+                      <Badge variant="outline" className="text-bildunterschrift">Profil-Weiche offen</Badge>
                     )}
-                    <Badge variant="outline" className="text-[10px]">{score.punkte} / {score.maxPunkte} Punkte</Badge>
-                    <Badge className={`text-[10px] ${empfehlungClass}`}>{EMPFEHLUNG_LABELS[score.empfehlung]}</Badge>
+                    <Badge variant="outline" className="text-bildunterschrift">{score.punkte} / {score.maxPunkte} Punkte</Badge>
+                    <Badge className={`text-bildunterschrift ${empfehlungClass}`}>{EMPFEHLUNG_LABELS[score.empfehlung]}</Badge>
                     {score.uebersteuert && (
-                      <Badge variant="outline" className="text-[10px]">von HR übersteuert</Badge>
+                      <Badge variant="outline" className="text-bildunterschrift">von HR übersteuert</Badge>
                     )}
                   </div>
                 );
@@ -1354,7 +1354,7 @@ export function BewerberArbeitsplatz({ ablauf }: { ablauf: BewerberAblauf }) {
                 <Card className="p-4" data-testid="uebersicht-telefonstand">
                   <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
                     <div className="min-w-0">
-                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Telefonstand</p>
+                      <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground">Telefonstand</p>
                       <p className="text-sm font-semibold mt-0.5">
                         {(() => {
                           const n = countNichtErreichtVersuche(b);
@@ -1421,7 +1421,7 @@ export function BewerberArbeitsplatz({ ablauf }: { ablauf: BewerberAblauf }) {
               {/* ─── 8. Persönlichkeitstyp ─── */}
               {b.typ && (
                 <Card className="p-4">
-                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">Persönlichkeitstyp</p>
+                  <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground mb-2">Persönlichkeitstyp</p>
                   <div className="flex items-center gap-3">
                     <Badge className="bg-primary text-primary-foreground">{b.typ}</Badge>
                     <div>
@@ -1473,7 +1473,7 @@ export function BewerberArbeitsplatz({ ablauf }: { ablauf: BewerberAblauf }) {
                     <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">Lebenslauf von {tarnName(`${b.vorname ?? ""} ${b.nachname ?? ""}`.trim(), "bewerber")}</p>
-                      <p className="text-[10px] text-muted-foreground">PDF · mit Bewerbung eingereicht</p>
+                      <p className="text-bildunterschrift text-muted-foreground">PDF · mit Bewerbung eingereicht</p>
                     </div>
                     <a href={b.lebenslaufUrl} target="_blank" rel="noopener noreferrer">
                       <Button size="sm" variant="outline">
@@ -1505,7 +1505,7 @@ export function BewerberArbeitsplatz({ ablauf }: { ablauf: BewerberAblauf }) {
                         <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium truncate">{d.name}</p>
-                          <p className="text-[10px] text-muted-foreground">{d.typ} · {d.datum}</p>
+                          <p className="text-bildunterschrift text-muted-foreground">{d.typ} · {d.datum}</p>
                         </div>
                         {d.url && (
                           <>
@@ -1517,7 +1517,7 @@ export function BewerberArbeitsplatz({ ablauf }: { ablauf: BewerberAblauf }) {
                             </a>
                           </>
                         )}
-                        <Badge className={`${DOK_STATUS_COLOR[d.status]} text-white text-[10px]`}>
+                        <Badge className={`${DOK_STATUS_COLOR[d.status]} text-white text-bildunterschrift`}>
                           {d.status === "hochgeladen" ? "Hochgeladen" : d.status === "in_pruefung" ? "In Prüfung" : d.status === "freigegeben" ? "Freigegeben" : "Abgelehnt"}
                         </Badge>
                         {canManage(user.role) && (
@@ -2004,12 +2004,12 @@ export function BewerberArbeitsplatz({ ablauf }: { ablauf: BewerberAblauf }) {
                     <><div className="hidden sm:block"><Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead className="text-[10px] uppercase tracking-wider">Erstellt</TableHead>
-                          <TableHead className="text-[10px] uppercase tracking-wider">Name</TableHead>
-                          <TableHead className="text-[10px] uppercase tracking-wider">Kontakt</TableHead>
-                          <TableHead className="text-[10px] uppercase tracking-wider">Stelle</TableHead>
-                          <TableHead className="text-[10px] uppercase tracking-wider">Abgelehnt am</TableHead>
-                          <TableHead className="text-[10px] uppercase tracking-wider">Grund</TableHead>
+                          <TableHead className="text-bildunterschrift uppercase tracking-wider">Erstellt</TableHead>
+                          <TableHead className="text-bildunterschrift uppercase tracking-wider">Name</TableHead>
+                          <TableHead className="text-bildunterschrift uppercase tracking-wider">Kontakt</TableHead>
+                          <TableHead className="text-bildunterschrift uppercase tracking-wider">Stelle</TableHead>
+                          <TableHead className="text-bildunterschrift uppercase tracking-wider">Abgelehnt am</TableHead>
+                          <TableHead className="text-bildunterschrift uppercase tracking-wider">Grund</TableHead>
                           <TableHead />
                         </TableRow>
                       </TableHeader>
@@ -2032,7 +2032,7 @@ export function BewerberArbeitsplatz({ ablauf }: { ablauf: BewerberAblauf }) {
                                       const cut = getSeenAt(SEEN_KEYS.bewerbungen);
                                       const isNew = !isItemSeen(SEEN_KEYS.bewerbungen, b.id) && (cut ? String(b.erstelltAm || "") > cut : false);
                                       return isNew ? (
-                                        <Badge className="text-[9px] px-1.5 py-0 h-4 bg-emerald-500 text-white border-0 hover:bg-emerald-500 uppercase tracking-wide">Neu</Badge>
+                                        <Badge className="text-bildunterschrift px-1.5 py-0 h-4 bg-emerald-500 text-white border-0 hover:bg-emerald-500 uppercase tracking-wide">Neu</Badge>
                                       ) : null;
                                     })()}
                                     {tarnName(`${b.vorname ?? ""} ${b.nachname ?? ""}`.trim(), "bewerber")}
@@ -2099,7 +2099,7 @@ export function BewerberArbeitsplatz({ ablauf }: { ablauf: BewerberAblauf }) {
                           ["Bewertung", "Bewertung"],
                           ["Typ", "Typ"],
                         ] as [string, string][]).filter(([id]) => zeige(id)).map(([id, kopf]) => (
-                          <TableHead key={id} className="text-[10px] uppercase tracking-wider">
+                          <TableHead key={id} className="text-bildunterschrift uppercase tracking-wider">
                             {id === "Vorab-Score" ? (
                               <SortierSpaltenkopf
                                 zustand={scoreSortierung}
@@ -2254,7 +2254,7 @@ export function BewerberArbeitsplatz({ ablauf }: { ablauf: BewerberAblauf }) {
                                     const cut = getSeenAt(SEEN_KEYS.bewerbungen);
                                     const isNew = !isItemSeen(SEEN_KEYS.bewerbungen, b.id) && (cut ? String(b.erstelltAm || "") > cut : false);
                                     return isNew ? (
-                                      <Badge className="text-[9px] px-1.5 py-0 h-4 bg-emerald-500 text-white border-0 hover:bg-emerald-500 uppercase tracking-wide">Neu</Badge>
+                                      <Badge className="text-bildunterschrift px-1.5 py-0 h-4 bg-emerald-500 text-white border-0 hover:bg-emerald-500 uppercase tracking-wide">Neu</Badge>
                                     ) : null;
                                   })()}
                                   {tarnName(`${b.vorname ?? ""} ${b.nachname ?? ""}`.trim(), "bewerber")}
@@ -2284,10 +2284,10 @@ export function BewerberArbeitsplatz({ ablauf }: { ablauf: BewerberAblauf }) {
                             </TableCell>
                             {zeige("Quelle") && <TableCell className="text-sm">{b.quelle}</TableCell>}
                             {zeige("Anrufe") && <TableCell className="text-xs">
-                              {cg ? <Badge className="bg-green-500 text-white text-[10px]">Closing gebucht</Badge>
-                                : versuche === 0 ? <Badge variant="outline" className="text-[10px]">Kein Versuch</Badge>
-                                : versuche >= 5 ? <Badge className="bg-red-500 text-white text-[10px]">{versuche}x nicht erreicht</Badge>
-                                : <Badge className="bg-orange-500 text-white text-[10px]">{versuche}x nicht erreicht</Badge>}
+                              {cg ? <Badge className="bg-green-500 text-white text-bildunterschrift">Closing gebucht</Badge>
+                                : versuche === 0 ? <Badge variant="outline" className="text-bildunterschrift">Kein Versuch</Badge>
+                                : versuche >= 5 ? <Badge className="bg-red-500 text-white text-bildunterschrift">{versuche}x nicht erreicht</Badge>
+                                : <Badge className="bg-orange-500 text-white text-bildunterschrift">{versuche}x nicht erreicht</Badge>}
                             </TableCell>}
                             <TableCell className="text-xs">
                               {/*
@@ -2310,10 +2310,10 @@ export function BewerberArbeitsplatz({ ablauf }: { ablauf: BewerberAblauf }) {
                                       onClick={(e) => e.stopPropagation()}
                                       className="inline-flex"
                                     >
-                                      <Badge className="bg-green-500 hover:bg-green-600 text-white text-[10px] gap-1 cursor-pointer"><MessageCircle className="h-3 w-3" />Ja</Badge>
+                                      <Badge className="bg-green-500 hover:bg-green-600 text-white text-bildunterschrift gap-1 cursor-pointer"><MessageCircle className="h-3 w-3" />Ja</Badge>
                                     </a>
-                                  ) : <Badge className="bg-green-500 text-white text-[10px] gap-1"><MessageCircle className="h-3 w-3" />Ja</Badge>)
-                                : <Badge variant="outline" className="text-[10px] text-muted-foreground">Nein</Badge>}
+                                  ) : <Badge className="bg-green-500 text-white text-bildunterschrift gap-1"><MessageCircle className="h-3 w-3" />Ja</Badge>)
+                                : <Badge variant="outline" className="text-bildunterschrift text-muted-foreground">Nein</Badge>}
                             </TableCell>}
                             {zeige("Termin") && <TableCell className="text-xs">
                               {isClosingSection ? (
@@ -2329,7 +2329,7 @@ export function BewerberArbeitsplatz({ ablauf }: { ablauf: BewerberAblauf }) {
                                         📅 {formatDatum(t.datum)}{t.uhrzeit ? ` · ${t.uhrzeit}` : ""}
                                       </span>
                                       {(t.quelle === "selbstGebucht" || t.quelle === "buchung") && !t.abgesagt && (
-                                        <span className="text-[10px] text-muted-foreground">Selbst gebucht</span>
+                                        <span className="text-bildunterschrift text-muted-foreground">Selbst gebucht</span>
                                       )}
                                       {/*
                                         Abgesagt schlaegt Vergangen: Ein abgesagter Termin ist
@@ -2339,7 +2339,7 @@ export function BewerberArbeitsplatz({ ablauf }: { ablauf: BewerberAblauf }) {
                                       {t.abgesagt ? (
                                         <TerminAbgesagtBadge className="w-fit" />
                                       ) : vorbei ? (
-                                        <Badge className="bg-destructive text-white text-[10px] w-fit">Vergangen</Badge>
+                                        <Badge className="bg-destructive text-white text-bildunterschrift w-fit">Vergangen</Badge>
                                       ) : null}
                                     </div>
                                   );
@@ -2353,10 +2353,10 @@ export function BewerberArbeitsplatz({ ablauf }: { ablauf: BewerberAblauf }) {
                                       ⏳ {formatDatum(b.bedenkzeitRueckrufAm)}
                                     </span>
                                     {terminIstVergangen(b.bedenkzeitRueckrufAm) && (
-                                      <Badge className="bg-destructive text-white text-[10px] w-fit">Überfällig</Badge>
+                                      <Badge className="bg-destructive text-white text-bildunterschrift w-fit">Überfällig</Badge>
                                     )}
                                     {b.bedenkzeitGrund && (
-                                      <span className="text-muted-foreground text-[10px] max-w-[200px] truncate" title={b.bedenkzeitGrund}>
+                                      <span className="text-muted-foreground text-bildunterschrift max-w-[200px] truncate" title={b.bedenkzeitGrund}>
                                         {b.bedenkzeitGrund}
                                       </span>
                                     )}
@@ -2369,7 +2369,7 @@ export function BewerberArbeitsplatz({ ablauf }: { ablauf: BewerberAblauf }) {
                                       🔔 {formatDatum(b.followUpDatum)}{b.followUpUhrzeit ? ` · ${b.followUpUhrzeit}` : ""}
                                     </span>
                                     {terminIstVergangen(b.followUpDatum, b.followUpUhrzeit) && (
-                                      <Badge className="bg-destructive text-white text-[10px] w-fit">Überfällig</Badge>
+                                      <Badge className="bg-destructive text-white text-bildunterschrift w-fit">Überfällig</Badge>
                                     )}
                                   </div>
                                 ) : <span className="text-muted-foreground">–</span>
@@ -2380,7 +2380,7 @@ export function BewerberArbeitsplatz({ ablauf }: { ablauf: BewerberAblauf }) {
                                   </span>
                                   {b.erstgespraechBerater && <span className="text-muted-foreground">{b.erstgespraechBerater}</span>}
                                   {!stillesErstgespraech && terminIstVergangen(b.erstgespraechDatum, b.erstgespraechUhrzeit) && (
-                                    <Badge className="bg-destructive text-white text-[10px] w-fit">Vergangen</Badge>
+                                    <Badge className="bg-destructive text-white text-bildunterschrift w-fit">Vergangen</Badge>
                                   )}
                                 </div>
                               ) : <span className="text-muted-foreground">–</span>}
@@ -2393,7 +2393,7 @@ export function BewerberArbeitsplatz({ ablauf }: { ablauf: BewerberAblauf }) {
                             */}
                             {zeige("Rechnung") && <TableCell>
                               {zs === "nicht_erstellt" ? <span className="text-xs text-muted-foreground">–</span>
-                                : <Badge className={`${ZAHL_STATUS_BADGE[zs]} text-[10px]`}>{ZAHL_STATUS_LABEL[zs]}</Badge>}
+                                : <Badge className={`${ZAHL_STATUS_BADGE[zs]} text-bildunterschrift`}>{ZAHL_STATUS_LABEL[zs]}</Badge>}
                             </TableCell>}
                             {/*
                               In der Stufe Vertrag steht hier das Datum der
@@ -2409,7 +2409,7 @@ export function BewerberArbeitsplatz({ ablauf }: { ablauf: BewerberAblauf }) {
                                 <TableCell className="text-sm whitespace-nowrap">
                                   {stand.datum || <span className="text-muted-foreground">Datum unbekannt</span>}
                                   {stand.wartetAufKurz && (
-                                    <Badge variant="outline" className="ml-2 text-[10px] font-normal">
+                                    <Badge variant="outline" className="ml-2 text-bildunterschrift font-normal">
                                       wartet auf Skowrnowski
                                     </Badge>
                                   )}
@@ -2455,8 +2455,8 @@ export function BewerberArbeitsplatz({ ablauf }: { ablauf: BewerberAblauf }) {
                         <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
                           <div className={`h-2.5 w-2.5 shrink-0 rounded-full ${section.color}`} />
                           <span className="min-w-0 truncate text-sm font-semibold">{section.icon && `${section.icon} `}{section.label}</span>
-                          {section.isDerived && <Badge variant="outline" className="shrink-0 text-[9px] uppercase">Schnellzugriff</Badge>}
-                          <Badge variant="secondary" className="ml-auto mr-2 shrink-0 text-[10px]">{section.items.length}</Badge>
+                          {section.isDerived && <Badge variant="outline" className="shrink-0 text-bildunterschrift uppercase">Schnellzugriff</Badge>}
+                          <Badge variant="secondary" className="ml-auto mr-2 shrink-0 text-bildunterschrift">{section.items.length}</Badge>
                         </div>
                       </AccordionTrigger>
                       <AccordionContent className="px-0 pt-0 pb-0">
@@ -2530,7 +2530,7 @@ export function BewerberArbeitsplatz({ ablauf }: { ablauf: BewerberAblauf }) {
                         {s.standort && <span>· {s.standort}</span>}
                         {s.art && <span className="w-full">{s.art}</span>}
                       </div>
-                      <Badge className={`${statusColor[s.status]} mt-3 text-[10px] text-white`}>{s.status}</Badge>
+                      <Badge className={`${statusColor[s.status]} mt-3 text-bildunterschrift text-white`}>{s.status}</Badge>
                     </div>
                     <div className="flex shrink-0 items-center gap-1">
                       {s.status === "Veröffentlicht" && (
@@ -2557,7 +2557,7 @@ export function BewerberArbeitsplatz({ ablauf }: { ablauf: BewerberAblauf }) {
                 <TableHeader>
                   <TableRow>
                     {["Titel", "Abteilung", "Standort", "Art", "Status", "Erstellt", "Link"].map(h => (
-                      <TableHead key={h} className="text-[10px] uppercase tracking-wider">{h}</TableHead>
+                      <TableHead key={h} className="text-bildunterschrift uppercase tracking-wider">{h}</TableHead>
                     ))}
                     {canManage(user.role) && <TableHead />}
                   </TableRow>
@@ -2604,7 +2604,7 @@ export function BewerberArbeitsplatz({ ablauf }: { ablauf: BewerberAblauf }) {
                       <TableCell className="text-sm">{s.abteilung}</TableCell>
                       <TableCell className="text-sm">{s.standort}</TableCell>
                       <TableCell className="text-sm">{s.art}</TableCell>
-                      <TableCell><Badge className={`${statusColor[s.status]} text-white text-[10px]`}>{s.status}</Badge></TableCell>
+                      <TableCell><Badge className={`${statusColor[s.status]} text-white text-bildunterschrift`}>{s.status}</Badge></TableCell>
                       <TableCell className="text-sm">{s.erstellt}</TableCell>
                       <TableCell>
                         {s.status === "Veröffentlicht" && (

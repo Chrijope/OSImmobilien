@@ -928,7 +928,7 @@ export default function VideoraumGast() {
               selbst wird nur beschnitten, es verzerrt nichts.
             */}
             <EigenesBild stream={lokalerStream} bildAus={!bildAn} className="max-h-[150px] sm:max-h-none" sprache={sprache} />
-            <span className="absolute bottom-3 left-3 rounded-lg bg-[#0F1621]/70 px-2.5 py-1 text-[10.5px] text-white/60 backdrop-blur">
+            <span className="absolute bottom-3 left-3 rounded-lg bg-[#0F1621]/70 px-2.5 py-1 text-bildunterschrift text-white/60 backdrop-blur">
               {texte.nurEigenesBild}
             </span>
             <div className="absolute bottom-3 right-3 flex gap-2">
@@ -1007,7 +1007,7 @@ export default function VideoraumGast() {
             {betreteGerade ? <Loader2 className="h-4 w-4 animate-spin" /> : <>{seite.betreten} <ArrowRight className="h-4 w-4" /></>}
           </button>
 
-          <p className="mt-4 text-center text-[10.5px] text-white/30">
+          <p className="mt-4 text-center text-bildunterschrift text-white/30">
             OS Immobilien · Am Ostbahnhof 1, 15749 Mittenwalde
           </p>
         </div>

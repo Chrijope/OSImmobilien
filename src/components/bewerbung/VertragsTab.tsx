@@ -606,7 +606,7 @@ export function VertragsTab({ bewerber: b, canEdit, hrName, onRefresh }: Props) 
                 <div className="text-right">
                   <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">Honorar</p>
                   <p className="text-2xl font-bold text-primary">{aktuellesPaket.provisionssatz} %</p>
-                  <p className="text-[10px] text-muted-foreground">auf Kaufpreis</p>
+                  <p className="text-bildunterschrift text-muted-foreground">auf Kaufpreis</p>
                 </div>
               </div>
               {b.vertragVersion && b.vertragVersion > 1 && (
@@ -647,7 +647,7 @@ export function VertragsTab({ bewerber: b, canEdit, hrName, onRefresh }: Props) 
                 <div className="text-right">
                   <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">Einmalige Investition</p>
                   <p className="text-2xl font-bold text-primary">0 €</p>
-                  <p className="text-[10px] text-muted-foreground">individuelle Absprache</p>
+                  <p className="text-bildunterschrift text-muted-foreground">individuelle Absprache</p>
                 </div>
               </div>
               {b.vertragVersion && b.vertragVersion > 1 && (
@@ -685,7 +685,7 @@ export function VertragsTab({ bewerber: b, canEdit, hrName, onRefresh }: Props) 
                 <div className="text-right">
                   <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">Einmalige Investition</p>
                   <p className="text-2xl font-bold text-primary">{formatPreis(aktuellesPaket.preis)}</p>
-                  <p className="text-[10px] text-muted-foreground">netto</p>
+                  <p className="text-bildunterschrift text-muted-foreground">netto</p>
                 </div>
               )}
             </div>
@@ -843,7 +843,7 @@ export function VertragsTab({ bewerber: b, canEdit, hrName, onRefresh }: Props) 
               <p className="font-medium flex items-center gap-2">
                 Vertragsentwurf v{b.vertragVersion}
                 {b.vertragIndividuell && (
-                  <Badge variant="secondary" className="text-[10px]">Individuell</Badge>
+                  <Badge variant="secondary" className="text-bildunterschrift">Individuell</Badge>
                 )}
               </p>
               <p className="text-xs text-muted-foreground">
@@ -892,7 +892,7 @@ export function VertragsTab({ bewerber: b, canEdit, hrName, onRefresh }: Props) 
                 );
               })}
             </ul>
-            <p className="text-[10px] text-muted-foreground">
+            <p className="text-bildunterschrift text-muted-foreground">
               Jede Anlage wird als eigenständiges, OS Immobilien-gebrandetes PDF geöffnet. Alle Anlagen sind zusätzlich im Gesamt-PDF des Handelsvertretervertrages enthalten.
             </p>
           </div>
@@ -930,10 +930,10 @@ export function VertragsTab({ bewerber: b, canEdit, hrName, onRefresh }: Props) 
                       : "Noch nicht geöffnet"}
                   </p>
                 </div>
-                {tracking.link_opened_at && <Badge className="ml-auto bg-green-500 text-white text-[10px] h-5">geöffnet</Badge>}
+                {tracking.link_opened_at && <Badge className="ml-auto bg-green-500 text-white text-bildunterschrift h-5">geöffnet</Badge>}
               </div>
             </div>
-            <p className="text-[10px] text-muted-foreground">
+            <p className="text-bildunterschrift text-muted-foreground">
               Hinweis: Gezählt wird, sobald die Signatur-Seite über den Link aufgerufen wird. Ob die Mail gelesen wurde, messen wir nicht.
             </p>
           </div>

@@ -340,7 +340,7 @@ export default function Kundenprofilseite() {
                 >
                   <Building2 className="h-3 w-3 mr-1.5" />
                   Investment {inv.nummer}
-                  {inv.objektTitel && <span className="ml-1 text-[10px] opacity-70">({inv.objektTitel}{inv.weNr ? ` WE ${inv.weNr}` : ""})</span>}
+                  {inv.objektTitel && <span className="ml-1 text-bildunterschrift opacity-70">({inv.objektTitel}{inv.weNr ? ` WE ${inv.weNr}` : ""})</span>}
                 </Button>
               ))}
             </div>
@@ -393,7 +393,7 @@ function DocRowKunde({ doc, status, onUpload, disabled }: {
         <div className="flex-1">
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium">{doc.name}{doc.required && <span className="text-destructive ml-0.5">*</span>}</span>
-            <span className={`text-[10px] px-1.5 py-0.5 rounded ${labelColor} bg-muted/50`}>{label}</span>
+            <span className={`text-bildunterschrift px-1.5 py-0.5 rounded ${labelColor} bg-muted/50`}>{label}</span>
           </div>
           <div className="flex gap-2 mt-1.5">
             {status === "none" && !disabled && (
@@ -649,7 +649,7 @@ function BonitaetsUnterlagenKunde({ inv, kunde, forceUpdate }: { inv: Investment
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-medium">Selbstauskunft<span className="text-destructive ml-0.5">*</span></span>
-                    <span className={`text-[10px] px-1.5 py-0.5 rounded bg-muted/50 ${saStatus === "approved" ? "text-[hsl(var(--success))]" : "text-destructive"}`}>
+                    <span className={`text-bildunterschrift px-1.5 py-0.5 rounded bg-muted/50 ${saStatus === "approved" ? "text-[hsl(var(--success))]" : "text-destructive"}`}>
                       {saStatus === "approved" ? "Freigegeben" : "Fehlt"}
                     </span>
                   </div>
@@ -1151,7 +1151,7 @@ function InvestmentView({ inv, kunde }: { inv: Investment; kunde: ReturnType<typ
                             <p className="font-medium">{ang.fileName}</p>
                             <p className="text-muted-foreground">Hochgeladen am {new Date(ang.uploadedAt).toLocaleDateString("de-DE")}</p>
                           </div>
-                          {eigenFin.vpBestaetigt && <Badge className="bg-[hsl(var(--success))] text-white text-[10px] shrink-0">Bestätigt</Badge>}
+                          {eigenFin.vpBestaetigt && <Badge className="bg-[hsl(var(--success))] text-white text-bildunterschrift shrink-0">Bestätigt</Badge>}
                           <Button
                             size="sm"
                             variant="ghost"
@@ -1252,7 +1252,7 @@ function InvestmentView({ inv, kunde }: { inv: Investment; kunde: ReturnType<typ
                   <div className="bg-primary/10 text-primary font-bold text-xs px-2 py-1 rounded">PDF</div>
                   <div className="min-w-0 flex-1 basis-48 break-words">
                     <p className="text-sm font-semibold">{doc.name}</p>
-                    <p className="text-[10px] text-muted-foreground">Hochgeladen von {doc.uploadedBy} am {new Date(doc.uploadedAt).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}</p>
+                    <p className="text-bildunterschrift text-muted-foreground">Hochgeladen von {doc.uploadedBy} am {new Date(doc.uploadedAt).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}</p>
                   </div>
                   <Button size="sm" variant="outline" className="text-xs ml-auto shrink-0"><Download className="h-3 w-3 mr-1" /> Herunterladen</Button>
                 </div>
@@ -1364,7 +1364,7 @@ function InvestmentView({ inv, kunde }: { inv: Investment; kunde: ReturnType<typ
                     <Gift className="h-3 w-3" />
                     <span className="text-xs font-bold">{prog.provisionsBetrag}{prog.provisionsTyp === "prozent" ? "%" : " €"} Tippgeberprovision</span>
                   </div>
-                  {prog.bedingungen && <p className="text-[10px] text-muted-foreground mt-2">{prog.bedingungen}</p>}
+                  {prog.bedingungen && <p className="text-bildunterschrift text-muted-foreground mt-2">{prog.bedingungen}</p>}
                 </div>
               </div>
             </div>
@@ -1434,7 +1434,7 @@ function InvestmentView({ inv, kunde }: { inv: Investment; kunde: ReturnType<typ
                         <p className="text-sm font-medium">{emp.name}</p>
                         <p className="text-xs text-muted-foreground">{emp.beziehung} · {new Date(emp.erstellt_am).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}</p>
                       </div>
-                      <Badge variant="outline" className={`ml-auto shrink-0 text-[10px] ${
+                      <Badge variant="outline" className={`ml-auto shrink-0 text-bildunterschrift ${
                         emp.status === "neu" ? "text-[hsl(var(--warning))]"
                         : emp.status === "kontaktiert" ? "text-primary"
                         : "text-[hsl(var(--success))]"

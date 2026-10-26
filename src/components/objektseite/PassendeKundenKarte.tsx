@@ -107,7 +107,7 @@ export function PassendeKundenKarte({ objekt, wohnung }: { objekt: ObjektData; w
               <div className="min-w-0">
                 <p className="text-[13px] font-semibold">
                   {t.name}{" "}
-                  <span className="ml-1 inline-flex items-center rounded-full bg-muted px-2 py-px text-[10px] font-semibold text-muted-foreground">{stufenName(t.pipelineStufe)}</span>
+                  <span className="ml-1 inline-flex items-center rounded-full bg-muted px-2 py-px text-bildunterschrift font-semibold text-muted-foreground">{stufenName(t.pipelineStufe)}</span>
                 </p>
                 {t.score.hauptgrund && (
                   <p className={cn("text-[11px] font-medium", t.score.warnung ? "text-[hsl(var(--warning))]" : "text-[hsl(var(--success))]")}>
@@ -137,7 +137,7 @@ export function PassendeKundenKarte({ objekt, wohnung }: { objekt: ObjektData; w
           {vormerkungAktiv(wohnung) ? " Die Einheit ist vorgemerkt, andere Kunden fehlen deshalb." : " Vorgemerkt ist die Einheit für niemanden."}
         </span>
       </p>
-      <p className="mt-2.5 text-[10px] text-muted-foreground">
+      <p className="mt-2.5 text-bildunterschrift text-muted-foreground">
         Interne Sortierhilfe aus Selbstauskunft, Zielen und Objektdaten. Keine Anlageberatung. „Kundenprofil öffnen“ führt in das Investment, Abschnitt Objektauswahl.
       </p>
     </section>

@@ -25,7 +25,7 @@ export function AkademieSectionNav({
   return (
     <aside className="hidden xl:block fixed right-6 top-28 w-56 z-20">
       <div className="rounded-xl border bg-card/95 backdrop-blur shadow-sm p-3">
-        <div className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold mb-2 px-2">
+        <div className="text-bildunterschrift uppercase tracking-wide text-muted-foreground font-semibold mb-2 px-2">
           Sections
         </div>
         <ul className="space-y-0.5">

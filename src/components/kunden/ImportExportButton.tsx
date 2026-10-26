@@ -473,14 +473,14 @@ export function ImportExportButton({ kontakte, onImportDone, exportFilename = "k
                     strasse; hausnummer; plz; ort; quelle;
                     ziel; einkommen; eigenkapital; beruf
                   </p>
-                  <p className="text-[10px] text-muted-foreground leading-relaxed">
+                  <p className="text-bildunterschrift text-muted-foreground leading-relaxed">
                     Qualifizierungsfragen:
                     <br />• <span className="font-medium">ziel</span> = Was ist dein Ziel?
                     <br />• <span className="font-medium">einkommen</span> = Wie viel Geld verdienst du monatlich?
                     <br />• <span className="font-medium">eigenkapital</span> = Wie viel Eigenkapital steht dir zur Verfügung?
                     <br />• <span className="font-medium">beruf</span> = Was ist deine derzeitige berufliche Situation?
                   </p>
-                  <p className="text-[10px] text-muted-foreground">
+                  <p className="text-bildunterschrift text-muted-foreground">
                     Tipp: Lade zuerst die Vorlage herunter – sie enthält die exakten Spaltennamen + 2 Beispielzeilen.
                   </p>
                 </div>
@@ -499,7 +499,7 @@ export function ImportExportButton({ kontakte, onImportDone, exportFilename = "k
                         ))}
                     </SelectContent>
                   </Select>
-                  <p className="text-[10px] text-muted-foreground">
+                  <p className="text-bildunterschrift text-muted-foreground">
                     Alle Kontakte starten in dieser Stufe und werden als <span className="font-medium">Eigenkontakt</span> markiert.
                     Eine Spalte <code className="font-mono">pipelinestufe</code> in der CSV überschreibt diese Vorgabe pro Zeile.
                   </p>
@@ -527,7 +527,7 @@ export function ImportExportButton({ kontakte, onImportDone, exportFilename = "k
                     />
                   </div>
                 )}
-                <p className="text-[10px] text-muted-foreground">
+                <p className="text-bildunterschrift text-muted-foreground">
                   Keine Mengenbegrenzung: Die Datei wird in Stapeln zu 500 Kontakten geschrieben.
                   Dubletten mit gleicher E-Mail oder Telefonnummer werden übersprungen.
                 </p>

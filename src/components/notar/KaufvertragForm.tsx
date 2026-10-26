@@ -458,8 +458,8 @@ export function KaufvertragForm({ initialData, onSave, readOnly = false, kundeNa
    * und damit vierzig Zeilen im Bogen.
    */
   const renderHinweis = (missing: boolean, hinweis?: string) => {
-    if (missing) return <p className="text-[10px] text-destructive mt-0.5">Pflichtfeld</p>;
-    if (hinweis) return <p className="text-[10px] text-muted-foreground mt-0.5">{hinweis}</p>;
+    if (missing) return <p className="text-bildunterschrift text-destructive mt-0.5">Pflichtfeld</p>;
+    if (hinweis) return <p className="text-bildunterschrift text-muted-foreground mt-0.5">{hinweis}</p>;
     return null;
   };
 
@@ -668,10 +668,10 @@ export function KaufvertragForm({ initialData, onSave, readOnly = false, kundeNa
               </div>
             )}
             {uploadMissing && (
-              <p className="text-[10px] text-destructive mt-1">Pflicht: Bitte Vollmacht-Dokument hochladen.</p>
+              <p className="text-bildunterschrift text-destructive mt-1">Pflicht: Bitte Vollmacht-Dokument hochladen.</p>
             )}
             {!dateiValue && !uploadMissing && (
-              <p className="text-[10px] text-muted-foreground mt-1">Pflicht-Upload, sobald „Vollmacht vorhanden" ausgewählt ist.</p>
+              <p className="text-bildunterschrift text-muted-foreground mt-1">Pflicht-Upload, sobald „Vollmacht vorhanden" ausgewählt ist.</p>
             )}
           </div>
         )}
@@ -963,13 +963,13 @@ export function KaufvertragForm({ initialData, onSave, readOnly = false, kundeNa
                 <SelectItem value="nein">Nein</SelectItem>
               </SelectContent>
             </Select>
-            <p className="text-[10px] text-muted-foreground mt-0.5">Freiwillig. Ohne Inventar bleibt der Block leer.</p>
+            <p className="text-bildunterschrift text-muted-foreground mt-0.5">Freiwillig. Ohne Inventar bleibt der Block leer.</p>
           </div>
           {renderEuroField("Angesetzter Kaufpreis", "inventar_kaufpreis", "z.B. 5.000", false, "Mindert die Grunderwerbsteuer, wenn er im Vertrag steht")}
           <div className="col-span-2">
             <Label className="text-xs font-semibold">Auflistung</Label>
             <Textarea value={data.inventar_auflistung || ""} onChange={e => set("inventar_auflistung", e.target.value)} className="text-sm mt-1" rows={2} disabled={readOnly} />
-            <p className="text-[10px] text-muted-foreground mt-0.5">Einbauküche, Möbel, Markise. Ohne Auflistung erkennt das Finanzamt den Abzug nicht an.</p>
+            <p className="text-bildunterschrift text-muted-foreground mt-0.5">Einbauküche, Möbel, Markise. Ohne Auflistung erkennt das Finanzamt den Abzug nicht an.</p>
           </div>
         </div>
       </Card>

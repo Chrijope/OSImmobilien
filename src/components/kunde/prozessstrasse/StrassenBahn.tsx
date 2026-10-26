@@ -129,7 +129,7 @@ export function StrassenBahn({
         <div className="absolute flex items-center gap-1" style={{ left: letzte.x - 8, top: letzte.y - 38 }}>
           <ZielSymbol strasse={strasse} className="h-4 w-4" />
           <span
-            className="text-[10px] font-semibold uppercase tracking-[0.1em]"
+            className="text-bildunterschrift font-semibold uppercase tracking-[0.1em]"
             style={{ color: strasse.zielErreicht ? ERLEDIGT : "hsl(var(--foreground))" }}
           >
             Ziel
@@ -182,7 +182,7 @@ export function StrassenBahn({
               />
               {istAktuell && (
                 <span
-                  className="rounded-full px-2 py-[1px] text-[10px] font-semibold"
+                  className="rounded-full px-2 py-[1px] text-bildunterschrift font-semibold"
                   style={
                     strasse.nichtErschienen
                       ? { color: "hsl(var(--ps-nein))", background: "hsl(var(--ps-nein) / 0.1)" }

@@ -110,7 +110,7 @@ export function AblaufplanZeitleiste() {
                 </p>
                 {station.imCrm && station.imCrm.length > 0 && (
                   <div className="mt-3 rounded-lg border border-primary/25 bg-primary/5 p-3">
-                    <p className="text-[10px] uppercase tracking-wide font-semibold text-primary mb-1.5">
+                    <p className="text-bildunterschrift uppercase tracking-wide font-semibold text-primary mb-1.5">
                       So machst du das im CRM
                     </p>
                     <ul className="space-y-1.5">
@@ -124,11 +124,11 @@ export function AblaufplanZeitleiste() {
                   </div>
                 )}
                 <div className="mt-3 flex items-center gap-1.5 flex-wrap">
-                  <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                  <span className="text-bildunterschrift uppercase tracking-wide text-muted-foreground">
                     Pipelinestufen:
                   </span>
                   {station.stufen.map((key) => (
-                    <Badge key={key} variant="outline" className="text-[10px]">
+                    <Badge key={key} variant="outline" className="text-bildunterschrift">
                       {ablaufStufenLabel(key)}
                     </Badge>
                   ))}

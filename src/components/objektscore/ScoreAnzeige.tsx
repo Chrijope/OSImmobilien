@@ -47,7 +47,7 @@ export function ScoreRing({ score, klein = false, className }: { score: RingStan
     >
       <span className={cn("absolute rounded-full bg-background", klein ? "inset-[3px]" : "inset-1")} />
       {score?.teilwert && <span className="pointer-events-none absolute -inset-[3px] rounded-full border-[1.5px] border-dashed border-muted-foreground/60" />}
-      <b className={cn("relative tabular-nums", wert === null ? "text-[9px] font-semibold text-muted-foreground" : klein ? "text-[11px]" : "text-[13px]")}>
+      <b className={cn("relative tabular-nums", wert === null ? "text-bildunterschrift font-semibold text-muted-foreground" : klein ? "text-[11px]" : "text-[13px]")}>
         {wert === null ? "n. b." : wert}
       </b>
     </div>
@@ -59,7 +59,7 @@ export function ScoreMini({ wert }: { wert: number | null }) {
   const stufe = scoreStufe(wert);
   return (
     <span
-      className="inline-grid h-[18px] min-w-[26px] place-items-center rounded-full px-1.5 text-[10px] font-bold tabular-nums text-white"
+      className="inline-grid h-[18px] min-w-[26px] place-items-center rounded-full px-1.5 text-bildunterschrift font-bold tabular-nums text-white"
       style={{ background: FARBE[stufe] }}
     >
       {wert ?? "n. b."}
@@ -73,12 +73,12 @@ export function ScoreChips({ score }: { score: ObjektScore | null | undefined })
   return (
     <>
       {score.warnung && (
-        <span className="inline-flex items-center rounded-full bg-[hsl(var(--warning))]/15 px-2 py-px text-[10px] font-semibold text-[hsl(var(--warning))]" data-testid="score-warnung">
+        <span className="inline-flex items-center rounded-full bg-[hsl(var(--warning))]/15 px-2 py-px text-bildunterschrift font-semibold text-[hsl(var(--warning))]" data-testid="score-warnung">
           {score.warnung}
         </span>
       )}
       {score.teilwert && (
-        <span className="inline-flex items-center rounded-full bg-muted px-2 py-px text-[10px] font-semibold text-muted-foreground" data-testid="score-teilwert">
+        <span className="inline-flex items-center rounded-full bg-muted px-2 py-px text-bildunterschrift font-semibold text-muted-foreground" data-testid="score-teilwert">
           Teilwert
         </span>
       )}
@@ -150,8 +150,8 @@ export function ScoreWarum({ score, ziele, saStand, anfangsOffen = false, classN
               </div>
             ))}
           </div>
-          {score.fehltText && <p className="mt-2 border-t border-border/60 pt-1.5 text-[10px] text-muted-foreground">{score.fehltText}</p>}
-          <p className="mt-2 border-t border-border/60 pt-1.5 text-[10px] text-muted-foreground">
+          {score.fehltText && <p className="mt-2 border-t border-border/60 pt-1.5 text-bildunterschrift text-muted-foreground">{score.fehltText}</p>}
+          <p className="mt-2 border-t border-border/60 pt-1.5 text-bildunterschrift text-muted-foreground">
             Gerechnet mit dem Investmentrechner (Standardannahmen) und der Selbstauskunft{saStand ? ` vom ${saStand}` : ""}.
             {" "}{ziel ? `Gewichte nach Zielen: ${ziel}.` : "Ohne gewählte Ziele, alle Ziele gleich gewichtet."}
           </p>

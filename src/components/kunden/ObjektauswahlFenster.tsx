@@ -190,9 +190,9 @@ export function ObjektauswahlFenster({
                   <div className="min-w-0 flex-1 space-y-1">
                     <div className="flex flex-wrap items-center gap-1.5">
                       <h3 className="text-sm font-bold leading-tight">{e.titel || "Objekt"}</h3>
-                      {e.global && <Badge variant="outline" className="text-[10px]">Gesamtobjekt</Badge>}
+                      {e.global && <Badge variant="outline" className="text-bildunterschrift">Gesamtobjekt</Badge>}
                       {passt && (
-                        <Badge className="bg-primary/10 text-[10px] text-primary hover:bg-primary/10">
+                        <Badge className="bg-primary/10 text-bildunterschrift text-primary hover:bg-primary/10">
                           {e.global ? "passt in den Rahmen" : `${e.anzahlPassend} passend`}
                         </Badge>
                       )}
@@ -277,7 +277,7 @@ export function ObjektauswahlFenster({
                                   {!rahmenVorhanden ? "" : k.passt
                                     ? <span className="font-medium text-[hsl(var(--success))]">passt</span>
                                     : <span className="text-muted-foreground">passt nicht</span>}
-                                  {k.vorgemerktFuerKunde && <Badge variant="outline" className="ml-1 text-[10px]">vorgemerkt</Badge>}
+                                  {k.vorgemerktFuerKunde && <Badge variant="outline" className="ml-1 text-bildunterschrift">vorgemerkt</Badge>}
                                 </TableCell>
                                 <TableCell className="text-right">
                                   <Button

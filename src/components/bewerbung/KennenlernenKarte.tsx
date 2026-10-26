@@ -639,13 +639,13 @@ export function KennenlernenKarte({
           <div className="flex flex-wrap items-center gap-2">
             <p className="text-sm font-semibold">Kennenlernen</p>
             {ausgefuellt ? (
-              <Badge className="bg-[hsl(var(--success))] text-white text-[10px]">Ausgefüllt</Badge>
+              <Badge className="bg-[hsl(var(--success))] text-white text-bildunterschrift">Ausgefüllt</Badge>
             ) : linkStand.art === "gueltig" ? (
-              <Badge variant="outline" className="text-[10px]">Link offen</Badge>
+              <Badge variant="outline" className="text-bildunterschrift">Link offen</Badge>
             ) : linkStand.art === "fehlt" && linkStand.grund === "abgelaufen" ? (
-              <Badge variant="outline" className="text-[10px] text-muted-foreground">Link abgelaufen</Badge>
+              <Badge variant="outline" className="text-bildunterschrift text-muted-foreground">Link abgelaufen</Badge>
             ) : (
-              <Badge variant="outline" className="text-[10px] text-muted-foreground">Noch nicht verschickt</Badge>
+              <Badge variant="outline" className="text-bildunterschrift text-muted-foreground">Noch nicht verschickt</Badge>
             )}
           </div>
           <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
@@ -780,7 +780,7 @@ export function KennenlernenKarte({
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs font-medium">Vorab-Score</span>
             <VorabScoreBadge score={vorabScore} />
-            <Badge variant="outline" className="text-[10px]">
+            <Badge variant="outline" className="text-bildunterschrift">
               {VORAB_EINSTUFUNG_LABELS[vorabScore.einstufung]}
             </Badge>
             <span className="text-[11px] text-muted-foreground">{vorabScore.begruendung}</span>

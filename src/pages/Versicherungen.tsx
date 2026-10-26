@@ -94,8 +94,8 @@ export default function VersicherungenPage() {
                   <div className="flex items-center gap-2">
                     <Shield className="h-4 w-4 text-primary" />
                     <p className="font-semibold">{v.versicherer}</p>
-                    <Badge variant="outline" className="text-[10px]">{VERSICHERUNGS_TYPEN.find(t => t.value === v.typ)?.label}</Badge>
-                    <Badge variant="secondary" className="text-[10px]">{v.policenNr}</Badge>
+                    <Badge variant="outline" className="text-bildunterschrift">{VERSICHERUNGS_TYPEN.find(t => t.value === v.typ)?.label}</Badge>
+                    <Badge variant="secondary" className="text-bildunterschrift">{v.policenNr}</Badge>
                   </div>
                   <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
                     <span>📍 {v.objektName}</span>
@@ -103,7 +103,7 @@ export default function VersicherungenPage() {
                     <span>Deckung: {v.deckungssumme.toLocaleString("de-DE")} €</span>
                     <span>SB: {v.selbstbeteiligung.toLocaleString("de-DE")} €</span>
                     <span>Bis: {v.vertragEnde ? new Date(v.vertragEnde).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" }) : "–"}</span>
-                    {vSchaeden.length > 0 && <Badge variant="destructive" className="text-[10px]">{vSchaeden.length} Schäden</Badge>}
+                    {vSchaeden.length > 0 && <Badge variant="destructive" className="text-bildunterschrift">{vSchaeden.length} Schäden</Badge>}
                   </div>
                 </div>
                 <div className="flex gap-1">

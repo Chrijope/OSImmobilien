@@ -971,7 +971,7 @@ export const ChatVerlauf = forwardRef<ChatVerlaufHandle, ChatVerlaufProps>(funct
               // wandern mit der Blase mit.
               <div key={msg.id} className={`flex max-w-[80%] items-start gap-3 group ${rechts ? "ml-auto flex-row-reverse" : ""}`}>
                 <Avatar className="h-8 w-8 shrink-0">
-                  <AvatarFallback className={`${colorForName(msg.senderName)} text-white text-[10px]`}>
+                  <AvatarFallback className={`${colorForName(msg.senderName)} text-white text-bildunterschrift`}>
                     {msg.senderInitials}
                   </AvatarFallback>
                 </Avatar>
@@ -1072,7 +1072,7 @@ export const ChatVerlauf = forwardRef<ChatVerlaufHandle, ChatVerlaufProps>(funct
                     <div className="flex items-center gap-1.5 mt-1">
                       <Popover>
                         <PopoverTrigger asChild>
-                          <button className="text-[10px] text-primary/70 hover:text-primary flex items-center gap-0.5 transition-colors">
+                          <button className="text-bildunterschrift text-primary/70 hover:text-primary flex items-center gap-0.5 transition-colors">
                             <CheckCheck className="h-3 w-3" />
                             <span>{readers.length}× gelesen</span>
                           </button>
@@ -1107,7 +1107,7 @@ export const ChatVerlauf = forwardRef<ChatVerlaufHandle, ChatVerlaufProps>(funct
           {mentionOpen && filteredMentions.length > 0 && (
             <div className="absolute bottom-full left-0 right-0 mb-4 bg-popover border rounded-lg shadow-lg max-h-48 overflow-y-auto z-20">
               <div className="p-1">
-                <p className="text-[10px] text-muted-foreground px-2 py-1 font-medium">Teilnehmer erwähnen</p>
+                <p className="text-bildunterschrift text-muted-foreground px-2 py-1 font-medium">Teilnehmer erwähnen</p>
                 {filteredMentions.map((p, idx) => (
                   <button
                     key={p.id}
@@ -1116,7 +1116,7 @@ export const ChatVerlauf = forwardRef<ChatVerlaufHandle, ChatVerlaufProps>(funct
                     onMouseEnter={() => setMentionIndex(idx)}
                   >
                     <Avatar className="h-6 w-6">
-                      <AvatarFallback className={`${colorForName(p.name)} text-white text-[9px]`}>{p.initials}</AvatarFallback>
+                      <AvatarFallback className={`${colorForName(p.name)} text-white text-bildunterschrift`}>{p.initials}</AvatarFallback>
                     </Avatar>
                     <div className="min-w-0">
                       <span className="font-medium text-sm">{p.name}</span>

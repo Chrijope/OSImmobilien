@@ -1644,7 +1644,7 @@ export function QuickActionDialog({
                     >
                       <span className="flex items-center gap-1.5 font-medium">
                         Videoraum
-                        <span className="rounded border border-primary/40 bg-primary/10 px-1 py-px text-[9px] font-semibold uppercase tracking-wide text-primary">
+                        <span className="rounded border border-primary/40 bg-primary/10 px-1 py-px text-bildunterschrift font-semibold uppercase tracking-wide text-primary">
                           Freigegeben
                         </span>
                       </span>

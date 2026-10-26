@@ -89,7 +89,7 @@ const MieterPage = () => {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <p className="font-semibold text-sm">{m.vorname} {m.nachname}</p>
-                  <Badge variant={statusLabels[m.status]?.variant || "secondary"} className="text-[10px]">
+                  <Badge variant={statusLabels[m.status]?.variant || "secondary"} className="text-bildunterschrift">
                     {statusLabels[m.status]?.label || m.status}
                   </Badge>
                 </div>

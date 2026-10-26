@@ -53,7 +53,7 @@ export function KundenprofilInvestmentLayout({ abschnitte, zaehler, investmentId
     <nav className="kundenprofil-abschnitte" aria-label="Investment-Abschnitte">
       <Card className="p-1.5">
         <div className="flex items-center gap-1 mb-1">
-          {offen && <h4 className="flex-1 px-2 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Abschnitte</h4>}
+          {offen && <h4 className="flex-1 px-2 text-bildunterschrift font-semibold uppercase tracking-wide text-muted-foreground">Abschnitte</h4>}
           <Button data-no-shrink variant="ghost" size="icon" className="h-8 w-8 shrink-0" aria-label={offen ? "Abschnitte einklappen" : "Abschnitte ausklappen"} aria-expanded={offen} onClick={() => setOffen(!offen)}>
             {offen ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
           </Button>
@@ -76,7 +76,7 @@ export function KundenprofilInvestmentLayout({ abschnitte, zaehler, investmentId
                 <TooltipTrigger asChild>
                   <button type="button" aria-label={beschreibung} onClick={() => springe(abschnitt)} className="kundenprofil-abschnitt-knopf w-full rounded-md p-2 text-sm hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring flex items-center gap-2 text-left">
                     <Icon aria-hidden="true" className="h-4 w-4 shrink-0 text-primary" />
-                    {offen && <span className="min-w-0"><span className="block">{abschnitt.label}</span>{zaehler[abschnitt.key] && <span className="block text-[10px] text-muted-foreground tabular-nums">{zaehler[abschnitt.key]}</span>}</span>}
+                    {offen && <span className="min-w-0"><span className="block">{abschnitt.label}</span>{zaehler[abschnitt.key] && <span className="block text-bildunterschrift text-muted-foreground tabular-nums">{zaehler[abschnitt.key]}</span>}</span>}
                   </button>
                 </TooltipTrigger>
                 <TooltipContent side="right">{beschreibung}</TooltipContent>
@@ -113,7 +113,7 @@ export function KundenprofilInvestmentLayout({ abschnitte, zaehler, investmentId
                 <Icon aria-hidden="true" className="h-4 w-4 shrink-0 text-primary" />
                 <span className="min-w-0 flex-1">{abschnitt.label}</span>
                 {zu && <Lock aria-hidden="true" className="h-3 w-3 shrink-0 text-muted-foreground" />}
-                {zaehler[abschnitt.key] && <span className="shrink-0 text-[10px] text-muted-foreground tabular-nums">{zaehler[abschnitt.key]}</span>}
+                {zaehler[abschnitt.key] && <span className="shrink-0 text-bildunterschrift text-muted-foreground tabular-nums">{zaehler[abschnitt.key]}</span>}
               </DropdownMenuItem>;
             })}
           </DropdownMenuContent>

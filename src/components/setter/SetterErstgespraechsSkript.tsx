@@ -149,7 +149,7 @@ const PFLICHT_RAHMEN = "border-[hsl(var(--warning))] focus-visible:ring-[hsl(var
 
 function Pflichtmarke({ gefuellt }: { gefuellt: boolean }) {
   return (
-    <span className="ml-1 text-[10px] font-semibold text-[hsl(var(--warning))]">
+    <span className="ml-1 text-bildunterschrift font-semibold text-[hsl(var(--warning))]">
       {gefuellt ? "Pflichtangabe ✓" : "Pflichtangabe"}
     </span>
   );
@@ -216,7 +216,7 @@ function UebernahmeRahmen({ feld, children }: { feld: string; children: ReactNod
   return (
     <div data-uebernahme={feld} className="rounded-lg border-2 border-brand-orange/60 bg-brand-orange/5 p-3">
       <div className="mb-1.5 flex items-center gap-1.5">
-        <span className="inline-flex items-center gap-1 rounded-full bg-brand-orange px-2 py-0.5 text-[10px] font-semibold text-brand-orange-foreground">
+        <span className="inline-flex items-center gap-1 rounded-full bg-brand-orange px-2 py-0.5 text-bildunterschrift font-semibold text-brand-orange-foreground">
           <ArrowRightLeft className="h-3 w-3" aria-hidden="true" /> wird übernommen
         </span>
         <InfoTooltip
@@ -1069,7 +1069,7 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
           </p>
         </div>
         {filledCount > 0 && <Badge variant="secondary" className="text-xs">{filledCount} ausgefüllt</Badge>}
-        {savedFlash && <span className="text-[10px] text-[hsl(var(--success))] flex items-center gap-1"><Save className="h-3 w-3" /> gespeichert</span>}
+        {savedFlash && <span className="text-bildunterschrift text-[hsl(var(--success))] flex items-center gap-1"><Save className="h-3 w-3" /> gespeichert</span>}
       </div>
 
       <div className="p-6 space-y-6">
@@ -1136,7 +1136,7 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
               />
               <span className="font-semibold text-sm">{s.nr}. {s.titel}</span>
               {s.marke && (
-                <Badge variant="outline" className="text-[10px] border-primary/40 text-primary">{s.marke}</Badge>
+                <Badge variant="outline" className="text-bildunterschrift border-primary/40 text-primary">{s.marke}</Badge>
               )}
             </div>
             <div className="p-4 space-y-3">
@@ -1154,7 +1154,7 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
                       {mitentscheiderVariante ? (
                         <div className="mt-3"><Sprechtext text={mitentscheiderVariante.text} /></div>
                       ) : (
-                        <p className="text-[10px] text-muted-foreground mt-1.5">Nach der Auswahl erscheint hier der passende Folgesatz.</p>
+                        <p className="text-bildunterschrift text-muted-foreground mt-1.5">Nach der Auswahl erscheint hier der passende Folgesatz.</p>
                       )}
                     </div>
                   )}
@@ -1339,7 +1339,7 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
                       <div>
                         <Label className="text-xs font-semibold">
                           {f.label}
-                          {isBerufField && <span className="ml-1 text-[10px] text-muted-foreground font-normal">— synchron mit Qualifizierungsfragen</span>}
+                          {isBerufField && <span className="ml-1 text-bildunterschrift text-muted-foreground font-normal">— synchron mit Qualifizierungsfragen</span>}
                           {f.pflicht && <Pflichtmarke gefuellt={gefuellt} />}
                         </Label>
                         {isBerufField ? (

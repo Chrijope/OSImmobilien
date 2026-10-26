@@ -89,7 +89,7 @@ export const ALL_COLUMNS: ColumnDef[] = [
       return (
         <div className="flex flex-col leading-tight">
           <span className="text-sm text-muted-foreground">{tarnTelefon(normalizeTelefon(k.telefon)) || "–"}</span>
-          {inWartezeit && <span className="text-[10px] text-amber-600">⏳ {waitLabel}</span>}
+          {inWartezeit && <span className="text-bildunterschrift text-amber-600">⏳ {waitLabel}</span>}
         </div>
       );
     } },
@@ -100,7 +100,7 @@ export const ALL_COLUMNS: ColumnDef[] = [
     key: "status", label: "Pipeline-Status", render: (k) => {
       const stufe = getEffectivePipelineStufe(k);
       const label = PIPELINE_STUFEN.find(s => s.key === stufe)?.label || stufe;
-      return <Badge className={`text-[10px] ${PIPELINE_COLORS[stufe] || "bg-muted text-muted-foreground"}`}>{label}</Badge>;
+      return <Badge className={`text-bildunterschrift ${PIPELINE_COLORS[stufe] || "bg-muted text-muted-foreground"}`}>{label}</Badge>;
     },
   },
   { key: "erstellt_am", label: "Angelegt am", render: (k) => <span className="text-sm text-muted-foreground">{formatDatum(k.erstellt_am)}</span> },
@@ -119,7 +119,7 @@ export const ALL_COLUMNS: ColumnDef[] = [
       const value = k.finanzierbarkeit || "";
       return (
         <div className="flex items-center gap-1" title="Nur der am Kontakt gepflegte Wert. Die gerechnete Finanzierbarkeit steht im Kundenprofil beim jeweiligen Investment, weil sie aus dessen eigener Selbstauskunft entsteht.">
-          <Badge className={`text-[10px] ${value === "Positiv" ? "bg-success/10 text-success" : value === "Negativ" ? "bg-destructive/10 text-destructive" : "bg-warning/10 text-warning"}`}>
+          <Badge className={`text-bildunterschrift ${value === "Positiv" ? "bg-success/10 text-success" : value === "Negativ" ? "bg-destructive/10 text-destructive" : "bg-warning/10 text-warning"}`}>
             {value || "–"}
           </Badge>
         </div>
@@ -176,13 +176,13 @@ export const ALL_COLUMNS: ColumnDef[] = [
         manuell: "bg-muted text-muted-foreground",
       };
       const labels: Record<string, string> = { meta: "Funnel Lead", google: "Google Ad", website: "Website", manuell: "Manuell" };
-      return <Badge className={`text-[10px] ${colors[k.leadTyp] || "bg-muted text-muted-foreground"}`}>{labels[k.leadTyp] || k.leadTyp}</Badge>;
+      return <Badge className={`text-bildunterschrift ${colors[k.leadTyp] || "bg-muted text-muted-foreground"}`}>{labels[k.leadTyp] || k.leadTyp}</Badge>;
     },
   },
   {
     key: "pipelineStufe", label: "Pipeline-Status", render: (k) => {
       // Stufen aller Investments, nicht nur die höchste (11.10.2026).
-      return <Badge className="text-[10px] bg-primary/10 text-primary">{investmentStufenText(k)}</Badge>;
+      return <Badge className="text-bildunterschrift bg-primary/10 text-primary">{investmentStufenText(k)}</Badge>;
     },
   },
   {
@@ -199,8 +199,8 @@ export const ALL_COLUMNS: ColumnDef[] = [
         <div className="flex flex-col gap-0.5">
           {invs.map(inv => (
             <div key={inv.id} className="flex items-center gap-1.5">
-              <span className="text-[10px] font-medium">Inv. {inv.nummer}</span>
-              <Badge className="text-[9px] px-1 py-0 bg-primary/10 text-primary">{STEP_LABELS[inv.pipelineStufe] || inv.pipelineStufe}</Badge>
+              <span className="text-bildunterschrift font-medium">Inv. {inv.nummer}</span>
+              <Badge className="text-bildunterschrift px-1 py-0 bg-primary/10 text-primary">{STEP_LABELS[inv.pipelineStufe] || inv.pipelineStufe}</Badge>
             </div>
           ))}
         </div>

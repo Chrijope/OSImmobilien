@@ -232,7 +232,7 @@ export function FinanzierungCard({ investmentId, kundeName, berater, beraterId, 
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <h4 className="font-semibold text-sm">Angebot {idx + 1}</h4>
-            {isFinal && <Badge className="bg-[hsl(var(--success))] text-white text-[10px] h-5">Bestätigt</Badge>}
+            {isFinal && <Badge className="bg-[hsl(var(--success))] text-white text-bildunterschrift h-5">Bestätigt</Badge>}
           </div>
           {canUpload && !isFinal && (
             <Button
@@ -310,7 +310,7 @@ export function FinanzierungCard({ investmentId, kundeName, berater, beraterId, 
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-medium">{doc.name}</span>
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded ${statusClass}`}>{statusLabel}</span>
+                      <span className={`text-bildunterschrift px-1.5 py-0.5 rounded ${statusClass}`}>{statusLabel}</span>
                     </div>
                     <div className="flex gap-2 mt-1 flex-wrap">
                       {/* Upload – VP and Admin can upload */}

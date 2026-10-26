@@ -451,7 +451,7 @@ function KreditPosten({ kredite, art }: { kredite: any[]; art: string }) {
   return (
     <div className="mt-0.5 mb-1 ml-3 space-y-0.5 border-l pl-2">
       {passende.map((k, i) => (
-        <div key={i} className="flex justify-between text-[10px] text-muted-foreground">
+        <div key={i} className="flex justify-between text-bildunterschrift text-muted-foreground">
           <span className="truncate">
             {kreditAuswahlLabel(k?.kategorie) || k?.art || "Kredit"}
             {kreditAuswahlLabel(k?.kategorie) && k?.art ? ` · ${k.art}` : ""}
@@ -492,7 +492,7 @@ function FinanzZeilen({ zeilen, kredite }: { zeilen: [string, number][]; kredite
       {mitBetrag.map((z, i) => zeile(z, `wert-${i}`))}
       {ohneBetrag.length > 0 && (
         <details className="group/nullzeilen">
-          <summary className="flex items-center justify-between cursor-pointer list-none text-[10px] uppercase tracking-wide text-muted-foreground hover:text-foreground">
+          <summary className="flex items-center justify-between cursor-pointer list-none text-bildunterschrift uppercase tracking-wide text-muted-foreground hover:text-foreground">
             <span>{ohneBetrag.length} {ohneBetrag.length === 1 ? "Position" : "Positionen"} ohne Betrag</span>
             <ChevronDown className="h-3 w-3 transition-transform group-open/nullzeilen:rotate-180" />
           </summary>
@@ -813,7 +813,7 @@ function NichtErschienenBadge() {
   return (
     <Badge
       variant="outline"
-      className="text-[10px] px-1.5 py-0.5 italic border-dashed bg-destructive/10 text-destructive border-destructive/40"
+      className="text-bildunterschrift px-1.5 py-0.5 italic border-dashed bg-destructive/10 text-destructive border-destructive/40"
       title="Termin war angesetzt, der Kunde ist nicht erschienen"
     >
       <XCircle className="mr-1 h-2.5 w-2.5" />
@@ -4431,7 +4431,7 @@ export default function KundenDetail() {
                       ))}
                       {!isVpManuellQualifizierung && withoutLink.length > 0 && (
                         <div className="pt-3 border-t">
-                          <p className="text-[10px] text-muted-foreground mb-2">Weitere Vertriebspartner (ohne Buchungskalender):</p>
+                          <p className="text-bildunterschrift text-muted-foreground mb-2">Weitere Vertriebspartner (ohne Buchungskalender):</p>
                           <Select
                             value={withoutLink.some(u => u.id === setterSelectedBeraterId) ? setterSelectedBeraterId : ""}
                             onValueChange={async (uid) => {
@@ -5187,7 +5187,7 @@ export default function KundenDetail() {
                       {emp.meta?.beziehung && <span> · {emp.meta.beziehung}</span>}
                     </div>
                   </div>
-                  <Badge variant="outline" className="text-[10px] shrink-0">
+                  <Badge variant="outline" className="text-bildunterschrift shrink-0">
                     {statusLabel[status] || status}
                   </Badge>
                 </div>
@@ -6019,7 +6019,7 @@ export default function KundenDetail() {
                   <h3 className="font-bold text-destructive text-sm uppercase tracking-wide">
                     {hist.length === 1 ? "No-Show" : `${hist.length}× No-Show`}
                   </h3>
-                  <Badge variant="destructive" className="text-[10px]">{hist.length}</Badge>
+                  <Badge variant="destructive" className="text-bildunterschrift">{hist.length}</Badge>
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
                   Dieser Lead ist bereits {hist.length === 1 ? "einmal" : `${hist.length}-mal`} nicht zum Erst- oder Beratungsgespräch erschienen. Bitte beim nächsten Kontakt explizit auf Verbindlichkeit eingehen.
@@ -6067,7 +6067,7 @@ export default function KundenDetail() {
             <div className="sm:hidden flex items-center gap-1.5 flex-wrap">
               {prev && (
                 <>
-                  <Badge variant="outline" className="bg-[hsl(var(--success))] text-white border-[hsl(var(--success))] text-[10px] px-1.5 py-0.5">{prev.label}</Badge>
+                  <Badge variant="outline" className="bg-[hsl(var(--success))] text-white border-[hsl(var(--success))] text-bildunterschrift px-1.5 py-0.5">{prev.label}</Badge>
                   <span className="text-muted-foreground text-xs">→</span>
                 </>
               )}
@@ -6105,7 +6105,7 @@ export default function KundenDetail() {
                         isNichtErschienen
                           ? NOSHOW_BADGE_CLASS
                           : isDone
-                          ? "bg-[hsl(var(--success))] text-white border-[hsl(var(--success))] text-[10px] px-1.5 py-0.5"
+                          ? "bg-[hsl(var(--success))] text-white border-[hsl(var(--success))] text-bildunterschrift px-1.5 py-0.5"
                           : isCurrent
                           ? "bg-[hsl(var(--warning))] text-white border-[hsl(var(--warning))] text-xs px-2.5 py-1 font-semibold ring-2 ring-[hsl(var(--warning))]/30"
                           : "bg-background text-muted-foreground border-border text-[11px] px-2 py-0.5",
@@ -6538,7 +6538,7 @@ export default function KundenDetail() {
                     )}
                     {(a.art === "aufgabe" || a.art === "meeting") && a.faelligAm && (
                       <div className="text-xs mt-1 flex flex-wrap items-center gap-1">
-                        <Badge variant="secondary" className="text-[10px]">
+                        <Badge variant="secondary" className="text-bildunterschrift">
                           📅 Fällig: {new Date(a.faelligAm).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}
                           {a.uhrzeit ? ` · ${a.uhrzeit}` : ""}
                         </Badge>
@@ -6546,7 +6546,7 @@ export default function KundenDetail() {
                           <span className="text-muted-foreground">· zugewiesen an {a.zugewiesenAn}</span>
                         )}
                         {a.prioritaet && a.prioritaet !== "mittel" && (
-                          <Badge variant="outline" className="text-[10px]">Prio: {a.prioritaet}</Badge>
+                          <Badge variant="outline" className="text-bildunterschrift">Prio: {a.prioritaet}</Badge>
                         )}
                         {/* Direkte Sicht auf die Tabelle `aufgaben`: Der
                             zugehörige Aktivitätseintrag fehlt oder wurde
@@ -8071,7 +8071,7 @@ export default function KundenDetail() {
                     <Download className="h-4 w-4 mr-1" /> Beratungspräsentation als PDF
                   </Button>
                   {isNewBadgeActive("beratungspraesentation_pdf") && (
-                    <Badge className="absolute -top-2 -right-2 text-[9px] px-1.5 py-0 h-4 bg-emerald-500 text-white border-0 hover:bg-emerald-500 uppercase tracking-wide">Neu</Badge>
+                    <Badge className="absolute -top-2 -right-2 text-bildunterschrift px-1.5 py-0 h-4 bg-emerald-500 text-white border-0 hover:bg-emerald-500 uppercase tracking-wide">Neu</Badge>
                   )}
                 </span>
               </div>
@@ -8371,7 +8371,7 @@ export default function KundenDetail() {
                         : "Klappt der Online-Weg nicht? Selbstauskunft als PDF automatisch per Mail an Kunde senden"}
                     </button>
                     {isNewBadgeActive("sa_pdf_versand") && (
-                      <Badge className="text-[9px] px-1.5 py-0 h-4 bg-emerald-500 text-white border-0 hover:bg-emerald-500 uppercase tracking-wide">Neu</Badge>
+                      <Badge className="text-bildunterschrift px-1.5 py-0 h-4 bg-emerald-500 text-white border-0 hover:bg-emerald-500 uppercase tracking-wide">Neu</Badge>
                     )}
                     {pdfGesendetAm && (
                       <span className="text-xs text-muted-foreground">
@@ -8544,7 +8544,7 @@ export default function KundenDetail() {
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
                               <span className="text-sm font-medium">{doc.name}{doc.required && <span className="text-destructive ml-0.5">*</span>}</span>
-                              <span className={`ml-auto text-[10px] px-1.5 py-0.5 rounded shrink-0 ${
+                              <span className={`ml-auto text-bildunterschrift px-1.5 py-0.5 rounded shrink-0 ${
                                 status === "approved" ? "bg-[hsl(var(--success))]/10 text-[hsl(var(--success))]"
                                 : status === "uploaded" ? "bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))]"
                                 : "bg-destructive/10 text-destructive"
@@ -8624,7 +8624,7 @@ export default function KundenDetail() {
                                         const saDatenVorhanden = !!(cacheGet("investments").find((r: { id?: string }) => r.id === inv.id) as { meta?: { saData?: unknown } } | undefined)?.meta?.saData;
                                         return (
                                           <span className="block w-full space-y-1">
-                                            <span className="block text-[10px] text-muted-foreground">
+                                            <span className="block text-bildunterschrift text-muted-foreground">
                                               Vom Kunden ausgefüllte PDF. Änderungen bitte mit dem Kunden auf der PDF vornehmen und die neue Fassung hochladen.
                                             </span>
                                             {/* Handschriftliche Fassung: Die Zahlen stehen nur auf
@@ -8632,10 +8632,10 @@ export default function KundenDetail() {
                                                 und Finanzierungsrahmen leer. */}
                                             {!saDatenVorhanden && canFillSA && (
                                               <span className="flex items-center gap-2 rounded border border-[hsl(var(--warning))]/40 bg-[hsl(var(--warning))]/10 px-2 py-1">
-                                                <span className="text-[10px] text-[hsl(var(--warning))]">
+                                                <span className="text-bildunterschrift text-[hsl(var(--warning))]">
                                                   Zahlen noch nicht im System: Bitte die Angaben aus der PDF in die Online-Selbstauskunft übertragen, damit Einnahmen, Ausgaben und Finanzierungsrahmen berechnet werden.
                                                 </span>
-                                                <button className="text-[10px] font-semibold text-[hsl(var(--warning))] underline shrink-0" onClick={() => navigate(saKlickGemerkt(`/selbstauskunft?kundeId=${id}&investmentId=${inv.id}`))}>
+                                                <button className="text-bildunterschrift font-semibold text-[hsl(var(--warning))] underline shrink-0" onClick={() => navigate(saKlickGemerkt(`/selbstauskunft?kundeId=${id}&investmentId=${inv.id}`))}>
                                                   Jetzt übertragen
                                                 </button>
                                               </span>
@@ -8895,7 +8895,7 @@ export default function KundenDetail() {
                     <Button size="sm" onClick={handleUnterlagenEinreichen} className="gap-1.5">
                       <Send className="h-3.5 w-3.5" /> Unterlagen einreichen
                     </Button>
-                    <p className="text-[10px] text-muted-foreground mt-1">Alle Pflichtdokumente hochgeladen – zur Prüfung an das Backoffice senden.</p>
+                    <p className="text-bildunterschrift text-muted-foreground mt-1">Alle Pflichtdokumente hochgeladen – zur Prüfung an das Backoffice senden.</p>
                   </div>
                 )}
                 {!isReadOnlyDocView && unterlagenGesendet && !isBackofficeOrAdmin && (
@@ -8972,8 +8972,8 @@ export default function KundenDetail() {
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
                               <span className="text-sm font-medium">{doc.name}{doc.required && <span className="text-destructive ml-0.5">*</span>}</span>
-                              {isCustom && <span className="text-[9px] px-1 py-0.5 rounded bg-primary/10 text-primary">Manuell</span>}
-                              <span className={`ml-auto text-[10px] px-1.5 py-0.5 rounded shrink-0 ${
+                              {isCustom && <span className="text-bildunterschrift px-1 py-0.5 rounded bg-primary/10 text-primary">Manuell</span>}
+                              <span className={`ml-auto text-bildunterschrift px-1.5 py-0.5 rounded shrink-0 ${
                                 status === "approved" ? "bg-[hsl(var(--success))]/10 text-[hsl(var(--success))]"
                                 : status === "uploaded" ? "bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))]"
                                 : "bg-destructive/10 text-destructive"
@@ -9207,7 +9207,7 @@ export default function KundenDetail() {
                               <div className="flex-1">
                                 <div className="flex items-center gap-2">
                                   <span className="text-sm font-medium">{doc.name}{doc.required && <span className="text-destructive ml-0.5">*</span>}</span>
-                                  <span className={`ml-auto text-[10px] px-1.5 py-0.5 rounded shrink-0 ${
+                                  <span className={`ml-auto text-bildunterschrift px-1.5 py-0.5 rounded shrink-0 ${
                                     status === "approved" ? "bg-[hsl(var(--success))]/10 text-[hsl(var(--success))]"
                                     : status === "uploaded" ? "bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))]"
                                     : "bg-destructive/10 text-destructive"
@@ -9290,7 +9290,7 @@ export default function KundenDetail() {
                               <div className="flex-1">
                                 <div className="flex items-center gap-2">
                                   <span className="text-sm font-medium">{doc.name}{doc.required && <span className="text-destructive ml-0.5">*</span>}</span>
-                                  <span className={`ml-auto text-[10px] px-1.5 py-0.5 rounded shrink-0 ${
+                                  <span className={`ml-auto text-bildunterschrift px-1.5 py-0.5 rounded shrink-0 ${
                                     status === "approved" ? "bg-[hsl(var(--success))]/10 text-[hsl(var(--success))]"
                                     : status === "uploaded" ? "bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))]"
                                     : "bg-destructive/10 text-destructive"
@@ -10552,7 +10552,7 @@ export default function KundenDetail() {
                       <div className="flex items-center justify-between mb-2">
                         <h4 className="font-semibold text-sm">📋 Aufnahmebogen Notar</h4>
                         {kaufvertragPdf && kaufvertragUpdatedAt && (
-                          <span className="text-[10px] text-muted-foreground">Zuletzt bearbeitet: {new Date(kaufvertragUpdatedAt).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })}</span>
+                          <span className="text-bildunterschrift text-muted-foreground">Zuletzt bearbeitet: {new Date(kaufvertragUpdatedAt).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })}</span>
                         )}
                       </div>
                       {kaufvertragPdf ? (
@@ -10561,7 +10561,7 @@ export default function KundenDetail() {
                             <div className="bg-destructive/10 text-destructive font-bold text-xs px-2 py-1 rounded">PDF</div>
                             <div className="min-w-0 flex-1 basis-48 break-words">
                               <span className="text-sm font-semibold">{kaufvertragPdf}</span>
-                              <p className="text-[10px] text-muted-foreground">Aufnahmebogen gespeichert</p>
+                              <p className="text-bildunterschrift text-muted-foreground">Aufnahmebogen gespeichert</p>
                             </div>
                             <div className="ml-auto flex shrink-0 flex-wrap items-center gap-2">
                               <Button size="sm" variant="outline" className="text-xs h-7" onClick={async () => {
@@ -10589,7 +10589,7 @@ export default function KundenDetail() {
                             <div className="bg-destructive/10 text-destructive font-bold text-xs px-2 py-1 rounded">PDF</div>
                             <div className="min-w-0 flex-1 basis-48 break-words">
                               <span className="text-sm font-semibold">Vollmacht Verkäufer</span>
-                              <p className="text-[10px] text-muted-foreground">Hochgeladen im Aufnahmebogen</p>
+                              <p className="text-bildunterschrift text-muted-foreground">Hochgeladen im Aufnahmebogen</p>
                             </div>
                             <Button size="sm" variant="outline" className="text-xs h-7 ml-auto shrink-0" onClick={async () => {
                               const url = await resolveUnterlagenUrl(kvData.vk_vollmacht_datei!);
@@ -10605,7 +10605,7 @@ export default function KundenDetail() {
                             <div className="bg-destructive/10 text-destructive font-bold text-xs px-2 py-1 rounded">PDF</div>
                             <div className="min-w-0 flex-1 basis-48 break-words">
                               <span className="text-sm font-semibold">Vollmacht Käufer</span>
-                              <p className="text-[10px] text-muted-foreground">Hochgeladen im Aufnahmebogen</p>
+                              <p className="text-bildunterschrift text-muted-foreground">Hochgeladen im Aufnahmebogen</p>
                             </div>
                             <Button size="sm" variant="outline" className="text-xs h-7 ml-auto shrink-0" onClick={async () => {
                               const url = await resolveUnterlagenUrl(kvData.k_vollmacht_datei!);
@@ -10706,7 +10706,7 @@ export default function KundenDetail() {
                                 />
                                 <div className="flex-1">
                                   <p className="text-xs font-semibold">📌 Gesetzter Notartermin</p>
-                                  <p className="text-[10px] text-muted-foreground">Du trägst Datum & Uhrzeit verbindlich ein.</p>
+                                  <p className="text-bildunterschrift text-muted-foreground">Du trägst Datum & Uhrzeit verbindlich ein.</p>
                                 </div>
                               </label>
                               <label className={`flex items-start gap-2 p-2.5 rounded-md border cursor-pointer transition-colors ${modus === "vorschlaege" ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"}`}>
@@ -10721,7 +10721,7 @@ export default function KundenDetail() {
                                 />
                                 <div className="flex-1">
                                   <p className="text-xs font-semibold">🗓️ Terminvorschläge zur Auswahl</p>
-                                  <p className="text-[10px] text-muted-foreground">Kunde wählt aus mehreren Terminen.</p>
+                                  <p className="text-bildunterschrift text-muted-foreground">Kunde wählt aus mehreren Terminen.</p>
                                 </div>
                               </label>
                             </div>
@@ -10735,7 +10735,7 @@ export default function KundenDetail() {
                           <div className="flex items-start justify-between mb-2 gap-2 flex-wrap">
                             <div>
                               <h4 className="font-semibold text-sm">📌 Gesetzter Notartermin</h4>
-                              <p className="text-[10px] text-muted-foreground">
+                              <p className="text-bildunterschrift text-muted-foreground">
                                 Verbindlich vereinbarter Termin. Wird im Kundenportal erst nach Klick auf <strong>Freigeben</strong> (unten) sichtbar.
                               </p>
                             </div>
@@ -11024,7 +11024,7 @@ export default function KundenDetail() {
                                 <div className="bg-primary/10 text-primary font-bold text-xs px-2 py-1 rounded">📸</div>
                                 <div className="min-w-0 flex-1 basis-48 break-words">
                                   <span className="text-sm font-semibold">{notarFoto}</span>
-                                  <p className="text-[10px] text-muted-foreground">Notarfoto hochgeladen</p>
+                                  <p className="text-bildunterschrift text-muted-foreground">Notarfoto hochgeladen</p>
                                 </div>
                                 {isBackofficeOrAdmin && (
                                   <Button size="sm" variant="outline" className="ml-auto shrink-0 text-xs h-7" onClick={async () => {
@@ -11104,7 +11104,7 @@ export default function KundenDetail() {
                     {id === "086acaeb-0ff9-4577-b114-3b973797d635" && (
                       <div className="space-y-2">
                         <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-semibold uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded">Musterkunden-Vorschau</span>
+                          <span className="text-bildunterschrift font-semibold uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded">Musterkunden-Vorschau</span>
                           <span className="text-[11px] text-muted-foreground">So sieht das Aftersales-Beratungsdokument am Notartermin aus</span>
                         </div>
                         <AftersalesBeratungCard
@@ -11186,7 +11186,7 @@ export default function KundenDetail() {
                     <div>
                       <Label className="text-xs font-semibold flex items-center gap-1.5 flex-wrap">
                         Kaufpreisfälligkeit
-                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-primary/10 text-primary text-[9px] font-bold uppercase tracking-wide">
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-primary/10 text-primary text-bildunterschrift font-bold uppercase tracking-wide">
                           <Eye className="h-2.5 w-2.5" /> Im Kundenportal sichtbar
                         </span>
                       </Label>
@@ -11199,7 +11199,7 @@ export default function KundenDetail() {
                     <div>
                       <Label className="text-xs font-semibold flex items-center gap-1.5 flex-wrap">
                         Grundbuch-Eintrag Datum
-                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-primary/10 text-primary text-[9px] font-bold uppercase tracking-wide">
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-primary/10 text-primary text-bildunterschrift font-bold uppercase tracking-wide">
                           <Eye className="h-2.5 w-2.5" /> Im Kundenportal sichtbar
                         </span>
                       </Label>
@@ -11227,7 +11227,7 @@ export default function KundenDetail() {
                       />
                       <Label className="text-sm">Kaufpreis eingegangen</Label>
                       {abw.kaufpreisEingegangen && abw.kaufpreisEingegangenDatum && (
-                        <span className="text-[10px] text-muted-foreground ml-2">({abw.kaufpreisEingegangenDatum})</span>
+                        <span className="text-bildunterschrift text-muted-foreground ml-2">({abw.kaufpreisEingegangenDatum})</span>
                       )}
                     </div>
 
@@ -11243,7 +11243,7 @@ export default function KundenDetail() {
                       />
                       <Label className="text-sm">Grundbucheintrag erfolgt</Label>
                       {abw.grundbuchEingetragen && abw.grundbuchDatum && (
-                        <span className="text-[10px] text-muted-foreground ml-2">({abw.grundbuchDatum})</span>
+                        <span className="text-bildunterschrift text-muted-foreground ml-2">({abw.grundbuchDatum})</span>
                       )}
                     </div>
 
@@ -11302,7 +11302,7 @@ export default function KundenDetail() {
                   </div>
                 )}
               >
-              <p className="text-[10px] text-muted-foreground mb-4">ℹ️ Der Kundenordner wird dem Kunden erst nach dem Notartermin im Kundenportal angezeigt.</p>
+              <p className="text-bildunterschrift text-muted-foreground mb-4">ℹ️ Der Kundenordner wird dem Kunden erst nach dem Notartermin im Kundenportal angezeigt.</p>
               {(() => {
                   const koDocs = getKundenordnerByInvestment(inv.id);
                   const isBackofficeRole = ["admin", "inhaber", "vertriebspartner", "backoffice", "buchhaltung", "setterin"].includes(user.role);
@@ -11327,7 +11327,7 @@ export default function KundenDetail() {
                   return (
                     <div className="space-y-2">
                       {(finSyncDV || finSyncGS) && (
-                        <p className="text-[10px] text-primary bg-primary/5 border border-primary/20 rounded p-2">
+                        <p className="text-bildunterschrift text-primary bg-primary/5 border border-primary/20 rounded p-2">
                           ℹ️ „Darlehensvertrag" und „Grundschuld" werden automatisch aus der Finanzierung übernommen und müssen hier nicht separat hochgeladen werden.
                         </p>
                       )}
@@ -11370,11 +11370,11 @@ export default function KundenDetail() {
                               ) : (
                                 <span className="text-sm font-medium">{displayName}</span>
                               )}
-                              {doc && <span className="text-[10px] text-muted-foreground ml-2">({doc.filename})</span>}
-                              {doc && !doc.freigegeben && <span className="text-[10px] text-[hsl(var(--warning))] ml-1">• Nicht freigegeben</span>}
-                              {doc && doc.freigegeben && <span className="text-[10px] text-[hsl(var(--success))] ml-1">• Freigegeben</span>}
-                              {hasLinkedRV && !doc && <span className="text-[10px] text-muted-foreground ml-2">(RV verknüpft)</span>}
-                              {isSynced && !doc && <span className="text-[10px] text-primary ml-2">(aus Finanzierung synchronisiert)</span>}
+                              {doc && <span className="text-bildunterschrift text-muted-foreground ml-2">({doc.filename})</span>}
+                              {doc && !doc.freigegeben && <span className="text-bildunterschrift text-[hsl(var(--warning))] ml-1">• Nicht freigegeben</span>}
+                              {doc && doc.freigegeben && <span className="text-bildunterschrift text-[hsl(var(--success))] ml-1">• Freigegeben</span>}
+                              {hasLinkedRV && !doc && <span className="text-bildunterschrift text-muted-foreground ml-2">(RV verknüpft)</span>}
+                              {isSynced && !doc && <span className="text-bildunterschrift text-primary ml-2">(aus Finanzierung synchronisiert)</span>}
                             </div>
                             {doc ? (
                               <div className="flex gap-1 shrink-0 items-center">
@@ -11386,7 +11386,7 @@ export default function KundenDetail() {
                                 {isBackofficeRole && (
                                   <>
                                     {doc.freigegeben ? (
-                                      <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground font-normal">
+                                      <span className="inline-flex items-center gap-1 text-bildunterschrift text-muted-foreground font-normal">
                                         <CheckCircle2 className="h-3 w-3 text-[hsl(var(--success))]" /> Freigegeben
                                       </span>
                                     ) : (
@@ -11427,7 +11427,7 @@ export default function KundenDetail() {
                                     <Eye className="h-3 w-3" /> Anzeigen
                                   </Button>
                                 ) : (
-                                  <span className="text-[10px] text-muted-foreground">Aus Finanzierung</span>
+                                  <span className="text-bildunterschrift text-muted-foreground">Aus Finanzierung</span>
                                 )}
                               </div>
                             ) : isBackofficeRole ? (
@@ -11539,7 +11539,7 @@ export default function KundenDetail() {
                                 }}><XCircle className="h-3 w-3" /></Button>
                               </div>
                             ) : (
-                              <span className="text-[10px] text-muted-foreground">Ausstehend</span>
+                              <span className="text-bildunterschrift text-muted-foreground">Ausstehend</span>
                             )}
                           </div>
                         );
@@ -11699,11 +11699,11 @@ export default function KundenDetail() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                   <div className="flex items-center gap-2">
                     <span className="text-muted-foreground">Notizen:</span>
-                    {hasNotizen ? <Badge variant="default" className="text-[10px]">Vorhanden</Badge> : <Badge variant="outline" className="text-[10px]">Fehlen</Badge>}
+                    {hasNotizen ? <Badge variant="default" className="text-bildunterschrift">Vorhanden</Badge> : <Badge variant="outline" className="text-bildunterschrift">Fehlen</Badge>}
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-muted-foreground">Termin:</span>
-                    {hasTermin ? <Badge variant="default" className="text-[10px]">{kunde.versicherungTerminDatum}</Badge> : <Badge variant="outline" className="text-[10px]">Offen</Badge>}
+                    {hasTermin ? <Badge variant="default" className="text-bildunterschrift">{kunde.versicherungTerminDatum}</Badge> : <Badge variant="outline" className="text-bildunterschrift">Offen</Badge>}
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-muted-foreground">Vertriebspartner:</span>
@@ -12104,7 +12104,7 @@ export default function KundenDetail() {
           <p className="text-sm text-muted-foreground">Bitte lade die Seite neu.</p>
           <details className="text-left max-w-2xl mx-auto">
             <summary className="text-xs text-muted-foreground cursor-pointer">Technische Details (für Support)</summary>
-            <pre className="mt-2 p-3 bg-muted rounded text-[10px] text-left whitespace-pre-wrap break-all overflow-auto max-h-64">
+            <pre className="mt-2 p-3 bg-muted rounded text-bildunterschrift text-left whitespace-pre-wrap break-all overflow-auto max-h-64">
               {msg}
               {stack ? "\n\n" + stack : ""}
             </pre>
@@ -12260,9 +12260,9 @@ export default function KundenDetail() {
             <div className="w-8 h-1 bg-primary mb-2" />
             <h3 className="font-bold text-sm mb-2">Einkünfte</h3>
             <div className="space-y-1.5 text-xs">
-              <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wide">Person 1</p>
+              <p className="text-bildunterschrift text-muted-foreground font-semibold uppercase tracking-wide">Person 1</p>
               <details className="group/zeile">
-                <summary className="flex items-center justify-between cursor-pointer list-none text-[10px] uppercase tracking-wide text-muted-foreground hover:text-foreground">
+                <summary className="flex items-center justify-between cursor-pointer list-none text-bildunterschrift uppercase tracking-wide text-muted-foreground hover:text-foreground">
                   <span>Details {fmt(invSumEink)}</span>
                   <ChevronDown className="h-3 w-3 transition-transform group-open/zeile:rotate-180" />
                 </summary>
@@ -12273,9 +12273,9 @@ export default function KundenDetail() {
               <div className="flex justify-between font-semibold border-t pt-1"><span>Summe P1</span><span>{fmt(invSumEink)}</span></div>
               {invP2Eink && invSumEinkP2 > 0 && (
                 <>
-                  <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wide mt-2">Person 2</p>
+                  <p className="text-bildunterschrift text-muted-foreground font-semibold uppercase tracking-wide mt-2">Person 2</p>
                   <details className="group/zeile">
-                    <summary className="flex items-center justify-between cursor-pointer list-none text-[10px] uppercase tracking-wide text-muted-foreground hover:text-foreground">
+                    <summary className="flex items-center justify-between cursor-pointer list-none text-bildunterschrift uppercase tracking-wide text-muted-foreground hover:text-foreground">
                       <span>Details {fmt(invSumEinkP2)}</span>
                       <ChevronDown className="h-3 w-3 transition-transform group-open/zeile:rotate-180" />
                     </summary>
@@ -12302,9 +12302,9 @@ export default function KundenDetail() {
             <div className="w-8 h-1 bg-primary mb-2" />
             <h3 className="font-bold text-sm mb-2">Ausgaben</h3>
             <div className="space-y-1.5 text-xs">
-              <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wide">Person 1</p>
+              <p className="text-bildunterschrift text-muted-foreground font-semibold uppercase tracking-wide">Person 1</p>
               <details className="group/zeile">
-                <summary className="flex items-center justify-between cursor-pointer list-none text-[10px] uppercase tracking-wide text-muted-foreground hover:text-foreground">
+                <summary className="flex items-center justify-between cursor-pointer list-none text-bildunterschrift uppercase tracking-wide text-muted-foreground hover:text-foreground">
                   <span>Details {fmt(invSumAusg)}</span>
                   <ChevronDown className="h-3 w-3 transition-transform group-open/zeile:rotate-180" />
                 </summary>
@@ -12316,9 +12316,9 @@ export default function KundenDetail() {
               <div className="flex justify-between font-semibold border-t pt-1"><span>Summe P1</span><span>{fmt(invSumAusg)}</span></div>
               {invP2Ausg && invSumAusgP2 > 0 && (
                 <>
-                  <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wide mt-2">Person 2</p>
+                  <p className="text-bildunterschrift text-muted-foreground font-semibold uppercase tracking-wide mt-2">Person 2</p>
                   <details className="group/zeile">
-                    <summary className="flex items-center justify-between cursor-pointer list-none text-[10px] uppercase tracking-wide text-muted-foreground hover:text-foreground">
+                    <summary className="flex items-center justify-between cursor-pointer list-none text-bildunterschrift uppercase tracking-wide text-muted-foreground hover:text-foreground">
                       <span>Details {fmt(invSumAusgP2)}</span>
                       <ChevronDown className="h-3 w-3 transition-transform group-open/zeile:rotate-180" />
                     </summary>
@@ -12355,7 +12355,7 @@ export default function KundenDetail() {
               */}
               {saFin && (
                 <div className="mt-3 p-2.5 rounded-lg border border-dashed text-[11px] text-muted-foreground space-y-0.5" data-testid="bankansatz-vergleich">
-                  <p className="font-semibold uppercase tracking-wide text-[10px] mb-1">Zum Vergleich: Bankansatz (Schätzung)</p>
+                  <p className="font-semibold uppercase tracking-wide text-bildunterschrift mb-1">Zum Vergleich: Bankansatz (Schätzung)</p>
                   <div className="flex justify-between"><span>Einkünfte</span><span>{fmt(saFin.sumEink)}</span></div>
                   <div className="flex justify-between"><span>Ausgaben</span><span>– {fmt(saFin.sumAusg)}</span></div>
                   <div className="flex justify-between font-semibold text-foreground border-t pt-1"><span>Monatl. Überschuss</span><span>{fmt(bankUeberschuss)}</span></div>
@@ -12365,7 +12365,7 @@ export default function KundenDetail() {
                 </div>
               )}
               <div className="mt-3 p-2.5 rounded-lg bg-muted/50 border text-[11px] text-muted-foreground space-y-0.5">
-                <p className="font-semibold uppercase tracking-wide text-[10px] mb-1">Tragfähigkeit (Bankansatz)</p>
+                <p className="font-semibold uppercase tracking-wide text-bildunterschrift mb-1">Tragfähigkeit (Bankansatz)</p>
                 <div className="flex justify-between"><span>80% Puffer</span><span>{fmt(invDavon80)}</span></div>
                 <div className="flex justify-between"><span>Max. Annuität p.a.</span><span>{fmt(invDavon80 * 12)}</span></div>
               </div>
@@ -12387,13 +12387,13 @@ export default function KundenDetail() {
                 return (
                   <div className="pt-1.5 border-t space-y-2">
                     <details className="group/zeile">
-                      <summary className="flex items-center justify-between cursor-pointer list-none text-[10px] uppercase tracking-wide text-muted-foreground hover:text-foreground">
+                      <summary className="flex items-center justify-between cursor-pointer list-none text-bildunterschrift uppercase tracking-wide text-muted-foreground hover:text-foreground">
                         <span>Eigenkapital-Details</span>
                         <ChevronDown className="h-3 w-3 transition-transform group-open/zeile:rotate-180" />
                       </summary>
                       <div className="mt-2 space-y-3">
                         <div className="space-y-1">
-                          <p className="text-[10px] uppercase tracking-wide font-semibold text-muted-foreground">Eigenkapital liquide</p>
+                          <p className="text-bildunterschrift uppercase tracking-wide font-semibold text-muted-foreground">Eigenkapital liquide</p>
                           {liquide.length > 0 ? liquide.map((v, i) => (
                             <div key={`liq-${i}`} className="flex justify-between gap-2">
                               <span className="truncate">{v.art}{v.institut ? ` · ${v.institut}` : ""}</span>
@@ -12407,7 +12407,7 @@ export default function KundenDetail() {
                           )}
                         </div>
                         <div className="space-y-1">
-                          <p className="text-[10px] uppercase tracking-wide font-semibold text-muted-foreground">Immobilienvermögen</p>
+                          <p className="text-bildunterschrift uppercase tracking-wide font-semibold text-muted-foreground">Immobilienvermögen</p>
                           {immoVermoegen.vorhanden ? (
                             <button
                               type="button"
@@ -12472,7 +12472,7 @@ export default function KundenDetail() {
                 </PopoverTrigger>
                 <PopoverContent className="w-96 text-xs space-y-3" align="start">
                   <div>
-                    <p className="font-semibold uppercase tracking-wide text-[10px] mb-1.5 text-muted-foreground">So wird die Finanzierbarkeit berechnet</p>
+                    <p className="font-semibold uppercase tracking-wide text-bildunterschrift mb-1.5 text-muted-foreground">So wird die Finanzierbarkeit berechnet</p>
                     <ul className="space-y-1 list-disc list-inside text-muted-foreground">
                       <li>Überschuss = Gesamteinnahmen − Gesamtausgaben</li>
                       <li>Max. tragbare Belastung = Überschuss × 80% (Sicherheitspuffer)</li>
@@ -12536,7 +12536,7 @@ export default function KundenDetail() {
               );
             })()}
             {effEK > 0 && (
-              <p className="text-[10px] text-muted-foreground mt-2">inkl. {fmt(effEK)} Eigenkapital aus Selbstauskunft</p>
+              <p className="text-bildunterschrift text-muted-foreground mt-2">inkl. {fmt(effEK)} Eigenkapital aus Selbstauskunft</p>
             )}
           </Card>
         </div>

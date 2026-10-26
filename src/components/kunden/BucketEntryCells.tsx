@@ -21,10 +21,10 @@ export function BucketEntryDealCell({ entry }: { entry: KundeBucketEntry }) {
   return (
     <div className="flex flex-col gap-0.5 min-w-[170px]">
       <div className="flex items-center gap-1.5 flex-wrap">
-        <Badge className="text-[10px] px-1.5 py-0 bg-primary text-primary-foreground font-medium whitespace-nowrap shrink-0">
+        <Badge className="text-bildunterschrift px-1.5 py-0 bg-primary text-primary-foreground font-medium whitespace-nowrap shrink-0">
           Inv. {entry.investmentNummer ?? "?"}
         </Badge>
-        <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-primary/40 text-primary whitespace-nowrap shrink-0">
+        <Badge variant="outline" className="text-bildunterschrift px-1.5 py-0 border-primary/40 text-primary whitespace-nowrap shrink-0">
           {stufeLabel}
         </Badge>
         <KontaktTypBadge kunde={entry.kunde} size="xs" showIcon={false} />

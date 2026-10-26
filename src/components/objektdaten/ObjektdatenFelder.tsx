@@ -20,7 +20,7 @@ function Feld({ label, wert, onChange, typ = "text", platzhalter, hinweis }: {
       <Label className="text-xs">{label}</Label>
       <Input className="h-8" type={typ === "date" ? "date" : "text"} inputMode={typ === "zahl" ? "decimal" : undefined}
         value={wert} placeholder={platzhalter} onChange={(e) => onChange(e.target.value)} />
-      {hinweis && <p className="mt-0.5 text-[10px] text-muted-foreground">{hinweis}</p>}
+      {hinweis && <p className="mt-0.5 text-bildunterschrift text-muted-foreground">{hinweis}</p>}
     </div>
   );
 }

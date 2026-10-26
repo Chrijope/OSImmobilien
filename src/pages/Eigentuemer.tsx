@@ -93,9 +93,9 @@ export default function EigentuemerPage() {
                 <div className="flex items-center gap-2">
                    <Building2 className="h-4 w-4 text-primary" />
                    <p className="font-semibold">{e.name}</p>
-                   <Badge variant="outline" className="text-[10px]">{EIGENTUEMER_TYPEN.find(t => t.value === e.typ)?.label}</Badge>
+                   <Badge variant="outline" className="text-bildunterschrift">{EIGENTUEMER_TYPEN.find(t => t.value === e.typ)?.label}</Badge>
                    {e.herkunftVertrieb && (
-                     <Badge className="text-[10px] bg-emerald-500/10 text-emerald-600 border-emerald-200">
+                     <Badge className="text-bildunterschrift bg-emerald-500/10 text-emerald-600 border-emerald-200">
                        <ArrowRightFromLine className="h-3 w-3 mr-1" />
                        Aus Vertrieb übernommen
                      </Badge>

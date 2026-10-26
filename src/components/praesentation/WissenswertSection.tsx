@@ -22,8 +22,8 @@ export function WissenswertSection() {
                 <h4 className="font-semibold text-sm group-hover:text-primary transition-colors">
                   {a.titel}
                 </h4>
-                <Badge variant="secondary" className="text-[10px]">{a.kategorie}</Badge>
-                <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                <Badge variant="secondary" className="text-bildunterschrift">{a.kategorie}</Badge>
+                <span className="text-bildunterschrift text-muted-foreground flex items-center gap-1">
                   <Clock className="h-2.5 w-2.5" /> {a.lesedauer} Min.
                 </span>
               </div>

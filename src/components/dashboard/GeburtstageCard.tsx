@@ -201,7 +201,7 @@ function Zeile({ eintrag }: { eintrag: GeburtstagEintrag }) {
         <p className="text-xs text-muted-foreground truncate">{eintrag.bezeichnung}</p>
       </div>
       <span
-        className={`text-[10px] font-medium whitespace-nowrap ${
+        className={`text-bildunterschrift font-medium whitespace-nowrap ${
           heute ? "text-primary" : "text-muted-foreground"
         }`}
       >

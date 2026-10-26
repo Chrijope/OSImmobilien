@@ -286,7 +286,7 @@ function ProvisionsEntwicklungChart({ partnerName, partnerId }: { partnerName: s
           <div className="flex items-center gap-2">
             <div className="w-6 h-0.5 bg-primary rounded-full" />
             <CardTitle className="text-sm font-semibold font-sans">Provisionsentwicklung ({new Date().getFullYear()})</CardTitle>
-            <Badge variant="outline" className="text-[10px]">{data.rate !== null ? `${data.rate} % Satz` : "Satz nicht gepflegt"}</Badge>
+            <Badge variant="outline" className="text-bildunterschrift">{data.rate !== null ? `${data.rate} % Satz` : "Satz nicht gepflegt"}</Badge>
           </div>
           <div className="flex items-center gap-3 text-xs">
             <span className="text-muted-foreground">Festgeschrieben: <span className={unscharfKlasse("font-semibold text-foreground")}>{totalFest.toLocaleString("de-DE")} €</span></span>
@@ -697,11 +697,11 @@ function PartnerDetail({ partner: p, onBack, showBackButton, overheadEinnahmen =
               <CardTitle className="text-sm font-semibold font-sans flex items-center gap-2">
                 💼 Rechnungsprüfung – {p.name}
                 {isComplete ? (
-                  <Badge className="bg-success text-destructive-foreground text-[10px]">✅ Abgeschlossen</Badge>
+                  <Badge className="bg-success text-destructive-foreground text-bildunterschrift">✅ Abgeschlossen</Badge>
                 ) : gs.gutschriftUeberwiesen ? (
-                  <Badge variant="outline" className="text-[10px] border-warning text-warning">⚠️ PDF fehlt</Badge>
+                  <Badge variant="outline" className="text-bildunterschrift border-warning text-warning">⚠️ PDF fehlt</Badge>
                 ) : (
-                  <Badge variant="outline" className="text-[10px]">Offen</Badge>
+                  <Badge variant="outline" className="text-bildunterschrift">Offen</Badge>
                 )}
               </CardTitle>
             </div>
@@ -780,7 +780,7 @@ function PartnerDetail({ partner: p, onBack, showBackButton, overheadEinnahmen =
                   </div>
                   <div>
                     <p className="text-sm font-medium text-foreground">{gs.pdfName}</p>
-                    <p className="text-[10px] text-muted-foreground">Hochgeladen am {gs.pdfUploadedAt}</p>
+                    <p className="text-bildunterschrift text-muted-foreground">Hochgeladen am {gs.pdfUploadedAt}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -876,7 +876,7 @@ function PartnerDetail({ partner: p, onBack, showBackButton, overheadEinnahmen =
               </p>
               <div className="mt-4">
                 <div data-ui="card" className="bg-card border border-border rounded-lg p-4">
-                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Fälligkeit der Kaufpreiszahlung</p>
+                  <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground">Fälligkeit der Kaufpreiszahlung</p>
                   <p className="font-semibold text-foreground mt-1">
                     Die Provision wird fällig, sobald der Kaufpreis der vermittelten Kapitalanlage beim Verkäufer eingegangen ist.
                   </p>
@@ -999,7 +999,7 @@ function PartnerDetail({ partner: p, onBack, showBackButton, overheadEinnahmen =
             >
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: kp.color }} />
-                <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{kp.label}</p>
+                <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground">{kp.label}</p>
               </div>
               <p className="text-2xl font-bold text-foreground">{kp.kunden.length}</p>
               <div className="mt-2 space-y-0.5">
@@ -1025,9 +1025,9 @@ function PartnerDetail({ partner: p, onBack, showBackButton, overheadEinnahmen =
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-[10px] uppercase">Name</TableHead>
-                  <TableHead className="text-[10px] uppercase">Objekt</TableHead>
-                  <TableHead className="text-[10px] uppercase text-right">Kaufpreis</TableHead>
+                  <TableHead className="text-bildunterschrift uppercase">Name</TableHead>
+                  <TableHead className="text-bildunterschrift uppercase">Objekt</TableHead>
+                  <TableHead className="text-bildunterschrift uppercase text-right">Kaufpreis</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -1057,11 +1057,11 @@ function PartnerDetail({ partner: p, onBack, showBackButton, overheadEinnahmen =
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-[10px] uppercase tracking-wider">Team-Mitglied</TableHead>
-                  <TableHead className="text-[10px] uppercase tracking-wider">Objekt</TableHead>
-                  <TableHead className="text-[10px] uppercase tracking-wider">Kaufpreis</TableHead>
-                  <TableHead className="text-[10px] uppercase tracking-wider">Rate</TableHead>
-                  <TableHead className="text-[10px] uppercase tracking-wider text-right">Overhead</TableHead>
+                  <TableHead className="text-bildunterschrift uppercase tracking-wider">Team-Mitglied</TableHead>
+                  <TableHead className="text-bildunterschrift uppercase tracking-wider">Objekt</TableHead>
+                  <TableHead className="text-bildunterschrift uppercase tracking-wider">Kaufpreis</TableHead>
+                  <TableHead className="text-bildunterschrift uppercase tracking-wider">Rate</TableHead>
+                  <TableHead className="text-bildunterschrift uppercase tracking-wider text-right">Overhead</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -1099,10 +1099,10 @@ function PartnerDetail({ partner: p, onBack, showBackButton, overheadEinnahmen =
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-[10px] uppercase tracking-wider">Teamleiter</TableHead>
-                  <TableHead className="text-[10px] uppercase tracking-wider">Objekt</TableHead>
-                  <TableHead className="text-[10px] uppercase tracking-wider">Rate</TableHead>
-                  <TableHead className="text-[10px] uppercase tracking-wider text-right">Betrag</TableHead>
+                  <TableHead className="text-bildunterschrift uppercase tracking-wider">Teamleiter</TableHead>
+                  <TableHead className="text-bildunterschrift uppercase tracking-wider">Objekt</TableHead>
+                  <TableHead className="text-bildunterschrift uppercase tracking-wider">Rate</TableHead>
+                  <TableHead className="text-bildunterschrift uppercase tracking-wider text-right">Betrag</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -1130,13 +1130,13 @@ function PartnerDetail({ partner: p, onBack, showBackButton, overheadEinnahmen =
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-[10px] uppercase tracking-wider">Objekt</TableHead>
-                  <TableHead className="text-[10px] uppercase tracking-wider">Kaufpreis</TableHead>
-                  <TableHead className="text-[10px] uppercase tracking-wider">Satz</TableHead>
-                  <TableHead className="text-[10px] uppercase tracking-wider">Provision</TableHead>
-                  <TableHead className="text-[10px] uppercase tracking-wider">Notartermin</TableHead>
-                  <TableHead className="text-[10px] uppercase tracking-wider">Kaufpreis fällig (ca.)</TableHead>
-                  <TableHead className="text-[10px] uppercase tracking-wider">Status</TableHead>
+                  <TableHead className="text-bildunterschrift uppercase tracking-wider">Objekt</TableHead>
+                  <TableHead className="text-bildunterschrift uppercase tracking-wider">Kaufpreis</TableHead>
+                  <TableHead className="text-bildunterschrift uppercase tracking-wider">Satz</TableHead>
+                  <TableHead className="text-bildunterschrift uppercase tracking-wider">Provision</TableHead>
+                  <TableHead className="text-bildunterschrift uppercase tracking-wider">Notartermin</TableHead>
+                  <TableHead className="text-bildunterschrift uppercase tracking-wider">Kaufpreis fällig (ca.)</TableHead>
+                  <TableHead className="text-bildunterschrift uppercase tracking-wider">Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -1152,7 +1152,7 @@ function PartnerDetail({ partner: p, onBack, showBackButton, overheadEinnahmen =
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">{a.notarDatum}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">{a.kaufpreisfaellig}</TableCell>
-                    <TableCell><Badge variant="outline" className="text-[10px]">{a.status}</Badge></TableCell>
+                    <TableCell><Badge variant="outline" className="text-bildunterschrift">{a.status}</Badge></TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -1244,7 +1244,7 @@ function PartnerDetail({ partner: p, onBack, showBackButton, overheadEinnahmen =
                     <p className="text-xs text-muted-foreground mt-0.5">
                       Deine Rechnung wurde beglichen. Das Zahlungsdokument steht in der Abrechnungshistorie zum Download bereit.
                     </p>
-                    <p className="text-[10px] text-muted-foreground mt-1">
+                    <p className="text-bildunterschrift text-muted-foreground mt-1">
                       {new Date(n.timestamp).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })}
                     </p>
                   </div>
@@ -1271,7 +1271,7 @@ function PartnerDetail({ partner: p, onBack, showBackButton, overheadEinnahmen =
                 <FileText className="h-4 w-4 text-success" />
                 <div>
                   <p className="text-sm font-medium text-foreground">Mär 2026 – {gs.pdfName}</p>
-                  <p className="text-[10px] text-muted-foreground">Hochgeladen am {gs.pdfUploadedAt} · {fmt(gesamtRechnung)}</p>
+                  <p className="text-bildunterschrift text-muted-foreground">Hochgeladen am {gs.pdfUploadedAt} · {fmt(gesamtRechnung)}</p>
                 </div>
               </div>
               {gs.pdfData && (
@@ -1284,14 +1284,14 @@ function PartnerDetail({ partner: p, onBack, showBackButton, overheadEinnahmen =
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="text-[10px] uppercase tracking-wider">Monat</TableHead>
-                <TableHead className="text-[10px] uppercase tracking-wider">Abschlüsse</TableHead>
-                <TableHead className="text-[10px] uppercase tracking-wider">Provision</TableHead>
-                {OVERHEAD_AKTIV && <TableHead className="text-[10px] uppercase tracking-wider">Overhead</TableHead>}
-                <TableHead className="text-[10px] uppercase tracking-wider">Gesamt</TableHead>
-                <TableHead className="text-[10px] uppercase tracking-wider">Kaufpreisfälligkeit</TableHead>
-                 <TableHead className="text-[10px] uppercase tracking-wider">Status</TableHead>
-                <TableHead className="text-[10px] uppercase tracking-wider">PDF</TableHead>
+                <TableHead className="text-bildunterschrift uppercase tracking-wider">Monat</TableHead>
+                <TableHead className="text-bildunterschrift uppercase tracking-wider">Abschlüsse</TableHead>
+                <TableHead className="text-bildunterschrift uppercase tracking-wider">Provision</TableHead>
+                {OVERHEAD_AKTIV && <TableHead className="text-bildunterschrift uppercase tracking-wider">Overhead</TableHead>}
+                <TableHead className="text-bildunterschrift uppercase tracking-wider">Gesamt</TableHead>
+                <TableHead className="text-bildunterschrift uppercase tracking-wider">Kaufpreisfälligkeit</TableHead>
+                 <TableHead className="text-bildunterschrift uppercase tracking-wider">Status</TableHead>
+                <TableHead className="text-bildunterschrift uppercase tracking-wider">PDF</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -1305,9 +1305,9 @@ function PartnerDetail({ partner: p, onBack, showBackButton, overheadEinnahmen =
                   <TableCell className="text-sm text-muted-foreground">{h.kaufpreisfaellig}</TableCell>
                    <TableCell>
                     {h.status === "Bezahlt" ? (
-                      <Badge className="bg-success text-destructive-foreground text-[10px]">Bezahlt</Badge>
+                      <Badge className="bg-success text-destructive-foreground text-bildunterschrift">Bezahlt</Badge>
                     ) : (
-                      <Badge variant="outline" className="text-[10px]">{h.status}</Badge>
+                      <Badge variant="outline" className="text-bildunterschrift">{h.status}</Badge>
                     )}
                   </TableCell>
                   <TableCell>
@@ -1349,7 +1349,7 @@ function KaufpreisFehltKarte({ eintraege }: { eintraege: KaufpreisFehlt[] }) {
         <CardTitle className="text-sm font-semibold font-sans flex items-center gap-2">
           <AlertTriangle className="h-4 w-4 text-warning" />
           Kaufpreis fehlt
-          <Badge variant="outline" className="text-[10px]">{eintraege.length}</Badge>
+          <Badge variant="outline" className="text-bildunterschrift">{eintraege.length}</Badge>
         </CardTitle>
         <p className="text-xs text-muted-foreground">
           Diese Investments sind ab Reservierung, haben aber keinen Kaufpreis. Sie fehlen in Abrechnung,
@@ -1360,9 +1360,9 @@ function KaufpreisFehltKarte({ eintraege }: { eintraege: KaufpreisFehlt[] }) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="text-[10px] uppercase tracking-wider">Kunde</TableHead>
-              <TableHead className="text-[10px] uppercase tracking-wider">Stufe</TableHead>
-              <TableHead className="text-[10px] uppercase tracking-wider text-right">Investment</TableHead>
+              <TableHead className="text-bildunterschrift uppercase tracking-wider">Kunde</TableHead>
+              <TableHead className="text-bildunterschrift uppercase tracking-wider">Stufe</TableHead>
+              <TableHead className="text-bildunterschrift uppercase tracking-wider text-right">Investment</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -1371,7 +1371,7 @@ function KaufpreisFehltKarte({ eintraege }: { eintraege: KaufpreisFehlt[] }) {
               return (
                 <TableRow key={e.investmentId}>
                   <TableCell className="text-sm">{tarnName(`${k?.vorname ?? ""} ${k?.nachname ?? ""}`.trim()) || "Unbekannt"}</TableCell>
-                  <TableCell><Badge variant="outline" className="text-[10px]">{stufenLabel(e.stufe)}</Badge></TableCell>
+                  <TableCell><Badge variant="outline" className="text-bildunterschrift">{stufenLabel(e.stufe)}</Badge></TableCell>
                   <TableCell className="text-right">
                     <Button
                       size="sm"
@@ -1759,22 +1759,22 @@ const Abrechnungen = () => {
         {/* KPIs */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <Card className="p-5 text-center flex flex-col items-center justify-center">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">Vertriebspartner</p>
+            <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground mb-2">Vertriebspartner</p>
             <p className="text-3xl font-bold text-foreground">{partner.length}</p>
             <p className="text-xs text-muted-foreground mt-1">{aktivPartner} aktiv · systemweit</p>
           </Card>
           <Card className="p-5 text-center flex flex-col items-center justify-center">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">Auszahlungen (akt. Monat)</p>
+            <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground mb-2">Auszahlungen (akt. Monat)</p>
             <p className="text-3xl font-bold text-foreground">{fmt(totalAuszahlungen)}</p>
             <p className="text-xs text-muted-foreground mt-1">{OVERHEAD_AKTIV ? "Provisionen + Overhead" : "Provisionen"}</p>
           </Card>
           <Card className="p-5 text-center flex flex-col items-center justify-center">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">ø Auszahlung / Partner</p>
+            <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground mb-2">ø Auszahlung / Partner</p>
             <p className="text-3xl font-bold text-foreground">{fmt(partner.length > 0 ? Math.round(totalAuszahlungen / partner.length) : 0)}</p>
             <p className="text-xs text-muted-foreground mt-1">Durchschnitt aktueller Monat</p>
           </Card>
           <Card className="p-5 text-center flex flex-col items-center justify-center">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">Offene Rechnungen</p>
+            <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground mb-2">Offene Rechnungen</p>
             <p className="text-3xl font-bold text-foreground">{ausstGutschriften}</p>
             <p className="text-xs text-muted-foreground mt-1">Von VPs zu stellen · warten auf Kaufpreisfälligkeit</p>
           </Card>
@@ -1794,28 +1794,28 @@ const Abrechnungen = () => {
                 <div className="bg-destructive/5 border border-destructive/20 rounded-lg p-3 text-center">
                   <Clock className="h-5 w-5 text-destructive mx-auto mb-1" />
                   <p className="text-2xl font-bold text-foreground">{offeneCount}</p>
-                  <p className="text-[10px] text-muted-foreground uppercase">Offen</p>
+                  <p className="text-bildunterschrift text-muted-foreground uppercase">Offen</p>
                 </div>
                 <div className="bg-warning/5 border border-warning/20 rounded-lg p-3 text-center">
                   <AlertTriangle className="h-5 w-5 text-warning mx-auto mb-1" />
                   <p className="text-2xl font-bold text-foreground">{pdfFehltCount}</p>
-                  <p className="text-[10px] text-muted-foreground uppercase">PDF fehlt</p>
+                  <p className="text-bildunterschrift text-muted-foreground uppercase">PDF fehlt</p>
                 </div>
                 <div className="bg-success/5 border border-success/20 rounded-lg p-3 text-center">
                   <CheckCircle2 className="h-5 w-5 text-success mx-auto mb-1" />
                   <p className="text-2xl font-bold text-foreground">{abgeschlossenCount}</p>
-                  <p className="text-[10px] text-muted-foreground uppercase">Abgeschlossen</p>
+                  <p className="text-bildunterschrift text-muted-foreground uppercase">Abgeschlossen</p>
                 </div>
               </div>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="text-[10px] uppercase tracking-wider">Partner</TableHead>
-                    <TableHead className="text-[10px] uppercase tracking-wider">Provision</TableHead>
-                    {OVERHEAD_AKTIV && <TableHead className="text-[10px] uppercase tracking-wider">Overhead</TableHead>}
-                    <TableHead className="text-[10px] uppercase tracking-wider">Gesamt</TableHead>
-                    <TableHead className="text-[10px] uppercase tracking-wider">Status</TableHead>
-                    <TableHead className="text-[10px] uppercase tracking-wider">Aktion</TableHead>
+                    <TableHead className="text-bildunterschrift uppercase tracking-wider">Partner</TableHead>
+                    <TableHead className="text-bildunterschrift uppercase tracking-wider">Provision</TableHead>
+                    {OVERHEAD_AKTIV && <TableHead className="text-bildunterschrift uppercase tracking-wider">Overhead</TableHead>}
+                    <TableHead className="text-bildunterschrift uppercase tracking-wider">Gesamt</TableHead>
+                    <TableHead className="text-bildunterschrift uppercase tracking-wider">Status</TableHead>
+                    <TableHead className="text-bildunterschrift uppercase tracking-wider">Aktion</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -1829,7 +1829,7 @@ const Abrechnungen = () => {
                       <TableRow key={p.kuerzel}>
                         <TableCell>
                           <div className="flex items-center gap-2">
-                            <div className="h-7 w-7 rounded-full bg-primary/20 flex items-center justify-center text-[9px] font-bold text-primary">{p.kuerzel}</div>
+                            <div className="h-7 w-7 rounded-full bg-primary/20 flex items-center justify-center text-bildunterschrift font-bold text-primary">{p.kuerzel}</div>
                             <span className="text-sm font-medium">{tarnName(p.name, "partner")}</span>
                           </div>
                         </TableCell>
@@ -1838,11 +1838,11 @@ const Abrechnungen = () => {
                         <TableCell className="text-sm font-bold">{fmt(total)}</TableCell>
                         <TableCell>
                           {status === "abgeschlossen" ? (
-                            <Badge className="bg-success text-destructive-foreground text-[10px]">✅ Erledigt</Badge>
+                            <Badge className="bg-success text-destructive-foreground text-bildunterschrift">✅ Erledigt</Badge>
                           ) : status === "pdf_fehlt" ? (
-                            <Badge variant="outline" className="text-[10px] border-warning text-warning">⚠️ PDF fehlt</Badge>
+                            <Badge variant="outline" className="text-bildunterschrift border-warning text-warning">⚠️ PDF fehlt</Badge>
                           ) : (
-                            <Badge variant="outline" className="text-[10px]"><Clock className="h-3 w-3 mr-1" /> Offen</Badge>
+                            <Badge variant="outline" className="text-bildunterschrift"><Clock className="h-3 w-3 mr-1" /> Offen</Badge>
                           )}
                         </TableCell>
                         <TableCell>
@@ -1873,12 +1873,12 @@ const Abrechnungen = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="text-[10px] uppercase tracking-wider">Overhead an</TableHead>
-                    <TableHead className="text-[10px] uppercase tracking-wider">Abschluss von</TableHead>
-                    <TableHead className="text-[10px] uppercase tracking-wider">Objekt</TableHead>
-                    <TableHead className="text-[10px] uppercase tracking-wider">Kaufpreis</TableHead>
-                    <TableHead className="text-[10px] uppercase tracking-wider">Rate</TableHead>
-                    <TableHead className="text-[10px] uppercase tracking-wider text-right">Betrag</TableHead>
+                    <TableHead className="text-bildunterschrift uppercase tracking-wider">Overhead an</TableHead>
+                    <TableHead className="text-bildunterschrift uppercase tracking-wider">Abschluss von</TableHead>
+                    <TableHead className="text-bildunterschrift uppercase tracking-wider">Objekt</TableHead>
+                    <TableHead className="text-bildunterschrift uppercase tracking-wider">Kaufpreis</TableHead>
+                    <TableHead className="text-bildunterschrift uppercase tracking-wider">Rate</TableHead>
+                    <TableHead className="text-bildunterschrift uppercase tracking-wider text-right">Betrag</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -1934,9 +1934,9 @@ const Abrechnungen = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-[10px] uppercase tracking-wider">Partner</TableHead>
-                  <TableHead className="text-[10px] uppercase tracking-wider">Provision</TableHead>
-                  <TableHead className="text-[10px] uppercase tracking-wider">Status</TableHead>
+                  <TableHead className="text-bildunterschrift uppercase tracking-wider">Partner</TableHead>
+                  <TableHead className="text-bildunterschrift uppercase tracking-wider">Provision</TableHead>
+                  <TableHead className="text-bildunterschrift uppercase tracking-wider">Status</TableHead>
                   {/*
                     Vier Spalten, vier verschiedene Zahlen. Sie hiessen vorher
                     alle irgendwie nach "Provision" und meinten Verschiedenes:
@@ -1946,12 +1946,12 @@ const Abrechnungen = () => {
                       Abschluesse  Geschaefte mit durchlaufenem Notartermin
                       Gesamt     was tatsaechlich ausgezahlt wurde
                   */}
-                  <TableHead className="text-[10px] uppercase tracking-wider">Erwartet</TableHead>
-                  <TableHead className="text-[10px] uppercase tracking-wider">Abrechenbar</TableHead>
-                  {OVERHEAD_AKTIV && <TableHead className="text-[10px] uppercase tracking-wider">Overhead</TableHead>}
-                  <TableHead className="text-[10px] uppercase tracking-wider">Abschlüsse</TableHead>
-                  <TableHead className="text-[10px] uppercase tracking-wider">Gesamt</TableHead>
-                  <TableHead className="text-[10px] uppercase tracking-wider">Aktion</TableHead>
+                  <TableHead className="text-bildunterschrift uppercase tracking-wider">Erwartet</TableHead>
+                  <TableHead className="text-bildunterschrift uppercase tracking-wider">Abrechenbar</TableHead>
+                  {OVERHEAD_AKTIV && <TableHead className="text-bildunterschrift uppercase tracking-wider">Overhead</TableHead>}
+                  <TableHead className="text-bildunterschrift uppercase tracking-wider">Abschlüsse</TableHead>
+                  <TableHead className="text-bildunterschrift uppercase tracking-wider">Gesamt</TableHead>
+                  <TableHead className="text-bildunterschrift uppercase tracking-wider">Aktion</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -1964,10 +1964,10 @@ const Abrechnungen = () => {
                     <TableRow key={p.kuerzel}>
                       <TableCell>
                         <div className="flex items-center gap-3">
-                          <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold text-primary">{p.kuerzel}</div>
+                          <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-bildunterschrift font-bold text-primary">{p.kuerzel}</div>
                           <div>
                             <p className="text-sm font-medium text-foreground">{tarnName(p.name, "partner")}</p>
-                            <p className="text-[10px] text-muted-foreground">{p.email}</p>
+                            <p className="text-bildunterschrift text-muted-foreground">{p.email}</p>
                           </div>
                         </div>
                       </TableCell>
@@ -1977,7 +1977,7 @@ const Abrechnungen = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge className={p.status === "Aktiv" ? "bg-success text-destructive-foreground text-[10px]" : "bg-muted text-muted-foreground text-[10px]"}>{p.status}</Badge>
+                        <Badge className={p.status === "Aktiv" ? "bg-success text-destructive-foreground text-bildunterschrift" : "bg-muted text-muted-foreground text-bildunterschrift"}>{p.status}</Badge>
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">{fmt(p.provision)}</TableCell>
                       <TableCell className="text-sm font-semibold text-foreground">
@@ -1986,7 +1986,7 @@ const Abrechnungen = () => {
                       {OVERHEAD_AKTIV && <TableCell className="text-sm font-semibold text-primary">{oh > 0 ? `+${fmt(oh)}` : "–"}</TableCell>}
                       <TableCell>
                         {p.vermittlungen > 0
-                          ? <Badge variant="outline" className="text-[10px]">{p.vermittlungen} {p.vermittlungen === 1 ? "Abschluss" : "Abschlüsse"}</Badge>
+                          ? <Badge variant="outline" className="text-bildunterschrift">{p.vermittlungen} {p.vermittlungen === 1 ? "Abschluss" : "Abschlüsse"}</Badge>
                           : <span className="text-muted-foreground text-sm">–</span>}
                       </TableCell>
                       <TableCell className="text-sm font-bold text-foreground">
@@ -2003,7 +2003,7 @@ const Abrechnungen = () => {
                   <TableCell /><TableCell />
                   <TableCell className="text-sm">{fmt(filtered.reduce((a, p) => a + p.provision, 0))}</TableCell>
                   {OVERHEAD_AKTIV && <TableCell className="text-sm text-primary">+{fmt(filtered.reduce((a, p) => a + (overheadEinnahmen[p.kuerzel]?.gesamt || 0), 0))}</TableCell>}
-                  <TableCell><Badge variant="outline" className="text-[10px]">{filtered.reduce((a, p) => a + p.vermittlungen, 0)} Verm.</Badge></TableCell>
+                  <TableCell><Badge variant="outline" className="text-bildunterschrift">{filtered.reduce((a, p) => a + p.vermittlungen, 0)} Verm.</Badge></TableCell>
                   <TableCell className="text-sm font-bold">{fmt(filtered.reduce((a, p) => a + gesamtAuszahlung(p), 0))}</TableCell>
                   <TableCell />
                 </TableRow>

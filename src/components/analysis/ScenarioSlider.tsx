@@ -63,7 +63,7 @@ export default function ScenarioSlider({ pessimistisch, realistisch, optimistisc
             >
               <Icon className={`w-4 h-4 mx-auto mb-1 ${opt.color}`} />
               <p className="text-[11px] sm:text-xs font-semibold text-foreground leading-tight">{opt.label}</p>
-              <p className="text-[10px] text-muted-foreground mt-0.5 leading-tight">{opt.sub}</p>
+              <p className="text-bildunterschrift text-muted-foreground mt-0.5 leading-tight">{opt.sub}</p>
             </button>
           );
         })}

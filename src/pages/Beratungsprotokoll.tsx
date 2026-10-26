@@ -386,7 +386,7 @@ function Text({ feld, label, daten, setze, aus, pflicht, typ = "text", platzhalt
     <div className="space-y-1 min-w-0">
       <Label htmlFor={id} className="text-xs">
         {label}{pflicht && <span className="text-destructive"> *</span>}
-        {vorausgefuellt && <span className="ml-1.5 text-[10px] font-normal text-sky-700 dark:text-sky-300">aus dem CRM</span>}
+        {vorausgefuellt && <span className="ml-1.5 text-bildunterschrift font-normal text-sky-700 dark:text-sky-300">aus dem CRM</span>}
       </Label>
       <Input
         id={id}
@@ -409,7 +409,7 @@ function Wahl({ feld, label, optionen, daten, setze, pflicht, untereinander, aus
     <div className="space-y-1.5">
       <Label className="text-xs">
         {label}{pflicht && <span className="text-destructive"> *</span>}
-        {vorausgefuellt && <span className="ml-1.5 text-[10px] font-normal text-sky-700 dark:text-sky-300">aus dem CRM</span>}
+        {vorausgefuellt && <span className="ml-1.5 text-bildunterschrift font-normal text-sky-700 dark:text-sky-300">aus dem CRM</span>}
       </Label>
       <RadioGroup
         value={String(daten[feld] ?? "")}

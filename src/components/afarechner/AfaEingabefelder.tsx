@@ -352,11 +352,11 @@ export function GrundstueckFeld({ antworten, aendern }: FeldProps) {
 
       <div className="grid grid-cols-2 gap-3">
         <div className="rounded-lg bg-muted/50 p-4">
-          <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Boden, nicht abschreibbar</p>
+          <p className="text-bildunterschrift uppercase tracking-wide text-muted-foreground">Boden, nicht abschreibbar</p>
           <p className="text-lg font-bold">{eurGenau(boden)}</p>
         </div>
         <div className="rounded-lg bg-muted/50 p-4">
-          <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Gebäude, abschreibbar</p>
+          <p className="text-bildunterschrift uppercase tracking-wide text-muted-foreground">Gebäude, abschreibbar</p>
           <p className="text-lg font-bold">{eurGenau(gebaeude)}</p>
         </div>
       </div>
@@ -689,7 +689,7 @@ export function ModernisierungFeld({ antworten, aendern, rechnung }: FeldProps &
                 <div key={el.key} className="rounded-lg border border-border p-3">
                   <div className="flex items-start justify-between gap-2">
                     <span className="text-xs font-medium leading-snug text-foreground">{el.label}</span>
-                    <Badge variant="outline" className="shrink-0 text-[10px]">
+                    <Badge variant="outline" className="shrink-0 text-bildunterschrift">
                       {punkteFuerElement(el.maxPunkte, zeitraum)} von {el.maxPunkte}
                     </Badge>
                   </div>
@@ -725,7 +725,7 @@ export function ModernisierungFeld({ antworten, aendern, rechnung }: FeldProps &
         </div>
         <div className="text-right">
           <p className="text-2xl font-bold text-primary">{rechnung.modPunkte}</p>
-          <p className="text-[10px] text-muted-foreground">Formel ab {rechnung.params.abRelativemAlter} % rel. Alter</p>
+          <p className="text-bildunterschrift text-muted-foreground">Formel ab {rechnung.params.abRelativemAlter} % rel. Alter</p>
         </div>
       </div>
 

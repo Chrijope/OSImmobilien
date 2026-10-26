@@ -552,15 +552,15 @@ export default function Praesentation() {
                               {dok.alt && (
                                 <Badge
                                   variant="outline"
-                                  className="text-[10px] border-amber-500/60 text-amber-600 shrink-0"
+                                  className="text-bildunterschrift border-amber-500/60 text-amber-600 shrink-0"
                                 >
                                   Alt
                                 </Badge>
                               )}
-                              {isPdfDownload && <Badge variant="secondary" className="text-[10px]">PDF-Download</Badge>}
-                              {isInternalLink && <Badge variant="secondary" className="text-[10px]">Im CRM öffnen</Badge>}
+                              {isPdfDownload && <Badge variant="secondary" className="text-bildunterschrift">PDF-Download</Badge>}
+                              {isInternalLink && <Badge variant="secondary" className="text-bildunterschrift">Im CRM öffnen</Badge>}
                               {!dok.url && dok.typ === "upload" && !dok.action && (
-                                <Badge variant="outline" className="text-[10px] text-muted-foreground">Kein Upload</Badge>
+                                <Badge variant="outline" className="text-bildunterschrift text-muted-foreground">Kein Upload</Badge>
                               )}
 
                               {isEditor && (

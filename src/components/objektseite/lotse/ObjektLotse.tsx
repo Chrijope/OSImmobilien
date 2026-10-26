@@ -89,7 +89,7 @@ Frag mich alles, was du wissen willst. Ich antworte mit Quelle und Stand, und we
 /** Das kleine „KI“-Abzeichen an Reiter und Chatkopf. */
 export function KiMarke() {
   return (
-    <span className="rounded-md bg-gradient-to-r from-[#197C56] to-[#7b5cf0] px-1.5 py-0.5 text-[10px] font-extrabold tracking-wider text-white">
+    <span className="rounded-md bg-gradient-to-r from-[#197C56] to-[#7b5cf0] px-1.5 py-0.5 text-bildunterschrift font-extrabold tracking-wider text-white">
       KI
     </span>
   );

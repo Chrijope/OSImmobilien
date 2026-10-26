@@ -74,7 +74,7 @@ export function ExposeLeiste({ aktiv, onSpringen, titel, adresse, rechts, obenLi
                   istAktiv ? "bg-foreground text-background" : fertig ? "text-foreground hover:bg-muted" : "text-muted-foreground hover:bg-muted hover:text-foreground",
                 )}
               >
-                <span className={cn("inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-[10px]", istAktiv ? "border-background/60" : "border-current")}>{a.nr}</span>
+                <span className={cn("inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-bildunterschrift", istAktiv ? "border-background/60" : "border-current")}>{a.nr}</span>
                 <span className="truncate">{a.titel}</span>
               </button>
             );
@@ -103,14 +103,14 @@ export function ExposeLeiste({ aktiv, onSpringen, titel, adresse, rechts, obenLi
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button type="button" variant="outline" className="w-full justify-between" data-testid="mobil-abschnitt-menue">
-                <span className="truncate"><span className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-foreground text-[10px] text-background">{nr}</span>{EXPOSE_ABSCHNITTE.find((a) => a.id === aktiv)?.titel}</span>
+                <span className="truncate"><span className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-foreground text-bildunterschrift text-background">{nr}</span>{EXPOSE_ABSCHNITTE.find((a) => a.id === aktiv)?.titel}</span>
                 <span className="ml-2 flex items-center gap-1 text-xs text-muted-foreground">{zaehler} <ChevronDown className="h-4 w-4" /></span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-[calc(100vw-2rem)] max-w-sm">
               {EXPOSE_ABSCHNITTE.map((a) => (
                 <DropdownMenuItem key={a.id} onSelect={() => onSpringen(a.id)} className={cn("gap-2", a.id === aktiv && "font-semibold")}>
-                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-current text-[10px]">{a.nr}</span>
+                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-current text-bildunterschrift">{a.nr}</span>
                   {a.titel}
                 </DropdownMenuItem>
               ))}

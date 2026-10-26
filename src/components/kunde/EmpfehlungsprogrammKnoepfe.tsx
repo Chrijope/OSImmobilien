@@ -91,7 +91,7 @@ export function EmpfehlungsprogrammKnoepfe({ ueberschrift, kunde, investments, c
       {aktiv && (
         <Badge
           variant="outline"
-          className="self-center text-[10px] gap-1 bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] border-[hsl(var(--success))]/30"
+          className="self-center text-bildunterschrift gap-1 bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] border-[hsl(var(--success))]/30"
         >
           <Gift className="h-3 w-3" /> Empfehlungsprogramm aktiv
         </Badge>

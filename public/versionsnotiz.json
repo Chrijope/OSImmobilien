@@ -2845,5 +2845,22 @@
     "zielrollen": [
       "alle"
     ]
+  },
+  {
+    "nr": 139,
+    "datum": "2026-10-26",
+    "art": "geaendert",
+    "titel": "Besser lesbare kleine Schrift",
+    "kurztext": "Die kleinsten Texte im CRM sind jetzt mindestens 11 Pixel groß. Vorher lagen über 1.200 Stellen bei 9 oder 10 Pixeln.",
+    "wasHeisstDasFuerDich": [
+      "Beschriftungen, Zähler und Hinweise liest du leichter, besonders am Handy.",
+      "Die Dichte am Schreibtisch bleibt, Tabellen passen weiter auf eine Zeile.",
+      "Die Anzeige „warm“ und „heiß“ beim Lead-Score bleibt, wie sie ist."
+    ],
+    "soFindestDuEs": "Überall im CRM",
+    "kritisch": false,
+    "zielrollen": [
+      "alle"
+    ]
   }
 ]

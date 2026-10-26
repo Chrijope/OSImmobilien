@@ -43,7 +43,7 @@ export type UebungsZiel = {
 
 function Abschnitt({ children }: { children: React.ReactNode }) {
   return (
-    <p className="px-3 pt-4 pb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+    <p className="px-3 pt-4 pb-1 text-bildunterschrift font-semibold uppercase tracking-wider text-muted-foreground">
       {children}
     </p>
   );
@@ -107,7 +107,7 @@ function Zeile({
             <span className="truncate">{eintrag.titel}</span>
           </span>
           {eintrag.unterzeile && (
-            <span className="block truncate text-[10px] font-normal text-muted-foreground">{eintrag.unterzeile}</span>
+            <span className="block truncate text-bildunterschrift font-normal text-muted-foreground">{eintrag.unterzeile}</span>
           )}
         </span>
       </button>
@@ -173,7 +173,7 @@ export function UebungsLeiste({
               Moderation gehört zu ihm, dann steht sein Name hier. Nur der
               Aufruf ohne Kennung ist wirklich eine blanke Übung. */}
           <div className="min-w-0" data-testid="leiste-kopf">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+            <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground">
               {bewerberName ? "Moderation" : "Übungsansicht"}
             </p>
             <p className="truncate text-sm font-semibold">
@@ -215,7 +215,7 @@ export function UebungsLeiste({
                     )}
                   >
                     <span className="block w-full truncate text-xs font-semibold">{a.kurz}</span>
-                    <span className={cn("block w-full truncate text-[10px]", aktiv ? "text-primary-foreground/80" : "text-muted-foreground")}>
+                    <span className={cn("block w-full truncate text-bildunterschrift", aktiv ? "text-primary-foreground/80" : "text-muted-foreground")}>
                       {a.unterzeile}
                     </span>
                   </button>
@@ -246,7 +246,7 @@ export function UebungsLeiste({
                         <Star className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-500" fill="currentColor" aria-hidden />
                         <span className="min-w-0 flex-1">
                           <span className="block truncate">{info.titel}</span>
-                          <span className="block truncate text-[10px] font-normal text-muted-foreground">{info.gruppe}</span>
+                          <span className="block truncate text-bildunterschrift font-normal text-muted-foreground">{info.gruppe}</span>
                         </span>
                       </button>
                       <Stern an onClick={() => onFavorit(schluessel)} />
@@ -278,7 +278,7 @@ export function UebungsLeiste({
                     </button>
                   ))}
                 </div>
-                <p className="px-3 pt-2 text-[10px] leading-snug text-muted-foreground">
+                <p className="px-3 pt-2 text-bildunterschrift leading-snug text-muted-foreground">
                   Die vier Hintergrund-Pfade (A bis D) ändern nur den Sprechtext der Moderation, nicht die Folien.
                 </p>
               </>
@@ -311,7 +311,7 @@ export function UebungsLeiste({
                               ein Blick in die Leiste reicht. */}
                           {seinWeg && g.weg === seinWeg && (
                             <span
-                              className="shrink-0 rounded-full bg-primary/10 px-1.5 py-0.5 text-[9px] font-medium text-primary"
+                              className="shrink-0 rounded-full bg-primary/10 px-1.5 py-0.5 text-bildunterschrift font-medium text-primary"
                               data-testid="leiste-sein-weg"
                             >
                               sein Weg
@@ -319,7 +319,7 @@ export function UebungsLeiste({
                           )}
                         </span>
                         {g.unterzeile && (
-                          <span className="block truncate text-[10px] text-muted-foreground">{g.unterzeile}</span>
+                          <span className="block truncate text-bildunterschrift text-muted-foreground">{g.unterzeile}</span>
                         )}
                       </span>
                       {stand.art === "kennenlernbogen" && (
@@ -329,13 +329,13 @@ export function UebungsLeiste({
                   </CollapsibleTrigger>
                   <CollapsibleContent>
                     {gedimmt && (
-                      <p className="px-3 pb-1 text-[10px] leading-snug text-muted-foreground">
+                      <p className="px-3 pb-1 text-bildunterschrift leading-snug text-muted-foreground">
                         Im Einstieg „Nur Teil 2" nicht dabei. Ein Klick wechselt auf „Ab Teil 1".
                       </p>
                     )}
                     {g.beiBedarf && g.beiBedarf.length > 0 && g.weg && (
                       <div className="flex flex-wrap items-center gap-1 px-3 pb-1">
-                        <span className="text-[10px] text-muted-foreground">Bei Bedarf:</span>
+                        <span className="text-bildunterschrift text-muted-foreground">Bei Bedarf:</span>
                         {g.beiBedarf.map((m) => {
                           const an = g.weg === stand.weg && stand.module.includes(m);
                           return (
@@ -350,7 +350,7 @@ export function UebungsLeiste({
                               })}
                               data-testid={`leiste-modul-${g.weg}-${m}`}
                               className={cn(
-                                "rounded-full border px-2 py-0.5 text-[10px] transition",
+                                "rounded-full border px-2 py-0.5 text-bildunterschrift transition",
                                 an ? "border-primary bg-primary/10 text-primary" : "hover:bg-muted",
                               )}
                               title={getModul(m).agenda}

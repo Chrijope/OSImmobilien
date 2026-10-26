@@ -105,7 +105,7 @@ const DienstleisterPage = () => {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <p className="font-semibold text-sm">{d.firma}</p>
-                  <Badge variant="outline" className="text-[10px]">{DIENSTLEISTER_TYPEN.find(t => t.value === d.typ)?.label || d.typ}</Badge>
+                  <Badge variant="outline" className="text-bildunterschrift">{DIENSTLEISTER_TYPEN.find(t => t.value === d.typ)?.label || d.typ}</Badge>
                 </div>
                 <p className="text-xs text-muted-foreground mt-0.5">{d.ansprechpartner}</p>
                 <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">

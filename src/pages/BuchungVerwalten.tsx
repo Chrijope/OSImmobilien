@@ -356,7 +356,7 @@ export default function BuchungVerwalten() {
           </div>
         </div>
 
-        <p className="mt-10 text-center text-[10.5px] text-white/30">
+        <p className="mt-10 text-center text-bildunterschrift text-white/30">
           OS Immobilien · Am Ostbahnhof 1, 15749 Mittenwalde
         </p>
       </div>

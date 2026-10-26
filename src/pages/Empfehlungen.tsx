@@ -558,9 +558,9 @@ export default function Empfehlungen() {
                 </div>
                 <div className="flex-1">
                   <div className="text-sm font-medium">{data.name}</div>
-                  <div className="text-[10px] text-muted-foreground">{data.count} Empfehlung{data.count > 1 ? "en" : ""} · {data.abgeschlossen} abgeschlossen</div>
+                  <div className="text-bildunterschrift text-muted-foreground">{data.count} Empfehlung{data.count > 1 ? "en" : ""} · {data.abgeschlossen} abgeschlossen</div>
                 </div>
-                <Badge variant="outline" className="text-[10px]">{data.count}x</Badge>
+                <Badge variant="outline" className="text-bildunterschrift">{data.count}x</Badge>
               </div>
             ))}
           </div>
@@ -622,7 +622,7 @@ export default function Empfehlungen() {
                         )}
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline" className="text-[10px]">{geber.anzahlEmpfehlungen}</Badge>
+                        <Badge variant="outline" className="text-bildunterschrift">{geber.anzahlEmpfehlungen}</Badge>
                       </TableCell>
                       {canManageProgramm && (
                         <TableCell className="text-right">
@@ -707,7 +707,7 @@ export default function Empfehlungen() {
                       ) : (
                         <span className="flex items-center gap-2">
                           {e.empfohlenerName}
-                          <Badge variant="outline" className="text-[10px] bg-muted text-muted-foreground">
+                          <Badge variant="outline" className="text-bildunterschrift bg-muted text-muted-foreground">
                             nicht verknüpft
                           </Badge>
                         </span>
@@ -722,12 +722,12 @@ export default function Empfehlungen() {
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-col gap-0.5 items-start">
-                        <Badge variant="outline" className={`text-[10px] ${(STATUS_CONFIG[e.status] || STATUS_FALLBACK).color}`}>
+                        <Badge variant="outline" className={`text-bildunterschrift ${(STATUS_CONFIG[e.status] || STATUS_FALLBACK).color}`}>
                           {(STATUS_CONFIG[e.status] || STATUS_FALLBACK).label}
                         </Badge>
                         {e.statusManuell && (
                           <span
-                            className="text-[10px] text-muted-foreground"
+                            className="text-bildunterschrift text-muted-foreground"
                             title={`Manuell gesetzt${e.statusManuellVon ? ` von ${e.statusManuellVon}` : ""}. Die Automatik ändert diesen Status nur noch bei Abschluss oder Verlust.`}
                           >
                             manuell
@@ -736,7 +736,7 @@ export default function Empfehlungen() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className={`text-[10px] ${(PRAEMIE_CONFIG[e.praemieStatus] || PRAEMIE_FALLBACK).color}`}>
+                      <Badge variant="outline" className={`text-bildunterschrift ${(PRAEMIE_CONFIG[e.praemieStatus] || PRAEMIE_FALLBACK).color}`}>
                         {(PRAEMIE_CONFIG[e.praemieStatus] || PRAEMIE_FALLBACK).label} ({e.praemieBetrag} €)
                       </Badge>
                     </TableCell>
@@ -761,7 +761,7 @@ export default function Empfehlungen() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-6 px-1 text-[10px] text-muted-foreground hover:text-foreground"
+                                className="h-6 px-1 text-bildunterschrift text-muted-foreground hover:text-foreground"
                                 onClick={() => resetStatusAutomatik(e.id)}
                               >
                                 Zurück auf Automatik

@@ -229,7 +229,7 @@ export default function StrukturVerwaltung() {
                     <TableRow key={z.userId}>
                       <TableCell className="font-medium">{name(z.userId)}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{profile.find((p) => p.id === z.userId)?.email || "–"}</TableCell>
-                      {!istVertriebsleitung && <TableCell><Badge variant="outline" className="text-[10px]">Ebene {z.ebene}</Badge></TableCell>}
+                      {!istVertriebsleitung && <TableCell><Badge variant="outline" className="text-bildunterschrift">Ebene {z.ebene}</Badge></TableCell>}
                       <TableCell className="text-sm">{z.teamleiterId === ich ? "Du" : name(z.teamleiterId)}</TableCell>
                       <TableCell><ProvisionssatzBadges userId={z.userId} /></TableCell>
                       {!istVertriebsleitung && (

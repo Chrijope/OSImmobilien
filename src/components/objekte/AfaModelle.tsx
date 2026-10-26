@@ -143,7 +143,7 @@ export function AfaModelle({ bemessungsgrundlage, baujahr, wohnflaeche, linearSa
               onChange={(e) => setBaubeginn(e.target.value)}
               className="h-8 mt-1"
             />
-            <p className="text-[10px] text-muted-foreground mt-1">
+            <p className="text-bildunterschrift text-muted-foreground mt-1">
               Möglich bei Baubeginn zwischen dem{" "}
               {new Date(DEGRESSIV_BAUBEGINN_VON).toLocaleDateString("de-DE")} und dem{" "}
               {new Date(DEGRESSIV_BAUBEGINN_BIS).toLocaleDateString("de-DE")}.
@@ -351,7 +351,7 @@ export function AfaModelle({ bemessungsgrundlage, baujahr, wohnflaeche, linearSa
           {beweglichWert > 0 && <Bar dataKey="beweglich" stackId="a" fill="hsl(var(--muted-foreground))" radius={[3, 3, 0, 0]} />}
         </BarChart>
       </ResponsiveContainer>
-      <p className="text-[10px] text-muted-foreground mt-2 flex items-start gap-1">
+      <p className="text-bildunterschrift text-muted-foreground mt-2 flex items-start gap-1">
         <Info className="h-3 w-3 mt-0.5 shrink-0" />
         Die degressive AfA steht alternativ zur linearen und ist deshalb als eigener Balken dargestellt. § 7b, Denkmal
         und bewegliche Wirtschaftsgüter kommen zur linearen AfA hinzu und sind gestapelt.

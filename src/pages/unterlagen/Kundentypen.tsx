@@ -91,7 +91,7 @@ const TYPEN: Typ[] = [
 function Zeile({ kopf, werte }: { kopf: string; werte: string[] }) {
   return (
     <div className="grid grid-cols-[7rem_repeat(4,1fr)] gap-2 border-t border-border py-2 text-xs">
-      <div className="font-semibold uppercase tracking-wide text-[10px] text-muted-foreground pt-0.5">{kopf}</div>
+      <div className="font-semibold uppercase tracking-wide text-bildunterschrift text-muted-foreground pt-0.5">{kopf}</div>
       {werte.map((w, i) => (
         <div key={i}>{w}</div>
       ))}
@@ -101,7 +101,7 @@ function Zeile({ kopf, werte }: { kopf: string; werte: string[] }) {
 
 function Kopfzeile() {
   return (
-    <div className="grid grid-cols-[7rem_repeat(4,1fr)] gap-2 text-[10px] font-bold uppercase tracking-wide">
+    <div className="grid grid-cols-[7rem_repeat(4,1fr)] gap-2 text-bildunterschrift font-bold uppercase tracking-wide">
       <div />
       {TYPEN.map((t) => (
         <div key={t.name} className="flex items-center gap-1.5">
@@ -151,7 +151,7 @@ export default function Kundentypen() {
               </div>
             ))}
           </div>
-          <div className="mt-3 grid grid-cols-2 gap-3 text-[10px] uppercase tracking-wide text-muted-foreground">
+          <div className="mt-3 grid grid-cols-2 gap-3 text-bildunterschrift uppercase tracking-wide text-muted-foreground">
             <div>Oben: schnell · links: Sache</div>
             <div className="text-right">Unten: langsam · rechts: Mensch</div>
           </div>

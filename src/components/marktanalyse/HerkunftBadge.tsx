@@ -46,7 +46,7 @@ export function HerkunftBadge({
         <TooltipTrigger asChild>
           <Badge
             variant="outline"
-            className={`gap-1 font-medium ${klein ? "h-4 px-1 text-[9px]" : "h-5 px-1.5 text-[10px]"} ${klasse} ${className}`}
+            className={`gap-1 font-medium ${klein ? "h-4 px-1 text-bildunterschrift" : "h-5 px-1.5 text-bildunterschrift"} ${klasse} ${className}`}
           >
             <Icon className={klein ? "h-2.5 w-2.5" : "h-3 w-3"} />
             {HERKUNFT_LABEL[herkunft]}

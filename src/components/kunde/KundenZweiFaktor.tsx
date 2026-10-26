@@ -200,7 +200,7 @@ export function KundenZweiFaktor() {
     <section id="zwei-faktor" aria-labelledby="zwei-faktor-titel">
       <div className="flex items-center gap-2 flex-wrap">
         <h3 id="zwei-faktor-titel" className="text-lg font-bold text-foreground">{t("portal.tfa.title")}</h3>
-        <Badge variant="outline" className="text-[10px]">{t("portal.tfa.badge")}</Badge>
+        <Badge variant="outline" className="text-bildunterschrift">{t("portal.tfa.badge")}</Badge>
       </div>
       <p className="text-sm text-muted-foreground mb-4">{t("portal.tfa.sub")}</p>
 

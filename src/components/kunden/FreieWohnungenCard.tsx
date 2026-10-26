@@ -246,16 +246,16 @@ export function ObjektKarteBlock({
           </>
         )}
         <div className="absolute top-2 left-2 flex flex-wrap items-center gap-1.5">
-          <Badge className="bg-primary text-primary-foreground text-[10px] font-semibold shadow">
+          <Badge className="bg-primary text-primary-foreground text-bildunterschrift font-semibold shadow">
             {karte.zustand}
           </Badge>
           {karte.zeitpunkt && (
-            <Badge variant="outline" className="bg-background/80 backdrop-blur text-[10px] font-medium shadow">
+            <Badge variant="outline" className="bg-background/80 backdrop-blur text-bildunterschrift font-medium shadow">
               {karte.zeitpunkt}
             </Badge>
           )}
           {investagon && (
-            <Badge variant="outline" className="bg-background/80 backdrop-blur text-[10px] font-medium shadow border-[hsl(var(--warning))]/40 text-[hsl(var(--warning))]">
+            <Badge variant="outline" className="bg-background/80 backdrop-blur text-bildunterschrift font-medium shadow border-[hsl(var(--warning))]/40 text-[hsl(var(--warning))]">
               Objektdaten via Investagon
             </Badge>
           )}
@@ -273,7 +273,7 @@ export function ObjektKarteBlock({
             niemand gewaehlt hat.
           */}
           {karte.nutzungsart && (
-            <Badge variant="outline" className="bg-background/80 backdrop-blur text-[10px] font-medium shadow">
+            <Badge variant="outline" className="bg-background/80 backdrop-blur text-bildunterschrift font-medium shadow">
               {karte.nutzungsart}
             </Badge>
           )}
@@ -318,7 +318,7 @@ export function ObjektKarteBlock({
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
             {karte.kacheln.map((k) => (
               <div key={k.name} className="bg-muted/50 rounded px-2 py-1.5">
-                <span className="text-muted-foreground block text-[10px]">{k.name}</span>
+                <span className="text-muted-foreground block text-bildunterschrift">{k.name}</span>
                 <span
                   className={`font-medium ${
                     k.ton === "gut" ? "text-[hsl(var(--success))]" : k.ton === "schlecht" ? "text-destructive" : ""
@@ -918,7 +918,7 @@ export function FreieWohnungenCard({
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <p className="text-sm font-semibold truncate">{obj.titel}</p>
-                          {obj.badge && <Badge variant="outline" className="text-[10px] px-1.5 shrink-0">{obj.badge}</Badge>}
+                          {obj.badge && <Badge variant="outline" className="text-bildunterschrift px-1.5 shrink-0">{obj.badge}</Badge>}
                         </div>
                         <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
                           <MapPin className="h-3 w-3 shrink-0" />
@@ -927,14 +927,14 @@ export function FreieWohnungenCard({
                       </div>
                       <div className="text-right shrink-0 mr-1">
                         <div className="flex items-center gap-1.5 justify-end">
-                          <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px] font-bold">
+                          <Badge className="bg-primary/10 text-primary border-primary/20 text-bildunterschrift font-bold">
                             {freie.length} frei
                           </Badge>
                         </div>
-                        <p className="text-[10px] text-muted-foreground mt-0.5">
+                        <p className="text-bildunterschrift text-muted-foreground mt-0.5">
                           {fmt(preisVon)}{preisVon !== preisBis ? ` – ${fmt(preisBis)}` : ""}
                         </p>
-                        <p className="text-[10px] text-muted-foreground">
+                        <p className="text-bildunterschrift text-muted-foreground">
                           {renditeVon.toFixed(2)}%{renditeVon !== renditeBis ? ` – ${renditeBis.toFixed(2)}%` : ""} Rendite
                         </p>
                       </div>

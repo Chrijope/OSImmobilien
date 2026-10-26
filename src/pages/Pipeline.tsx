@@ -231,7 +231,7 @@ function InactivityBadge({
   // schriebe "14d inaktiv" an einen Kunden, der morgen einen Termin hat.
   if (!bewertung) {
     return (
-      <div className="text-[10px] text-muted-foreground/50 flex items-center gap-0.5">
+      <div className="text-bildunterschrift text-muted-foreground/50 flex items-center gap-0.5">
         <Clock className="h-2.5 w-2.5" /> …
       </div>
     );
@@ -239,7 +239,7 @@ function InactivityBadge({
 
   if (bewertung.grund === "eingeplant" && bewertung.text) {
     return (
-      <div className="text-[10px] font-semibold flex items-center gap-0.5 text-emerald-600">
+      <div className="text-bildunterschrift font-semibold flex items-center gap-0.5 text-emerald-600">
         <Clock className="h-2.5 w-2.5" />
         {bewertung.text}
       </div>
@@ -252,7 +252,7 @@ function InactivityBadge({
     const tage = getDaysSinceUpdate(kunde);
     if (tage < 1) return null;
     return (
-      <div className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+      <div className="text-bildunterschrift text-muted-foreground flex items-center gap-0.5">
         <Clock className="h-2.5 w-2.5" /> {tage}d inaktiv
       </div>
     );
@@ -261,7 +261,7 @@ function InactivityBadge({
   const istRot = bewertung.farbe === "red";
   return (
     <div
-      className={`text-[10px] font-semibold flex items-center gap-0.5 ${
+      className={`text-bildunterschrift font-semibold flex items-center gap-0.5 ${
         istRot ? "text-red-600" : "text-orange-600"
       }`}
     >
@@ -399,14 +399,14 @@ function KundeCard({ kunde, stufe, investmentId, zusatzBereit, datenstand, onCli
         <div className="flex items-center gap-1">
           <KontaktTypBadge kunde={kunde} size="xs" />
           {isArchived && (
-            <Badge variant="outline" className="text-[9px] gap-0.5 px-1.5 border-dashed">
+            <Badge variant="outline" className="text-bildunterschrift gap-0.5 px-1.5 border-dashed">
               <Archive className="h-2.5 w-2.5" /> Archiviert
             </Badge>
           )}
         </div>
       </div>
       {invData?.inv && (
-        <div className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium">
+        <div className="text-bildunterschrift uppercase tracking-wide text-muted-foreground font-medium">
           Investment {invData.inv.nummer}
           {invData.inv.objektTitel ? ` · ${invData.inv.objektTitel}` : ""}
         </div>
@@ -571,7 +571,7 @@ function KundeCard({ kunde, stufe, investmentId, zusatzBereit, datenstand, onCli
         <>
           {kunde.objekt && <div className="text-xs text-muted-foreground flex items-start gap-1"><Building2 className="h-3 w-3 mt-0.5 shrink-0" /><span>{kunde.objekt}</span></div>}
           {kunde.finanzierungsStatus && (
-            <div className="mt-1"><Badge variant="outline" className={`text-[10px] ${FINANZ_LABELS[kunde.finanzierungsStatus]?.className || ""}`}>Finanzierung: {FINANZ_LABELS[kunde.finanzierungsStatus]?.label || kunde.finanzierungsStatus}</Badge></div>
+            <div className="mt-1"><Badge variant="outline" className={`text-bildunterschrift ${FINANZ_LABELS[kunde.finanzierungsStatus]?.className || ""}`}>Finanzierung: {FINANZ_LABELS[kunde.finanzierungsStatus]?.label || kunde.finanzierungsStatus}</Badge></div>
           )}
         </>
       )}
@@ -598,7 +598,7 @@ function KundeCard({ kunde, stufe, investmentId, zusatzBereit, datenstand, onCli
             <div className="text-xs text-muted-foreground"><span className="font-medium">Beurkundet:</span>{" "}
               <span className={beurkundet ? "text-green-600 font-semibold" : "text-amber-600 font-semibold"}>{beurkundet ? "Ja" : "Nein"}</span>
             </div>
-            <Badge variant="outline" className={cn("text-[10px] px-1.5 py-0.5 italic border-dashed mt-1", gsUp ? "bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] border-[hsl(var(--success))]/40" : "bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))] border-[hsl(var(--warning))]/40")} title="Nur intern sichtbar">
+            <Badge variant="outline" className={cn("text-bildunterschrift px-1.5 py-0.5 italic border-dashed mt-1", gsUp ? "bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] border-[hsl(var(--success))]/40" : "bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))] border-[hsl(var(--warning))]/40")} title="Nur intern sichtbar">
               {gsUp ? "Notar mit GS" : "Notar ohne GS"} 🔒
             </Badge>
           </>
@@ -624,7 +624,7 @@ function KundeCard({ kunde, stufe, investmentId, zusatzBereit, datenstand, onCli
                 <div className={`text-xs flex items-center gap-1 ${isOverdue ? "text-destructive font-semibold" : "text-muted-foreground"}`}>
                   <Clock className="h-3 w-3 shrink-0" />
                   <span>Kaufpreisfälligkeit: {datum ? formatDatum(datum) : "–"}</span>
-                  {isOverdue && <span className="text-[10px]">(überfällig)</span>}
+                  {isOverdue && <span className="text-bildunterschrift">(überfällig)</span>}
                 </div>
               );
             })()}
@@ -1343,9 +1343,9 @@ export default function Pipeline() {
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                 {/* Solange geladen wird, waere „0 Kunden" eine Falschmeldung. */}
                 {cacheReady && !wartetAufKennung && (
-                  <Badge variant="outline" className="text-[10px] sm:text-xs">{totalInPipeline} Kunden</Badge>
+                  <Badge variant="outline" className="text-bildunterschrift sm:text-xs">{totalInPipeline} Kunden</Badge>
                 )}
-                {totalValue > 0 && <Badge variant="outline" className="text-[10px] sm:text-xs">Σ <span className={unscharfKlasse()}>{formatEuro(totalValue)}</span></Badge>}
+                {totalValue > 0 && <Badge variant="outline" className="text-bildunterschrift sm:text-xs">Σ <span className={unscharfKlasse()}>{formatEuro(totalValue)}</span></Badge>}
               </div>
             </div>
             <div className="flex items-center gap-2 sm:gap-4 flex-wrap">

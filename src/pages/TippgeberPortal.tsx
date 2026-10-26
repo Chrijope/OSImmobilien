@@ -361,7 +361,7 @@ export default function TippgeberPortal() {
                   <TabsTrigger value="chat" className="relative">
                     <MessageCircle className="h-4 w-4 mr-1.5" />Chat
                     {unreadChat > 0 && (
-                      <span className="ml-1.5 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-destructive text-destructive-foreground text-[10px] font-semibold">
+                      <span className="ml-1.5 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-destructive text-destructive-foreground text-bildunterschrift font-semibold">
                         {unreadChat > 99 ? "99+" : unreadChat}
                       </span>
                     )}
@@ -410,7 +410,7 @@ function StatTile({ icon: Icon, label, value, hint }: { icon: any; label: string
         <div className="min-w-0">
           <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</div>
           <div className="text-2xl font-bold leading-tight">{value}</div>
-          {hint && <div className="text-[10px] text-muted-foreground/80 mt-0.5 line-clamp-2">{hint}</div>}
+          {hint && <div className="text-bildunterschrift text-muted-foreground/80 mt-0.5 line-clamp-2">{hint}</div>}
         </div>
       </CardContent>
     </Card>
@@ -456,7 +456,7 @@ function VpContactCard({
             )}
           </div>
           <div className="min-w-0 flex-1">
-            <div className="text-[10px] font-semibold uppercase tracking-widest text-primary">
+            <div className="text-bildunterschrift font-semibold uppercase tracking-widest text-primary">
               Dein Ansprechpartner
             </div>
             <div className="text-lg md:text-xl font-bold leading-tight truncate">{name}</div>
@@ -1047,7 +1047,7 @@ function ChatTab({ vpName }: { vpName: string }) {
                         own ? "bg-primary text-primary-foreground" : "bg-background border"
                       }`}>
                         {m.inhalt}
-                        <div className={`text-[10px] mt-1 ${own ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
+                        <div className={`text-bildunterschrift mt-1 ${own ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
                           {new Date(m.gesendet_am).toLocaleString("de-DE", { hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit" })}
                         </div>
                       </div>
@@ -1454,11 +1454,11 @@ function PitchesTab({
                 </AccordionTrigger>
                 <AccordionContent className="space-y-2 text-sm">
                   <div>
-                    <div className="text-[10px] font-semibold uppercase tracking-wider text-primary mb-1">Deine Antwort</div>
+                    <div className="text-bildunterschrift font-semibold uppercase tracking-wider text-primary mb-1">Deine Antwort</div>
                     <p className="text-foreground">{e.antwort}</p>
                   </div>
                   <div className="pt-1">
-                    <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1">Übergang zum Termin</div>
+                    <div className="text-bildunterschrift font-semibold uppercase tracking-wider text-muted-foreground mb-1">Übergang zum Termin</div>
                     <p className="text-muted-foreground italic">{e.uebergang}</p>
                   </div>
                 </AccordionContent>
@@ -1513,7 +1513,7 @@ function PitchesTab({
                     <span className="text-lg">{p.emoji}</span>
                     <span>{p.titel}</span>
                   </span>
-                  <Badge variant="outline" className="text-[10px]">{p.thema}</Badge>
+                  <Badge variant="outline" className="text-bildunterschrift">{p.thema}</Badge>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">

@@ -126,7 +126,7 @@ function Freitext({
 function AusErstgespraech({ sichtbar, dunkel }: { sichtbar: boolean; dunkel?: boolean }) {
   if (!sichtbar) return null;
   return (
-    <span className="block mt-1 text-[10px] font-normal" style={{ color: dunkel ? FARBE.gold : FARBE.gruenText }}>
+    <span className="block mt-1 text-bildunterschrift font-normal" style={{ color: dunkel ? FARBE.gold : FARBE.gruenText }}>
       aus dem Erstgespräch
     </span>
   );
@@ -146,7 +146,7 @@ function Trainer({ id, hinweis, dunkel }: { id?: string; hinweis?: string; dunke
         dunkel ? "border-amber-300/40 bg-amber-300/10 text-amber-50" : "border-amber-400/60 bg-amber-50 text-amber-950"
       }`}
     >
-      <p className={`text-[10px] uppercase tracking-[0.22em] font-semibold mb-2 ${dunkel ? "text-amber-200" : "text-amber-700"}`}>
+      <p className={`text-bildunterschrift uppercase tracking-[0.22em] font-semibold mb-2 ${dunkel ? "text-amber-200" : "text-amber-700"}`}>
         Sprechskript · nur für dich sichtbar
       </p>
       {hinweis && <p className="mb-1">{hinweis}</p>}

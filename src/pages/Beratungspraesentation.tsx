@@ -686,7 +686,7 @@ export default function Beratungspraesentation() {
               </div>
               <h3 className="text-lg font-bold mb-2">{h.t}</h3>
               <p className="text-sm text-muted-foreground mb-4 leading-relaxed">{h.p}</p>
-              <div className="text-[10px] tracking-widest uppercase text-muted-foreground mb-2">Trade-off</div>
+              <div className="text-bildunterschrift tracking-widest uppercase text-muted-foreground mb-2">Trade-off</div>
               <ul className="space-y-1.5">
                 {h.tradeoffs.map(x => (
                   <li key={x} className="flex items-start gap-2 text-xs">
@@ -904,7 +904,7 @@ export default function Beratungspraesentation() {
               <div className="text-xs leading-tight">
                 <div className="text-muted-foreground">Memmingen 33m²</div>
                 <div className="text-lg font-bold"><CountUp end={132000} suffix=" €" /></div>
-                <span className="inline-block mt-1 text-[10px] bg-muted px-1.5 py-0.5 rounded-full">Kaufpreis</span>
+                <span className="inline-block mt-1 text-bildunterschrift bg-muted px-1.5 py-0.5 rounded-full">Kaufpreis</span>
               </div>
             </div>
             <ArrowRight className="hidden md:block h-4 w-4 text-muted-foreground mx-auto" />
@@ -918,7 +918,7 @@ export default function Beratungspraesentation() {
             </div>
             <ArrowRight className="hidden md:block h-4 w-4 text-muted-foreground mx-auto" />
             <div className="rounded-xl bg-muted/50 px-4 py-3 text-center">
-              <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Bankrate</div>
+              <div className="text-bildunterschrift uppercase tracking-widest text-muted-foreground">Bankrate</div>
               <div className="text-xs text-muted-foreground"><CountUp end={7920} suffix=" € / Jahr" /></div>
               <div className="text-lg font-bold text-primary"><CountUp end={660} suffix=" € / Monat" /></div>
             </div>
@@ -931,7 +931,7 @@ export default function Beratungspraesentation() {
               <div className="text-xs leading-tight">
                 <div className="text-muted-foreground">33m² × 13,00 €</div>
                 <div className="text-sm"><strong>= <CountUp end={429} suffix=" €" /></strong></div>
-                <span className="inline-block mt-1 text-[10px] bg-muted px-1.5 py-0.5 rounded-full">Kaltmiete</span>
+                <span className="inline-block mt-1 text-bildunterschrift bg-muted px-1.5 py-0.5 rounded-full">Kaltmiete</span>
               </div>
             </div>
             <ArrowRight className="hidden md:block h-4 w-4 text-muted-foreground mx-auto" />
@@ -943,13 +943,13 @@ export default function Beratungspraesentation() {
                 <span className="text-muted-foreground">3,5 % AfA</span><span className="text-right"><CountUp end={3696} suffix=" €" /></span>
               </div>
               <div className="mt-2 pt-2 border-t border-border flex items-center justify-between">
-                <span className="text-[10px] bg-primary/15 text-primary px-1.5 py-0.5 rounded-full">Steuerl. Verlust</span>
+                <span className="text-bildunterschrift bg-primary/15 text-primary px-1.5 py-0.5 rounded-full">Steuerl. Verlust</span>
                 <span className="font-bold">= <CountUp end={5228} suffix=" €" /></span>
               </div>
             </div>
             <ArrowRight className="hidden md:block h-4 w-4 text-muted-foreground mx-auto" />
             <div className="rounded-xl bg-muted/50 px-4 py-3 text-center">
-              <div className="text-[10px] uppercase tracking-widest text-primary font-semibold">Steuervorteil</div>
+              <div className="text-bildunterschrift uppercase tracking-widest text-primary font-semibold">Steuervorteil</div>
               <div className="text-lg font-bold mt-1">= <CountUp end={152} suffix=" € / Monat" /></div>
             </div>
           </div>
@@ -970,7 +970,7 @@ export default function Beratungspraesentation() {
             <Equal className="hidden md:block h-4 w-4 text-muted-foreground mx-auto" />
             <div className="rounded-xl bg-primary/10 border border-primary/30 px-4 py-4 text-center shadow-lg shadow-primary/10 ring-1 ring-primary/20 hover:ring-primary/40 hover:scale-[1.02] transition-all duration-500">
               <div className="text-2xl md:text-3xl font-bold text-primary"><CountUp end={141} suffix=" €" /></div>
-              <div className="text-[10px] uppercase tracking-widest text-muted-foreground mt-1">Mtl. Eigenaufwand</div>
+              <div className="text-bildunterschrift uppercase tracking-widest text-muted-foreground mt-1">Mtl. Eigenaufwand</div>
             </div>
           </div>
         </div>

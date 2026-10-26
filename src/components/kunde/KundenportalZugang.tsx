@@ -101,7 +101,7 @@ export function KundenportalZugang({
   const knopf = profil ? "w-full justify-start h-auto min-h-9 whitespace-normal text-left" : undefined;
 
   const statusBadge = (
-    <Badge variant="outline" className={cn("text-[10px]",
+    <Badge variant="outline" className={cn("text-bildunterschrift",
       status === "aktiv" && "bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] border-[hsl(var(--success))]/30",
       status === "eingeladen" && "bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))] border-[hsl(var(--warning))]/30",
       status === "ausstehend" && "bg-muted text-muted-foreground",
@@ -120,10 +120,10 @@ export function KundenportalZugang({
             {!profil && <span className="text-sm font-medium">Kundenportal</span>}
             {statusBadge}
             {freigeschaltetText && (
-              <span className="text-[10px] text-muted-foreground">freigeschaltet am {freigeschaltetText}</span>
+              <span className="text-bildunterschrift text-muted-foreground">freigeschaltet am {freigeschaltetText}</span>
             )}
             {!profil && gesperrtText && (
-              <span className="text-[10px] text-muted-foreground">gesperrt am {gesperrtText}</span>
+              <span className="text-bildunterschrift text-muted-foreground">gesperrt am {gesperrtText}</span>
             )}
           </div>
         ) : onFreischalten && darfVerwalten ? (
@@ -135,7 +135,7 @@ export function KundenportalZugang({
           <div className="space-y-1">
             {statusBadge}
             {darfVerwalten && (
-              <p className="text-[10px] text-muted-foreground">
+              <p className="text-bildunterschrift text-muted-foreground">
                 Freischalten kannst du im Investment unter „Bonität und Bankprüfung“, sobald die Selbstauskunft vorliegt.
               </p>
             )}
@@ -190,10 +190,10 @@ export function KundenportalZugang({
             </div>
           )}
           {erneutText && (
-            <p className="text-[10px] text-muted-foreground">Zuletzt erneut versendet am {erneutText}</p>
+            <p className="text-bildunterschrift text-muted-foreground">Zuletzt erneut versendet am {erneutText}</p>
           )}
           {gesperrtText && (
-            <p className="text-[10px] text-destructive">Gesperrt am {gesperrtText}</p>
+            <p className="text-bildunterschrift text-destructive">Gesperrt am {gesperrtText}</p>
           )}
         </>
       )}

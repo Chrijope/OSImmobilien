@@ -1035,7 +1035,7 @@ const Einstellungen = () => {
                 {bereiche.map((bereich) => (
                   <SelectItem key={bereich.slug} value={bereich.slug} disabled={!bereich.offen}>
                     {bereich.titel}
-                    {bereich.abzeichen && <Badge variant="outline" className="ml-2 text-[10px] bg-yellow-100 text-yellow-800 border-yellow-300 py-0 px-1">{bereich.abzeichen}</Badge>}
+                    {bereich.abzeichen && <Badge variant="outline" className="ml-2 text-bildunterschrift bg-yellow-100 text-yellow-800 border-yellow-300 py-0 px-1">{bereich.abzeichen}</Badge>}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -1059,7 +1059,7 @@ const Einstellungen = () => {
           <div className="hidden md:flex items-center gap-2 border-b border-border pb-2 mb-6">
             <h2 className="text-base font-semibold text-foreground">{activeTabLabel}</h2>
             {bereichZu(activeTab)?.abzeichen && (
-              <Badge variant="outline" className="text-[10px] bg-yellow-100 text-yellow-800 border-yellow-300 py-0 px-1">
+              <Badge variant="outline" className="text-bildunterschrift bg-yellow-100 text-yellow-800 border-yellow-300 py-0 px-1">
                 {bereichZu(activeTab)?.abzeichen}
               </Badge>
             )}
@@ -1613,7 +1613,7 @@ const Einstellungen = () => {
                 />
               </div>
               <Card className="p-4 bg-muted/30 mt-4">
-                <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">Vorschau</p>
+                <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground mb-2">Vorschau</p>
                 <div className="text-sm" dangerouslySetInnerHTML={{ __html: settings.email.signatur.html }} />
               </Card>
             </Section>
@@ -1832,9 +1832,9 @@ const Einstellungen = () => {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="text-[10px] uppercase tracking-wider">Aktion</TableHead>
-                        <TableHead className="text-[10px] uppercase tracking-wider">Datum der Änderung</TableHead>
-                        <TableHead className="text-[10px] uppercase tracking-wider">Quelle</TableHead>
+                        <TableHead className="text-bildunterschrift uppercase tracking-wider">Aktion</TableHead>
+                        <TableHead className="text-bildunterschrift uppercase tracking-wider">Datum der Änderung</TableHead>
+                        <TableHead className="text-bildunterschrift uppercase tracking-wider">Quelle</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -2547,7 +2547,7 @@ export function ActiveSessionsSection() {
                     {anzeige(s.browser)} · {anzeige(s.os)}
                     {/* Echtes Leerzeichen: Mit reinem Außenabstand stand beim
                         Umbruch und beim Vorlesen „macOSAktuelle Sitzung“. */}
-                    {i === 0 && <>{" "}<Badge variant="outline" className="ml-1 text-[10px] border-primary/50 text-primary">{t("portal.security.current_session")}</Badge></>}
+                    {i === 0 && <>{" "}<Badge variant="outline" className="ml-1 text-bildunterschrift border-primary/50 text-primary">{t("portal.security.current_session")}</Badge></>}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {formatDate(s.logged_in_at)} · {t("portal.security.ip", { ip: anzeige(s.ip_address) })}

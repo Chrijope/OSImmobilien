@@ -40,7 +40,7 @@ export function KundenprofilNavigation({ tabs, activeTab, rolle, portalFreigesch
                 >
                   {t.label.replace(/^[^\p{L}]+/u, "")}
                   <Badge className={cn(
-                    "ml-1 shrink-0 text-[7px] leading-none px-1 py-0.5 h-3.5 font-semibold uppercase tracking-wide rounded",
+                    "ml-1 shrink-0 text-bildunterschrift leading-none px-1 py-0.5 h-3.5 font-semibold uppercase tracking-wide rounded",
                     canAccessDraft
                       ? "bg-orange-500/15 text-orange-500 border border-orange-500/30"
                       : "bg-muted text-muted-foreground border border-border"
@@ -93,7 +93,7 @@ export function KundenprofilNavigation({ tabs, activeTab, rolle, portalFreigesch
                       <Badge
                         variant="secondary"
                         className={cn(
-                          "ml-1.5 shrink-0 text-[10px] px-1.5 py-0 h-5 tabular-nums",
+                          "ml-1.5 shrink-0 text-bildunterschrift px-1.5 py-0 h-5 tabular-nums",
                           activeTab === t.key
                             ? "bg-primary-foreground text-primary"
                             : "bg-primary text-primary-foreground",
@@ -107,7 +107,7 @@ export function KundenprofilNavigation({ tabs, activeTab, rolle, portalFreigesch
                       <Badge
                         variant="outline"
                         className={cn(
-                          "ml-1.5 shrink-0 h-4 min-w-4 px-1 text-[10px] leading-none tabular-nums justify-center",
+                          "ml-1.5 shrink-0 h-4 min-w-4 px-1 text-bildunterschrift leading-none tabular-nums justify-center",
                           activeTab === t.key
                             ? "bg-primary/10 text-primary border-primary/20"
                             : "bg-muted text-muted-foreground",

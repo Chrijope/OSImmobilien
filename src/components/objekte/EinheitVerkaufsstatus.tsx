@@ -40,9 +40,9 @@ export function EinheitVerkaufsstatus({ vorhandene, wert, onWaehlen, kontext }: 
       <div className="flex items-start gap-2" data-testid="verkaufsstatus-anzeige">
         <Label className="text-xs pt-1">Verkaufsstatus:</Label>
         <div className="space-y-1">
-          <EinheitStatusChip status={vorhandene.status} className="text-[10px]" />
+          <EinheitStatusChip status={vorhandene.status} className="text-bildunterschrift" />
           <BelegungsAngaben anzeige={anzeige} />
-          <p className="text-[10px] text-muted-foreground">Reserviert wird über die Einheitsseite oder das Kundenprofil.</p>
+          <p className="text-bildunterschrift text-muted-foreground">Reserviert wird über die Einheitsseite oder das Kundenprofil.</p>
         </div>
       </div>
     );

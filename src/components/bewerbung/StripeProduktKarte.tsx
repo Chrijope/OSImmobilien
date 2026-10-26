@@ -66,7 +66,7 @@ export function StripeProduktKarte({ produkt }: Props) {
             Zahlungslink noch nicht hinterlegt
           </p>
         )}
-        <p className="text-[10px] text-muted-foreground">
+        <p className="text-bildunterschrift text-muted-foreground">
           Über den Zahlungslink richtet der Partner die monatliche Abbuchung in Stripe selbst ein.
         </p>
       </div>

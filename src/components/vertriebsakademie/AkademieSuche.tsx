@@ -91,7 +91,7 @@ export function AkademieSuche({
                 >
                   <div className="flex items-center gap-2 flex-wrap mb-1">
                     {mitKapitelNamen && (
-                      <Badge variant="outline" className="text-[10px]">
+                      <Badge variant="outline" className="text-bildunterschrift">
                         Kapitel {t.kapitel.nummer}: {t.kapitel.titel}
                       </Badge>
                     )}

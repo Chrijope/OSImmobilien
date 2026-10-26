@@ -1,5 +1,18 @@
 import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { extendTailwindMerge } from "tailwind-merge";
+
+/*
+ * tailwind-merge kennt nur die Standardgrößen. Die eigenen Schriftstufen aus
+ * tailwind.config.ts (A1, 26.10.2026) hielte es sonst für Textfarben und
+ * würfe beim Zusammenführen eine echte Farbe wie `text-[hsl(…)]` heraus.
+ */
+const twMerge = extendTailwindMerge({
+  extend: {
+    classGroups: {
+      "font-size": [{ text: ["grosstitel", "titel1", "titel2", "ueberschrift", "fliesstext", "hinweis", "fussnote", "bildunterschrift"] }],
+    },
+  },
+});
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

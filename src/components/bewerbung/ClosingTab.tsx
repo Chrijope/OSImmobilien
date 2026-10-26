@@ -113,7 +113,7 @@ const AusGespraechZeichen = ({ klein = false }: { klein?: boolean }) => (
 const NichtGespeichertBadge = () => (
   <Badge
     variant="outline"
-    className="h-5 border-amber-400/60 text-[10px] text-amber-700 dark:text-amber-400"
+    className="h-5 border-amber-400/60 text-bildunterschrift text-amber-700 dark:text-amber-400"
     title="Die Anzeige rechts zeigt den gespeicherten Stand. Zum Übernehmen speichern."
   >
     nicht gespeichert
@@ -837,10 +837,10 @@ export const ClosingTab = ({
   const entscheidungBadge = (() => {
     const e = fortschritt.entscheidung;
     const text = schritt(2).kurz;
-    if (e === "ja") return <Badge className="h-5 bg-green-600 text-white hover:bg-green-600 text-[10px]">{text}</Badge>;
-    if (e === "nein") return <Badge variant="destructive" className="h-5 text-[10px]">{text}</Badge>;
-    if (e === "bedenkzeit") return <Badge className="h-5 bg-violet-600 text-white hover:bg-violet-600 text-[10px]">{text}</Badge>;
-    return <Badge variant="secondary" className="h-5 text-[10px]">offen</Badge>;
+    if (e === "ja") return <Badge className="h-5 bg-green-600 text-white hover:bg-green-600 text-bildunterschrift">{text}</Badge>;
+    if (e === "nein") return <Badge variant="destructive" className="h-5 text-bildunterschrift">{text}</Badge>;
+    if (e === "bedenkzeit") return <Badge className="h-5 bg-violet-600 text-white hover:bg-violet-600 text-bildunterschrift">{text}</Badge>;
+    return <Badge variant="secondary" className="h-5 text-bildunterschrift">offen</Badge>;
   })();
 
   return (
@@ -857,11 +857,11 @@ export const ClosingTab = ({
             )}
             <span className="flex items-center gap-1 text-[11px] text-muted-foreground">Entscheidung: {entscheidungBadge}</span>
             {b.paketBestaetigtAm ? (
-              <Badge className="h-5 bg-blue-600 text-white hover:bg-blue-600 text-[10px]">
+              <Badge className="h-5 bg-blue-600 text-white hover:bg-blue-600 text-bildunterschrift">
                 Vertrag {schritt(6).kurz}
               </Badge>
             ) : (
-              <Badge variant="outline" className="h-5 text-[10px] text-muted-foreground">
+              <Badge variant="outline" className="h-5 text-bildunterschrift text-muted-foreground">
                 {fortschritt.teil2Komplett
                   ? "Teil 2 im Gespräch komplett"
                   : teil2Aktiv
@@ -880,7 +880,7 @@ export const ClosingTab = ({
             der Stand in einer Zeile, samt Hinweis auf die übernommenen Werte,
             der vorher an vier Karten ausgeschrieben stand. */}
         <div className="flex flex-wrap items-center gap-2 border-t pt-2 text-[11px]" data-testid="closing-kopf-stand">
-          <Badge variant="outline" className="h-5 text-[10px]">
+          <Badge variant="outline" className="h-5 text-bildunterschrift">
             {fortschritt.aktiverSchritt === 0
               ? "Alle Pflichtschritte erledigt"
               : `Schritt ${fortschritt.aktiverSchritt} von 6`}
@@ -1086,7 +1086,7 @@ export const ClosingTab = ({
                       onChange={setBedenkzeitDatum}
                       disabled={!canEdit}
                     />
-                    <p className="text-[10px] text-muted-foreground">
+                    <p className="text-bildunterschrift text-muted-foreground">
                       Pflicht. Eine Bedenkzeit ohne Termin ist keine Bedenkzeit, sondern ein
                       verlorener Bewerber.
                     </p>
@@ -1117,7 +1117,7 @@ export const ClosingTab = ({
                       {bedenkzeitSpeichert ? "Wird gesetzt …" : b.closingEntscheidung === "bedenkzeit" ? "Rückruf speichern" : "Auf Bedenkzeit setzen"}
                     </Button>
                   )}
-                  <p className="text-[10px] text-muted-foreground">
+                  <p className="text-bildunterschrift text-muted-foreground">
                     Status wechselt auf <strong>Bedenkzeit</strong>. Der Bewerber erscheint dann
                     in der eigenen Spalte im Bewerbermanagement, nicht mehr unter Closing.
                   </p>
@@ -1128,7 +1128,7 @@ export const ClosingTab = ({
                   <div className="flex flex-wrap items-center gap-2 text-sm font-semibold">
                     <PhoneCall className="h-4 w-4 text-primary" /> Follow-up zum Rückruf
                     {b.closingEntscheidung === "bedenkzeit" && b.bedenkzeitRueckrufAm && (
-                      <Badge className="h-5 bg-green-600 text-white hover:bg-green-600 text-[10px]">
+                      <Badge className="h-5 bg-green-600 text-white hover:bg-green-600 text-bildunterschrift">
                         Auf Bedenkzeit gesetzt
                       </Badge>
                     )}
@@ -1170,7 +1170,7 @@ export const ClosingTab = ({
                         </SelectContent>
                       </Select>
                       {bedenkzeitDatum.trim() && (
-                        <p className="text-[10px] text-muted-foreground">
+                        <p className="text-bildunterschrift text-muted-foreground">
                           erscheint am {bedenkzeitErinnerungsTag(bedenkzeitDatum, bedenkzeitErinnerung) || "–"} in der Inbox
                         </p>
                       )}
@@ -1194,11 +1194,11 @@ export const ClosingTab = ({
                       </Button>
                     </div>
                   )}
-                  <p className="text-[10px] text-muted-foreground leading-snug">
+                  <p className="text-bildunterschrift text-muted-foreground leading-snug">
                     <strong>Erscheint in der Übersicht des Bewerbers:</strong> Datum, Uhrzeit und die Vorbereitung
                     stehen dort in der Follow-up-Karte. Gespeichert wird alles mit dem Knopf oben.
                   </p>
-                  <div className="rounded-md border border-violet-300/50 bg-violet-50/60 dark:bg-violet-500/10 p-2.5 text-[10px] leading-snug">
+                  <div className="rounded-md border border-violet-300/50 bg-violet-50/60 dark:bg-violet-500/10 p-2.5 text-bildunterschrift leading-snug">
                     <strong>Bedenkzeit und Follow-Up bleiben getrennte Status.</strong> Follow-Up ist der Status nach
                     Teil 1 (Empfehlung B oder Unterlagen-Weiche im Erstgespräch). Bedenkzeit ist der Status nach der
                     Präsentation, wenn der Bewerber alles gesehen hat und die Entscheidung vertagt. Der Rückruf hier ist
@@ -1232,7 +1232,7 @@ export const ClosingTab = ({
                     <XCircle className="h-3.5 w-3.5" /> Bewerbung als „Kein Interesse / Abgelehnt" markieren
                   </Button>
                 )}
-                <p className="text-[10px] text-muted-foreground">
+                <p className="text-bildunterschrift text-muted-foreground">
                   Status wechselt automatisch auf <strong>Kein Interesse / Abgelehnt</strong>.
                   Der Verlust-Grund bleibt intern und steht nicht in der Mail.
                 </p>
@@ -1281,17 +1281,17 @@ export const ClosingTab = ({
                     {p.istTippgeber ? (
                       <>
                         <div className="text-lg font-bold">Individuell</div>
-                        <div className="text-[10px] text-muted-foreground">Vergütung im Einzelfall vereinbart · keine Gebühr</div>
+                        <div className="text-bildunterschrift text-muted-foreground">Vergütung im Einzelfall vereinbart · keine Gebühr</div>
                       </>
                     ) : p.preis > 0 ? (
                       <>
                         <div className="text-lg font-bold">{formatPreis(p.preis)}</div>
-                        <div className="text-[10px] text-muted-foreground">einmalig, netto · + {formatPreis(p.monatlich)}/Monat</div>
+                        <div className="text-bildunterschrift text-muted-foreground">einmalig, netto · + {formatPreis(p.monatlich)}/Monat</div>
                       </>
                     ) : (
                       <>
                         <div className="text-lg font-bold">Kein laufendes Entgelt</div>
-                        <div className="text-[10px] text-muted-foreground">keine Setup-Gebühr · keine Mindestlaufzeit</div>
+                        <div className="text-bildunterschrift text-muted-foreground">keine Setup-Gebühr · keine Mindestlaufzeit</div>
                       </>
                     )}
                     <div className="mt-2 text-xs font-medium text-primary">
@@ -1422,7 +1422,7 @@ export const ClosingTab = ({
                             disabled={!canEdit}
                             placeholder={"Ein Unternehmen pro Zeile, z. B.:\nMuster Vertriebs GmbH, München\nBeispiel Immobilien AG"}
                           />
-                          <p className="text-[10px] text-muted-foreground leading-snug">
+                          <p className="text-bildunterschrift text-muted-foreground leading-snug">
                             Wird als Erklärung in <strong>{nebentaetigkeitOrt}</strong> eingedruckt. Leer lassen = der
                             Vertrag druckt „keine". Spätere Änderungen laufen über die Anzeigepflicht des
                             Partners in Textform, hier muss nichts nachgepflegt werden.
@@ -1529,7 +1529,7 @@ export const ClosingTab = ({
                               placeholder={`z. B. ${aktiv.provisionssatz}`}
                               disabled={!canEdit || !!(satzLead.trim() || satzEigen.trim())}
                             />
-                            <p className="text-[10px] text-muted-foreground mt-0.5">Gilt für Lead + Eigenkontakte</p>
+                            <p className="text-bildunterschrift text-muted-foreground mt-0.5">Gilt für Lead + Eigenkontakte</p>
                           </div>
                           <div>
                             <Label className="text-xs font-medium">Lead Satz (%)</Label>
@@ -1541,7 +1541,7 @@ export const ClosingTab = ({
                               placeholder="z. B. 3"
                               disabled={!canEdit || !!satzIndividuell.trim()}
                             />
-                            <p className="text-[10px] text-muted-foreground mt-0.5">Bei Leads aus OS Immobilien</p>
+                            <p className="text-bildunterschrift text-muted-foreground mt-0.5">Bei Leads aus OS Immobilien</p>
                           </div>
                           <div>
                             <Label className="text-xs font-medium">Eigen Satz (%)</Label>
@@ -1553,7 +1553,7 @@ export const ClosingTab = ({
                               placeholder="z. B. 5"
                               disabled={!canEdit || !!satzIndividuell.trim() || eigenGesperrtDurchObjektart}
                             />
-                            <p className="text-[10px] text-muted-foreground mt-0.5">
+                            <p className="text-bildunterschrift text-muted-foreground mt-0.5">
                               {eigenGesperrtDurchObjektart
                                 ? "Gesperrt: Bestand/Neubau eingetragen, der Eigen-Satz kann nicht zusätzlich gelten"
                                 : "Aus eigenem Netzwerk"}
@@ -1571,7 +1571,7 @@ export const ClosingTab = ({
                               placeholder="z. B. 5"
                               disabled={!canEdit || !!satzIndividuell.trim() || objektartGesperrtDurchEigen}
                             />
-                            <p className="text-[10px] text-muted-foreground mt-0.5">
+                            <p className="text-bildunterschrift text-muted-foreground mt-0.5">
                               {objektartGesperrtDurchEigen
                                 ? "Gesperrt: Eigen-Satz eingetragen, Objektart-Sätze können nicht zusätzlich gelten"
                                 : "Bei Vermittlung eines Bestandsobjekts"}
@@ -1587,14 +1587,14 @@ export const ClosingTab = ({
                               placeholder="z. B. 4,5"
                               disabled={!canEdit || !!satzIndividuell.trim() || objektartGesperrtDurchEigen}
                             />
-                            <p className="text-[10px] text-muted-foreground mt-0.5">
+                            <p className="text-bildunterschrift text-muted-foreground mt-0.5">
                               {objektartGesperrtDurchEigen
                                 ? "Gesperrt: Eigen-Satz eingetragen"
                                 : "Bei Vermittlung eines Neubauprojekts"}
                             </p>
                           </div>
                         </div>
-                        <p className="text-[10px] text-muted-foreground">
+                        <p className="text-bildunterschrift text-muted-foreground">
                           Leer lassen = Standardsatz „{aktiv.titel}" ({aktiv.provisionssatz}%) gilt. Lead-Satz lässt sich
                           mit Eigen-Satz oder mit Bestand/Neubau kombinieren; Eigen-Satz und Bestand/Neubau schließen sich aus.
                         </p>
@@ -1728,7 +1728,7 @@ export const ClosingTab = ({
                                 Startet der Partner erfahren und sofort mit Leads?
                                 {/* In Teil 2 des Erstgesprächs bereits eingeblendet (qualiCallAngeboten). */}
                                 {folgeCallAngeboten && (
-                                  <Badge variant="outline" className="h-5 border-amber-500/50 text-[10px] font-normal text-amber-700 dark:text-amber-400">
+                                  <Badge variant="outline" className="h-5 border-amber-500/50 text-bildunterschrift font-normal text-amber-700 dark:text-amber-400">
                                     im Gespräch angeboten
                                   </Badge>
                                 )}
@@ -1837,7 +1837,7 @@ export const ClosingTab = ({
                   <span className="text-sm font-semibold">
                     Vertragsanschrift <span className="text-destructive">*</span>
                   </span>
-                  <span className="text-[10px] uppercase tracking-wider text-destructive font-medium ml-1">Pflichtfeld</span>
+                  <span className="text-bildunterschrift uppercase tracking-wider text-destructive font-medium ml-1">Pflichtfeld</span>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
                   <div className="md:col-span-2 space-y-1">
@@ -1882,7 +1882,7 @@ export const ClosingTab = ({
                   <span className="text-sm font-semibold">
                     Rechnungsadresse <span className="text-destructive">*</span>
                   </span>
-                  <span className="text-[10px] uppercase tracking-wider text-destructive font-medium ml-1">Pflichtfeld</span>
+                  <span className="text-bildunterschrift uppercase tracking-wider text-destructive font-medium ml-1">Pflichtfeld</span>
                 </div>
 
                 {/* Identisch mit der Vertragsanschrift */}
@@ -1936,7 +1936,7 @@ export const ClosingTab = ({
                     />
                   </div>
                 </div>
-                <p className="text-[10px] text-muted-foreground pt-1">↑ wird in der Übersicht und auf der Rechnung verwendet</p>
+                <p className="text-bildunterschrift text-muted-foreground pt-1">↑ wird in der Übersicht und auf der Rechnung verwendet</p>
               </div>
             </div>
             {(!vertragsAdresse.trim() || !rechnungsAdresse.trim()) && (
@@ -2033,7 +2033,7 @@ export const ClosingTab = ({
                           {isPaket && !b.paketUebersichtSentAt && (
                             <Badge
                               variant="outline"
-                              className="h-5 border-amber-400/60 text-[10px] text-amber-700 dark:text-amber-400"
+                              className="h-5 border-amber-400/60 text-bildunterschrift text-amber-700 dark:text-amber-400"
                               title="Der Eintrag wird vor dem Absenden angelegt. Ohne bestätigten Versand am Bewerber ist die Mail vermutlich nicht angekommen."
                             >
                               Versand nicht bestätigt
@@ -2042,12 +2042,12 @@ export const ClosingTab = ({
                         </div>
                         <div className="flex flex-wrap items-center gap-1.5 pl-5 text-[11px]">
                           {t.tracked === false ? (
-                            <Badge variant="outline" className="h-5 text-[10px] text-muted-foreground">
+                            <Badge variant="outline" className="h-5 text-bildunterschrift text-muted-foreground">
                               Tracking nicht verfügbar (Altdaten)
                             </Badge>
                           ) : (
                             <Badge
-                              className={`h-5 text-[10px] ${t.clicked_at ? "bg-green-600 text-white hover:bg-green-600" : "bg-muted text-muted-foreground hover:bg-muted"}`}
+                              className={`h-5 text-bildunterschrift ${t.clicked_at ? "bg-green-600 text-white hover:bg-green-600" : "bg-muted text-muted-foreground hover:bg-muted"}`}
                             >
                               {t.clicked_at ? `🖱 Link geöffnet · ${formatVersandTs(t.clicked_at)}` : "Link noch nicht geöffnet"}
                             </Badge>
@@ -2056,7 +2056,7 @@ export const ClosingTab = ({
                       </div>
                     );
                   })}
-                  <p className="text-[10px] text-muted-foreground leading-snug pt-0.5">
+                  <p className="text-bildunterschrift text-muted-foreground leading-snug pt-0.5">
                     Hinweis: Öffnen wird über ein 1×1-Pixel erkannt – manche Mail-Clients blockieren Bilder, dann bleibt der Status „nicht geöffnet" obwohl die Mail gelesen wurde. Der Link-Klick ist zuverlässiger.
                   </p>
                 </div>
@@ -2090,12 +2090,12 @@ export const ClosingTab = ({
             sperrText="Erzeugt den Handelsvertretervertrag mit allen Anlagen aus Paket, Schaltern, Sätzen, Lead-Paket und beiden Adressen. Freigeschaltet, sobald Entscheidung, Paket und Adressen stehen."
             badges={
               schritt(6).zustand === "gesperrt"
-                ? <Badge variant="secondary" className="h-5 text-[10px]">noch nicht möglich</Badge>
+                ? <Badge variant="secondary" className="h-5 text-bildunterschrift">noch nicht möglich</Badge>
                 : b.paketBestaetigtAm
-                  ? <Badge className={`h-5 text-white text-[10px] ${b.vertragStatus === "nicht_gesendet" ? "bg-green-600 hover:bg-green-600" : "bg-blue-600 hover:bg-blue-600"}`}>
+                  ? <Badge className={`h-5 text-white text-bildunterschrift ${b.vertragStatus === "nicht_gesendet" ? "bg-green-600 hover:bg-green-600" : "bg-blue-600 hover:bg-blue-600"}`}>
                       Vertrag {schritt(6).kurz}
                     </Badge>
-                  : <Badge className="h-5 bg-primary/10 text-primary hover:bg-primary/10 text-[10px]">nächster Schritt</Badge>
+                  : <Badge className="h-5 bg-primary/10 text-primary hover:bg-primary/10 text-bildunterschrift">nächster Schritt</Badge>
             }
           >
             <p className="text-xs text-muted-foreground">
@@ -2204,7 +2204,7 @@ export const ClosingTab = ({
                 )}
               </div>
             )}
-            <p className="text-[10px] text-muted-foreground text-right">
+            <p className="text-bildunterschrift text-muted-foreground text-right">
               {b.paketBestaetigtAm
                 ? <>„Neu erstellen" setzt Versand und Signatur zurück und ist nach der Unterschrift gesperrt.</>
                 : <>Nach dem Erzeugen: grüner Stempel „Paket bestätigt & Vertrag erstellt" und der Knopf „Vertrag mit aktuellem Paket neu erstellen".</>}
@@ -2215,7 +2215,7 @@ export const ClosingTab = ({
         {/* ── Seitenleiste ── */}
         <aside className="space-y-4">
           <Card className="p-4" data-testid="closing-seitenleiste-fortschritt">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">Fortschritt im Closing</p>
+            <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground mb-2">Fortschritt im Closing</p>
             {/* Die einzige vollständige Übersicht: gleiche Namen und gleiche
                 Ergebnisse wie an den Karten, nur ausführlicher. Der Text darf
                 umbrechen, vorher wurde er einzeilig abgeschnitten. Ein Klick
@@ -2241,7 +2241,7 @@ export const ClosingTab = ({
                           {s.ausGespraech && <AusGespraechZeichen klein />}
                         </div>
                         {s.zeilen.map((z, i) => (
-                          <div key={i} className="text-[10px] leading-snug text-muted-foreground">{z}</div>
+                          <div key={i} className="text-bildunterschrift leading-snug text-muted-foreground">{z}</div>
                         ))}
                       </div>
                     </button>
@@ -2252,7 +2252,7 @@ export const ClosingTab = ({
           </Card>
 
           <Card className="p-4" data-testid="closing-seitenleiste-fehlt">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">Was noch fehlt</p>
+            <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground mb-2">Was noch fehlt</p>
             {fortschritt.fehlt.length === 0 ? (
               <p className="text-xs text-muted-foreground">
                 {fortschritt.entscheidung === "nein"
@@ -2268,7 +2268,7 @@ export const ClosingTab = ({
                       : <Circle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground/50" />}
                     <div className="min-w-0">
                       <div className={`font-medium ${f.dringend ? "text-amber-700 dark:text-amber-400" : ""}`}>{f.text}</div>
-                      {f.unter && <div className="text-[10px] text-muted-foreground">{f.unter}</div>}
+                      {f.unter && <div className="text-bildunterschrift text-muted-foreground">{f.unter}</div>}
                     </div>
                   </li>
                 ))}
@@ -2280,7 +2280,7 @@ export const ClosingTab = ({
             /* Dieselbe Zusammenfassung wie im Reiter Videocall: der Weg, alle
                Antworten, die Merkmale, unsere Entscheidung und sein Wunsch. */
             <Card className="p-4 space-y-3" data-testid="closing-seitenleiste-kennenlernbogen">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground">
                 Aus dem Kennenlernbogen
               </p>
               {kennenlernen ? (
@@ -2304,13 +2304,13 @@ export const ClosingTab = ({
                   {videocall?.wunsch ? WUNSCH_LABELS[videocall.wunsch].label : "noch offen"}
                 </dd>
               </dl>
-              <p className="border-t pt-2 text-[10px] leading-snug text-muted-foreground">
+              <p className="border-t pt-2 text-bildunterschrift leading-snug text-muted-foreground">
                 Erfasst im persönlichen Gespräch. Entscheidung und Adressen bleiben hier änderbar.
               </p>
             </Card>
           ) : (
           <Card className="p-4" data-testid="closing-seitenleiste-erstgespraech">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">Aus dem Erstgespräch</p>
+            <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground mb-2">Aus dem Erstgespräch</p>
             <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-[11px]">
               <dt className="text-muted-foreground">Empfehlung</dt>
               <dd className="text-right font-medium">{score ? `${EMPFEHLUNG_LABELS[score.empfehlung]} (${score.punkte} Punkte)` : "noch offen"}</dd>
@@ -2329,7 +2329,7 @@ export const ClosingTab = ({
               <dt className="text-muted-foreground">Rechner</dt>
               <dd className="text-right font-medium">{rechnerAbschluesse ? `${rechnerAbschluesse} Abschlüsse pro Monat` : "—"}</dd>
             </dl>
-            <p className="mt-3 border-t pt-2 text-[10px] text-muted-foreground leading-snug">
+            <p className="mt-3 border-t pt-2 text-bildunterschrift text-muted-foreground leading-snug">
               KI-Zusammenfassung Erstgespräch und Closing liegt im Reiter Erstgespräch und in der Übersicht.
             </p>
           </Card>

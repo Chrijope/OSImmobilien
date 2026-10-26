@@ -821,7 +821,7 @@ export default function SteuerErgebnis({ antworten, aendern, erstmalig, onHandlu
                 dem Handy unter der Erklaerung liegen, und dort findet ihn
                 niemand. */}
             <div className="flex items-baseline justify-between gap-3">
-              <span className="text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+              <span className="text-bildunterschrift font-semibold uppercase tracking-[0.1em] text-muted-foreground">
                 {p.rang}
               </span>
               <span className="shrink-0 text-xl font-semibold tabular-nums leading-none text-foreground">

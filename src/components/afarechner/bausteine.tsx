@@ -181,9 +181,9 @@ export function Kennzahl({
     <div
       className={`rounded-lg p-4 ${betont ? "border-2 border-primary/20 bg-primary/5" : "bg-muted/50"}`}
     >
-      <p className="mb-1 text-[10px] uppercase tracking-wide text-muted-foreground">{bezeichnung}</p>
+      <p className="mb-1 text-bildunterschrift uppercase tracking-wide text-muted-foreground">{bezeichnung}</p>
       <p className={`font-bold ${betont ? "text-2xl text-primary" : "text-lg"}`}>{wert}</p>
-      {fussnote && <p className="mt-0.5 text-[10px] leading-relaxed text-muted-foreground">{fussnote}</p>}
+      {fussnote && <p className="mt-0.5 text-bildunterschrift leading-relaxed text-muted-foreground">{fussnote}</p>}
     </div>
   );
 }

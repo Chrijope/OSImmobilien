@@ -1000,7 +1000,7 @@ export default function AlleKontakte() {
                             <TooltipProvider>
                               <Tooltip>
                                 <TooltipTrigger asChild>
-                                  <span className="text-[10px] text-amber-600 flex items-center gap-0.5 w-fit" tabIndex={0}>
+                                  <span className="text-bildunterschrift text-amber-600 flex items-center gap-0.5 w-fit" tabIndex={0}>
                                     <Clock className="h-2.5 w-2.5" /> Nicht erreicht, nächster Anruf ab {wartezeitEndeText(waitUntil)}
                                   </span>
                                 </TooltipTrigger>
@@ -1013,18 +1013,18 @@ export default function AlleKontakte() {
                         </div>
                       </TableCell>
                       <TableCell>{tarnEmail(k.email)}</TableCell>
-                      <TableCell><Badge className="text-[10px] bg-primary/10 text-primary">{stufeLabel}</Badge></TableCell>
+                      <TableCell><Badge className="text-bildunterschrift bg-primary/10 text-primary">{stufeLabel}</Badge></TableCell>
                       <TableCell>{tarnName(resolveBerater(k), "partner") || <span className="text-muted-foreground">–</span>}</TableCell>
-                      <TableCell><span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${kategorieColor(kat)}`}>{kat === "Bestand" ? "📇 Bestand" : kat}</span></TableCell>
+                      <TableCell><span className={`px-2 py-0.5 rounded-full text-bildunterschrift font-semibold ${kategorieColor(kat)}`}>{kat === "Bestand" ? "📇 Bestand" : kat}</span></TableCell>
                       <TableCell><KontaktTypBadge kunde={k} size="xs" /></TableCell>
                       <TableCell>
                         {kontaktQuelleAnzeige(k) ? (
                           <div className="flex flex-col gap-1">
-                            <Badge className={`text-[10px] w-fit ${QUELLE_COLORS[kontaktQuelleAnzeige(k)] || "bg-muted text-muted-foreground"}`}>
+                            <Badge className={`text-bildunterschrift w-fit ${QUELLE_COLORS[kontaktQuelleAnzeige(k)] || "bg-muted text-muted-foreground"}`}>
                               {kontaktQuelleAnzeige(k)}
                             </Badge>
                             {(k as any).meta?.tippgeberName && (
-                              <span className="text-[10px] text-muted-foreground italic">
+                              <span className="text-bildunterschrift text-muted-foreground italic">
                                 Empfehlung: {tarnName((k as any).meta.tippgeberName, "person")}
                               </span>
                             )}
