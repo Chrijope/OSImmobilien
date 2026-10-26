@@ -11,10 +11,11 @@ describe('Lokaler CRM-Entwurf erhält Inhalte und Exportansichten', () => {
   it('isoliert jede Regel auf Vorschau und Liquid Glass, ausschließlich am Bildschirm', () => {
     ast.walkRules(rule => {
       expect(rule.selector).toContain('[data-crm-design="studio"][data-glas="liquid"]');
-      let parent = rule.parent;
+      // Bis hinauf zum Dokument; nur At-Regeln tragen name und params.
+      let parent: postcss.Node | undefined = rule.parent;
       let screen = false;
       while (parent) {
-        if (parent.type === 'atrule' && parent.name === 'media' && parent.params === 'screen') screen = true;
+        if (parent.type === 'atrule' && (parent as postcss.AtRule).name === 'media' && (parent as postcss.AtRule).params === 'screen') screen = true;
         parent = parent.parent;
       }
       expect(screen, rule.selector).toBe(true);

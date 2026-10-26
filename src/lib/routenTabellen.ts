@@ -242,6 +242,8 @@ export const ROUTEN_TABELLEN: Record<string, readonly string[]> = {
   "/vorschau/rechnungsvorlage": [],
   "/vorschau/kunde-komplett": [],
   "/vorschau/kunde-komplett/:id": [],
+  // Lokaler CRM-Entwurf (b0b8856), nur im Entwicklungsmodus.
+  "/vorschau/crm/*": [],
   "/vorschau/objekt-anlegen": [],
   "/vorschau/kundenchat": [],
   "/vorschau/analysetool-ergebnis": [],

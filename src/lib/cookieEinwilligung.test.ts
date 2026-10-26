@@ -123,6 +123,7 @@ describe("Wo der Banner hingehört", () => {
       "/vorschau/beratungsprotokoll",
       "/vorschau/kundenprofil-links",
       "/vorschau/beratung-druck",
+      "/vorschau/crm/*",
     ]);
     const ohneEntscheidung = routen
       // Hinter `PraesentationGuard` liegt eine Anmeldung, `Navigate` leitet
