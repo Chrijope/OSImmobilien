@@ -2252,68 +2252,17 @@
 }
 
 /* ─────────────────────────────────────────────────────────────
- * MOBILE TYPOGRAPHY NORMALIZATION (≤ 767px)
- * Vereinheitlicht Schriftgrößen auf Mobile auf ein ruhiges,
- * lesefreundliches Niveau (~13–14px Body). Seiten-Überschriften
- * (h1 in PageHeader) und Karten-Titel (CardTitle/h2/h3) bleiben
- * unverändert. Inputs/Selects/Buttons/Labels werden kompakter,
- * damit Filter-Toolbars und Formulare nicht mehr wuchtig wirken.
- * Tap-Targets bleiben ≥ 32–40px hoch.
+ * Schrift am Handy wie am iPhone (B5, 26.10.2026)
+ *
+ * Hier stand bis heute eine bewusste Verkleinerung („Globale Body-Schrift
+ * etwas reduzieren“): Grundschrift 14 px, dazu kleinere Texte, Felder,
+ * Tabellen und Menüs. Sie fällt weg. Stattdessen 17 px Grundschrift wie
+ * iOS: Fließtext (text-sm) liegt bei rund 15 px, text-base bei 17 px, die
+ * kleinste Stufe (text-bildunterschrift) bei rund 13 px. Am Schreibtisch
+ * bleibt die 90-%-Basis und damit die Dichte.
  * ───────────────────────────────────────────────────────────── */
 @media (max-width: 767px) {
-  /* Globale Body-Schrift etwas reduzieren */
-  html, body { font-size: 14px; }
-
-  /* Utility-Schriftgrößen vereinheitlichen. Das Exposé (.premium-expose) ist
-     hier und bei Knöpfen, Labels und Tabellen ausgenommen: Es hat eigene,
-     bewusst gut lesbare Größen in premiumExpose.css (01.10.2026). */
-  .text-base { font-size: 0.875rem !important; line-height: 1.4 !important; }
-  .text-lg   { font-size: 0.95rem  !important; line-height: 1.35 !important; }
-  .text-xl:where(:not(.premium-expose *)) { font-size: 1.05rem  !important; line-height: 1.3  !important; }
-
-  /* Formular-Elemente kompakter (Inputs, Selects, Textarea, Trigger) */
-  input:not([type="checkbox"]):not([type="radio"]),
-  textarea,
-  select,
-  [data-slot="select-trigger"],
-  [data-slot="input"],
-  [data-slot="textarea"],
-  [role="combobox"] {
-    font-size: 0.875rem !important;
-  }
-
-  /* Labels & FormDescriptions */
-  label:where(:not(.premium-expose *)), [data-slot="label"], [data-slot="form-label"],
-  [data-slot="form-description"], .form-description {
-    font-size: 0.8rem !important;
-  }
-
-  /* Buttons: kompakter, aber nicht unter 32px Höhe */
-  button:not([data-no-shrink]):not([role="tab"]):not([data-sidebar="menu-button"]):where(:not(.premium-expose *)) {
-    font-size: 0.85rem;
-  }
-
-  /* Dropdown-/Menu-Items lesefreundlich, aber kompakt */
-  [role="menuitem"], [role="option"], [data-slot="select-item"] {
-    font-size: 0.85rem !important;
-  }
-
-  /* Tabellen-Inhalte etwas kleiner */
-  table th:where(:not(.premium-expose *)), table td:where(:not(.premium-expose *)) { font-size: 0.8rem !important; }
-
-  /* Karten-/Section-Untertitel (CardDescription) ruhiger */
-  [data-slot="card-description"] { font-size: 0.8rem !important; line-height: 1.4 !important; }
-
-  /* Page-Subtitle (z. B. „Deine tagesrelevanten Aufgaben …") */
-  header.sticky p, .sticky.top-0 p { font-size: 0.85rem !important; }
-
-  /* Großes Dashboard-Zitat / Hero-Sätze runterregeln */
-  blockquote, .text-2xl:not(h1):not(h2):not([data-slot="card-title"]) {
-    font-size: 1rem !important;
-    line-height: 1.4 !important;
-  }
-
-  /* H1 in PageHeader, CardTitle, h2/h3 NICHT anfassen — bewusst ausgespart. */
+  html { font-size: 17px; }
 }
 
 /* ─────────────────────────────────────────────────────────────

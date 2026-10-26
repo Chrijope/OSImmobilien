@@ -2915,5 +2915,21 @@
     "zielrollen": [
       "alle"
     ]
+  },
+  {
+    "nr": 143,
+    "datum": "2026-10-26",
+    "art": "geaendert",
+    "titel": "Größere Schrift am Handy",
+    "kurztext": "Am Handy ist die Schrift jetzt so groß wie in Apps auf dem iPhone. Die bisherige Verkleinerung von Texten, Feldern und Tabellen fällt weg.",
+    "wasHeisstDasFuerDich": [
+      "Du liest am Handy ohne Heranzoomen.",
+      "Am Schreibtisch bleibt alles so kompakt wie bisher."
+    ],
+    "soFindestDuEs": "Überall im CRM am Handy",
+    "kritisch": false,
+    "zielrollen": [
+      "alle"
+    ]
   }
 ]
