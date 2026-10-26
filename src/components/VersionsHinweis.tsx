@@ -1,43 +1,15 @@
-import { useEffect, useRef } from "react";
-import { useLocation } from "react-router-dom";
-import { AlertTriangle, X } from "lucide-react";
+import { AlertTriangle, RefreshCw, X } from "lucide-react";
 import { useVersionsHinweis } from "@/lib/versionspruefung";
 import { useVideoraumOptional } from "@/contexts/VideoraumContext";
 import { confirmDialog } from "@/lib/confirm";
 
 /**
- * Laedt beim naechsten Seitenwechsel still neu (seit 26.09.2026, fuer alle).
- *
- * Nur gerendert, wenn `useVersionsHinweis` das so entschieden hat. Der
- * Seitenwechsel ist der Moment, in dem die alte Seite schon abgebaut ist,
- * also nichts Getipptes mehr offen steht. Geladen wird die neue Adresse,
- * der Nutzer landet genau dort, wohin er wollte.
- *
- * Nie waehrend eines Videogespraechs: Das Neuladen trennt die Verbindung.
- * Dann wartet es auf einen Seitenwechsel nach dem Gespraech.
- * `window.location.reload()` loest die `beforeunload`-Waechter aus, wer
- * noch etwas Ungespeichertes offen hat, bekommt die Rueckfrage.
- */
-function StillesNeuladen({ merkeStill }: { merkeStill: () => void }) {
-  const { pathname } = useLocation();
-  const videoraum = useVideoraumOptional();
-  const start = useRef(pathname);
-
-  useEffect(() => {
-    if (pathname === start.current || videoraum?.aktiv) return;
-    merkeStill();
-    window.location.reload();
-  }, [pathname, videoraum?.aktiv, merkeStill]);
-
-  return null;
-}
-
-/**
  * Der Warnstreifen ganz oben, wenn eine neuere Fassung des CRM bereitliegt
  * und `public/versionsnotiz.json` fuer sie einen Eintrag mit `kritisch`
  * enthaelt, also der alte Stand nicht mehr richtig speichert. Bei jedem
- * anderen Update gibt es seit dem 26.09.2026 keinen Streifen mehr, dann
- * laedt `StillesNeuladen` beim naechsten Seitenwechsel.
+ * anderen Update steht seit dem 26.10.2026 ein dezenter Streifen „Neue
+ * Version verfuegbar“. Von selbst laedt die App nie neu, auch nicht beim
+ * Seitenwechsel: Das hat Eingaben in offenen Dialogen gekostet.
  *
  * Anlass war ein Vorfall vom 18.09.2026: Ein Vertriebspartner konnte vier Tage
  * lang bei einem Kunden nichts speichern, jede Eingabe endete mit „Eintrag
@@ -63,10 +35,9 @@ function StillesNeuladen({ merkeStill }: { merkeStill: () => void }) {
  * wegwerfen, was jemand gerade tippt.
  */
 export function VersionsHinweis() {
-  const { sichtbar, still, ausblenden, merkeStill } = useVersionsHinweis();
+  const { sichtbar, kritisch, ausblenden } = useVersionsHinweis();
   const videoraum = useVideoraumOptional();
 
-  if (still) return <StillesNeuladen merkeStill={merkeStill} />;
   if (!sichtbar) return null;
 
   const laden = async () => {
@@ -104,9 +75,13 @@ export function VersionsHinweis() {
         `min-h-[44px]` in festen Pixeln, nicht `h-11`. Die Wurzelschrift steht
         in `index.css` auf 90 Prozent, aus `h-11` wuerden dadurch nur 40 Pixel.
       */
-      className="flex min-h-[44px] w-full shrink-0 items-center gap-2 border-b border-warning/40 bg-warning/15 px-3 text-foreground sm:gap-3 sm:px-4"
+      className={`flex min-h-[44px] w-full shrink-0 items-center gap-2 border-b px-3 text-foreground sm:gap-3 sm:px-4 ${
+        kritisch ? "border-warning/40 bg-warning/15" : "border-border bg-muted/60"
+      }`}
     >
-      <AlertTriangle aria-hidden className="h-4 w-4 shrink-0 text-warning" />
+      {kritisch
+        ? <AlertTriangle aria-hidden className="h-4 w-4 shrink-0 text-warning" />
+        : <RefreshCw aria-hidden className="h-4 w-4 shrink-0 text-muted-foreground" />}
 
       {/*
         Der Text darf umbrechen, er muss ganz gelesen werden. `min-w-0`
@@ -114,7 +89,9 @@ export function VersionsHinweis() {
         schiebt den Knopf aus dem Bild.
       */}
       <span className="min-w-0 flex-1 py-1 text-sm font-medium">
-        Bitte kurz neu laden, damit alles richtig gespeichert wird.
+        {kritisch
+          ? "Bitte kurz neu laden, damit alles richtig gespeichert wird."
+          : "Neue Version verfügbar. Lade neu, wenn es dir passt."}
       </span>
 
       <div className="flex shrink-0 items-center gap-1">
@@ -134,8 +111,10 @@ export function VersionsHinweis() {
           onClick={() => void laden()}
           className="flex !min-h-[44px] items-center rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          <span className="rounded-lg bg-warning px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-warning/90">
-            Jetzt laden
+          <span className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors ${
+            kritisch ? "bg-warning text-white hover:bg-warning/90" : "bg-primary text-primary-foreground hover:bg-primary/90"
+          }`}>
+            Jetzt neu laden
           </span>
         </button>
 

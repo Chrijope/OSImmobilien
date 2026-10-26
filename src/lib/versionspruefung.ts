@@ -27,14 +27,13 @@
  *  d) Findet das Muster nichts, ebenfalls still aussteigen. Lieber kein
  *     Hinweis als ein falscher.
  *
- * Was dann geschieht (seit 26.09.2026, fuer alle): Die App holt
+ * Was dann geschieht (seit 26.10.2026, fuer alle): Die App holt
  * `public/versionsnotiz.json` frisch vom Server. Ist darunter ein neuer
  * Eintrag mit `kritisch`, erscheint der Warnstreifen „Bitte kurz neu laden“.
- * Sonst laedt die App beim naechsten Seitenwechsel still neu, einmal je
- * Build. Der Seitenwechsel ist der Moment, in dem die alte Seite schon
- * abgebaut ist und nichts Getipptes mehr offen steht. Mitten auf einer Seite
- * wird nie neu geladen. Fehlt die Notiz, ebenfalls still: Sie kommt mit
- * demselben Publish, ihr Fehlen ist kein Grund fuer einen Streifen.
+ * Sonst erscheint ein dezenter Hinweis „Neue Version verfuegbar“. In beiden
+ * Faellen laedt nur der Klick auf den Knopf neu. Das stille Neuladen beim
+ * Seitenwechsel (26.09. bis 26.10.2026) ist entfernt: Es hat trotzdem
+ * Eingaben gekostet, etwa in offenen Dialogen.
  */
 import { useEffect, useState } from "react";
 import { entscheideNeuladen, ladeVersionsnotiz, BEKANNTE_NOTIZ_NR, type NeuladenArt } from "./versionsnotiz";
@@ -216,32 +215,6 @@ export function hebeAusblendenAuf(): void {
   } catch { /* nichts zu tun */ }
 }
 
-/*
- * Einmal still neu laden je Build. Die Kennung des neuen Builds wird vor dem
- * Neuladen gemerkt. Kommt der Tab danach trotzdem mit dem alten Stand hoch
- * (Zwischenspeicher, Auslieferung noch nicht fertig) und erkennt denselben
- * Build wieder, gibt es den Streifen statt eines zweiten stillen Versuchs.
- * `sessionStorage`, weil es genau diesen Tab betrifft und ein Neuladen
- * ueberlebt.
- */
-const STILL_SCHLUESSEL = "versionshinweis-still-geladen";
-
-export function merkeStillGeladen(build: string): void {
-  try {
-    sessionStorage.setItem(STILL_SCHLUESSEL, build);
-  } catch { /* private Fenster: dann eben ohne Merker, siehe unten */ }
-}
-
-export function istSchonStillGeladen(build: string): boolean {
-  try {
-    return sessionStorage.getItem(STILL_SCHLUESSEL) === build;
-  } catch {
-    // Ohne Speicher laesst sich keine Schleife ausschliessen, also lieber
-    // gar nicht still neu laden.
-    return true;
-  }
-}
-
 /**
  * Sagt der Oberflaeche, ob eine neuere Fassung bereitliegt, und liefert die
  * Kennungen vom Server. `null`, solange nichts Neues da ist.
@@ -258,13 +231,11 @@ export function useNeueFassung(): string[] | null {
 }
 
 export interface VersionsHinweisZustand {
-  /** Der Warnstreifen fuer einen neuen kritischen Eintrag steht. */
+  /** Der Hinweis auf eine neue Fassung steht. */
   sichtbar: boolean;
-  /** Beim naechsten Seitenwechsel still neu laden. */
-  still: boolean;
+  /** Ein neuer kritischer Eintrag: der alte Stand speichert nicht mehr richtig. */
+  kritisch: boolean;
   ausblenden: () => void;
-  /** Vor dem stillen Neuladen aufrufen, damit es nur einmal je Build geschieht. */
-  merkeStill: () => void;
 }
 
 /**
@@ -299,7 +270,8 @@ export function useVersionsHinweis(): VersionsHinweisZustand {
       setArt(entscheideNeuladen({
         notiz,
         bekannteNr: BEKANNTE_NOTIZ_NR,
-        schonStillGeladen: istSchonStillGeladen(build),
+        // Still neu geladen wird nicht mehr (26.10.2026).
+        schonStillGeladen: false,
         // Streifen nur fuer freigegebene Eintraege, fuer alle gleich, auch
         // fuer Christian (seit 27.09.2026, sonst saehe er ihn in jeder Rolle).
         betrachter: {
@@ -312,9 +284,8 @@ export function useVersionsHinweis(): VersionsHinweisZustand {
   }, [neueFassung, build]);
 
   return {
-    sichtbar: art === "kritisch" && !ausgeblendet,
-    still: art === "still",
+    sichtbar: (art === "kritisch" || art === "still") && !ausgeblendet,
+    kritisch: art === "kritisch",
     ausblenden: () => { merkeAusgeblendet(); setAusgeblendet(true); },
-    merkeStill: () => merkeStillGeladen(build),
   };
 }

@@ -37,41 +37,26 @@ const InvestagonDokument = lazy(() => import("./pages/InvestagonDokument"));
 
 type LazyModule<T extends ComponentType<any>> = { default: T };
 
-const LAZY_IMPORT_ERROR_RE = /Failed to fetch dynamically imported module|dynamically imported module|error loading dynamically imported module|Importing a module script failed|Loading module|Loading chunk|Unable to preload CSS/i;
 const LAZY_LOAD_TIMEOUT_MS = 12000;
 
-function triggerCacheBustReload() {
-  if (typeof window === "undefined") return;
-  const reloadKey = `lazy-route-reload:${window.location.pathname}${window.location.search}`;
-  const last = sessionStorage.getItem(reloadKey);
-  // Only reload once per minute per path to avoid infinite loops
-  if (last && Date.now() - Number(last) < 60_000) return;
-  sessionStorage.setItem(reloadKey, String(Date.now()));
-  const url = new URL(window.location.href);
-  url.searchParams.set("__reload", String(Date.now()));
-  window.location.replace(url.toString());
-}
-
+/*
+ * Laedt eine Seite nach. Schlaegt das fehl (fehlender Chunk nach einem Deploy,
+ * Zeitueberschreitung), wird der Fehler an die Fehlergrenze weitergereicht,
+ * die eine Karte mit „Jetzt neu laden“ zeigt. Bis 26.10.2026 lud die App hier
+ * selbst neu und hat dabei Eingaben verworfen.
+ */
 function lazyRoute<T extends ComponentType<any>>(importer: () => Promise<LazyModule<T>>) {
   return lazy(async () => {
-    // Race the import against a timeout so a hanging chunk doesn't leave the user
-    // stuck on the Suspense fallback (skeletons) forever.
+    // Gegen eine Zeitgrenze laufen lassen, damit ein haengender Chunk nicht
+    // ewig die Platzhalter stehen laesst.
+    let zeitgeber: ReturnType<typeof setTimeout> | undefined;
     const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(() => reject(new Error("Loading chunk timeout")), LAZY_LOAD_TIMEOUT_MS);
+      zeitgeber = setTimeout(() => reject(new Error("Loading chunk timeout")), LAZY_LOAD_TIMEOUT_MS);
     });
-
     try {
       return (await Promise.race([importer(), timeoutPromise])) as LazyModule<T>;
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-
-      if (typeof window !== "undefined" && LAZY_IMPORT_ERROR_RE.test(message)) {
-        triggerCacheBustReload();
-        // Hold here so React doesn't unmount the Suspense boundary before the reload happens.
-        return new Promise<LazyModule<T>>(() => {});
-      }
-
-      throw error;
+    } finally {
+      clearTimeout(zeitgeber);
     }
   });
 }

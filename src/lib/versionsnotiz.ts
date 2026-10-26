@@ -203,7 +203,9 @@ export function zaehleUngeleseneNotizen(
  * Wie auf einen neuen Build reagiert wird, für alle Nutzer.
  *
  *  - `kritisch`: der Warnstreifen, ein neuer Eintrag verlangt das Neuladen.
- *  - `still`: beim nächsten Seitenwechsel ohne Rückfrage neu laden.
+ *  - `still`: ein dezenter Hinweis „Neue Version verfügbar“. Bis 26.10.2026
+ *    hieß das: beim nächsten Seitenwechsel ohne Rückfrage neu laden; heute
+ *    lädt nur noch der Klick auf den Knopf neu.
  *  - `nichts`: für diesen Build wurde schon einmal still neu geladen, und er
  *    ist trotzdem noch nicht da (Zwischenspeicher, Auslieferung noch nicht
  *    fertig). Ein zweiter Versuch könnte zur Schleife werden, also Ruhe bis
@@ -214,8 +216,7 @@ export function zaehleUngeleseneNotizen(
  * Streifen. Einen Streifen gibt es nur noch bei `kritisch`, und seit dem
  * 27.09.2026 nur für einen freigegebenen Eintrag (Christian sieht ihn schon
  * vorher). Die Rolle zählt hier bewusst nicht: Ein kritischer Eintrag heißt,
- * der alte Stand speichert für niemanden mehr richtig. Ohne Streifen lädt die
- * App trotzdem still beim nächsten Seitenwechsel neu.
+ * der alte Stand speichert für niemanden mehr richtig.
  */
 export type NeuladenArt = "kritisch" | "still" | "nichts";
 

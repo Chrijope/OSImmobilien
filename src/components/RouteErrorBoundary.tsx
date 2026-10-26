@@ -1,6 +1,7 @@
 import React from "react";
 import { merkeFehler } from "@/lib/fehlerKontext";
 import { oeffneFehlerMeldung } from "@/lib/fehlerMelden";
+import { istChunkLadefehler } from "@/lib/chunkLadefehler";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, RefreshCw, Bug } from "lucide-react";
 
@@ -33,26 +34,8 @@ export class RouteErrorBoundary extends React.Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error("RouteErrorBoundary caught:", error?.message, error?.stack, "Component:", errorInfo?.componentStack);
 
-    // Auto-reload on stale chunk errors
-    if (
-      error.message?.includes("dynamically imported module") ||
-      error.message?.includes("Failed to fetch dynamically imported module") ||
-      error.message?.includes("error loading dynamically imported module") ||
-      error.message?.includes("Importing a module script failed") ||
-      error.message?.includes("Loading module") ||
-      error.message?.includes("Loading chunk") ||
-      // Vite meldet fehlende CSS-Chunks nach einem Deploy so (17.10.2026).
-      error.message?.includes("Unable to preload CSS")
-    ) {
-      const reloadKey = "reb_reload_" + window.location.pathname;
-      const lastReload = sessionStorage.getItem(reloadKey);
-      if (!lastReload || Date.now() - Number(lastReload) > 10000) {
-        sessionStorage.setItem(reloadKey, String(Date.now()));
-        const url = new URL(window.location.href);
-        url.searchParams.set("__reload", String(Date.now()));
-        window.location.replace(url.toString());
-      }
-    }
+    // Kein automatisches Neuladen (26.10.2026). Bei einem fehlenden Chunk
+    // zeigt die Karte „Jetzt neu laden“, der Nutzer entscheidet.
   }
 
   componentDidUpdate(prevProps: Props) {
@@ -67,6 +50,27 @@ export class RouteErrorBoundary extends React.Component<Props, State> {
   };
 
   render() {
+    if (this.state.hasError && istChunkLadefehler(this.state.error)) {
+      // Nach einem Deploy fehlt der alte Programmteil. „Erneut versuchen“
+      // hilft hier nicht, React merkt sich den Fehlschlag; nur Neuladen.
+      return (
+        <div className="flex-1 flex items-center justify-center p-6">
+          <div className="text-center max-w-md space-y-4">
+            <RefreshCw className="h-10 w-10 text-muted-foreground mx-auto" />
+            <h2 className="text-lg font-semibold text-foreground">Neue Version verfügbar</h2>
+            <p className="text-sm text-muted-foreground">
+              Diese Seite gehört zu einer neueren Fassung des CRM. Lade neu, um sie zu öffnen.
+              Andere Bereiche kannst du weiter nutzen.
+            </p>
+            <Button size="sm" onClick={() => window.location.reload()}>
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Jetzt neu laden
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
     if (this.state.hasError) {
       return (
         <div className="flex-1 flex items-center justify-center p-6">

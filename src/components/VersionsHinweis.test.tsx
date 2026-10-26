@@ -3,17 +3,16 @@ import { render, screen, fireEvent, waitFor, act } from "@testing-library/react"
 import { MemoryRouter, useNavigate } from "react-router-dom";
 
 /**
- * Der Warnstreifen darf nur zwei Dinge tun: auf Klick neu laden und sich
- * wegklicken lassen. Das stille Neuladen darf nur beim Seitenwechsel
- * geschehen, nie mitten auf einer Seite und nie im Videogespraech. Beides
- * kostet sonst Arbeit oder einen Kunden, deshalb steht es hier abgesichert.
+ * Der Streifen darf nur zwei Dinge tun: auf Klick neu laden und sich
+ * wegklicken lassen. Von selbst laedt er nie neu, auch nicht beim
+ * Seitenwechsel (seit 26.10.2026). Das kostet sonst Eingaben oder im
+ * Videogespraech einen Kunden, deshalb steht es hier abgesichert.
  */
 
 const pruefung = vi.hoisted(() => ({
   sichtbar: true,
-  still: false,
+  kritisch: true,
   ausblenden: vi.fn(),
-  merkeStill: vi.fn(),
 }));
 
 const videoraum = vi.hoisted(() => ({
@@ -28,9 +27,8 @@ const dialog = vi.hoisted(() => ({
 vi.mock("@/lib/versionspruefung", () => ({
   useVersionsHinweis: () => ({
     sichtbar: pruefung.sichtbar,
-    still: pruefung.still,
+    kritisch: pruefung.kritisch,
     ausblenden: pruefung.ausblenden,
-    merkeStill: pruefung.merkeStill,
   }),
 }));
 
@@ -63,9 +61,8 @@ const neuLaden = vi.fn();
 
 beforeEach(() => {
   pruefung.sichtbar = true;
-  pruefung.still = false;
+  pruefung.kritisch = true;
   pruefung.ausblenden.mockClear();
-  pruefung.merkeStill.mockClear();
   videoraum.wert = null;
   dialog.antwort = true;
   dialog.aufrufe = [];
@@ -92,7 +89,7 @@ describe("VersionsHinweis", () => {
     expect(screen.getByText("Bitte kurz neu laden, damit alles richtig gespeichert wird.")).toBeTruthy();
     // Kein Verweis auf die News-Seite, nur der Knopf.
     expect(screen.queryByRole("link")).toBeNull();
-    expect(screen.getByRole("button", { name: "Jetzt laden" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Jetzt neu laden" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Hinweis ausblenden" })).toBeTruthy();
   });
 
@@ -100,7 +97,7 @@ describe("VersionsHinweis", () => {
     render(<VersionsHinweis />);
     expect(neuLaden).not.toHaveBeenCalled();
 
-    fireEvent.click(screen.getByRole("button", { name: "Jetzt laden" }));
+    fireEvent.click(screen.getByRole("button", { name: "Jetzt neu laden" }));
     await waitFor(() => expect(neuLaden).toHaveBeenCalledTimes(1));
     // Ohne laufendes Gespraech gibt es keine Rueckfrage.
     expect(dialog.aufrufe).toHaveLength(0);
@@ -118,7 +115,7 @@ describe("VersionsHinweis", () => {
     dialog.antwort = false;
 
     render(<VersionsHinweis />);
-    fireEvent.click(screen.getByRole("button", { name: "Jetzt laden" }));
+    fireEvent.click(screen.getByRole("button", { name: "Jetzt neu laden" }));
 
     await waitFor(() => expect(dialog.aufrufe).toHaveLength(1));
     // Abgelehnt heisst: Das Gespraech laeuft weiter.
@@ -130,29 +127,25 @@ describe("VersionsHinweis", () => {
     dialog.antwort = true;
 
     render(<VersionsHinweis />);
-    fireEvent.click(screen.getByRole("button", { name: "Jetzt laden" }));
+    fireEvent.click(screen.getByRole("button", { name: "Jetzt neu laden" }));
 
     await waitFor(() => expect(neuLaden).toHaveBeenCalledTimes(1));
   });
 
-  it("laedt still genau einmal beim naechsten Seitenwechsel, vorher nicht", () => {
-    pruefung.sichtbar = false;
-    pruefung.still = true;
-    mitRouter();
+  it("zeigt bei einem normalen Update den dezenten Hinweis mit Knopf", () => {
+    pruefung.kritisch = false;
+    render(<VersionsHinweis />);
+    expect(screen.getByText("Neue Version verfügbar. Lade neu, wenn es dir passt.")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Jetzt neu laden" })).toBeTruthy();
     expect(neuLaden).not.toHaveBeenCalled();
-    expect(screen.queryByRole("status")).toBeNull();
-
-    act(() => { fireEvent.click(screen.getByText("wechseln")); });
-    expect(pruefung.merkeStill).toHaveBeenCalledTimes(1);
-    expect(neuLaden).toHaveBeenCalledTimes(1);
   });
 
-  it("laedt im laufenden Videogespraech auch beim Seitenwechsel nicht still", () => {
-    videoraum.wert = { aktiv: { raumId: "raum-1" } };
-    pruefung.sichtbar = false;
-    pruefung.still = true;
+  it("laedt auch beim Seitenwechsel nicht von selbst neu", () => {
+    pruefung.kritisch = false;
     mitRouter();
     act(() => { fireEvent.click(screen.getByText("wechseln")); });
     expect(neuLaden).not.toHaveBeenCalled();
+    // Der Hinweis steht weiter da.
+    expect(screen.getByRole("status")).toBeTruthy();
   });
 });

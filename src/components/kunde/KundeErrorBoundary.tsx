@@ -7,25 +7,13 @@ import i18n from "@/i18n";
 interface Props { children: ReactNode }
 interface State { hasError: boolean }
 
-/** Meldungen eines abgebrochenen Chunk-Ladens (z. B. nach einem Deploy). */
-const CHUNK_ERROR_HINTS = [
-  "dynamically imported module",
-  "Failed to fetch dynamically imported module",
-  "error loading dynamically imported module",
-  "Importing a module script failed",
-  "Loading module",
-  "Loading chunk",
-  "Unable to preload CSS",
-];
-
 /**
  * Freundlicher Error Boundary speziell fürs Kundenportal.
  *
  * Unterschied zur internen RouteErrorBoundary: Kunden sehen keinen Stacktrace
  * und keinen Fehler-melden-Dialog, sondern eine ruhige Meldung in Du-Form.
- * Das Auto-Reload bei veralteten Chunks übernehmen wir von der internen
- * Variante, sonst bliebe das Portal nach einem Deploy auf einem alten Bundle
- * hängen.
+ * Bei veralteten Chunks nach einem Deploy wird nicht mehr selbst neu geladen
+ * (26.10.2026), der Knopf „Seite neu laden“ unten genügt.
  */
 export class KundeErrorBoundary extends Component<Props, State> {
   state: State = { hasError: false };
@@ -36,19 +24,6 @@ export class KundeErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, info: any) {
     console.error("[KundeErrorBoundary]", error, info);
-
-    const message = error?.message || "";
-    if (CHUNK_ERROR_HINTS.some((hint) => message.includes(hint))) {
-      // Nur einmal pro Pfad und Zeitfenster neu laden, sonst droht eine Schleife.
-      const reloadKey = "kunde_reb_reload_" + window.location.pathname;
-      const lastReload = sessionStorage.getItem(reloadKey);
-      if (!lastReload || Date.now() - Number(lastReload) > 10000) {
-        sessionStorage.setItem(reloadKey, String(Date.now()));
-        const url = new URL(window.location.href);
-        url.searchParams.set("__reload", String(Date.now()));
-        window.location.replace(url.toString());
-      }
-    }
   }
 
   componentDidUpdate(prevProps: Props) {

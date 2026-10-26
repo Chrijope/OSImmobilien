@@ -1,5 +1,6 @@
 import React from "react";
 import { merkeFehler, speichereFuerNeuladen } from "@/lib/fehlerKontext";
+import { istChunkLadefehler } from "@/lib/chunkLadefehler";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle } from "lucide-react";
 
@@ -27,26 +28,8 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error(`[ErrorBoundary ${this.state.errorId}] caught:`, error, errorInfo);
-    // Auto-reload on dynamic import failures (stale chunks after deploy)
-    if (
-      error.message?.includes("dynamically imported module") ||
-      error.message?.includes("Failed to fetch dynamically imported module") ||
-      error.message?.includes("error loading dynamically imported module") ||
-      error.message?.includes("Importing a module script failed") ||
-      error.message?.includes("Loading module") ||
-      error.message?.includes("Loading chunk") ||
-      // Vite meldet fehlende CSS-Chunks nach einem Deploy so (17.10.2026).
-      error.message?.includes("Unable to preload CSS")
-    ) {
-      const reloadKey = "eb_reload_" + window.location.pathname;
-      const lastReload = sessionStorage.getItem(reloadKey);
-      if (!lastReload || Date.now() - Number(lastReload) > 10000) {
-        sessionStorage.setItem(reloadKey, String(Date.now()));
-        const url = new URL(window.location.href);
-        url.searchParams.set("__reload", String(Date.now()));
-        window.location.replace(url.toString());
-      }
-    }
+    // Kein automatisches Neuladen mehr (26.10.2026), auch nicht bei einem
+    // fehlenden Chunk: Die Karte unten bietet „Jetzt neu laden“ an.
   }
 
   render() {
@@ -59,7 +42,9 @@ export class ErrorBoundary extends React.Component<Props, State> {
               Ein unerwarteter Fehler ist aufgetreten
             </h1>
             <p className="text-muted-foreground text-sm">
-              {this.state.error?.message || "Bitte lade die Seite neu."}
+              {istChunkLadefehler(this.state.error)
+                ? "Es gibt eine neue Version des CRM. Bitte lade die Seite neu."
+                : this.state.error?.message || "Bitte lade die Seite neu."}
             </p>
             {this.state.errorId && (
               <p className="text-xs text-muted-foreground font-mono">
@@ -71,12 +56,8 @@ export class ErrorBoundary extends React.Component<Props, State> {
               </p>
             )}
             <div className="flex flex-col sm:flex-row gap-2 justify-center">
-              <Button onClick={() => {
-                const url = new URL(window.location.href);
-                url.searchParams.set("__retry", String(Date.now()));
-                window.location.replace(url.toString());
-              }}>
-                Seite neu laden
+              <Button onClick={() => window.location.reload()}>
+                Jetzt neu laden
               </Button>
               {/*
                 Der Meldedialog lebt innerhalb der Anwendung, die hier gerade
