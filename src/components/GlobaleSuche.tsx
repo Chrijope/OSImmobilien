@@ -39,6 +39,7 @@ import { getUserSetting } from "@/lib/userSettingsCache";
 import { handbuchPartnerFreigeschaltet } from "@/lib/handbuch/zugang";
 import { useVideocallFreigabe } from "@/hooks/useVideocallFreigabe";
 import { useLiveVersion } from "@/hooks/useLiveData";
+import { istApple } from "@/lib/tastenkuerzel";
 
 const ZULETZT_KEY = "osimmo_suche_zuletzt";
 const MAX_JE_GRUPPE = 6;
@@ -400,7 +401,8 @@ export function SuchFeld() {
         />
         {!suche && (
           <kbd className="hidden md:inline text-bildunterschrift font-medium text-muted-foreground/70 border border-border/60 rounded px-1 py-0.5">
-            ⌘K
+            {/* Ab Tabletbreite sichtbar; unter Windows heißt die Taste Strg (A8). */}
+            {istApple() ? "⌘K" : "Strg K"}
           </kbd>
         )}
       </div>

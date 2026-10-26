@@ -234,6 +234,7 @@ import { useUser } from "@/contexts/UserContext";
 import { ansprechpartnerAdresse } from "@/lib/ansprechpartnerAdresse";
 import { nichtErreichtMailVerarbeiten } from "@/lib/nichtErreichtMails";
 import { QuickActionDialog } from "@/components/kunden/QuickActionDialog";
+import { KUERZEL_AUFGABE } from "@/lib/tastenkuerzel";
 import { AufgabeBearbeitenDialog } from "@/components/kunden/AufgabeBearbeitenDialog";
 import { starteAnrufFuerKontakt, type AnrufQuelle } from "@/lib/anrufStarten";
 import { CallSessionBar } from "@/components/kunde/CallSessionBar";
@@ -1200,6 +1201,12 @@ export default function KundenDetail() {
     useState<"notizen" | "manuell" | "system">("notizen");
   const [aktivitaetenFilter, setAktivitaetenFilter] = useState("alle");
   const [actionDialog, setActionDialog] = useState<AktivitaetEntry["art"] | null>(null);
+  // Tastenkürzel T (A8): Aufgabe für diesen Kunden anlegen.
+  useEffect(() => {
+    const oeffnen = () => setActionDialog((offen) => offen ?? "aufgabe");
+    window.addEventListener(KUERZEL_AUFGABE, oeffnen);
+    return () => window.removeEventListener(KUERZEL_AUFGABE, oeffnen);
+  }, []);
   // Wurde das offene Anruf-Protokoll durch einen gestarteten Anruf geöffnet?
   // Dann fragt der Dialog beim Schließen ohne Speichern nach.
   const [anrufGestartet, setAnrufGestartet] = useState(false);

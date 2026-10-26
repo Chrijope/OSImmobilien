@@ -8,6 +8,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { NaechsterSchritt } from "@/components/kunden/NaechsterSchritt";
 import { NeuerTabLink } from "@/components/kunden/NeuerTabLink";
 import { zeilenKlick } from "@/lib/zeilenNavigation";
+import { listenzeile, useListenTastatur } from "@/hooks/useListenTastatur";
 import { starteAnrufFuerKontakt } from "@/lib/anrufStarten";
 import { TableSkeleton } from "@/components/ui/table-skeleton";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -208,6 +209,8 @@ export default function AlleKontakte() {
   const [nurNieKontaktiert, setNurNieKontaktiert] = useState(false);
   // Ansicht „Ohne nächsten Schritt“ (24.10.2026), Gegenstück zur Kachel auf der Startseite.
   const [nurOhneSchritt, setNurOhneSchritt] = useState(false);
+  // ↑ ↓ ↵ in der Tabelle (A8).
+  const listenTastatur = useListenTastatur();
   const [nurMitTermin, setNurMitTermin] = useState(false);
   const [beraterFilter, setBeraterFilter] = useState<string>("-");
   const [showArchived, setShowArchived] = useState(false);
@@ -927,12 +930,12 @@ export default function AlleKontakte() {
                 ))}
               </TableRow>
             </TableHeader>
-            <TableBody>
+            <TableBody onKeyDown={listenTastatur.onKeyDown}>
               {(() => {
                 const colSpan = 11;
                 if (!cacheReady) return <TableRow><TableCell colSpan={colSpan}><TableSkeleton columns={colSpan} rows={6} /></TableCell></TableRow>;
                 if (filtered.length === 0) return <TableRow><TableCell colSpan={colSpan} className="text-center py-8 text-muted-foreground">Keine Kontakte gefunden.</TableCell></TableRow>;
-                return paged.map(k => {
+                return paged.map((k, zeilenIndex) => {
                   const kat = kategorieLabel(k);
                   const stufeLabel = investmentStufenText(k);
                   const checked = selectedIds.has(k.id);
@@ -941,7 +944,8 @@ export default function AlleKontakte() {
                   return (
                     <TableRow
                       key={k.id}
-                      className="group cursor-pointer hover:bg-muted/50"
+                      {...listenzeile(zeilenIndex)}
+                      className="group cursor-pointer hover:bg-muted/50 focus-visible:outline-none focus-visible:bg-accent"
                       onClick={e => zeilenKlick(e, profilUrl, navigate)}
                       onAuxClick={e => zeilenKlick(e, profilUrl, navigate)}
                     >

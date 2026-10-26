@@ -9,6 +9,7 @@ import { schreibenSperren } from "./VorschauKundeKomplett";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { HeaderBar } from "@/components/HeaderBar";
+import { TastenkuerzelEmpfaenger } from "@/components/TastenkuerzelEmpfaenger";
 import { Kopfbereich } from "@/components/Kopfbereich";
 import { CrmTutorialProvider } from "@/components/tutorial/CrmTutorial";
 import Index from "./Index";
@@ -127,6 +128,8 @@ export default function VorschauCrm() {
               <Route path="inbox" element={<Inbox />} />
             </Routes>
           </main>
+          {/* Wie im echten Rahmen (DashboardLayout): Tastenkürzel (A8). */}
+          <TastenkuerzelEmpfaenger />
         </div>
       </div>
     </CrmTutorialProvider></SidebarProvider>

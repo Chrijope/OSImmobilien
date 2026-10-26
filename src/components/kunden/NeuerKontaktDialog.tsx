@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -40,6 +40,18 @@ export function NeuerKontaktDialog({ triggerLabel = "Kontakt anlegen", size = "s
   const navigate = useNavigate();
   const { user } = useUser();
   const [open, setOpen] = useState(false);
+  /*
+   * `?neu=1` öffnet den Dialog (Tastenkürzel N, A8). Der Parameter wird
+   * gleich wieder entfernt, damit Zurück oder Neuladen ihn nicht erneut öffnet.
+   */
+  const [suche, setSuche] = useSearchParams();
+  useEffect(() => {
+    if (suche.get("neu") !== "1") return;
+    setOpen(true);
+    const ohne = new URLSearchParams(suche);
+    ohne.delete("neu");
+    setSuche(ohne, { replace: true });
+  }, [suche, setSuche]);
   const [newKontakt, setNewKontakt] = useState(emptyForm);
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
 

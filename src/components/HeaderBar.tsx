@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Bell, Settings, MessageSquare, CheckSquare, Calendar, Trophy, GitBranch, Monitor, GraduationCap, ChevronRight, SlidersHorizontal, AtSign, LogOut, ShieldCheck, ShieldOff, Info, User, ArrowLeft } from "lucide-react";
+import { Bell, Moon, Sun, SunMoon, Settings, MessageSquare, CheckSquare, Calendar, Trophy, GitBranch, Monitor, GraduationCap, ChevronRight, SlidersHorizontal, AtSign, LogOut, ShieldCheck, ShieldOff, Info, User, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { TestModeHeaderBadge } from "@/components/TestModeBadge";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -52,6 +52,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { onCacheChange, cacheGet } from "@/lib/dataCache";
 import { getFollowUps } from "@/lib/followUpStore";
 import { istBewerberMeldung, siehtBewerberMeldungen } from "@/lib/bewerberRechte";
@@ -148,7 +149,7 @@ function nameOderErsatz(name: unknown): string {
 }
 
 export function HeaderBar() {
-  const { user, logout, authUser } = useUser();
+  const { user, logout, authUser, farbschema, setzeFarbschema } = useUser();
   const navigate = useNavigate();
   const roleConfig = ROLES.find((r) => r.id === user.role);
   const [activeFilter, setActiveFilter] = useState<NotificationCategory>("alle");
@@ -949,6 +950,45 @@ export function HeaderBar() {
               globalen Suche, aus demselben Grund.
             */}
             <DropdownMenuContent align="end" className="w-56 z-[70]">
+              {/* Darstellung (26.10.2026): mit einem Klick von jeder Seite, statt als Knöpfe in der Kopfleiste. */}
+              {setzeFarbschema && (
+                <>
+                  {/*
+                    Platzsparend nur die drei Symbole nebeneinander (Christian,
+                    26.10.2026); die Bezeichnung erscheint beim Überfahren und
+                    steht für Vorleseprogramme im Label. Das Menü bleibt offen,
+                    damit die Wirkung gleich zu sehen ist.
+                  */}
+                  <div className="flex items-center justify-between gap-2 px-2 py-1.5">
+                    <span className="text-hinweis text-muted-foreground">Darstellung</span>
+                    <div role="radiogroup" aria-label="Darstellung" className="flex gap-0.5 rounded-lg bg-muted/60 p-0.5">
+                      {([
+                        { wert: "hell", label: "Hell", Icon: Sun },
+                        { wert: "dunkel", label: "Dunkel", Icon: Moon },
+                        { wert: "auto", label: "Automatisch wie das Gerät", Icon: SunMoon },
+                      ] as const).map(({ wert, label, Icon }) => (
+                        <Tooltip key={wert}>
+                          <TooltipTrigger asChild>
+                            <button
+                              type="button"
+                              role="radio"
+                              data-no-min
+                              aria-checked={farbschema === wert}
+                              aria-label={label}
+                              onClick={() => setzeFarbschema(wert)}
+                              className={`inline-flex h-7 w-8 items-center justify-center rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${farbschema === wert ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                            >
+                              <Icon className="h-4 w-4" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom" className="z-[80]">{label}</TooltipContent>
+                        </Tooltip>
+                      ))}
+                    </div>
+                  </div>
+                  <DropdownMenuSeparator />
+                </>
+              )}
               <DropdownMenuLabel>Einstellungen</DropdownMenuLabel>
               <DropdownMenuSeparator />
               {einstellungenMenue(user.role).map((eintrag) =>

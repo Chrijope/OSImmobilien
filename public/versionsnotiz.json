@@ -2753,13 +2753,13 @@
     "datum": "2026-10-26",
     "art": "neu",
     "titel": "Hell, Dunkel oder Automatisch",
-    "kurztext": "In den Einstellungen wählst du jetzt Hell, Dunkel oder Automatisch. Mit Automatisch folgt das CRM der Einstellung deines Geräts.",
+    "kurztext": "Über das Zahnrad oben rechts wählst du jetzt Hell, Dunkel oder Automatisch. Mit Automatisch folgt das CRM der Einstellung deines Geräts.",
     "wasHeisstDasFuerDich": [
       "Deine Wahl bleibt auch nach dem Neuladen erhalten.",
       "Gemerkt wird je Gerät: Am Handy kann es anders sein als am Schreibtisch.",
       "Der Mond oben in der Kopfleiste ist dafür weggefallen, die Leiste ist ruhiger."
     ],
-    "soFindestDuEs": "Einstellungen, Profil, ganz oben unter Darstellung",
+    "soFindestDuEs": "Zahnrad oben rechts, ganz oben unter Darstellung. Ebenso in den Einstellungen unter Profil.",
     "kritisch": false,
     "zielrollen": [
       "alle"
@@ -2858,6 +2858,24 @@
       "Die Anzeige „warm“ und „heiß“ beim Lead-Score bleibt, wie sie ist."
     ],
     "soFindestDuEs": "Überall im CRM",
+    "kritisch": false,
+    "zielrollen": [
+      "alle"
+    ]
+  },
+  {
+    "nr": 140,
+    "datum": "2026-10-26",
+    "art": "neu",
+    "titel": "Tastenkürzel",
+    "kurztext": "Mit der Tastatur geht vieles schneller. Drück ? und du siehst alle Kürzel auf einen Blick.",
+    "wasHeisstDasFuerDich": [
+      "N legt einen neuen Kontakt an, T im Kundenprofil eine Aufgabe.",
+      "⌘ ↵ (unter Windows Strg ↵) speichert in einem Dialog.",
+      "In Alle Kontakte bewegst du dich mit ↑ und ↓ und öffnest mit ↵.",
+      "Während du in ein Feld tippst, wirken die Kürzel nicht."
+    ],
+    "soFindestDuEs": "Taste ? auf jeder Seite des CRM",
     "kritisch": false,
     "zielrollen": [
       "alle"

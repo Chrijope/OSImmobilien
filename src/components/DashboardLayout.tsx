@@ -12,6 +12,7 @@ import { useFollowUpInboxEscalation } from "@/hooks/useFollowUpInboxEscalation";
 import { useKontaktversuchInboxReminder } from "@/hooks/useKontaktversuchInboxReminder";
 import { useStagnationInboxNudges } from "@/hooks/useStagnationInboxNudges";
 import { useNeueEinheitGlocke } from "@/hooks/useNeueEinheitGlocke";
+import { TastenkuerzelEmpfaenger } from "@/components/TastenkuerzelEmpfaenger";
 import { useWarteraumBenachrichtigung } from "@/hooks/useWarteraumBenachrichtigung";
 import { useRealtimeChannelMonitor } from "@/hooks/useRealtimeChannelMonitor";
 import { useRoutenTabellen } from "@/hooks/useRoutenTabellen";
@@ -356,6 +357,8 @@ export function AppShell() {
                 </KundenMfaGuard>
             </KundenportalLockGuard>
           </main>
+          {/* Tastenkürzel (A8): nur im internen CRM, nicht im Kunden- oder Tippgeberportal. */}
+          <TastenkuerzelEmpfaenger />
           <TestModeBadge />
         </div>
       </div>
