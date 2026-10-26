@@ -199,7 +199,8 @@
     padding:20px 24px;background:transparent;border-color:transparent;box-shadow:none;margin-bottom:16px;
   }
   [data-crm-design="studio"][data-glas="liquid"] [data-studio="dashboard-begruessung"] h1 { font-size:30px; }
-  [data-crm-design="studio"][data-glas="liquid"] [data-studio="dashboard-begruessung"] > div:last-child { margin-top:12px;padding:10px 14px;background:#ffffff70; }
+  /* Glaubenssatz: ein normales Kästchen wie die Karten darunter, hell und dunkel (26.10.2026; vorher #ffffff70, im Dunkeln neblig). */
+  [data-crm-design="studio"][data-glas="liquid"] [data-studio="dashboard-begruessung"] > div:last-child { margin-top:12px;padding:10px 14px;background:hsl(var(--card));border-color:hsl(var(--border));box-shadow:var(--studio-innen-schatten); }
   [data-crm-design="studio"][data-glas="liquid"] #dashboard-aktionen h2 { font-size:14px;margin-bottom:8px; }
   [data-crm-design="studio"][data-glas="liquid"] [data-studio="dashboard-kopf"] { display:grid;gap:16px; }
   [data-crm-design="studio"][data-glas="liquid"] [data-studio="dashboard-kopf"] > * { margin-top:0;min-width:0; }
@@ -211,12 +212,15 @@
   [data-crm-design="studio"][data-glas="liquid"] section[aria-labelledby="dashboard-heute-title"] [data-ui="kennzahl"] { display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:12px; }
   [data-crm-design="studio"][data-glas="liquid"] section[aria-labelledby="dashboard-heute-title"] [data-ui="kennzahl-wert"] { grid-column:2;grid-row:1 / span 2;font-size:34px;margin:0; }
   [data-crm-design="studio"][data-glas="liquid"] section[aria-labelledby="dashboard-heute-title"] [data-ui="kennzahl-zusatz"] { margin-top:4px; }
-  [data-crm-design="studio"][data-glas="liquid"] section[aria-labelledby="dashboard-fortschritt-title"] { padding:24px;background:#ffffff85; }
+  /* Fortschritt & Kennzahlen: deckende Karte statt #ffffff85, sonst im Dunkeln neblig (26.10.2026). */
+  [data-crm-design="studio"][data-glas="liquid"] section[aria-labelledby="dashboard-fortschritt-title"] { padding:24px;background:hsl(var(--card)); }
   [data-crm-design="studio"][data-glas="liquid"] section[aria-labelledby="dashboard-fortschritt-title"] > .grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
-  [data-crm-design="studio"][data-glas="liquid"] section[aria-labelledby="dashboard-fortschritt-title"] > .grid > :first-child { grid-column:1 / -1;background:linear-gradient(120deg,#e2f2e9,#ffffff) !important; }
+  /* Umsatz beurkundet hervorgehoben, über Tokens: hell Mint, dunkel Tannengrün. Vorher ein Verlauf nach Weiß, im Dunkeln unlesbar. */
+  [data-crm-design="studio"][data-glas="liquid"] section[aria-labelledby="dashboard-fortschritt-title"] > .grid > :first-child { grid-column:1 / -1;background:hsl(var(--accent)) !important; }
   [data-crm-design="studio"][data-glas="liquid"] section[aria-labelledby="dashboard-fortschritt-title"] [data-ui="kennzahl-wert"] { font-size:36px; }
   @media(min-width:1150px) {
-    [data-crm-design="studio"][data-glas="liquid"] [data-studio="dashboard-kopf"] { grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);align-items:start; }
+    /* Heute zu tun und Fortschritt gleich breit, wie die Kacheln darunter (26.10.2026). */
+    [data-crm-design="studio"][data-glas="liquid"] [data-studio="dashboard-kopf"] { grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start; }
     [data-crm-design="studio"][data-glas="liquid"] [data-studio="dashboard-kopf"] > div:first-child { grid-column:1 / -1; }
   }
   @media(max-width:600px) {

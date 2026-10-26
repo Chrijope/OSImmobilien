@@ -2931,5 +2931,15 @@
     "zielrollen": [
       "alle"
     ]
+  },
+  {
+    "nr": 144,
+    "datum": "2026-10-26",
+    "titel": "Startseite klarer, auch im Dunkelmodus",
+    "text": "Der Glaubenssatz und „Fortschritt & Kennzahlen“ stehen jetzt in normalen Kästchen wie alle anderen, ohne Schleier. „Heute zu tun“ und „Fortschritt & Kennzahlen“ sind gleich breit wie die Kacheln darunter. In „Alle Kontakte“ ist die Quelle im Dunkelmodus gut lesbar.",
+    "kritisch": false,
+    "zielrollen": [
+      "alle"
+    ]
   }
 ]

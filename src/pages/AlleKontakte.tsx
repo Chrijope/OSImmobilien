@@ -95,28 +95,29 @@ interface AlleKontakteFilter {
   showArchived?: boolean;
 }
 
+// Im Dunkeln hellere Schrift auf etwas kräftigerem Grund, sonst ist Blau auf Dunkelgrün kaum lesbar (26.10.2026).
 const QUELLE_COLORS: Record<string, string> = {
-  "Website": "bg-emerald-500/10 text-emerald-600",
-  "Instagram": "bg-pink-500/10 text-pink-600",
-  "Facebook": "bg-blue-500/10 text-blue-600",
-  "LinkedIn": "bg-sky-500/10 text-sky-600",
-  "TikTok": "bg-violet-500/10 text-violet-600",
-  "Empfehlung": "bg-amber-500/10 text-amber-600",
-  "Veranstaltung": "bg-orange-500/10 text-orange-600",
-  "Netzwerk": "bg-teal-500/10 text-teal-600",
-  "Meta Kampagne": "bg-blue-500/10 text-blue-600",
-  "Google Ads": "bg-amber-500/10 text-amber-600",
-  "Flyer": "bg-lime-500/10 text-lime-600",
-  "Kaltakquise": "bg-slate-500/10 text-slate-600",
+  "Website": "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-400/15 dark:text-emerald-300",
+  "Instagram": "bg-pink-500/10 text-pink-600 dark:bg-pink-400/15 dark:text-pink-300",
+  "Facebook": "bg-blue-500/10 text-blue-600 dark:bg-blue-400/15 dark:text-blue-300",
+  "LinkedIn": "bg-sky-500/10 text-sky-600 dark:bg-sky-400/15 dark:text-sky-300",
+  "TikTok": "bg-violet-500/10 text-violet-600 dark:bg-violet-400/15 dark:text-violet-300",
+  "Empfehlung": "bg-amber-500/10 text-amber-600 dark:bg-amber-400/15 dark:text-amber-300",
+  "Veranstaltung": "bg-orange-500/10 text-orange-600 dark:bg-orange-400/15 dark:text-orange-300",
+  "Netzwerk": "bg-teal-500/10 text-teal-600 dark:bg-teal-400/15 dark:text-teal-300",
+  "Meta Kampagne": "bg-blue-500/10 text-blue-600 dark:bg-blue-400/15 dark:text-blue-300",
+  "Google Ads": "bg-amber-500/10 text-amber-600 dark:bg-amber-400/15 dark:text-amber-300",
+  "Flyer": "bg-lime-500/10 text-lime-600 dark:bg-lime-400/15 dark:text-lime-300",
+  "Kaltakquise": "bg-slate-500/10 text-slate-600 dark:bg-slate-400/15 dark:text-slate-300",
   "Sonstige": "bg-muted text-muted-foreground",
-  "Foto-Upload": "bg-indigo-500/10 text-indigo-600",
+  "Foto-Upload": "bg-indigo-500/10 text-indigo-600 dark:bg-indigo-400/15 dark:text-indigo-300",
   // Handbuch-Seite: Konfigurator und offene Selbstauskunft, seit 26.09.2026.
   // Ältere Leads tragen noch „Handbuch-Seite“.
-  "Konfigurator": "bg-orange-500/10 text-orange-700",
-  "Handbuch-Seite": "bg-orange-500/10 text-orange-700",
-  "meta": "bg-blue-500/10 text-blue-600",
-  "google": "bg-amber-500/10 text-amber-600",
-  "website": "bg-emerald-500/10 text-emerald-600",
+  "Konfigurator": "bg-orange-500/10 text-orange-700 dark:bg-orange-400/15 dark:text-orange-300",
+  "Handbuch-Seite": "bg-orange-500/10 text-orange-700 dark:bg-orange-400/15 dark:text-orange-300",
+  "meta": "bg-blue-500/10 text-blue-600 dark:bg-blue-400/15 dark:text-blue-300",
+  "google": "bg-amber-500/10 text-amber-600 dark:bg-amber-400/15 dark:text-amber-300",
+  "website": "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-400/15 dark:text-emerald-300",
 };
 
 // Kategorie folgt strikt der zentralen Bereichs-Logik aus kontaktPipeline.ts:
