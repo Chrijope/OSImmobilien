@@ -10,6 +10,7 @@ import { confirmDialog } from "@/lib/confirm";
 import { edgeFehlerMitGrund } from "@/lib/edgeFehler";
 import { protokolliereZugriff } from "@/lib/finanzierungEinreichung";
 import { finanzierungIstFrei } from "@/lib/finanzierungFreigabe";
+import { darfObjektpaketHinweisSehen, fehlendeFinanzierungsunterlagen } from "@/lib/finanzierungsObjektpaket";
 import { filterFinanzierungspartner } from "@/lib/finanzierungspartner";
 import { kundenUnterlagenDateien, type KundenordnerZeile } from "@/lib/finanzierungUnterlagenZip";
 import { getInvestmentMetaField, setInvestmentMeta, setInvestmentMetaNurLokal } from "@/lib/investmentsStore";
@@ -87,6 +88,16 @@ export function FinanzierungspartnerKarte(p: FinanzierungspartnerKarteProps) {
     saData: getInvestmentMetaField<Record<string, unknown> | null>(p.investmentId, "saData", null),
     saSnapshot: getInvestmentMetaField<Record<string, unknown> | null>(p.investmentId, "saSnapshot", null),
   });
+  /*
+   * Fehlen Pflichtunterlagen im Objektpaket, sieht die Leitung das vor dem
+   * Einreichen (Christian, 27.10.2026). Kein Riegel: Der Finanzierer kann mit
+   * der Bonitaet schon anfangen, das Paket wird nachgereicht.
+   */
+  const paketObjekt = p.objektId ? getObjektById(p.objektId) : undefined;
+  const paketWohnung = paketObjekt && p.wohnungId ? paketObjekt.wohnungen.find((w) => w.id === p.wohnungId) : undefined;
+  const paketFehlt = paketObjekt && darfObjektpaketHinweisSehen(user.role)
+    ? fehlendeFinanzierungsunterlagen(paketObjekt, paketWohnung).fehlend
+    : [];
   const sperrgrund = aktiveAuswahl.length === 0
     ? "Bitte mindestens einen Finanzierungspartner wählen."
     : !p.rvSigned
@@ -106,6 +117,7 @@ export function FinanzierungspartnerKarte(p: FinanzierungspartnerKarteProps) {
         ...empfaenger.map((u) => `• ${u.name}${u.email ? ` (${u.email})` : ""}`),
         "",
         "Die Mail enthält keine Unterlagen. Sie liegen nach der Anmeldung hier als ZIP bereit.",
+        ...(paketFehlt.length > 0 ? ["", `Im Objektpaket fehlt noch: ${paketFehlt.join(", ")}.`] : []),
         ...(schonGemeldet.length > 0
           ? ["", `Schon benachrichtigt: ${schonGemeldet.map((u) => `${u.name} am ${zeitpunkt(meldungVon(u.id)!.am)}`).join("; ")}. Die Mail geht dann erneut hinaus.`]
           : []),
@@ -234,6 +246,11 @@ export function FinanzierungspartnerKarte(p: FinanzierungspartnerKarteProps) {
 
       {p.darfBearbeiten && partner.length > 0 && (
         <div className="space-y-1">
+          {paketFehlt.length > 0 && (
+            <div className="rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-800 dark:text-amber-200">
+              <span className="font-semibold">Objektpaket unvollständig:</span> {paketFehlt.join(", ")} fehlt.
+            </div>
+          )}
           <Button size="sm" className="text-xs h-8" disabled={!!sperrgrund || sendet} onClick={benachrichtigen}>
             {sendet ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <Bell className="h-3.5 w-3.5 mr-1.5" />}
             Bei Finanzierern einreichen
