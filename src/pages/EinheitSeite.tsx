@@ -48,6 +48,7 @@ import { EinheitInvestmentrechner, INVESTMENTKALKULATION_ERKLAERUNG } from "@/co
 import { ExposeErzeugenDialog } from "@/components/expose/ExposeErzeugenDialog";
 import { exposePfad } from "@/lib/objektExposeStore";
 import { einheitUnterlagenGruppen } from "@/lib/objektUnterlagenRegeln";
+import { FinanzierungspaketHinweis } from "@/components/objektseite/FinanzierungspaketHinweis";
 import { EmptyState } from "@/components/ui/empty-state";
 import { darfEinheitInvestmentrechner, darfKundenaktionen, darfLotseNutzen, istInterneRolle, siehtAdminOnlyNavigation } from "@/lib/sidebarPermissions";
 import { ObjektLotse, KiMarke } from "@/components/objektseite/lotse/ObjektLotse";
@@ -610,6 +611,9 @@ function EinheitAnsicht({ objekt, wohnung: w }: { objekt: ObjektData; wohnung: O
           : '„Als Kunde ansehen" öffnet in einem neuen Tab genau die Seite, die der Kunde über seinen Link bekommt, ohne Link und ohne Zählen. „Kundenlink senden" schickt ihm seine persönliche Objektübersicht per Mail oder kopiert den Link: 60 Tage gültig, mit den Wohnungen des Hauses, die du auswählst, und neutralen Standardannahmen, nie mit Werten aus der Selbstauskunft. Jeder gesendete Link liegt im Kundenprofil beim Investment. „Exposé anzeigen" öffnet die interne Vorschau des Exposés in einem neuen Tab.'}
       </p>}
 
+      {/* Fehlende Unterlagen für die Finanzierung, nur für die internen Pflegerollen (27.10.2026). */}
+      <FinanzierungspaketHinweis objekt={objekt} wohnung={w} onZuDenDokumenten={() => reiterWaehlen("dokumente")}
+        hochladenZiel={darfWohnungPflegen ? `/objekte/${objekt.id}/verwaltung` : undefined} />
       <Tabs value={reiter} onValueChange={reiterWaehlen}>
         {/*
           Die Reiter durften nicht breiter werden als ihre Zelle: Mit nowrap lief

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import { MemoryRouter, Routes, Route, useLocation, useNavigate, useParams } from "react-router-dom";
 import type { ObjektData, ObjektWohnung } from "@/lib/objekteStore";
 
@@ -163,10 +163,20 @@ describe("Anordnung der Objektseite", () => {
     expect(raster.className).toContain("xl:grid-cols-1");
     expect(raster.className).not.toContain("xl:grid-cols-4");
     for (const label of ["Energieausweis", "Gemeinschaftseigentum", "Sanierungen", "Verwaltung"]) {
-      expect(raster).toContainElement(screen.getByText(label));
+      expect(within(raster).getByText(label)).toBeInTheDocument();
     }
     // Der Hinweis und die Einheitenliste stehen weiter darunter, außerhalb der Zeile.
     expect(zeile).not.toContainElement(screen.getByTestId("hinweis-kundenansicht"));
+  });
+
+  it("zeigt dem Admin oben, welche Unterlagen für die Finanzierung fehlen, und springt zu den Dokumenten", () => {
+    objekte.liste = { o7: objekt("o7", [we("w1"), we("w2")]) };
+    renderMit(["/objekte/o7"]);
+    const hinweis = screen.getByTestId("finanzierungspaket-hinweis");
+    expect(hinweis).toHaveTextContent("Finanzierungspaket unvollständig");
+    expect(within(hinweis).getByText("Energieausweis")).toBeInTheDocument();
+    fireEvent.click(within(hinweis).getByText("Zu den Dokumenten"));
+    expect(screen.getByRole("tab", { name: /Dokumente/ })).toHaveAttribute("data-state", "active");
   });
 
   it("zeigt keine Datenherkunft mehr, das Etikett oben bleibt", () => {

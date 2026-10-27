@@ -37,6 +37,7 @@ import { ObjektGarantieDetails } from "@/components/objektseite/mieteGarantie";
 import { nettoRenditeSpanne } from "@/lib/renditeBruttoNetto";
 import { Galerie } from "@/components/objektseite/Galerie";
 import { DokumenteAnsicht } from "@/components/objektseite/DokumenteAnsicht";
+import { FinanzierungspaketHinweis } from "@/components/objektseite/FinanzierungspaketHinweis";
 import { UmgebungsKarte } from "@/components/maps/UmgebungsKarte";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -635,6 +636,9 @@ function ObjektAnsicht({ objekt, onPflege, eigeneId }: {
         Übersicht immer oben. Die Übersicht wird nur ausgeblendet, nicht
         ausgehängt, damit Galerie und Bilder beim Zurückwechseln stehen.
       */}
+      {/* Fehlende Unterlagen für die Finanzierung, nur für die internen Pflegerollen (27.10.2026). */}
+      <FinanzierungspaketHinweis objekt={objekt} onZuDenDokumenten={() => setReiter("dokumente")}
+        hochladenZiel={!globalobjekt && darfPflegen ? `/objekte/${objekt.id}/verwaltung` : undefined} />
       <Tabs value={reiter} onValueChange={setReiter}>
         {/* Immer links, wie auf der Einheitsseite (Christian, 05.10.2026). */}
         <TabsList className={`mb-4 grid h-auto w-full grid-cols-2 justify-start gap-1 rounded-xl p-1 ${istInterneRolle(user.role) ? "max-w-2xl sm:grid-cols-5" : "max-w-xl sm:grid-cols-4"}`}>
