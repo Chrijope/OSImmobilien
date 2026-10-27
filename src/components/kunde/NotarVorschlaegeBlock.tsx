@@ -17,6 +17,8 @@ import {
 
 interface Props {
   investmentId: string;
+  /** Frühester erlaubter Tag: 14 Tage nach dem Kaufvertragsentwurf (notarFristen.ts). */
+  minDatum?: string;
   onChange?: () => void;
   toast: (opts: { title?: string; description?: string }) => void;
 }
@@ -28,7 +30,7 @@ interface Props {
  * Sobald der Kunde im Portal einen Termin bestätigt hat, wird nur noch der bestätigte
  * Termin angezeigt – inkl. Hinweis, dass der VP diesen dem Notar verbindlich bestätigen muss.
  */
-export function NotarVorschlaegeBlock({ investmentId, onChange, toast }: Props) {
+export function NotarVorschlaegeBlock({ investmentId, minDatum, onChange, toast }: Props) {
   const [vorschlaege, setVorschlaegeLocal] = useState<NotarTerminVorschlag[]>(() => getNotarTerminVorschlaege(investmentId));
   const [tick, setTick] = useState(0);
 
@@ -151,6 +153,7 @@ export function NotarVorschlaegeBlock({ investmentId, onChange, toast }: Props) 
             <div key={idx} className="flex items-center gap-2">
               <Input
                 type="date"
+                min={minDatum}
                 value={v.datum}
                 onChange={e => updateVorschlag(idx, "datum", e.target.value)}
                 className="h-8 text-xs flex-1"

@@ -43,7 +43,7 @@ const OFFENE_AUFGABEN_TABELLEN = ["aufgaben", "follow_ups"];
 import { formatDatum } from "@/lib/utils";
 // Zuweisungsdatum wird ab jetzt einheitlich als ISO geschrieben, damit die
 // Sortierung „zuletzt zugewiesen" nicht an zwei Formaten scheitert.
-import { jetztAlsIsoDatum } from "@/lib/datumsformate";
+import { heuteBerlinIso, jetztAlsIsoDatum } from "@/lib/datumsformate";
 import JSZip from "jszip";
 import { resolveUnterlagenUrl, openUnterlage, extractStoragePath, unterlageHerunterladen } from "@/lib/storage";
 import { aktuellerSaPdfPfad, legeSaPdfNeuAb } from "@/lib/selbstauskunftPdfAblage";
@@ -178,6 +178,7 @@ import { findeErgebnisTermin, ladeErgebnisTermine, lokalesDatum, type ErgebnisKo
 import { TerminErgebnisDialog } from "@/components/kunden/TerminErgebnisDialog";
 import { StufenTerminDialog } from "@/components/kunden/StufenTerminDialog";
 import { besichtigungsVorschlag, brauchtStufenTermin, terminFehlerText, type TerminStufe } from "@/lib/stufenTermin";
+import { finanzierungsFrist, fruehesterNotartermin, notarterminPruefen, tagDe } from "@/lib/notarFristen";
 import { BankgutachterTerminZeile } from "@/components/finanzierung/BankgutachterTerminZeile";
 import { speichereStufenTermin } from "@/lib/stufenTerminAktionen";
 import { berechneInaktivitaetsAmpel } from "@/lib/inaktivitaetsAmpel";
@@ -334,6 +335,7 @@ import {
   setRvEditApproved,
   clearEinheitGewechselt,
   getKundenordnerByInvestment,
+  getKveVersandAm,
   addKundenordnerDokument,
   removeKundenordnerDokument,
   updateKundenordnerDokument,
@@ -10271,7 +10273,12 @@ export default function KundenDetail() {
                               size="sm"
                               className="h-7 text-xs"
                               onClick={async () => {
-                                setInvestmentNotarFields(inv.id, { datum: bestaetigt.datum, uhrzeit: bestaetigt.uhrzeit });
+                                try {
+                                  setInvestmentNotarFields(inv.id, { datum: bestaetigt.datum, uhrzeit: bestaetigt.uhrzeit });
+                                } catch (err) {
+                                  toast({ title: "Termin nicht übernommen", description: terminFehlerText(err), variant: "destructive" });
+                                  return;
+                                }
                                 toast({ title: "Termin übernommen ✓", description: `${bestaetigt.datum}${bestaetigt.uhrzeit ? ` um ${bestaetigt.uhrzeit} Uhr` : ""}` });
                                 forceUpdate(n => n + 1);
                               }}
@@ -10310,7 +10317,13 @@ export default function KundenDetail() {
                   // Atomare Speicherung: notarData + top-level Spiegel-Felder in EINEM DB-Update,
                   // damit Race-Conditions keine Felder (z. B. Uhrzeit) verschlucken können.
                   if (["datum", "uhrzeit", "name", "adresse", "telefon", "verkaeufer", "vertretung"].includes(field)) {
-                    setInvestmentNotarFields(inv.id, { [field]: value } as any);
+                    try {
+                      setInvestmentNotarFields(inv.id, { [field]: value } as any);
+                    } catch (err) {
+                      // Notartermin vor Ablauf der 14 Tage nach dem Kaufvertragsentwurf.
+                      toast({ title: "Notartermin nicht gespeichert", description: terminFehlerText(err), variant: "destructive" });
+                      return;
+                    }
                   } else {
                     setInvestmentNotarData(inv.id, updated);
                   }
@@ -10406,9 +10419,12 @@ export default function KundenDetail() {
                   return "";
                 })();
 
+                // Frühere Tage als 14 Tage nach dem Kaufvertragsentwurf sind im Kalender gesperrt.
+                const kveVersand = getKveVersandAm(inv.id);
+                const notarMinDatum = kveVersand ? fruehesterNotartermin(kveVersand) : undefined;
                 const notarFieldsRow1 = [
-                  { key: "datum", label: "Datum", placeholder: "TT.MM.JJJJ", type: "date", val: notarData.datum || inv.notarTermin || "", required: true },
-                  { key: "uhrzeit", label: "Uhrzeit", placeholder: "HH:MM", type: "time", val: notarData.uhrzeit || inv.notarUhrzeit || "", required: true },
+                  { key: "datum", label: "Datum", placeholder: "TT.MM.JJJJ", type: "date", val: notarData.datum || inv.notarTermin || "", required: true, min: notarMinDatum },
+                  { key: "uhrzeit", label: "Uhrzeit", placeholder: "HH:MM", type: "time", val: notarData.uhrzeit || inv.notarUhrzeit || "", required: true, min: undefined },
                 ];
                 const notarFieldsRow2 = [
                   { key: "name", label: "Notarname", placeholder: "z.B. Dr. Hans Müller", type: "text", val: notarData.name || inv.notarName || "", required: true },
@@ -10758,7 +10774,7 @@ export default function KundenDetail() {
                               <div key={f.key}>
                                 <Label className="text-xs font-semibold">{f.label} {f.required && <span className="text-destructive">*</span>}</Label>
                                 {canEditNotar ? (
-                                  <Input type={f.type} defaultValue={f.val} placeholder={f.placeholder} className="h-8 text-sm mt-1" onBlur={e => saveNotarField(f.key, e.target.value)} />
+                                  <Input type={f.type} min={f.min} defaultValue={f.val} placeholder={f.placeholder} className="h-8 text-sm mt-1" onBlur={e => saveNotarField(f.key, e.target.value)} />
                                 ) : (
                                   <p className="text-sm mt-1 h-8 flex items-center">{f.val || "–"}</p>
                                 )}
@@ -10767,6 +10783,25 @@ export default function KundenDetail() {
                           </div>
                         </>
                       )}
+
+                      {/* Fristen aus dem Kaufvertragsentwurf (Vorgabe Christian, 27.10.2026) */}
+                      {(() => {
+                        const frist = finanzierungsFrist(terminDatum, inv.finanzierungsStatus);
+                        return (
+                          <div className="border rounded-lg p-3 bg-muted/20 mb-3 space-y-1">
+                            <p className={`text-xs ${kveVersand ? "text-muted-foreground" : "text-[hsl(var(--warning))] font-semibold"}`}>
+                              {kveVersand
+                                ? `Kaufvertragsentwurf an den Kunden am ${tagDe(heuteBerlinIso(new Date(kveVersand)))}. Frühestmöglicher Notartermin: ${tagDe(notarMinDatum!)}.`
+                                : "Der Kaufvertragsentwurf ist noch nicht beim Kunden. Erst nach der Freigabe im Kundenordner unter „Kaufvertragsentwurf“ lässt sich ein Notartermin setzen, frühestens 14 Tage danach."}
+                            </p>
+                            {frist && (
+                              <p className={`text-xs ${frist.ueberfaellig ? "text-destructive font-semibold" : "text-muted-foreground"}`}>
+                                {frist.text}{frist.ueberfaellig ? ", noch nicht bestätigt." : "."}
+                              </p>
+                            )}
+                          </div>
+                        );
+                      })()}
 
                       {/* Notar & Verkäuferdaten */}
                       <h4 className="font-semibold text-sm mb-2">🏛️ Notar & Verkäuferdaten</h4>
@@ -10823,6 +10858,7 @@ export default function KundenDetail() {
                         {canEditNotar && getNotarTerminModus(inv.id) === "vorschlaege" && (
                           <NotarVorschlaegeBlock
                             investmentId={inv.id}
+                            minDatum={notarMinDatum}
                             onChange={() => forceUpdate(n => n + 1)}
                             toast={toast}
                           />
@@ -10887,6 +10923,12 @@ export default function KundenDetail() {
                                       // Bei Vorschlagsmodus: aktuell gepflegte (valide) Vorschläge JETZT
                                       // ins "Freigegeben"-Array übernehmen, damit der Kunde sie im Portal sieht.
                                       const aktuelleVorschlaege = (getNotarTerminVorschlaege(inv.id) || []).filter(v => !!v.datum && !!v.uhrzeit);
+                                      // Der Kunde darf nur Termine wählen, die 14 Tage nach dem Kaufvertragsentwurf liegen.
+                                      const vorschlagFehler = aktuelleVorschlaege.map(v => notarterminPruefen(v.datum, kveVersand)).find(Boolean);
+                                      if (vorschlagFehler) {
+                                        toast({ title: "Terminvorschläge nicht freigegeben", description: vorschlagFehler, variant: "destructive" });
+                                        return;
+                                      }
                                       const sollBestaetigtVerwerfen =
                                         !!getNotarTerminBestaetigt(inv.id) && aktuelleVorschlaege.length > 0;
 
@@ -11410,8 +11452,10 @@ export default function KundenDetail() {
                                           const all = getKundenordnerByInvestment(inv.id);
                                           const idx = all.findIndex(d => d.id === doc.id);
                                           if (idx >= 0) {
-                                            all[idx] = { ...all[idx], freigegeben: true };
-                                            updateKundenordnerDokument(doc.id, { freigegeben: true });
+                                            // freigegebenAm: ab hier liegt das Dokument beim Kunden, z. B. der Kaufvertragsentwurf (notarFristen.ts).
+                                            const freigegebenAm = new Date().toISOString();
+                                            all[idx] = { ...all[idx], freigegeben: true, freigegebenAm };
+                                            updateKundenordnerDokument(doc.id, { freigegeben: true, freigegebenAm });
                                             notifyKundeKundenordnerDokument(id || "", doc.kategorie || "Dokument");
                                             toast({ title: "Für Kunde freigegeben ✓" });
                                             forceUpdate(n => n + 1);
