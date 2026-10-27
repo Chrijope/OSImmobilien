@@ -5,7 +5,7 @@
  */
 import { supabase } from "@/integrations/supabase/client";
 
-function getCurrentRole(): string {
+export function getCurrentRole(): string {
   try {
     return localStorage.getItem("osimmo_current_role") || "";
   } catch { return ""; }

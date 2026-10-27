@@ -6,6 +6,7 @@ import { Switch } from "@/components/ui/switch";
 import { useUser } from "@/contexts/UserContext";
 import { useCacheReady } from "@/hooks/useCacheReady";
 import { getInvestments } from "@/lib/investmentsStore";
+import { getFinanzierung } from "@/lib/finanzierungStore";
 import { getKontakte } from "@/lib/kundenStore";
 import { loadAllUsers } from "@/lib/loadAllUsers";
 import {
@@ -79,6 +80,31 @@ export default function Finanzierungen() {
       .sort((a, b) => Number(b.ueberfaellig) - Number(a.ueberfaellig) || a.kunde.localeCompare(b.kunde));
   }, [liste, nurLaufende, cacheBereit]);
 
+  /*
+   * Laufende Faelle ohne Finanzierer: Bonitaet gemeldet oder Angebote in der
+   * Finanzierung, aber keine Einreichung. Bis zum 27.10.2026 sah jeder
+   * Finanzierer alle Kunden; uebernommen wurden nur nachweislich gemeldete
+   * Faelle. Die uebrigen teilt die Leitung hier zu (Christian, 27.10.2026).
+   */
+  const ohneFinanzierer = useMemo(() => {
+    if (!liste) return [];
+    const eingereicht = new Set(liste.map((e) => e.investment_id));
+    const kontakte = new Map(getKontakte().map((k) => [k.id, k]));
+    return getInvestments()
+      .filter((i) => !eingereicht.has(i.id) && i.finanzierungsStatus !== "bestaetigt")
+      .filter((i) => i.meta?.bonitaetFreigabeGemeldetAm || getFinanzierung(i.id).angebote.length > 0)
+      .map((i) => {
+        const k = kontakte.get(i.kontaktId);
+        return {
+          investmentId: i.id,
+          kontaktId: i.kontaktId,
+          kunde: k ? `${k.vorname} ${k.nachname}`.trim() : "Unbekannt",
+          objekt: [i.objektTitel, i.weNr ? `WE ${String(i.weNr).replace(/^WE\s*/i, "")}` : ""].filter(Boolean).join(", "),
+        };
+      })
+      .sort((a, b) => a.kunde.localeCompare(b.kunde));
+  }, [liste, cacheBereit]);
+
   const finanzierer = useMemo(() => [...new Set((liste || []).map((e) => e.finanzierer_id))], [liste]);
   const kennzahlen = useMemo(() => kennzahlenJeFinanzierer(liste || []), [liste]);
   const zeigeKennzahlen = user.role === "admin" || user.role === "inhaber";
@@ -141,6 +167,24 @@ export default function Finanzierungen() {
             Ampel: rot heißt Angebotsfrist überschritten, gelb heißt Frist heute oder morgen. Überfällige Finanzierer werden werktags morgens automatisch erinnert.
           </p>
         </div>
+
+        {ohneFinanzierer.length > 0 && (
+          <div data-ui="card" className="rounded-2xl border border-border/60 bg-card p-6 space-y-3">
+            <h2 className="font-semibold">Laufend, ohne Finanzierer ({ohneFinanzierer.length})</h2>
+            <p className="text-xs text-muted-foreground">
+              Bonität gemeldet oder Angebote vorhanden, aber bei keinem Finanzierer eingereicht. Im Kundenprofil unter Finanzierung zuteilen.
+            </p>
+            <ul className="divide-y text-sm">
+              {ohneFinanzierer.map((z) => (
+                <li key={z.investmentId} className="py-2 cursor-pointer hover:bg-muted/40"
+                  onClick={() => navigate(`/kunden/${z.kontaktId}?tab=investments&investment=${z.investmentId}#finanzierung`)}>
+                  <span className="font-medium">{z.kunde}</span>
+                  {z.objekt && <span className="text-xs text-muted-foreground"> · {z.objekt}</span>}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {zeigeKennzahlen && kennzahlen.length > 0 && (
           <div data-ui="card" className="rounded-2xl border border-border/60 bg-card p-6 space-y-3">

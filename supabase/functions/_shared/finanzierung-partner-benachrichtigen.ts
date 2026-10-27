@@ -18,13 +18,12 @@ export const FINANZIERUNG_MELDUNG_VORLAGE = 'finanzierung-starten'
 export const FINANZIERUNGSPARTNER_ROLLE = 'finanzierungspartner'
 
 /**
- * Wer Partner wählen und benachrichtigen darf: interne Rollen, die das
- * Investment bearbeiten. Der Finanzierungspartner selbst sieht die Karte nur
- * lesend. Für Vertriebspartner gilt zusätzlich die Zuständigkeit am Kontakt
- * (Browser: `darfKontaktBearbeiten`, Server: `pruefeKontaktZugriff`).
+ * Wer bei Finanzierern einreichen darf (Christian, 27.10.2026): admin,
+ * inhaber, vertriebsleiter, backoffice. Vertriebspartner nicht mehr. Der
+ * Finanzierungspartner selbst sieht die Karte nur lesend.
  */
 export const FINANZIERUNG_MELDEN_ROLLEN: readonly string[] = Object.freeze([
-  'admin', 'inhaber', 'vertriebsleiter', 'backoffice', 'vertriebspartner',
+  'admin', 'inhaber', 'vertriebsleiter', 'backoffice',
 ])
 
 /** Browser: darf die aktive Rolle grundsätzlich wählen und benachrichtigen? */

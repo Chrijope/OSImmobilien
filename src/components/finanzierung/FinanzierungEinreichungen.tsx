@@ -12,7 +12,7 @@ import { useUser } from "@/contexts/UserContext";
 import { confirmDialog } from "@/lib/confirm";
 import { loadAllUsers } from "@/lib/loadAllUsers";
 import { openUnterlage } from "@/lib/storage";
-import { createAngebot, updateAngebot, updateDokumentStatus } from "@/lib/finanzierungStore";
+import { createAngebot, saveFinanzierung, updateAngebot, updateDokumentStatus } from "@/lib/finanzierungStore";
 import {
   STATUS_TEXT, aendereEinreichung, angeboteImVergleich, bankenKollisionen, darfFinanzierungSteuern,
   fehlendeAngaben, fristAmpel, gibZuschlag, ladeEinreichungen, ladeNachrichten, ladeZugriffe, laeuft,
@@ -105,7 +105,7 @@ function LeitungsAnsicht({ investmentId, liste, neuLaden }: { investmentId: stri
   const zuschlag = async (e: Einreichung) => {
     const ok = await confirmDialog({
       title: `Zuschlag an ${name(e.finanzierer_id)}?`,
-      description: "Alle anderen laufenden Einreichungen dieses Kunden werden abgesagt, die Finanzierer bekommen eine Glocke. Das Angebot wird in die Finanzierung übernommen; für den Kunden sichtbar wird es erst, wenn es dort freigegeben ist.",
+      description: "Alle anderen laufenden Einreichungen dieses Kunden werden abgesagt, die Finanzierer bekommen eine Glocke. Das Angebot ersetzt die bisherigen Angebote in der Finanzierung (im Vergleich hier bleiben alle erhalten); für den Kunden sichtbar wird es erst, wenn es dort freigegeben ist.",
       confirmText: "Zuschlag geben",
       cancelText: "Abbrechen",
     });
@@ -256,9 +256,15 @@ function LeitungsAnsicht({ investmentId, liste, neuLaden }: { investmentId: stri
  * laufen Freigabe fuer den Kunden, Grundschuld und Darlehensvertrag wie
  * gewohnt. Die PDF kommt an den Ort, an dem die Finanzierung ihre Dateien
  * sucht.
+ *
+ * Die Finanzierung haelt danach nur noch dieses Angebot: Der Gewinner sieht
+ * sie mit dem Zuschlag und soll keine fremden Angebote lesen. Seine Dateien
+ * gibt die Datenbank auch nur fuer Angebote frei, die hier stehen
+ * (`finanzierer_darf_pfad`).
  */
 async function inFinanzierungUebernehmen(investmentId: string, e: Einreichung) {
   const a = e.angebot!;
+  saveFinanzierung(investmentId, { angebote: [] });
   const komma = (v: number) => String(v).replace(".", ",");
   const neu = createAngebot(investmentId);
   updateAngebot(investmentId, neu.id, {

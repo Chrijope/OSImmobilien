@@ -15,8 +15,13 @@
 --   * Ein Finanzierer sieht nur Kunden, Investments und Kundenunterlagen, die
 --     ihm eingereicht wurden und noch laufen. Nach Absage, Ablehnung oder
 --     Rueckzug ist der Zugang weg; mit Zuschlag bleibt er.
---   * Die Zielbanken sehen nur admin, inhaber und backoffice, nie ein anderer
---     Finanzierer (Christian: „ganz wichtig“).
+--   * Einreichen duerfen admin, inhaber, vertriebsleiter und backoffice, ueber
+--     die Edge Function `finanzierung-partner-benachrichtigen`; Vertriebspartner
+--     nicht mehr.
+--   * Die Zielbanken, den Vergleich und den Zuschlag sehen nur admin, inhaber
+--     und backoffice, nie ein anderer Finanzierer (Christian: „ganz wichtig“).
+--   * Je Investment hoechstens ein Zuschlag. Danach haelt die Finanzierung nur
+--     das gewonnene Angebot, der Gewinner sieht keine fremden.
 --   * Die anderen Finanzierer sehen weder Einreichungen noch Angebote
 --     voneinander. Auch die Angebotsdateien liegen je Einreichung in einem
 --     eigenen Ordner, den nur der Eigentuemer lesen darf.
@@ -26,7 +31,9 @@
 --   finanzierungspartner: alle Kunden, die ihm nicht eingereicht sind, dazu
 --   Aktivitaeten, Kommunikation, Aufgaben und Pipeline aller Kunden (die
 --   haengen an `darf_alle_kunden_sehen`). Laufende Faelle bleiben ihm durch
---   die Uebernahme unten erhalten.
+--   die Uebernahme unten erhalten, aber nur dort, wo er nachweislich gemeldet
+--   wurde. Die uebrigen laufenden Faelle zeigt die Seite Finanzierungen unter
+--   „Laufend, ohne Finanzierer“ zum Zuteilen.
 --
 -- Mehrfach ausfuehrbar.
 -- ===========================================================================
@@ -55,6 +62,8 @@ CREATE TABLE IF NOT EXISTS public.finanzierung_einreichungen (
   angebot_am timestamptz,
   entschieden_am timestamptz,
   aktualisiert_am timestamptz NOT NULL DEFAULT now(),
+  -- Letzte Fristerinnerung, damit sie hoechstens einmal am Tag kommt.
+  erinnert_am date,
   UNIQUE (investment_id, finanzierer_id)
 );
 
@@ -67,6 +76,10 @@ COMMENT ON COLUMN public.finanzierung_einreichungen.banken IS
 
 CREATE INDEX IF NOT EXISTS finanzierung_einreichungen_finanzierer
   ON public.finanzierung_einreichungen (finanzierer_id);
+
+-- Hoechstens ein Zuschlag je Investment, auch bei zwei gleichzeitigen Klicks.
+CREATE UNIQUE INDEX IF NOT EXISTS finanzierung_einreichungen_ein_zuschlag
+  ON public.finanzierung_einreichungen (investment_id) WHERE status = 'zuschlag';
 
 CREATE TABLE IF NOT EXISTS public.finanzierung_nachrichten (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -96,7 +109,9 @@ CREATE INDEX IF NOT EXISTS finanzierung_zugriffe_investment
 -- 2) Hilfsfunktionen
 -- ---------------------------------------------------------------------------
 
--- Wer steuert die Finanzierung: einreichen, Banken sehen, Zuschlag geben.
+-- Wer steuert die Finanzierung: Banken sehen, vergleichen, Zuschlag geben.
+-- Einreichen darf zusaetzlich die Vertriebsleitung, das prueft die Edge
+-- Function (FINANZIERUNG_MELDEN_ROLLEN).
 CREATE OR REPLACE FUNCTION public.darf_finanzierung_steuern(_user_id uuid)
 RETURNS boolean
 LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public
@@ -250,9 +265,12 @@ CREATE POLICY "kunde_dokumente_select_finanzierungspartner" ON public.kunde_doku
 -- ---------------------------------------------------------------------------
 --
 -- Ordner einer Einreichung: finanzierung/<investment>/einreichung-<id>/...
--- Nur der Eigentuemer der Einreichung und die Leitung. Alles andere unter
--- finanzierung/<investment>/ (das angenommene Angebot, Grundschuld,
--- Darlehensvertrag) nur mit Zuschlag.
+-- Nur der Eigentuemer der Einreichung und die Leitung. Ordner eines Angebots
+-- finanzierung/<investment>/<angebot>/ (Angebot, Grundschuld,
+-- Darlehensvertrag) nur mit Zuschlag und nur fuer Angebote, die in der
+-- Finanzierung stehen; nach dem Zuschlag ist das nur noch das gewonnene.
+-- finanzierung/eigen/<kontakt>/... hat der Kunde selbst hochgeladen und
+-- zaehlt wie der Kundenordner.
 
 CREATE OR REPLACE FUNCTION public.finanzierer_darf_pfad(_user_id uuid, _name text)
 RETURNS boolean
@@ -267,7 +285,7 @@ BEGIN
     RETURN false;
   END IF;
 
-  IF teile[1] = 'finanzierung' THEN
+  IF teile[1] = 'finanzierung' AND teile[2] IS DISTINCT FROM 'eigen' THEN
     IF coalesce(teile[2], '') !~* uuid_muster THEN
       RETURN false;
     END IF;
@@ -280,7 +298,13 @@ BEGIN
            AND e.status NOT IN ('abgelehnt', 'abgesagt', 'zurueckgezogen')
       );
     END IF;
-    RETURN public.finanzierer_hat_zuschlag(_user_id, teile[2]);
+    RETURN public.finanzierer_hat_zuschlag(_user_id, teile[2])
+       AND EXISTS (
+         SELECT 1 FROM public.finanzierungen f
+          CROSS JOIN LATERAL jsonb_array_elements(
+            CASE WHEN jsonb_typeof(f.angebote) = 'array' THEN f.angebote ELSE '[]'::jsonb END) a
+          WHERE f.kunde_id = teile[2] AND a ->> 'id' = teile[3]
+       );
   END IF;
 
   kontakt := public.unterlagen_lese_kontakt(_name);
@@ -373,7 +397,10 @@ BEGIN
   IF (storage.foldername(_name))[1] = _user_id::text THEN
     RETURN true;
   END IF;
+  -- Nicht finanzierung/eigen/: Das sind Dateien des Kunden, die liest der
+  -- Finanzierer nur.
   IF (storage.foldername(_name))[1] = 'finanzierung'
+     AND (storage.foldername(_name))[2] IS DISTINCT FROM 'eigen'
      AND public.finanzierer_darf_pfad(_user_id, _name) THEN
     RETURN true;
   END IF;
@@ -409,11 +436,15 @@ CREATE POLICY "Einreichungen lesen" ON public.finanzierung_einreichungen
   FOR SELECT TO authenticated
   USING ((select public.darf_finanzierung_steuern(auth.uid())) OR finanzierer_id = auth.uid());
 
--- Anlegen nur die Leitung oder die Edge Function (Dienstschluessel).
+-- Anlegen nur die Leitung oder die Edge Function (Dienstschluessel), und nur
+-- fuer Nutzer mit der Rolle Finanzierungspartner.
 DROP POLICY IF EXISTS "Einreichungen anlegen" ON public.finanzierung_einreichungen;
 CREATE POLICY "Einreichungen anlegen" ON public.finanzierung_einreichungen
   FOR INSERT TO authenticated
-  WITH CHECK ((select public.darf_finanzierung_steuern(auth.uid())));
+  WITH CHECK (
+    (select public.darf_finanzierung_steuern(auth.uid()))
+    AND public.has_role(finanzierer_id, 'finanzierungspartner'::public.app_role)
+  );
 
 -- Aendern: Leitung alles, Finanzierer nur die eigene; welche Felder, prueft
 -- der Ausloeser unten.
@@ -496,6 +527,20 @@ BEGIN
        AND NEW.status NOT IN ('in_pruefung', 'rueckfrage', 'angebot', 'abgelehnt') THEN
       RAISE EXCEPTION 'Diesen Stand setzt nur die Leitung.' USING ERRCODE = 'insufficient_privilege';
     END IF;
+    -- Die Angebotsdatei nur aus dem eigenen Ordner, sonst kaeme ueber die
+    -- Uebernahme beim Zuschlag eine fremde Datei in die Finanzierung.
+    IF NEW.angebot_datei IS DISTINCT FROM OLD.angebot_datei
+       AND NEW.angebot_datei IS NOT NULL
+       AND (NEW.angebot_datei NOT LIKE 'finanzierung/' || NEW.investment_id || '/einreichung-' || NEW.id || '/%'
+            OR NEW.angebot_datei LIKE '%..%') THEN
+      RAISE EXCEPTION 'Die Angebotsdatei gehoert in den Ordner dieser Einreichung.' USING ERRCODE = 'insufficient_privilege';
+    END IF;
+    -- Zeitstempel zaehlen fuer die Kennzahlen, der Finanzierer setzt sie
+    -- nicht selbst. "Gesichtet" nur einmal und mit der Serverzeit.
+    NEW.gesichtet_am := coalesce(OLD.gesichtet_am, CASE WHEN NEW.gesichtet_am IS NOT NULL THEN now() END);
+    NEW.angebot_am := OLD.angebot_am;
+    NEW.entschieden_am := OLD.entschieden_am;
+    NEW.erinnert_am := OLD.erinnert_am;
   END IF;
 
   IF NEW.gesichtet_am IS NULL AND NEW.status <> 'eingereicht' THEN
@@ -637,6 +682,10 @@ BEGIN
   IF v_investment IS NULL THEN
     RAISE EXCEPTION 'Diese Einreichung laeuft nicht mehr.' USING ERRCODE = 'check_violation';
   END IF;
+  IF EXISTS (SELECT 1 FROM public.finanzierung_einreichungen
+              WHERE investment_id = v_investment AND status = 'zuschlag') THEN
+    RAISE EXCEPTION 'Fuer diesen Kauf gibt es schon einen Zuschlag.' USING ERRCODE = 'check_violation';
+  END IF;
   UPDATE public.finanzierung_einreichungen SET status = 'zuschlag' WHERE id = _einreichung_id;
   UPDATE public.finanzierung_einreichungen SET status = 'abgesagt'
    WHERE investment_id = v_investment AND id <> _einreichung_id
@@ -664,7 +713,13 @@ BEGIN
      WHERE status IN ('eingereicht', 'in_pruefung', 'rueckfrage')
        AND frist_bis IS NOT NULL
        AND frist_bis < (now() AT TIME ZONE 'Europe/Berlin')::date
+       AND erinnert_am IS DISTINCT FROM (now() AT TIME ZONE 'Europe/Berlin')::date
+     FOR UPDATE SKIP LOCKED
   LOOP
+    -- Hoechstens einmal am Tag, auch wenn der Lauf doppelt anstoesst.
+    UPDATE public.finanzierung_einreichungen
+       SET erinnert_am = (now() AT TIME ZONE 'Europe/Berlin')::date
+     WHERE id = e.id;
     PERFORM public.finanzierung_glocke(e, false, 'Frist für das Angebot überschritten',
       'Das Angebot war bis ' || to_char(e.frist_bis, 'DD.MM.YYYY') || ' vereinbart. Bitte Stand melden.');
     PERFORM public.finanzierung_glocke(e, true, 'Finanzierer überfällig',
@@ -695,10 +750,10 @@ $zeitplan$;
 -- 11) Laufende Faelle uebernehmen
 -- ---------------------------------------------------------------------------
 --
--- Wer heute schon benachrichtigt wurde, behaelt seinen Kunden. Ebenso jeder
--- Finanzierer bei Investments, deren Bonitaet schon freigegeben gemeldet ist
--- oder die schon Angebote haben: Diese Meldung ging bisher an alle. Ohne
--- diesen Schritt stuenden laufende Finanzierungen ab dem Lauf leer da.
+-- Wer nachweislich benachrichtigt wurde (finanzierungPartnerMeldungen),
+-- behaelt seinen Kunden (Christian, 27.10.2026). Alle anderen laufenden
+-- Faelle bekommt kein Finanzierer automatisch; die Seite Finanzierungen
+-- listet sie unter „Laufend, ohne Finanzierer“ zum Zuteilen.
 
 INSERT INTO public.finanzierung_einreichungen (investment_id, finanzierer_id, status, eingereicht_am)
 SELECT i.id, (m ->> 'userId')::uuid, 'in_pruefung',
@@ -710,15 +765,4 @@ SELECT i.id, (m ->> 'userId')::uuid, 'in_pruefung',
  WHERE (m ->> 'userId') ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
    AND EXISTS (SELECT 1 FROM public.user_roles ur
                 WHERE ur.user_id = (m ->> 'userId')::uuid AND ur.role = 'finanzierungspartner')
-ON CONFLICT (investment_id, finanzierer_id) DO NOTHING;
-
-INSERT INTO public.finanzierung_einreichungen (investment_id, finanzierer_id, status)
-SELECT i.id, ur.user_id, 'in_pruefung'
-  FROM public.investments i
-  JOIN public.user_roles ur ON ur.role = 'finanzierungspartner'
- WHERE i.meta ? 'bonitaetFreigabeGemeldetAm'
-    OR EXISTS (SELECT 1 FROM public.finanzierungen f
-                WHERE f.kunde_id = i.id::text
-                  AND jsonb_typeof(f.angebote) = 'array'
-                  AND jsonb_array_length(f.angebote) > 0)
 ON CONFLICT (investment_id, finanzierer_id) DO NOTHING;

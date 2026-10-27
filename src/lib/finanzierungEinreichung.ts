@@ -72,7 +72,11 @@ export function laeuft(e: Pick<Einreichung, "status">): boolean {
   return LAUFEND.includes(e.status);
 }
 
-/** Wer einreicht, Banken sieht und den Zuschlag gibt. Gleiche Liste wie `darf_finanzierung_steuern`. */
+/**
+ * Wer Banken sieht, vergleicht und den Zuschlag gibt. Gleiche Liste wie
+ * `darf_finanzierung_steuern`. Einreichen darf zusaetzlich die Vertriebsleitung
+ * (`FINANZIERUNG_MELDEN_ROLLEN`).
+ */
 export function darfFinanzierungSteuern(rolle: string | null | undefined): boolean {
   return rolle === "admin" || rolle === "inhaber" || rolle === "backoffice";
 }

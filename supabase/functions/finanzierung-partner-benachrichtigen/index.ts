@@ -157,9 +157,10 @@ Deno.serve(async (req: Request) => {
    * erledigt, lebt sie mit neuer Frist wieder auf.
    */
   if (empfaenger.length > 0) {
-    const { data: vorhanden } = await db.from('finanzierung_einreichungen')
+    const { data: vorhanden, error: vorhandenFehler } = await db.from('finanzierung_einreichungen')
       .select('id, finanzierer_id, status').eq('investment_id', investmentId)
       .in('finanzierer_id', empfaenger.map((e) => e.id))
+    if (vorhandenFehler) return antwort({ error: 'Einreichungen nicht ladbar, bitte erneut einreichen.' }, 500)
     const nachPartner = new Map((vorhanden || []).map((r: { finanzierer_id: string }) => [r.finanzierer_id, r]))
     for (const e of empfaenger) {
       const alt = nachPartner.get(e.id) as { id: string; status: string } | undefined
@@ -173,7 +174,13 @@ Deno.serve(async (req: Request) => {
             grund: null, entschieden_am: null,
           }).eq('id', alt.id)
           : { error: null }
-      if (einreichungFehler) console.error('finanzierung-partner-benachrichtigen: Einreichung', einreichungFehler.message)
+      // Ohne Einreichung sieht der Finanzierer den Kunden nicht, trotz Mail.
+      // Deshalb als Fehler zurueck, damit die Karte es meldet.
+      if (einreichungFehler) {
+        console.error('finanzierung-partner-benachrichtigen: Einreichung', einreichungFehler.message)
+        const r = ergebnisse.find((x) => x.userId === e.id)
+        if (r) { r.ok = false; r.grund = 'Einreichung nicht angelegt, bitte erneut einreichen' }
+      }
     }
   }
 

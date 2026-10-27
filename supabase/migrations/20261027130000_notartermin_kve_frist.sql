@@ -24,7 +24,8 @@
 --   Geprüft wird nur, wenn sich notarTermin auf ein Datum ab heute ändert.
 --   Nicht geprüft: Leeren, Uhrzeit oder Notar ändern, Tage vor heute
 --   (Nachtrag für einen schon gelaufenen Verkauf), unlesbares Datum, der
---   Server ohne Nutzer (auth.uid() IS NULL).
+--   Server ohne Nutzer (auth.uid() IS NULL), admin und inhaber (dürfen die
+--   Frist übergehen, etwa bei Altfällen; Christian, 27.10.2026).
 --
 --   Ändert keine Daten, wiederholbar. Der Name trg_zzz_ sorgt dafür, dass der
 --   Wächter nach trg_zz_kundendaten_nur_lesend läuft (Reihenfolge nach Name).
@@ -41,7 +42,8 @@ DECLARE
   _versand timestamptz;
   _frueh date;
 BEGIN
-  IF auth.uid() IS NULL OR coalesce(_neu, '') = '' OR _neu IS NOT DISTINCT FROM _alt THEN
+  IF auth.uid() IS NULL OR coalesce(_neu, '') = '' OR _neu IS NOT DISTINCT FROM _alt
+     OR public.is_admin_role(auth.uid()) THEN
     RETURN NEW;
   END IF;
 

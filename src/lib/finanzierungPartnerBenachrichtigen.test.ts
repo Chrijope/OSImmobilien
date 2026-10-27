@@ -37,7 +37,8 @@ describe("Empfaenger der Mail an die Finanzierungspartner", () => {
 
   it("laesst nur interne Rollen mit Bearbeitungsrecht senden, nie den Finanzierungspartner", () => {
     expect(hatMeldeRolle(["finanzierungspartner"])).toBe(false);
-    expect(hatMeldeRolle(["kunde", "vertriebspartner"])).toBe(true);
+    expect(hatMeldeRolle(["kunde", "vertriebspartner"])).toBe(false);
+    expect(hatMeldeRolle(["kunde", "vertriebsleiter"])).toBe(true);
     expect(hatMeldeRolle("admin")).toBe(false);
     expect(darfFinanzierungspartnerMelden("backoffice")).toBe(true);
     expect(darfFinanzierungspartnerMelden("finanzierungspartner")).toBe(false);

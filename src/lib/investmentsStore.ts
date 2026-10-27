@@ -2,7 +2,7 @@ import { cacheGet, cacheInsert, cacheUpdate, cacheDelete, onCacheChange, cacheSe
 import { istSaHinterlegtAusMeta, istUnterlagenFreigeschaltetAusMeta } from "./unterlagenFreigabe";
 import { eigeneSaDataFuerInvestmentRow, saVomVorherigenInvestment } from "./saQuelle";
 import { validateKontaktMetaPatch } from "./kontaktMetaSchema";
-import { isTestAccount, localGet, localSet } from "./dbStoreHelper";
+import { getCurrentRole, isTestAccount, localGet, localSet } from "./dbStoreHelper";
 import { withTestFlag } from "./previewFlag";
 import { darfVorruecken, fortschrittsRang, istEndzustand } from "./pipelineStufen";
 import { toast } from "@/hooks/use-toast";
@@ -363,7 +363,13 @@ export function setInvestmentNotarFields(investmentId: string, fields: Partial<{
   // hier durchgehen. Die Datenbank prueft dieselbe Regel noch einmal.
   if (fields.datum !== undefined) {
     const meldung = notarterminPruefen(fields.datum, getKveVersandAm(investmentId));
-    if (meldung) throw new Error(meldung);
+    // Admin und Inhaber duerfen die Frist uebergehen, etwa bei Altfaellen
+    // (Christian, 27.10.2026). Sie bekommen den Hinweis, gespeichert wird trotzdem.
+    if (meldung && ["admin", "inhaber"].includes(getCurrentRole())) {
+      toast({ title: "14-Tage-Frist übergangen", description: meldung });
+    } else if (meldung) {
+      throw new Error(meldung);
+    }
   }
   if (isTestAccount()) {
     const current = getMetaField<Record<string, string>>(investmentId, "notarData", {});

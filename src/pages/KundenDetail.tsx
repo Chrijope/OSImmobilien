@@ -10422,8 +10422,10 @@ export default function KundenDetail() {
                 // Frühere Tage als 14 Tage nach dem Kaufvertragsentwurf sind im Kalender gesperrt.
                 const kveVersand = getKveVersandAm(inv.id);
                 const notarMinDatum = kveVersand ? fruehesterNotartermin(kveVersand) : undefined;
+                // Admin und Inhaber duerfen die Frist uebergehen (Altfaelle), ihr Kalender bleibt offen.
+                const notarKalenderMin = isAdminOrInhaberNotar ? undefined : notarMinDatum;
                 const notarFieldsRow1 = [
-                  { key: "datum", label: "Datum", placeholder: "TT.MM.JJJJ", type: "date", val: notarData.datum || inv.notarTermin || "", required: true, min: notarMinDatum },
+                  { key: "datum", label: "Datum", placeholder: "TT.MM.JJJJ", type: "date", val: notarData.datum || inv.notarTermin || "", required: true, min: notarKalenderMin },
                   { key: "uhrzeit", label: "Uhrzeit", placeholder: "HH:MM", type: "time", val: notarData.uhrzeit || inv.notarUhrzeit || "", required: true, min: undefined },
                 ];
                 const notarFieldsRow2 = [
@@ -10858,7 +10860,7 @@ export default function KundenDetail() {
                         {canEditNotar && getNotarTerminModus(inv.id) === "vorschlaege" && (
                           <NotarVorschlaegeBlock
                             investmentId={inv.id}
-                            minDatum={notarMinDatum}
+                            minDatum={notarKalenderMin}
                             onChange={() => forceUpdate(n => n + 1)}
                             toast={toast}
                           />
