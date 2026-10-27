@@ -8,6 +8,8 @@ import { useUser } from "@/contexts/UserContext";
 import { useUnterlagenZip } from "@/hooks/useUnterlagenZip";
 import { confirmDialog } from "@/lib/confirm";
 import { edgeFehlerMitGrund } from "@/lib/edgeFehler";
+import { protokolliereZugriff } from "@/lib/finanzierungEinreichung";
+import { finanzierungIstFrei } from "@/lib/finanzierungFreigabe";
 import { filterFinanzierungspartner } from "@/lib/finanzierungspartner";
 import { kundenUnterlagenDateien, type KundenordnerZeile } from "@/lib/finanzierungUnterlagenZip";
 import { getInvestmentMetaField, setInvestmentMeta, setInvestmentMetaNurLokal } from "@/lib/investmentsStore";
@@ -74,11 +76,24 @@ export function FinanzierungspartnerKarte(p: FinanzierungspartnerKarteProps) {
 
   // Nur gewählte, die es als Finanzierungspartner noch gibt.
   const aktiveAuswahl = gewaehlt.filter((id) => partner.some((u) => u.id === id));
+  /*
+   * Eingereicht wird erst mit freigegebener Bonitaet (Christian, 27.10.2026):
+   * Der Finanzierer bekommt die Nachricht „Bonitaetsunterlagen vollstaendig“,
+   * das muss dann auch stimmen.
+   */
+  const bonitaetFrei = finanzierungIstFrei({
+    bonitaetFreigabeGemeldetAm: getInvestmentMetaField<string | null>(p.investmentId, "bonitaetFreigabeGemeldetAm", null),
+    docStatuses: getInvestmentMetaField<Record<string, string>>(p.investmentId, "docStatuses", {}),
+    saData: getInvestmentMetaField<Record<string, unknown> | null>(p.investmentId, "saData", null),
+    saSnapshot: getInvestmentMetaField<Record<string, unknown> | null>(p.investmentId, "saSnapshot", null),
+  });
   const sperrgrund = aktiveAuswahl.length === 0
     ? "Bitte mindestens einen Finanzierungspartner wählen."
     : !p.rvSigned
-      ? "Benachrichtigen geht erst, wenn die Reservierung unterschrieben ist."
-      : "";
+      ? "Einreichen geht erst, wenn die Reservierung unterschrieben ist."
+      : !bonitaetFrei
+        ? "Einreichen geht erst, wenn die Bonitätsunterlagen vollständig freigegeben sind."
+        : "";
 
   const benachrichtigen = async () => {
     if (sperrgrund || sendet) return;
@@ -117,6 +132,7 @@ export function FinanzierungspartnerKarte(p: FinanzierungspartnerKarteProps) {
       setMeldungen(neueMeldungen);
       const fehler = ergebnisse.filter((e) => !e.ok);
       const gesendet = ergebnisse.length - fehler.length;
+      window.dispatchEvent(new CustomEvent("finanzierung-einreichung"));
       if (fehler.length === 0) toast.success(`${gesendet} Finanzierungspartner benachrichtigt.`);
       else toast.warning(`${gesendet} benachrichtigt, nicht erreicht: ${fehler.map((e) => `${nameVon(e.userId)} (${e.grund || "Fehler"})`).join(", ")}`);
     } finally {
@@ -138,6 +154,7 @@ export function FinanzierungspartnerKarte(p: FinanzierungspartnerKarteProps) {
       rvPdfPath: getInvestmentMetaField<string>(p.investmentId, "rvPdfPath", ""),
       kundenordner: (data || []) as KundenordnerZeile[],
     });
+    protokolliereZugriff(p.investmentId, "Kundenunterlagen als ZIP");
     starten("kunde", dateien, zipDateiname({ objektTitel: p.objektTitel, weNr: p.weNr, zusatz: "Kunde" }));
   };
 
@@ -153,6 +170,7 @@ export function FinanzierungspartnerKarte(p: FinanzierungspartnerKarteProps) {
       : [{ schluessel: "objekt", eintraege: objektUnterlagenEintraege(objekt) }];
     const weNr = wohnung?.weNr || p.weNr;
     const dateien = zipDateienAusBereichen(bereiche, user.role, (s) => (s === "wohnung" ? (weNr ? `Wohnung ${weNr}` : "Wohnung") : "Objekt"));
+    protokolliereZugriff(p.investmentId, "Objektunterlagen als ZIP");
     starten("objekt", dateien, zipDateiname({ objektTitel: objekt.titel || p.objektTitel, weNr, zusatz: "Objekt" }));
   };
 
@@ -165,6 +183,19 @@ export function FinanzierungspartnerKarte(p: FinanzierungspartnerKarteProps) {
   );
 
   const anzeige = p.darfBearbeiten ? partner : partner.filter((u) => gewaehlt.includes(u.id));
+
+  // Der Finanzierer sieht nur seine Unterlagen, nicht, wer sonst angefragt ist.
+  if (user.role === "finanzierungspartner") {
+    return (
+      <div className="mb-4 rounded-lg border px-4 py-3 space-y-3" data-finanzierungspartner-karte>
+        <p className="text-sm font-semibold">Unterlagen</p>
+        <div className="flex flex-wrap gap-2">
+          {zipKnopf("kunde", "Kundenunterlagen als ZIP", kundenZip)}
+          {zipKnopf("objekt", "Objektunterlagen als ZIP", objektZip)}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mb-4 rounded-lg border px-4 py-3 space-y-3" data-finanzierungspartner-karte>
@@ -205,7 +236,7 @@ export function FinanzierungspartnerKarte(p: FinanzierungspartnerKarteProps) {
         <div className="space-y-1">
           <Button size="sm" className="text-xs h-8" disabled={!!sperrgrund || sendet} onClick={benachrichtigen}>
             {sendet ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <Bell className="h-3.5 w-3.5 mr-1.5" />}
-            Finanzierungspartner benachrichtigen
+            Bei Finanzierern einreichen
           </Button>
           {sperrgrund ? (
             <p className="text-xs text-muted-foreground">{sperrgrund}</p>

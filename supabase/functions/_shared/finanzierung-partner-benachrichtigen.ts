@@ -116,6 +116,8 @@ export function partnerMailDaten(args: {
   objekt?: string
   kaufpreis: string
   unterschriebenAm?: string
+  /** Angebot erbeten bis, deutsches Datum. */
+  fristBis?: string
   link: string
 }): Record<string, string> {
   return {
@@ -124,6 +126,7 @@ export function partnerMailDaten(args: {
     ...(args.objekt ? { objektTitel: args.objekt } : {}),
     kaufpreis: args.kaufpreis,
     ...(args.unterschriebenAm ? { unterschriebenAm: args.unterschriebenAm } : {}),
+    ...(args.fristBis ? { fristBis: args.fristBis } : {}),
     link: args.link,
   }
 }
@@ -148,4 +151,26 @@ export function meldungenZusammenfuehren(alt: unknown, neu: PartnerMeldung[]): P
   const nachId = new Map(meldungenLesen(alt).map((m) => [m.userId, m]))
   for (const m of neu) nachId.set(m.userId, m)
   return [...nachId.values()]
+}
+
+/** Status, in denen eine Einreichung erledigt ist. Neu senden belebt sie wieder. */
+export const EINREICHUNG_ERLEDIGT: readonly string[] = Object.freeze(['abgelehnt', 'abgesagt', 'zurueckgezogen'])
+
+/** Werktage fuer ein Angebot (Christian, 27.10.2026: 5 Werktage). */
+export const ANGEBOT_FRIST_WERKTAGE = 5
+
+/**
+ * Datum `werktage` Werktage nach `start`, als JJJJ-MM-TT. Samstag und Sonntag
+ * zaehlen nicht; Feiertage bewusst nicht, die Frist ist eine Erinnerung,
+ * keine Rechtsfrist.
+ */
+export function fristInWerktagen(start: Date, werktage = ANGEBOT_FRIST_WERKTAGE): string {
+  const d = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate()))
+  let rest = werktage
+  while (rest > 0) {
+    d.setUTCDate(d.getUTCDate() + 1)
+    const tag = d.getUTCDay()
+    if (tag !== 0 && tag !== 6) rest--
+  }
+  return d.toISOString().slice(0, 10)
 }

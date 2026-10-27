@@ -267,6 +267,7 @@ import { FinanzierungCard } from "@/components/finanzierung/FinanzierungCard";
 import { TerminseiteKnopf } from "@/components/kunden/TerminseiteKnopf";
 import { EigenfinanzierungSection } from "@/components/finanzierung/EigenfinanzierungSection";
 import { FinanzierungspartnerKarte } from "@/components/finanzierung/FinanzierungspartnerKarte";
+import { FinanzierungEinreichungen } from "@/components/finanzierung/FinanzierungEinreichungen";
 import { darfFinanzierungspartnerMelden } from "../../supabase/functions/_shared/finanzierung-partner-benachrichtigen";
 import { getFinanzierung } from "@/lib/finanzierungStore";
 import { meldeBonitaetFreigabe } from "@/lib/bonitaetFreigabeMeldung";
@@ -10114,6 +10115,11 @@ export default function KundenDetail() {
                 objektTitel={inv.objektTitel}
                 weNr={inv.weNr}
               />
+              {/*
+                Einreichungen bei mehreren Finanzierern (Christian, 27.10.2026):
+                Leitung mit Vergleich und Zuschlag, Finanzierer nur die eigene.
+              */}
+              <FinanzierungEinreichungen investmentId={inv.id} />
               {/*
                 Termin Bankgutachter (Vorgabe Christian, 16.10.2026): Nach der
                 Finanzierungsanfrage traegt das Backoffice hier Datum, Uhrzeit

@@ -2935,11 +2935,36 @@
   {
     "nr": 144,
     "datum": "2026-10-26",
+    "art": "geaendert",
     "titel": "Startseite klarer, auch im Dunkelmodus",
-    "text": "Der Glaubenssatz und „Fortschritt & Kennzahlen“ stehen jetzt in normalen Kästchen wie alle anderen, ohne Schleier. „Heute zu tun“ und „Fortschritt & Kennzahlen“ sind gleich breit wie die Kacheln darunter. In „Alle Kontakte“ ist die Quelle im Dunkelmodus gut lesbar.",
+    "kurztext": "Der Glaubenssatz und „Fortschritt & Kennzahlen“ stehen jetzt in normalen Kästchen wie alle anderen, ohne Schleier. „Heute zu tun“ und „Fortschritt & Kennzahlen“ sind gleich breit wie die Kacheln darunter. In „Alle Kontakte“ ist die Quelle im Dunkelmodus gut lesbar.",
+    "wasHeisstDasFuerDich": [
+      "Die Startseite liest sich auch im Dunkelmodus gut."
+    ],
+    "soFindestDuEs": "Startseite und Alle Kontakte",
     "kritisch": false,
     "zielrollen": [
       "alle"
+    ]
+  },
+  {
+    "nr": 145,
+    "datum": "2026-10-27",
+    "art": "neu",
+    "titel": "Finanzierung bei mehreren Finanzierern",
+    "kurztext": "Ein Kunde kann jetzt bei mehreren Finanzierern gleichzeitig eingereicht werden. Jeder Finanzierer sieht nur die Kunden, die ihm eingereicht wurden, gibt sein Angebot mit festen Feldern ab und hat einen eigenen Verlauf für Rückfragen.",
+    "wasHeisstDasFuerDich": [
+      "Im Investment unter Finanzierung wählst du die Finanzierer und reichst ein, sobald die Bonität freigegeben ist.",
+      "Die Angebote stehen nebeneinander im Vergleich, der Zuschlag sagt den anderen automatisch ab.",
+      "Unter Vertrieb, Finanzierungen siehst du alle Einreichungen mit Fristen und die Kennzahlen je Finanzierer."
+    ],
+    "soFindestDuEs": "Kundenprofil, Investment, Abschnitt Finanzierung, und Vertrieb, Finanzierungen",
+    "kritisch": false,
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "backoffice",
+      "finanzierungspartner"
     ]
   }
 ]

@@ -3,19 +3,18 @@ import { addProzessAufgabe } from "@/lib/prozessAufgabe";
 import { supabase } from "@/integrations/supabase/client";
 
 /**
- * Den Finanzierungspartner rufen, sobald die Bonität steht.
+ * Die Leitung rufen, sobald die Bonität steht: Jetzt wird bei Finanzierern
+ * eingereicht.
  *
- * Seit die Bonitätsunterlagen hinter der Reservierung liegen, ist ihre
- * Freigabe der Startschuss für die Finanzierung. Vorher lag die Bonität weit
- * vorne im Prozess und der Finanzierungspartner erfuhr erst viel später, dass
- * etwas für ihn anliegt.
+ * Bis zum 27.10.2026 ging diese Meldung an alle Finanzierungspartner, mit
+ * Glocke und Mail. Seit mehrere externe Finanzierer angebunden sind, erfährt
+ * ein Finanzierer nur noch von Kunden, die ihm eingereicht werden
+ * (`FinanzierungspartnerKarte`, Edge Function
+ * `finanzierung-partner-benachrichtigen`). Hier rufen wir deshalb nur noch
+ * admin, inhaber und backoffice, die einreichen.
  *
- * Drei Wege gleichzeitig, weil sie Verschiedenes leisten:
- *
- *   Glocke   sieht er beim nächsten Blick ins CRM.
- *   Aufgabe  bleibt stehen, bis er sie erledigt. Eine Glocke ist weg, sobald
- *            man sie angeklickt hat, und dann erinnert nichts mehr daran.
- *   E-Mail   erreicht ihn, wenn er gerade nicht im CRM ist.
+ * Glocke und Aufgabe, weil sie Verschiedenes leisten: Die Glocke sieht man
+ * beim nächsten Blick ins CRM, die Aufgabe bleibt stehen, bis sie erledigt ist.
  *
  * Genau einmal je Investment. Wer bei jeder gespeicherten Änderung erneut
  * gerufen wird, hört irgendwann auf hinzusehen.
@@ -44,7 +43,7 @@ export async function meldeBonitaetFreigabe(
       .from("investments").select("meta").eq("id", investmentId).maybeSingle();
     const meta = ((inv?.meta as Record<string, unknown>) || {});
     if (meta.bonitaetFreigabeGemeldetAm) {
-      return { gemeldet: false, grund: "Der Finanzierungspartner wurde bereits informiert." };
+      return { gemeldet: false, grund: "Die Freigabe wurde bereits gemeldet." };
     }
 
     const { error: riegel } = await supabase
@@ -61,9 +60,9 @@ export async function meldeBonitaetFreigabe(
      */
     const link = `/kunden/${kundeId}?tab=investments&investment=${investmentId}`;
 
-    notifyByRole(["finanzierungspartner", "admin", "inhaber"], {
+    notifyByRole(["admin", "inhaber", "backoffice"], {
       titel: "Bonitätsunterlagen freigegeben",
-      nachricht: `${kundeName}: Die Bonitätsunterlagen sind vollständig geprüft und freigegeben. Die Finanzierung kann gestartet werden.`,
+      nachricht: `${kundeName}: Die Bonitätsunterlagen sind vollständig geprüft und freigegeben. Jetzt bei den Finanzierern einreichen.`,
       link,
     });
 
@@ -72,10 +71,10 @@ export async function meldeBonitaetFreigabe(
      * die Leitung, nicht mehr an den, der gerade freigegeben hat.
      */
     await addProzessAufgabe({
-      titel: "Bonität freigegeben: Finanzierung starten",
+      titel: "Bonität freigegeben: bei Finanzierern einreichen",
       beschreibung:
         `Die Bonitätsunterlagen von ${kundeName} sind vollständig geprüft und freigegeben. ` +
-        `Die Finanzierung kann jetzt angestoßen werden.`,
+        `Im Abschnitt Finanzierung die Finanzierer wählen und einreichen.`,
       prioritaet: "hoch",
       typ: "aufgabe",
       kundeId,
@@ -86,18 +85,6 @@ export async function meldeBonitaetFreigabe(
       // Ausloeser, damit dieselbe Aufgabe nicht zweimal entsteht.
       ausloeserSchluessel: `bonitaet_freigabe:${investmentId}`,
     });
-
-    // Die Mail läuft über eine Edge Function, damit sie auch dann hinausgeht,
-    // wenn der Browser die Seite gleich danach verlässt.
-    const { error: mailFehler } = await supabase.functions.invoke("bonitaet-freigabe-mail", {
-      body: { investmentId, kontaktId: kundeId, kundeName },
-    });
-    if (mailFehler) {
-      console.error("Freigabemail an den Finanzierungspartner:", mailFehler);
-      // Glocke und Aufgabe sind draußen, das ist das Wichtigere. Die fehlende
-      // Mail wird gemeldet, hebt die Meldung aber nicht auf.
-      return { gemeldet: true, grund: "Die E-Mail konnte nicht versendet werden, Glocke und Aufgabe stehen." };
-    }
 
     return { gemeldet: true };
   } catch (fehler) {

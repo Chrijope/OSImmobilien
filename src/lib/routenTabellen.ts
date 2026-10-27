@@ -186,6 +186,8 @@ export const ROUTEN_TABELLEN: Record<string, readonly string[]> = {
   "/follow-up": [],
   "/neukunden": [...KONTAKT_TABELLEN],
   "/abwicklung": [...KONTAKT_TABELLEN],
+  // Namen zu Kunden und Investments; die Einreichungen laedt die Seite selbst.
+  "/finanzierungen": [...KONTAKT_TABELLEN],
   "/bestandskunden": [...KONTAKT_TABELLEN],
   "/bestandskunden-import": [...KONTAKT_TABELLEN],
   "/bestandskunden-import/csv": [...KONTAKT_TABELLEN],

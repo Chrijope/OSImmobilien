@@ -4,9 +4,11 @@ import { pruefeKontaktZugriff } from '../_shared/kontakt-signatur-zugriff.ts'
 import { datumDeutsch } from '../_shared/reservierung-unterschrieben-meldung.ts'
 import { kaufpreisFuerMail } from '../_shared/finanzierung-starten-mail.ts'
 import {
+  EINREICHUNG_ERLEDIGT,
   FINANZIERUNG_MELDUNG_VORLAGE,
   FINANZIERUNGSPARTNER_ROLLE,
   finanzierungPfad,
+  fristInWerktagen,
   hatMeldeRolle,
   kennungenLesen,
   meldungenZusammenfuehren,
@@ -115,6 +117,8 @@ Deno.serve(async (req: Request) => {
   const kundeName = `${kontakt.vorname || ''} ${kontakt.nachname || ''}`.trim()
   const pfad = finanzierungPfad(inv.kunde_id as string, investmentId)
   const jetzt = new Date().toISOString()
+  const fristIso = fristInWerktagen(new Date())
+  const fristDeutsch = fristIso.split('-').reverse().join('.')
   const ergebnisse: Array<{ userId: string; name: string; ok: boolean; grund?: string }> = []
   const neu: PartnerMeldung[] = []
 
@@ -129,6 +133,7 @@ Deno.serve(async (req: Request) => {
         objekt: objektMitEinheit(objektTitel, weNr),
         kaufpreis: kaufpreisFuerMail(inv),
         unterschriebenAm: datumDeutsch(meta.rvVertragsdatum || meta.rvSignedAt),
+        fristBis: fristDeutsch,
         link: `${BASIS}${pfad}`,
       }),
       metadata: { kontakt_id: inv.kunde_id, investment_id: investmentId, art: 'finanzierung_partner' },
@@ -139,13 +144,39 @@ Deno.serve(async (req: Request) => {
     // Die Glocke geht auch dann, wenn die Mail scheitert: Sie ist der Weg im CRM.
     const { error: glockeFehler } = await db.from('benachrichtigungen').insert({
       benutzer_id: e.id,
-      titel: 'Finanzierung kann starten',
-      nachricht: `${kundeName || 'Ein Kunde'}: Die Reservierung ist unterschrieben. Kunden- und Objektunterlagen liegen im Abschnitt Finanzierung als ZIP bereit.`,
+      titel: 'Neue Finanzierungsanfrage',
+      nachricht: `${kundeName || 'Ein Kunde'}: Die Bonitätsunterlagen sind vollständig, die Objektunterlagen liegen bereit. Die Finanzierung kann starten, Angebot bis ${fristDeutsch}.`,
       link: pfad,
       gelesen: false,
     })
     if (glockeFehler) console.error('finanzierung-partner-benachrichtigen: Glocke', glockeFehler.message)
   }
+  /*
+   * Die Einreichung je Finanzierer (Migration 20261027120000). Erst sie gibt
+   * ihm den Kunden frei. Laeuft sie schon, bleibt sie, wie sie ist; war sie
+   * erledigt, lebt sie mit neuer Frist wieder auf.
+   */
+  if (empfaenger.length > 0) {
+    const { data: vorhanden } = await db.from('finanzierung_einreichungen')
+      .select('id, finanzierer_id, status').eq('investment_id', investmentId)
+      .in('finanzierer_id', empfaenger.map((e) => e.id))
+    const nachPartner = new Map((vorhanden || []).map((r: { finanzierer_id: string }) => [r.finanzierer_id, r]))
+    for (const e of empfaenger) {
+      const alt = nachPartner.get(e.id) as { id: string; status: string } | undefined
+      const { error: einreichungFehler } = !alt
+        ? await db.from('finanzierung_einreichungen').insert({
+          investment_id: investmentId, finanzierer_id: e.id, eingereicht_von: user.id, frist_bis: fristIso,
+        })
+        : EINREICHUNG_ERLEDIGT.includes(alt.status)
+          ? await db.from('finanzierung_einreichungen').update({
+            status: 'eingereicht', frist_bis: fristIso, eingereicht_von: user.id, eingereicht_am: jetzt,
+            grund: null, entschieden_am: null,
+          }).eq('id', alt.id)
+          : { error: null }
+      if (einreichungFehler) console.error('finanzierung-partner-benachrichtigen: Einreichung', einreichungFehler.message)
+    }
+  }
+
   for (const u of uebersprungen) ergebnisse.push({ userId: u.id, name: '', ok: false, grund: u.grund })
 
   let meldungen = meldungenZusammenfuehren(meta.finanzierungPartnerMeldungen, [])

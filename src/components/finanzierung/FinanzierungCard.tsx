@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { extractStoragePath, openUnterlage } from "@/lib/storage";
 import { Button } from "@/components/ui/button";
@@ -111,6 +111,13 @@ export function FinanzierungCard({ investmentId, kundeName, berater, beraterId, 
 
   const reload = () => setData(getFinanzierung(investmentId));
 
+  // Der Zuschlag in `FinanzierungEinreichungen` legt hier ein Angebot an.
+  useEffect(() => {
+    const neu = () => setData(getFinanzierung(investmentId));
+    window.addEventListener("finanzierung-updated", neu);
+    return () => window.removeEventListener("finanzierung-updated", neu);
+  }, [investmentId]);
+
   const isVP = user.role === "vertriebspartner";
   const isAdminOrInhaber = ["admin", "inhaber"].includes(user.role);
   // Everyone internal can upload and manage
@@ -118,6 +125,12 @@ export function FinanzierungCard({ investmentId, kundeName, berater, beraterId, 
   const canDeleteDoc = isAdminOrInhaber;
   // Nur Admin/Inhaber/Finanzierungspartner dürfen den Mischzinsrechner bedienen
   const canUseMischzins = isAdminOrInhaber || user.role === "finanzierungspartner";
+  /*
+   * Freigeben heisst: Der Kunde sieht das Dokument im Portal. Das entscheidet
+   * OS, nicht der Finanzierer (Christian, 27.10.2026: Angebot nur, wenn
+   * hochgeladen und fuers Kundenportal freigegeben).
+   */
+  const canFreigeben = canUpload && user.role !== "finanzierungspartner";
 
   /*
    * Bis zum 25.09.2026 sperrte die Karte hier ein zweites Mal, und zwar auch
@@ -324,7 +337,7 @@ export function FinanzierungCard({ investmentId, kundeName, berater, beraterId, 
                         </button>
                       )}
                       {/* Freigeben – for default docs after upload */}
-                      {doc.status === "uploaded" && isDefaultDoc && canUpload && !isFinal && (
+                      {doc.status === "uploaded" && isDefaultDoc && canFreigeben && !isFinal && (
                         <button
                           className="text-xs hover:underline uppercase tracking-wide flex items-center gap-1" style={{ color: "hsl(var(--alert-green))" }}
                           onClick={async () => {

@@ -23,6 +23,14 @@ const ANKAUFSTOOL_ROLLEN: readonly string[] = ["admin", "inhaber"];
 export const MIETSUBVENTION_ROUTE = "/mietsubvention";
 /** Kaufpreisliste (Einheiten, Mieter, Hausgeld aus Wirtschaftsplan), seit dem 09.10.2026; dieselben Rollen wie das Ankaufstool. */
 export const KAUFPREISLISTE_ROUTE = "/kaufpreisliste";
+/**
+ * Finanzierungen: Einreichungen aller Kunden bei allen Finanzierern, mit
+ * Fristen und Kennzahlen je Finanzierer (Christian, 27.10.2026). Dieselben
+ * Rollen wie `darf_finanzierung_steuern` in der Datenbank, auch vor den
+ * Rollen mit Vollzugriff.
+ */
+export const FINANZIERUNGEN_ROUTE = "/finanzierungen";
+const FINANZIERUNGEN_ROLLEN: readonly string[] = ["admin", "inhaber", "backoffice"];
 
 /**
  * Die Hausverwaltung (Mieter, Kautionen, Vermietung und so weiter), seit dem
@@ -602,6 +610,7 @@ export function isUrlAllowedForRole(
   // Objektdaten: eine feste Rollenliste, auch vor den Rollen mit Vollzugriff
   // (Christian, 17.10.2026: nur Admin, Inhaber, Backoffice, Objektpartner).
   if (istObjektdatenRoute(url)) return darfObjektdaten(role);
+  if (url.split("?")[0].split("#")[0] === FINANZIERUNGEN_ROUTE) return FINANZIERUNGEN_ROLLEN.includes(role);
   if (FULL_ACCESS_ROLES.includes(role)) return true;
   const cleanUrl = url.split("?")[0].split("#")[0];
   // Freigaben im Code, die vor der Rollenliste stehen. Siehe

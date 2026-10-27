@@ -31,7 +31,7 @@ import { HANDBUCH_SEITE_ROUTE } from "@/lib/handbuch/zugang";
 import { isDraftRoute } from "@/lib/draftRoutes";
 import { OBJEKTDATEN_EINHEITEN_ROUTE, OBJEKTDATEN_MIETER_ROUTE, OBJEKTDATEN_ROUTE, OBJEKTDATEN_VOLLSTAENDIGKEIT_ROUTE, darfObjektdaten } from "@/lib/objektdatenZugang";
 import {
-  ANKAUFSTOOL_ROUTE, greiftAdminRiegel, isUrlAllowedForRole, isKundeRole, isTippgeberRole, objekteTestFreigabe, type NutzerIdentitaet,
+  ANKAUFSTOOL_ROUTE, FINANZIERUNGEN_ROUTE, greiftAdminRiegel, isUrlAllowedForRole, isKundeRole, isTippgeberRole, objekteTestFreigabe, type NutzerIdentitaet,
 } from "@/lib/sidebarPermissions";
 
 /** Wonach Menschen die Einstellungen suchen. Steht hier, weil zwei Einträge sie brauchen. */
@@ -64,6 +64,9 @@ const vertriebItems = [
   { title: "Meine Leads", url: "/meine-leads", icon: ClipboardCheck, suchbegriffe: ["meine kunden", "zugewiesen", "eigene leads"] },
   { title: "Alle Kontakte", url: "/alle-kontakte", icon: Users, suchbegriffe: ["kunden", "kontakte", "lead", "interessent", "adressen", "liste", "neukunden", "bestandskunden", "abwicklung", "selbstauskunft", "kundenprofil"], tooltip: "Zentrale Anlaufstelle: alle aktiven Kontakte mit Pipeline-Chip-Filtern, Wartezeit-Anzeige und Anruf-Session (ersetzt die alten Buckets Kontakte, Neukunden, Abwicklung)." },
   { title: "Pipeline", url: "/pipeline", icon: GitBranch, suchbegriffe: ["stufen", "trichter", "funnel", "spalten", "kanban"] },
+  /* Einreichungen bei Finanzierern, Fristen, Kennzahlen (27.10.2026). Rollen
+     in `FINANZIERUNGEN_ROLLEN` (sidebarPermissions.ts). */
+  { title: "Finanzierungen", url: FINANZIERUNGEN_ROUTE, icon: Banknote, adminOnly: true, auchFuer: ["backoffice"], suchbegriffe: ["finanzierer", "bank", "angebote", "einreichung", "kredit", "darlehen", "zins"] },
   { title: "Empfehlungen", url: "/empfehlungen", icon: Gift, suchbegriffe: ["tippgeber", "weiterempfehlung", "referral"] },
   // Verlorene, archivierte und geloeschte Kontakte liegen seit der
   // Zusammenfuehrung alle im Papierkorb, jeweils in einem eigenen Register.

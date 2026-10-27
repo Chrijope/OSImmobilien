@@ -79,7 +79,7 @@ describe("Inhalt der Mail an die Finanzierungspartner", () => {
 
   it("schickt keine Anhaenge und nennt Knopf und Kernsatz", () => {
     const vorlage = quelle("supabase/functions/_shared/transactional-email-templates/finanzierung-starten.tsx");
-    expect(vorlage).toContain("Der Finanzierungsprozess kann gestartet werden.");
+    expect(vorlage).toContain("Mit der Finanzierung kann gestartet werden.");
     expect(vorlage).toContain('text="Unterlagen im CRM öffnen"');
     expect(vorlage).toContain("als ZIP bereit");
     const fn = quelle("supabase/functions/finanzierung-partner-benachrichtigen/index.ts");

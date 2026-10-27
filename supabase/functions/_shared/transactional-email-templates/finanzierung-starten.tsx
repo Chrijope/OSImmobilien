@@ -19,21 +19,22 @@ interface Props {
   objektTitel?: string
   kaufpreis?: string
   unterschriebenAm?: string
+  fristBis?: string
   link?: string
 }
 
-const Mail = ({ finanzierungspartnerName, kundeName, objektTitel, kaufpreis, unterschriebenAm, link }: Props) => (
+const Mail = ({ finanzierungspartnerName, kundeName, objektTitel, kaufpreis, unterschriebenAm, fristBis, link }: Props) => (
   <EmailLayout
     augenbraue="Finanzierung"
-    titel="Reservierung unterschrieben"
-    vorschau="Der Finanzierungsprozess kann gestartet werden."
+    titel="Neue Finanzierungsanfrage"
+    vorschau="Bonitätsunterlagen vollständig, die Finanzierung kann starten."
     anrede={hallo(finanzierungspartnerName)}
     intern
     ohneUnterschrift
   >
     <Absatz>
-      die Reservierungsvereinbarung von {kundeName || 'einem Kunden'} ist unterschrieben.
-      Der Finanzierungsprozess kann gestartet werden.
+      die Bonitätsunterlagen von {kundeName || 'einem Kunden'} sind vollständig. Die
+      Objektunterlagen liegen im CRM bereit. Mit der Finanzierung kann gestartet werden.
     </Absatz>
 
     <Angaben titel="Der Vorgang" zeilen={[
@@ -41,6 +42,7 @@ const Mail = ({ finanzierungspartnerName, kundeName, objektTitel, kaufpreis, unt
       ...(objektTitel ? ([['Objekt', objektTitel]] as Array<[string, string]>) : []),
       ...(kaufpreis ? ([['Kaufpreis', kaufpreis]] as Array<[string, string]>) : []),
       ...(unterschriebenAm ? ([['Reservierung unterschrieben am', unterschriebenAm]] as Array<[string, string]>) : []),
+      ...(fristBis ? ([['Angebot erbeten bis', fristBis]] as Array<[string, string]>) : []),
     ]} />
 
     <Handlung
@@ -68,6 +70,7 @@ export const template = {
     objektTitel: 'Musterstraße 1, WE 12',
     kaufpreis: '132.000 €',
     unterschriebenAm: '29.07.2026',
+    fristBis: '05.08.2026',
     link: 'https://osimmobilien.netlify.app/kunden/123?tab=investments&investment=456#finanzierung',
   },
 } satisfies TemplateEntry

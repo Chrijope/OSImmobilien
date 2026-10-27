@@ -33,7 +33,6 @@ const VOLLZUGRIFF = [
   "inhaber",
   "vertriebsleiter",
   "backoffice",
-  "finanzierungspartner",
   "buchhaltung",
   "setterin",
   // Unveraendert wie bisher, deshalb ebenfalls Vollzugriff.
@@ -41,8 +40,12 @@ const VOLLZUGRIFF = [
   "testaccount",
 ];
 
-/** Nur die eigenen zugewiesenen Kunden und deren Investments. */
-const NUR_EIGENE = ["vertriebspartner"];
+/**
+ * Nur die eigenen zugewiesenen Kunden und deren Investments. Der
+ * Finanzierungspartner sieht seit dem 27.10.2026 nur die Kunden, die ihm
+ * eingereicht wurden (20261027120000_finanzierung_einreichungen.sql).
+ */
+const NUR_EIGENE = ["vertriebspartner", "finanzierungspartner"];
 
 /** Gar kein Zugriff auf Kunden, Kundenprofile und Investments. */
 const KEIN_ZUGRIFF = [
@@ -127,7 +130,7 @@ describe("darf_alle_kunden_sehen traegt genau die Entscheidung vom 16.09.2026", 
     expect(rumpf).not.toBe("");
   });
 
-  it("nennt genau die neun Rollen mit Vollzugriff, keine mehr und keine weniger", () => {
+  it("nennt genau die acht Rollen mit Vollzugriff, keine mehr und keine weniger", () => {
     expect(rollenIn(rumpf)).toEqual([...VOLLZUGRIFF].sort());
   });
 
