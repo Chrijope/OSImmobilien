@@ -19,6 +19,7 @@ import { useUser } from "@/contexts/UserContext";
 import { useLiveVersion } from "@/hooks/useLiveData";
 import { cn } from "@/lib/utils";
 import { getObjekte, type ObjektData } from "@/lib/objekteStore";
+import { fehlendeFinanzierungsunterlagen } from "@/lib/finanzierungsObjektpaket";
 import {
   EINHEIT_FAECHER, OBJEKT_FAECHER, OBJEKTDATEN_EINHEITEN_ROUTE, OBJEKTDATEN_VOLLSTAENDIGKEIT_ROUTE,
   einheitZeile, einheitenSumme, mieterZeilen, objekteFuerRolle, objektVollstaendigkeit,
@@ -107,7 +108,7 @@ function Cockpit({ objekte, suche, setSuche }: { objekte: ObjektData[]; suche: s
   const [anlegenOffen, setAnlegenOffen] = useState(false);
   const q = suche.trim().toLocaleLowerCase("de-DE");
   const liste = objekte.filter((o) => !q || `${o.titel} ${o.adresse} ${o.plz} ${o.ort}`.toLocaleLowerCase("de-DE").includes(q));
-  const daten = liste.map((o) => ({ o, s: einheitenSumme(o.wohnungen.map(einheitZeile)), v: objektVollstaendigkeit(o, listenwerte) }));
+  const daten = liste.map((o) => ({ o, s: einheitenSumme(o.wohnungen.map(einheitZeile)), v: objektVollstaendigkeit(o, listenwerte), f: fehlendeFinanzierungsunterlagen(o) }));
   type D = (typeof daten)[number];
   const sort = useSortierung<D>({
     titel: (d) => d.o.titel, einheiten: (d) => d.s.einheiten, frei: (d) => d.s.frei, reserviert: (d) => d.s.reserviert,
@@ -140,11 +141,18 @@ function Cockpit({ objekte, suche, setSuche }: { objekte: ObjektData[]; suche: s
               </TableRow>
             </TableHeader>
             <TableBody>
-              {sort.sortiert(daten).map(({ o, s, v }) => {
+              {sort.sortiert(daten).map(({ o, s, v, f }) => {
                 return (
                   <TableRow key={o.id}>
                     <TableCell>
                       <Link to={`/objekte/${o.id}`} className="font-medium hover:underline">{o.titel}</Link>
+                      {/* Die Gruppe sehen ohnehin nur die vier Rollen, die auch den Finanzierungshinweis sehen dürfen. */}
+                      {!f.vollstaendig && (
+                        <span title={`Für die Finanzierung fehlt: ${f.fehlend.join(", ")}`} data-testid="finanzierungspaket-marke"
+                          className="ml-2 inline-flex items-center gap-1 rounded-full border border-amber-500/50 bg-amber-50 px-1.5 py-0.5 align-middle text-[11px] font-medium text-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+                          <AlertTriangle className="h-3 w-3" /> Finanzierung {f.vorhanden.length}/{f.vorhanden.length + f.fehlend.length}
+                        </span>
+                      )}
                       <div className="text-xs text-muted-foreground">{[o.adresse, [o.plz, o.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ")}</div>
                     </TableCell>
                     <TableCell className="text-right tabular-nums">{s.einheiten}</TableCell>
