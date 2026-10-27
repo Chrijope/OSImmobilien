@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { rvUnterschriftStand } from "./rvUnterschriftMahnung";
 import { saNeueUnterschriftAusstehend } from "../../supabase/functions/_shared/selbstauskunft-geltende-unterschrift.ts";
 import { investmentLoeschen, saPdfVermerken } from "./investmentGepruefteWege";
+import { kveVersandAm, notarterminPruefen } from "./notarFristen";
 
 /**
  * Führt eine RPC mit automatischem Retry bei transienten Netzwerkfehlern aus
@@ -357,6 +358,13 @@ export function setInvestmentNotarFields(investmentId: string, fields: Partial<{
   datum: string; uhrzeit: string; name: string; adresse: string; telefon: string;
   verkaeufer: string; vertretung: string;
 }>): void {
+  // Notartermin erst 14 Tage nach Versand des Kaufvertragsentwurfs (27.10.2026).
+  // Hier, weil alle Wege im CRM (Notarkarte, „Termin übernehmen", Einheitenliste)
+  // hier durchgehen. Die Datenbank prueft dieselbe Regel noch einmal.
+  if (fields.datum !== undefined) {
+    const meldung = notarterminPruefen(fields.datum, getKveVersandAm(investmentId));
+    if (meldung) throw new Error(meldung);
+  }
   if (isTestAccount()) {
     const current = getMetaField<Record<string, string>>(investmentId, "notarData", {});
     const merged = { ...current, ...fields };
@@ -1239,7 +1247,7 @@ export function getSaDataZurVorbelegung(
 export const KUNDENORDNER_DEFAULT_KATEGORIEN = ["Reservierungsvertrag", "IBAN Immobilienkonto", "Kaufvertragsentwurf", "Grundschuld", "Kaufvertrag", "Kaufpreisfälligkeit", "GBA Erwerbvormerkung", "Darlehensvertrag", "Kaufnebenkosten", "Beratungsdokument"] as const;
 export const KUNDENORDNER_KATEGORIEN = KUNDENORDNER_DEFAULT_KATEGORIEN;
 export type KundenordnerKategorie = string;
-export interface KundenordnerDokument { id: string; investmentId: string; kategorie: KundenordnerKategorie; filename: string; uploadedBy: string; uploadedAt: string; linkedPdf?: string; fileUrl?: string; freigegeben?: boolean; }
+export interface KundenordnerDokument { id: string; investmentId: string; kategorie: KundenordnerKategorie; filename: string; uploadedBy: string; uploadedAt: string; linkedPdf?: string; fileUrl?: string; freigegeben?: boolean; /** Zeitpunkt der Freigabe an den Kunden, seit 27.10.2026. */ freigegebenAm?: string; }
 
 /** Get custom categories added by admin for this investment */
 export function getCustomKundenordnerKategorien(investmentId: string): string[] { return getMetaField<string[]>(investmentId, "kundenordnerCustomKat", []); }
@@ -1261,6 +1269,8 @@ export function getVisibleKundenordnerKategorien(investmentId: string): string[]
 }
 
 export function getKundenordnerByInvestment(investmentId: string) { return getMetaField<KundenordnerDokument[]>(investmentId, "kundenordner", []); }
+/** Wann der Kaufvertragsentwurf an den Kunden ging (Freigabe im Kundenordner), sonst `null`. Siehe notarFristen.ts. */
+export function getKveVersandAm(investmentId: string): string | null { return kveVersandAm(getKundenordnerByInvestment(investmentId)); }
 export function addKundenordnerDokument(doc: Omit<KundenordnerDokument, "id">) { const all = getKundenordnerByInvestment(doc.investmentId); const newDoc: KundenordnerDokument = { ...doc, id: `ko-${Date.now()}-${Math.random().toString(36).slice(2, 6)}` }; all.push(newDoc); setMetaField(doc.investmentId, "kundenordner", all); return newDoc; }
 export function updateKundenordnerDokument(docId: string, fields: Partial<KundenordnerDokument>) {
   if (isTestAccount()) return;
