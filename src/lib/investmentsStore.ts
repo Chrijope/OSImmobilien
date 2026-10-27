@@ -180,7 +180,7 @@ function buildInvestmentMeta(inv: Investment, existingMeta: Record<string, any> 
  * Steuer-Cockpits). Deshalb wird der Wert hier aus den vorhandenen
  * Snapshots abgeleitet, statt die Spalte leer zu lassen.
  */
-function kaufpreisAusMeta(meta: Record<string, any>): number {
+export function kaufpreisAusMeta(meta: Record<string, any>): number {
   const kandidaten = [
     meta?.kaufpreis,
     meta?.rvVirtualWohnung?.kaufpreis,

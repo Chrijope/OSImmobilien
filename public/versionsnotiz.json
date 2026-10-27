@@ -2976,12 +2976,13 @@
       "admin",
       "inhaber"
     ],
-    "kurztext": "Der Verkaufsreport entsteht jetzt im CRM statt in der Excel. Geschäftspartner sehen nur, was du veröffentlichst.",
+    "kurztext": "Der Verkaufsreport entsteht jetzt im CRM, im Aufbau der bisherigen Excel. Geschäftspartner sehen nur, was du veröffentlichst.",
     "wasHeisstDasFuerDich": [
-      "„Stand erstellen“ rechnet Ø Kaufpreis, Ø €/m², reservierte und verkaufte Wohnungen, Verkaufsdauer und den Verkaufstrichter aus den CRM-Daten.",
-      "Erst „Veröffentlichen“ gibt den Stand frei. Kundennamen, Bank, Berater und Provision stehen nie im Report.",
-      "Die neue Rolle Geschäftspartner sieht im CRM nur diese Seite. Einladen wie gewohnt über die Nutzerverwaltung.",
-      "„PDF“ öffnet den Druckdialog, dort als PDF sichern."
+      "„Stand erstellen“ legt je Vorgang eine Zeile an und füllt aus dem CRM: Wohnung, Objekt, Beratung, Closing, Reservierung, Finanzierung samt Bank, KVE, Notartermin und Kaufpreis.",
+      "Gelbe Felder (Stellplatz, Besichtigung, Gutachtertermin, geplante Beurkundung, Mängel) trägst du von Hand ein. Jedes Feld lässt sich überschreiben, der nächste Stand übernimmt deine Einträge.",
+      "Oben stehen wie in der Excel der Trichter mit Quoten, Ø Salescycle und Ø Kaufpreis. Zeilen für Fremdvertrieb fügst du selbst hinzu.",
+      "Erst „Veröffentlichen“ gibt den Stand frei. Kundennamen stehen nie im Report. „PDF“ druckt im Querformat.",
+      "Die neue Rolle Geschäftspartner sieht im CRM nur diese Seite. Einladen wie gewohnt über die Nutzerverwaltung."
     ],
     "soFindestDuEs": "Seitenleiste, Vertrieb, Verkaufsreport",
     "kritisch": false
