@@ -8044,6 +8044,7 @@ export type Database = {
         | "individuell"
         | "versicherungsexperte"
         | "tippgeber"
+        | "geschaeftspartner"
       aufgabe_prioritaet: "niedrig" | "mittel" | "hoch" | "dringend"
       aufgabe_status: "offen" | "in_bearbeitung" | "erledigt" | "abgesagt"
       aufgabe_typ: "anruf" | "meeting" | "follow_up" | "aufgabe" | "deadline"
@@ -8226,6 +8227,7 @@ export const Constants = {
         "individuell",
         "versicherungsexperte",
         "tippgeber",
+        "geschaeftspartner",
       ],
       aufgabe_prioritaet: ["niedrig", "mittel", "hoch", "dringend"],
       aufgabe_status: ["offen", "in_bearbeitung", "erledigt", "abgesagt"],

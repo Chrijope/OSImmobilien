@@ -11,6 +11,7 @@ import {
 import { darfHandbuchSeite, istHandbuchSeiteRoute } from "@/lib/handbuch/zugang";
 import { getAppConfig } from "@/lib/appConfigStore";
 import { darfObjektdaten, istObjektdatenRoute } from "@/lib/objektdatenZugang";
+import { VERKAUFSREPORT_ROUTE } from "@/lib/verkaufsreport";
 
 /**
  * Ankaufstool (Bauträger-Kalkulator), seit dem 07.10.2026. Ein internes
@@ -31,6 +32,13 @@ export const KAUFPREISLISTE_ROUTE = "/kaufpreisliste";
  */
 export const FINANZIERUNGEN_ROUTE = "/finanzierungen";
 const FINANZIERUNGEN_ROLLEN: readonly string[] = ["admin", "inhaber", "backoffice"];
+
+/**
+ * Verkaufsreport (27.10.2026): Admin und Inhaber erstellen und
+ * veroeffentlichen, die Rolle geschaeftspartner liest und sieht sonst nichts.
+ * Die Datenbank zieht dieselbe Grenze (Migration 20261027150100).
+ */
+const VERKAUFSREPORT_ROLLEN: readonly string[] = ["admin", "inhaber", "geschaeftspartner"];
 
 /**
  * Die Hausverwaltung (Mieter, Kautionen, Vermietung und so weiter), seit dem
@@ -599,6 +607,11 @@ export function isUrlAllowedForRole(
 ): boolean {
   // Bestehende Vorschau-Links erben die regulären Akademie-Berechtigungen.
   url = url.replace(/^\/vertriebsakademie-neu(?=\/|\?|#|$)/, "/vertriebsakademie");
+  // Der Verkaufsreport und der Geschaeftspartner: feste Liste vor allem
+  // anderen, weder role_permissions noch eigene Berechtigungen oeffnen mehr.
+  const ohneZusatz = url.split("?")[0].split("#")[0];
+  if (ohneZusatz === VERKAUFSREPORT_ROUTE) return VERKAUFSREPORT_ROLLEN.includes(role);
+  if (role === "geschaeftspartner") return false;
   // Sperren zuerst: Sie gehen jeder Freigabe vor, auch der aus der Datenbank
   // und den individuellen Berechtigungen.
   if (istRouteGesperrt(url, role, identitaet)) return false;

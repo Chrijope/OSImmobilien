@@ -150,6 +150,12 @@ export function beispielkundeZeilen(eigeneNutzerId: string) {
         obj_adresse: `${OBJEKT.adresse}, ${OBJEKT.plz} ${OBJEKT.ort}`, we_nr: OBJEKT.weNr, kaufpreis: String(OBJEKT.kaufpreis),
       },
       kaufvertragPdf: "Kaufvertragsentwurf_Beispiel.pdf", kaufvertragUpdatedAt: "2026-09-12T10:00:00Z",
+      // Kaufvertragsentwurf an den Kunden, 19 Tage vor dem Notartermin (Regel seit 27.10.2026).
+      kundenordner: [{
+        id: "beispiel-ko-kve", investmentId: BEISPIEL_INVESTMENT_ID, kategorie: "Kaufvertragsentwurf",
+        filename: "Kaufvertragsentwurf_Beispiel.pdf", uploadedBy: "Beispiel",
+        uploadedAt: "2026-09-12T10:00:00Z", freigegeben: true, freigegebenAm: "2026-09-12T10:00:00Z",
+      }],
       abwicklung: { kaufpreisfaelligkeitDatum: "2026-10-20", grundbuchDatum: "2026-10-25", uebergabeDatum: "2026-11-01" },
     },
   };

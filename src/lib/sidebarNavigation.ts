@@ -26,6 +26,7 @@ import {
   Trash2, ScrollText, ShieldAlert, Video, CalendarPlus, Star,
   ShoppingBag, Settings, Heart, Moon, Route, Handshake, Table2, ListChecks,
 } from "lucide-react";
+import { VERKAUFSREPORT_ROUTE } from "@/lib/verkaufsreport";
 import type { UserRole } from "@/types/user";
 import { HANDBUCH_SEITE_ROUTE } from "@/lib/handbuch/zugang";
 import { isDraftRoute } from "@/lib/draftRoutes";
@@ -67,6 +68,8 @@ const vertriebItems = [
   /* Einreichungen bei Finanzierern, Fristen, Kennzahlen (27.10.2026). Rollen
      in `FINANZIERUNGEN_ROLLEN` (sidebarPermissions.ts). */
   { title: "Finanzierungen", url: FINANZIERUNGEN_ROUTE, icon: Banknote, adminOnly: true, auchFuer: ["backoffice"], suchbegriffe: ["finanzierer", "bank", "angebote", "einreichung", "kredit", "darlehen", "zins"] },
+  /* Verkaufsreport fuer Geschaeftspartner (27.10.2026), Rollen in `VERKAUFSREPORT_ROLLEN`. */
+  { title: "Verkaufsreport", url: VERKAUFSREPORT_ROUTE, icon: BarChart3, adminOnly: true, auchFuer: ["geschaeftspartner"], suchbegriffe: ["report", "geschaeftspartner", "durchschnittskaufpreis", "verkauft", "reserviert"] },
   { title: "Empfehlungen", url: "/empfehlungen", icon: Gift, suchbegriffe: ["tippgeber", "weiterempfehlung", "referral"] },
   // Verlorene, archivierte und geloeschte Kontakte liegen seit der
   // Zusammenfuehrung alle im Papierkorb, jeweils in einem eigenen Register.

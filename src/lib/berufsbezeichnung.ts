@@ -90,6 +90,8 @@ const ROLLENKENNUNGEN = new Set(
     "individuell",
     "marketing",
     "bewerber",
+    "geschaeftspartner",
+    "geschäftspartner",
     "testaccount",
     // Anzeige-Variante der Vertriebspartner, siehe rollenLabel.ts.
     "lead-berater",

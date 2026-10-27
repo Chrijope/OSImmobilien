@@ -376,3 +376,19 @@ describe("Ankaufstool", () => {
     }
   });
 });
+
+describe("Geschäftspartner und Verkaufsreport (27.10.2026)", () => {
+  it("Geschäftspartner sehen nur den Verkaufsreport, auch mit eigenen Berechtigungen", () => {
+    expect(isUrlAllowedForRole("/verkaufsreport", "geschaeftspartner")).toBe(true);
+    for (const url of ["/", "/kunden", "/objekte", "/alle-kontakte", "/finanzierungen", "/news"]) {
+      expect(isUrlAllowedForRole(url, "geschaeftspartner", [url])).toBe(false);
+    }
+  });
+
+  it("den Verkaufsreport sehen nur Admin, Inhaber und Geschäftspartner", () => {
+    expect(isUrlAllowedForRole("/verkaufsreport", "admin")).toBe(true);
+    expect(isUrlAllowedForRole("/verkaufsreport", "inhaber")).toBe(true);
+    expect(isUrlAllowedForRole("/verkaufsreport", "backoffice", ["/verkaufsreport"])).toBe(false);
+    expect(isUrlAllowedForRole("/verkaufsreport", "vertriebspartner")).toBe(false);
+  });
+});

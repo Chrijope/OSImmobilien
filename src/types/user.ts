@@ -12,6 +12,7 @@ export type UserRole =
   | "hausverwaltung"
   | "setterin"
   | "versicherungsexperte"
+  | "geschaeftspartner"
   | "kunde"
   | "tippgeber"
   | "marketing"
@@ -54,6 +55,8 @@ export const ROLES: RoleConfig[] = [
   { id: "individuell", label: "Individuell", color: "hsl(240, 60%, 58%)" },
   { id: "marketing", label: "Marketing", color: "hsl(310, 65%, 50%)" },
   { id: "bewerber", label: "Bewerber", color: "hsl(95, 45%, 42%)" },
+  // Sieht nur den veroeffentlichten Verkaufsreport (27.10.2026).
+  { id: "geschaeftspartner", label: "Geschäftspartner", color: "hsl(200, 45%, 40%)" },
   { id: "testaccount", label: "Testaccount", color: "hsl(215, 12%, 65%)" },
 ];
 

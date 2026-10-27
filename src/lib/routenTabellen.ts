@@ -188,6 +188,8 @@ export const ROUTEN_TABELLEN: Record<string, readonly string[]> = {
   "/abwicklung": [...KONTAKT_TABELLEN],
   // Namen zu Kunden und Investments; die Einreichungen laedt die Seite selbst.
   "/finanzierungen": [...KONTAKT_TABELLEN],
+  // Fuer „Stand erstellen“; der Stand selbst kommt aus verkaufsreport_staende.
+  "/verkaufsreport": [...KONTAKT_TABELLEN, ...OBJEKT_TABELLEN],
   "/bestandskunden": [...KONTAKT_TABELLEN],
   "/bestandskunden-import": [...KONTAKT_TABELLEN],
   "/bestandskunden-import/csv": [...KONTAKT_TABELLEN],

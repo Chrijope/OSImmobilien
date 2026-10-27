@@ -25,6 +25,7 @@ import { LoadingFallback } from "@/components/LoadingFallback";
 import { RouteErrorBoundary } from "@/components/RouteErrorBoundary";
 import { RouteFallback } from "@/components/RouteFallback";
 import { isUrlAllowedForRole, isTippgeberRole } from "@/lib/sidebarPermissions";
+import { VERKAUFSREPORT_ROUTE } from "@/lib/verkaufsreport";
 import { objektbereichGesperrt } from "@/lib/sidebarNavigation";
 import { loginZielFuer } from "@/lib/chatDirektlink";
 import { prefetchCriticalRoutes } from "@/lib/routePrefetch";
@@ -157,6 +158,11 @@ export function AppShell() {
       return <Navigate to="/tippgeber-portal" replace />;
     }
   }
+  // Geschaeftspartner: nur der Verkaufsreport, ohne Onboarding (27.10.2026).
+  const isGeschaeftspartner = user.role === "geschaeftspartner";
+  if (isGeschaeftspartner && location.pathname !== VERKAUFSREPORT_ROUTE && location.pathname !== "/einstellungen") {
+    return <Navigate to={VERKAUFSREPORT_ROUTE} replace />;
+  }
 
   // Umgekehrt: Nicht-Kunden dürfen NICHT im Kundenportal landen,
   // sonst entsteht ein Misch-UI aus Admin-Sidebar und Kunden-Content.
@@ -177,7 +183,7 @@ export function AppShell() {
   // sofort die Sidebar und nicht den Onboarding-Wizard.
   const onboardingBypass = isSidebarBlurExempt(authUser?.email);
 
-  if (!isAdmin && !isTippgeber && !onboardingBypass && !effectiveOnboardingComplete && !isOnSettingsPage) {
+  if (!isAdmin && !isTippgeber && !isGeschaeftspartner && !onboardingBypass && !effectiveOnboardingComplete && !isOnSettingsPage) {
     return <Navigate to="/einstellungen" replace />;
   }
 
@@ -186,7 +192,7 @@ export function AppShell() {
   const sidebarBlurExempt =
     onboardingBypass;
   const sidebarLocked =
-    !sidebarBlurExempt && !isTippgeber && !isAdmin && !effectiveOnboardingComplete;
+    !sidebarBlurExempt && !isTippgeber && !isGeschaeftspartner && !isAdmin && !effectiveOnboardingComplete;
 
 
   // Route guard: check if user's DB role allows access to this URL

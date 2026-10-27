@@ -87,6 +87,7 @@ const FollowUp = lazyRoute(() => import("./pages/FollowUp"));
 const Neukunden = lazyRoute(() => import("./pages/Neukunden"));
 const Abwicklung = lazyRoute(() => import("./pages/Abwicklung"));
 const Finanzierungen = lazyRoute(() => import("./pages/Finanzierungen"));
+const Verkaufsreport = lazyRoute(() => import("./pages/Verkaufsreport"));
 const Bestandskunden = lazyRoute(() => import("./pages/Bestandskunden"));
 const Pipeline = lazyRoute(() => import("./pages/Pipeline"));
 const VerlorenPage = lazyRoute(() => import("./pages/Verloren"));
@@ -636,6 +637,7 @@ const App = () => (
                   <Route path="/neukunden" element={<Neukunden />} />
                   <Route path="/abwicklung" element={<Abwicklung />} />
                   <Route path="/finanzierungen" element={<Finanzierungen />} />
+                  <Route path="/verkaufsreport" element={<Verkaufsreport />} />
                   <Route path="/bestandskunden" element={<Bestandskunden />} />
                   <Route path="/bestandskunden-import" element={<BestandskundenImport />} />
                   <Route path="/bestandskunden-import/csv" element={<BestandskundenImportCsv />} />

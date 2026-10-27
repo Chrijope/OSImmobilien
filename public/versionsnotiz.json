@@ -2966,5 +2966,24 @@
       "backoffice",
       "finanzierungspartner"
     ]
+  },
+  {
+    "nr": 146,
+    "datum": "2026-10-27",
+    "art": "neu",
+    "titel": "Verkaufsreport für Geschäftspartner",
+    "zielrollen": [
+      "admin",
+      "inhaber"
+    ],
+    "kurztext": "Der Verkaufsreport entsteht jetzt im CRM statt in der Excel. Geschäftspartner sehen nur, was du veröffentlichst.",
+    "wasHeisstDasFuerDich": [
+      "„Stand erstellen“ rechnet Ø Kaufpreis, Ø €/m², reservierte und verkaufte Wohnungen, Verkaufsdauer und den Verkaufstrichter aus den CRM-Daten.",
+      "Erst „Veröffentlichen“ gibt den Stand frei. Kundennamen, Bank, Berater und Provision stehen nie im Report.",
+      "Die neue Rolle Geschäftspartner sieht im CRM nur diese Seite. Einladen wie gewohnt über die Nutzerverwaltung.",
+      "„PDF“ öffnet den Druckdialog, dort als PDF sichern."
+    ],
+    "soFindestDuEs": "Seitenleiste, Vertrieb, Verkaufsreport",
+    "kritisch": false
   }
 ]
