@@ -5,7 +5,8 @@
  * Frist, eigenem Angebot und eigenen Zielbanken. Tabelle und Rechte stehen in
  * `supabase/migrations/20261027120000_finanzierung_einreichungen.sql`; dort ist
  * auch geregelt, dass ein Finanzierer nur seine eigene Einreichung sieht und
- * die Zielbanken nur admin, inhaber und backoffice.
+ * die Zielbanken nur admin, inhaber, backoffice und (seit 28.10.2026,
+ * `20261028120000_finanzierung_chat_verlauf.sql`) die Vertriebsleitung.
  *
  * Diese Datei haelt die reinen Rechnungen (Vergleich, Bankenkollision,
  * Kennzahlen) und die wenigen Datenbankaufrufe.
@@ -73,12 +74,21 @@ export function laeuft(e: Pick<Einreichung, "status">): boolean {
 }
 
 /**
- * Wer Banken sieht, vergleicht und den Zuschlag gibt. Gleiche Liste wie
- * `darf_finanzierung_steuern`. Einreichen darf zusaetzlich die Vertriebsleitung
- * (`FINANZIERUNG_MELDEN_ROLLEN`).
+ * Wer den Zuschlag gibt und Einreichungen zurueckzieht. Gleiche Liste wie
+ * `darf_finanzierung_steuern`; die Vertriebsleitung seit dem 28.10.2026
+ * (Christian: „Vertriebsleitung darf auch den Zuschlag geben“).
  */
 export function darfFinanzierungSteuern(rolle: string | null | undefined): boolean {
-  return rolle === "admin" || rolle === "inhaber" || rolle === "backoffice";
+  return rolle === "admin" || rolle === "inhaber" || rolle === "backoffice" || rolle === "vertriebsleiter";
+}
+
+/**
+ * Wer alle Einreichungen, Zielbanken und den Angebotsvergleich sieht. Gleiche
+ * Liste wie `darf_finanzierung_einsehen`: die Steuernden und die
+ * Vertriebsleitung (Christian, 28.10.2026).
+ */
+export function darfFinanzierungEinsehen(rolle: string | null | undefined): boolean {
+  return darfFinanzierungSteuern(rolle) || rolle === "vertriebsleiter";
 }
 
 /** Monatsrate aus Summe, Sollzins und anfänglicher Tilgung, wie `monatsrateAusAngebot`. */
@@ -109,6 +119,24 @@ export function angeboteImVergleich(liste: Einreichung[]): Einreichung[] {
   return liste
     .filter((e) => e.angebot && (e.status === "angebot" || e.status === "zuschlag"))
     .sort((a, b) => (a.angebot!.effektivzins || Infinity) - (b.angebot!.effektivzins || Infinity));
+}
+
+/**
+ * Nach dem Zuschlag bleibt nur das gewonnene Angebot sichtbar, alle anderen
+ * Angebote wandern in den Verlauf (Christian, 28.10.2026). Nichts wird
+ * geloescht. Ohne Zuschlag stehen alle Angebote im Vergleich.
+ */
+export function angeboteNachZuschlag(liste: Einreichung[]): { sichtbar: Einreichung[]; verlauf: Einreichung[] } {
+  const alle = liste
+    .filter((e) => e.angebot)
+    .sort((a, b) => (a.angebot!.effektivzins || Infinity) - (b.angebot!.effektivzins || Infinity));
+  if (!liste.some((e) => e.status === "zuschlag")) {
+    return { sichtbar: angeboteImVergleich(liste), verlauf: [] };
+  }
+  return {
+    sichtbar: alle.filter((e) => e.status === "zuschlag"),
+    verlauf: alle.filter((e) => e.status !== "zuschlag"),
+  };
 }
 
 function bankSchluessel(bank: string): string {
@@ -230,6 +258,22 @@ export async function ladeNachrichten(einreichungId: string): Promise<Einreichun
 export async function schreibeNachricht(einreichungId: string, text: string, nachforderung: boolean): Promise<void> {
   const { error } = await db.from("finanzierung_nachrichten").insert({ einreichung_id: einreichungId, text, nachforderung });
   if (error) throw error;
+}
+
+/** Ein Angebot, das beim Zuschlag aus der Finanzierung in den Verlauf kam. */
+export interface VerlaufAngebot {
+  id: string;
+  investment_id: string;
+  angebot: { label?: string; bank?: string; summe?: number; zins?: string; tilgung?: string; laufzeit?: string; anmerkungen?: string };
+  archiviert_am: string;
+}
+
+/** Angebote im Verlauf. Der Finanzierer bekommt von der Datenbank keine Zeile. */
+export async function ladeAngebotsVerlauf(investmentId: string): Promise<VerlaufAngebot[]> {
+  const { data, error } = await db.from("finanzierung_angebote_verlauf").select("id, investment_id, angebot, archiviert_am")
+    .eq("investment_id", investmentId).order("archiviert_am", { ascending: true });
+  if (error) throw error;
+  return (data || []) as VerlaufAngebot[];
 }
 
 /** Wer welche Unterlagen geladen hat. Fehler hier halten den Download nicht auf. */

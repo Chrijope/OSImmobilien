@@ -31,7 +31,7 @@ export const KAUFPREISLISTE_ROUTE = "/kaufpreisliste";
  * Rollen mit Vollzugriff.
  */
 export const FINANZIERUNGEN_ROUTE = "/finanzierungen";
-const FINANZIERUNGEN_ROLLEN: readonly string[] = ["admin", "inhaber", "backoffice"];
+const FINANZIERUNGEN_ROLLEN: readonly string[] = ["admin", "inhaber", "backoffice", "vertriebsleiter"];
 
 /**
  * Verkaufsreport (27.10.2026): Admin und Inhaber erstellen und

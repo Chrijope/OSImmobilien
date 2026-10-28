@@ -2,8 +2,10 @@ import { describe, it, expect, vi } from "vitest";
 
 vi.mock("@/integrations/supabase/client", () => ({ supabase: {} }));
 
+import { readFileSync } from "node:fs";
 import {
-  angeboteImVergleich, bankenKollisionen, fehlendeAngaben, fristAmpel, kennzahlenJeFinanzierer,
+  angeboteImVergleich, angeboteNachZuschlag, bankenKollisionen, darfFinanzierungEinsehen,
+  darfFinanzierungSteuern, fehlendeAngaben, fristAmpel, kennzahlenJeFinanzierer,
   type Einreichung,
 } from "./finanzierungEinreichung";
 import { fristInWerktagen } from "../../supabase/functions/_shared/finanzierung-partner-benachrichtigen";
@@ -89,5 +91,57 @@ describe("Kennzahlen je Finanzierer", () => {
     expect(k.zusagequote).toBe(0.5);
     expect(k.besterEffektivzins).toBe(3.6);
     expect(k.volumen).toBe(250000);
+  });
+});
+
+describe("Rechte an Einreichungen (28.10.2026)", () => {
+  it("Vertriebsleitung sieht Zielbanken und Vergleich und gibt den Zuschlag", () => {
+    for (const r of ["admin", "inhaber", "backoffice", "vertriebsleiter"]) {
+      expect(darfFinanzierungEinsehen(r)).toBe(true);
+      expect(darfFinanzierungSteuern(r)).toBe(true);
+    }
+    for (const r of ["vertriebspartner", "finanzierungspartner", "buchhaltung", null, undefined]) {
+      expect(darfFinanzierungEinsehen(r)).toBe(false);
+      expect(darfFinanzierungSteuern(r)).toBe(false);
+    }
+  });
+
+  it("nennt in der Migration dieselben Rollen wie die Oberflaeche", () => {
+    const sql = readFileSync("supabase/migrations/20261028120000_finanzierung_chat_verlauf.sql", "utf8");
+    for (const fn of ["darf_finanzierung_einsehen", "darf_finanzierung_steuern"]) {
+      const liste = sql.match(new RegExp(`FUNCTION public\\.${fn}[\\s\\S]*?IN \\(([^)]*)\\)`))![1];
+      const rollen = liste.match(/'([a-z]+)'/g)!.map((r) => r.replace(/'/g, "")).sort();
+      expect(rollen).toEqual(["admin", "backoffice", "inhaber", "vertriebsleiter"]);
+      expect(rollen.every((r) => darfFinanzierungSteuern(r) && darfFinanzierungEinsehen(r))).toBe(true);
+    }
+  });
+});
+
+describe("Angebote nach dem Zuschlag", () => {
+  it("zeigt ohne Zuschlag alle Angebote im Vergleich, nichts im Verlauf", () => {
+    const { sichtbar, verlauf } = angeboteNachZuschlag([
+      e({ finanzierer_id: "a", status: "angebot", angebot: angebot(3.9) }),
+      e({ finanzierer_id: "b", status: "angebot", angebot: angebot(3.6) }),
+      e({ finanzierer_id: "c", status: "in_pruefung" }),
+    ]);
+    expect(sichtbar.map((x) => x.finanzierer_id)).toEqual(["b", "a"]);
+    expect(verlauf).toEqual([]);
+  });
+
+  it("zeigt nach dem Zuschlag nur den Gewinner, die anderen Angebote im Verlauf statt weg", () => {
+    const { sichtbar, verlauf } = angeboteNachZuschlag([
+      e({ finanzierer_id: "a", status: "abgesagt", angebot: angebot(3.5) }),
+      e({ finanzierer_id: "b", status: "zuschlag", angebot: angebot(3.7) }),
+      e({ finanzierer_id: "c", status: "abgelehnt" }),
+    ]);
+    expect(sichtbar.map((x) => x.finanzierer_id)).toEqual(["b"]);
+    expect(verlauf.map((x) => x.finanzierer_id)).toEqual(["a"]);
+  });
+
+  it("laesst dem Finanzierer mit Zuschlag nichts Fremdes im Verlauf", () => {
+    // Die Datenbank liefert ihm nur die eigene Zeile.
+    const { sichtbar, verlauf } = angeboteNachZuschlag([e({ status: "zuschlag", angebot: angebot(3.7) })]);
+    expect(sichtbar).toHaveLength(1);
+    expect(verlauf).toEqual([]);
   });
 });
