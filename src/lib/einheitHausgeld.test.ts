@@ -11,9 +11,10 @@ import { zusammengefuehrteObjektDaten } from "./objektKarte";
  * Objektauswahl-Karte meldete „Hausgeld fehlt“, obwohl Investagon die Teile
  * liefert. Beispiel einer echten Einheit, ohne Namen.
  *
- * Rechnung: 221,30 umlagefähig + 66,39 nicht umlagefähig + 26,556 Rücklage
- * = 314,246, auf Cent 314,25 € je Monat. Die SEV-Verwaltung (120) und die
- * Stellplatz-Werte zählen nicht dazu.
+ * Seit dem 28.10.2026 (Christian): Hausgeld = 221,30 umlagefähig + 66,39
+ * nicht umlagefähig = 287,69 € je Monat, OHNE Rücklage. Die Rücklage (26,556)
+ * steht getrennt; Vorauszahlung = 287,69 + 26,556 = 314,246, auf Cent 314,25.
+ * Die SEV-Verwaltung (120) und die Stellplatz-Werte zählen nirgends dazu.
  */
 const ROH = {
   operation_cost_tenant_apartment: 221.3,
@@ -32,49 +33,58 @@ const META_HEUTE = {
   verwaltungSevMonat: 120,
 };
 
-describe("Hausgeld gesamt einer Einheit", () => {
-  it("rechnet umlagefähig plus nicht umlagefähig plus Rücklage, ohne SEV und Stellplatz", () => {
+describe("Hausgeld einer Einheit", () => {
+  it("rechnet umlagefähig plus nicht umlagefähig, die Rücklage NICHT, ohne SEV und Stellplatz", () => {
     const t = hausgeldTeile(META_HEUTE);
-    expect(221.3 + 66.39 + 26.556).toBeCloseTo(314.246, 6);
-    expect(t.gesamt).toBe(314.25);
+    expect(t.hausgeld).toBe(287.69);
+    expect(t.vorauszahlung).toBe(314.25);
     expect(t).toMatchObject({ umlagefaehig: 221.3, nichtUmlagefaehig: 66.39, ruecklage: 26.556, sevVerwaltung: 120 });
   });
 
   it("liest allein aus den Rohdaten", () => {
-    expect(hausgeldTeile({ investagonRaw: ROH }).gesamt).toBe(314.25);
+    expect(hausgeldTeile({ investagonRaw: ROH })).toMatchObject({ hausgeld: 287.69, vorauszahlung: 314.25 });
   });
 
-  it("ein gepflegtes Hausgeld geht vor", () => {
-    expect(hausgeldTeile({ ...META_HEUTE, hausgeldMonat: 300 }).gesamt).toBe(300);
+  it("ein gepflegtes Hausgeld geht vor, die Rücklage kommt nur in die Vorauszahlung", () => {
+    expect(hausgeldTeile({ ...META_HEUTE, hausgeldMonat: 300 })).toMatchObject({ hausgeld: 300, vorauszahlung: 326.56 });
   });
 
-  it("fehlt ein Teil, gibt es kein Hausgeld gesamt", () => {
+  it("eine alte Summe samt Rücklage (bis 28.10.2026 gespeichert) wird als solche erkannt", () => {
+    expect(hausgeldTeile({ ...META_HEUTE, hausgeldMonat: 314.25 })).toMatchObject({ hausgeld: 287.69, vorauszahlung: 314.25 });
+  });
+
+  it("fehlt ein Hausgeld-Teil, gibt es kein Hausgeld; ohne Rücklage keine Vorauszahlung", () => {
     const { operation_cost_tenant_apartment: _weg, ...ohneUmlage } = ROH;
-    expect(hausgeldTeile({ investagonRaw: ohneUmlage }).gesamt).toBeUndefined();
+    expect(hausgeldTeile({ investagonRaw: ohneUmlage }).hausgeld).toBeUndefined();
+    const { operation_cost_reserve_apartment: _r, ...ohneRuecklage } = ROH;
+    expect(hausgeldTeile({ investagonRaw: ohneRuecklage })).toMatchObject({ hausgeld: 287.69, vorauszahlung: undefined });
   });
 
-  it("der Lotse nennt dieselbe Summe", () => {
-    expect(festeZahlenEinheit(META_HEUTE).werte["Hausgeld gesamt je Monat in Euro"]).toBe(314.25);
+  it("der Lotse nennt Hausgeld und Vorauszahlung getrennt", () => {
+    const werte = festeZahlenEinheit(META_HEUTE).werte;
+    expect(werte["Hausgeld (umlagefähig + nicht umlagefähig, ohne Rücklage) je Monat in Euro"]).toBe(287.69);
+    expect(werte["Vorauszahlung gesamt (Hausgeld + Rücklage) je Monat in Euro"]).toBe(314.25);
   });
 
   it("die Objektauswahl-Karte zeigt es für eine Einheit aus dem Bestand", () => {
     const d = zusammengefuehrteObjektDaten({ investment: {}, wohnung: { investagonRaw: ROH }, objekt: null } as never);
-    expect(d.hausgeld).toBe(314.25);
+    expect(d.hausgeld).toBe(287.69);
     expect(d.hausgeldNichtUmlage).toBe(66.39);
   });
 });
 
 describe("Hausgeld in den Antworten der Functions", () => {
-  it("Exposé und Kundenansicht bekommen die Summe, aber keine Investagon-Teile", () => {
+  it("Exposé und Kundenansicht bekommen das Hausgeld ohne Rücklage, aber keine Investagon-Teile", () => {
     const expose = oeffentlicheWohnung({ id: "w1", meta: META_HEUTE }).meta as Record<string, unknown>;
-    expect(expose.hausgeldMonat).toBe(314.25);
+    expect(expose.hausgeldMonat).toBe(287.69);
     expect(expose.investagonRaw ?? {}).not.toHaveProperty("operation_cost_tenant_apartment");
-    expect(kundenMeta(META_HEUTE, "wohnung").hausgeldMonat).toBe(314.25);
+    expect(kundenMeta(META_HEUTE, "wohnung").hausgeldMonat).toBe(287.69);
     expect(kundenMeta(META_HEUTE, "wohnung_global")).not.toHaveProperty("hausgeldMonat");
   });
 
-  it("überschreibt ein vorhandenes Hausgeld nicht", () => {
-    expect(mitHausgeldMonat({ hausgeldMonat: 280 }, META_HEUTE).hausgeldMonat).toBe(280);
+  it("ein Handwert kommt durch, eine alte Summe samt Rücklage nicht", () => {
+    expect(mitHausgeldMonat({ hausgeldMonat: 280 }, { ...META_HEUTE, hausgeldMonat: 280 }).hausgeldMonat).toBe(280);
+    expect(mitHausgeldMonat({ hausgeldMonat: 314.25 }, { ...META_HEUTE, hausgeldMonat: 314.25 }).hausgeldMonat).toBe(287.69);
   });
 });
 
@@ -85,7 +95,7 @@ describe("Hausgeld im Investagon-Import", () => {
 
   it("ein gespeicherter Rückfallwert gehört dem Import, ein Handwert nicht", () => {
     const neu = 320;
-    const alteSumme = hausgeldTeile({ investagonRaw: ROH }).gesamt!;
+    const alteSumme = hausgeldTeile({ investagonRaw: ROH }).vorauszahlung!;
     expect(rechenwertNachImport(neu, alteSumme, undefined, [0, alteSumme])).toMatchObject({ schreiben: true, wert: neu });
     expect(rechenwertNachImport(neu, 250, undefined, [0, alteSumme])).toMatchObject({ schreiben: false, geschuetzt: true });
   });

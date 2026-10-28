@@ -1,5 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { hausgeldAusPlan, wirtschaftsplanAusBlatt } from "./wirtschaftsplanObjekt";
+import { hausgeldAusPlan, hausgeldSpalten, wirtschaftsplanAusBlatt } from "./wirtschaftsplanObjekt";
+
+describe("Hausgeld-Spalten der Einheitenliste (28.10.2026)", () => {
+  it("Hausgeld ohne Rücklage, Rücklage separat, Vorauszahlung als Summe", () => {
+    expect(hausgeldSpalten(139.78, 41.49, 12.06, null, null)).toEqual({ uml: 139.78, nichtUml: 41.49, ruecklage: 12.06, hausgeld: 181.27, vorauszahlung: 193.33 });
+  });
+  it("aus der Liste: „Hausgeld gesamt“ ist die Vorauszahlung, das Hausgeld ist sie ohne Rücklage", () => {
+    expect(hausgeldSpalten(null, null, 12.06, null, 193.33)).toMatchObject({ hausgeld: 181.27, vorauszahlung: 193.33 });
+  });
+  it("fehlende Werte bleiben leer statt 0", () => {
+    expect(hausgeldSpalten(139.78, null, null, null, null)).toMatchObject({ hausgeld: null, vorauszahlung: null });
+    expect(hausgeldSpalten(139.78, 41.49, null, null, null)).toMatchObject({ hausgeld: 181.27, vorauszahlung: null });
+  });
+});
 import type { Blatt } from "./excelLesen";
 
 // Blatt „Wirtschaftsplan“ aus „Kaufpreisliste_Marktstrasse6.xlsx“ (Brück, WP 2027), Werte 1:1.
@@ -36,7 +49,8 @@ describe("Wirtschaftsplan am Objekt", () => {
 
   it("ergibt für 39 MEA genau den Einzelwirtschaftsplan E/006: 193,33 €", () => {
     const hg = hausgeldAusPlan(wirtschaftsplanAusBlatt(BRUECK)!, 39)!;
-    expect(hg).toEqual({ gesamt: 193.33, umlagefaehig: 139.78, nichtUmlagefaehig: 41.49, ruecklage: 12.06 });
+    // Hausgeld ohne Rücklage (28.10.2026): 139,78 + 41,49; Vorauszahlung samt Rücklage.
+    expect(hg).toEqual({ hausgeld: 181.27, vorauszahlung: 193.33, umlagefaehig: 139.78, nichtUmlagefaehig: 41.49, ruecklage: 12.06 });
   });
 
   it("rechnet ohne MEA nichts und erkennt Blätter ohne Positionen", () => {

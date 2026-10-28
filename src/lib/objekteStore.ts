@@ -186,7 +186,7 @@ export interface ObjektWohnung {
   finanzierungsnebenkostenSatz?: number;
   /** Aktuelle Instandhaltungsrücklage dieser Wohnung in € */
   ruecklageWohnung?: number;
-  /** Hausgeld brutto/Monat dieser Wohnung in € */
+  /** Hausgeld/Monat dieser Wohnung in €: umlagefähig + nicht umlagefähig, ohne Rücklage (seit 28.10.2026, siehe `einheit-hausgeld.ts`) */
   hausgeldMonat?: number;
   /** Nicht umlagefähiger Hausgeld-Anteil dieser Wohnung in €/Monat */
   hausgeldNichtUmlagefaehigEuro?: number;
@@ -223,9 +223,16 @@ export interface ObjektWohnung {
   vermietetSeit?: string;
   /** Von Hand gepflegte interne Highlights, nur intern, siehe `interneHighlights.ts` */
   interneHighlightsHand?: string[];
+  /** Außenbereich der Einheit, seit dem 28.10.2026 */
+  balkonArt?: BalkonArt;
+  /** Anzahl Badezimmer, seit dem 28.10.2026 */
+  badezimmer?: number;
   /** Roh aus `meta.grundriss3d`, gelesen wird mit `planAusMeta` (`components/grundriss3d/plan.ts`). Geschrieben nur von dort. */
   grundriss3d?: unknown;
 }
+
+export const BALKON_ARTEN = ["keiner", "balkon", "terrasse", "loggia", "garten"] as const;
+export type BalkonArt = (typeof BALKON_ARTEN)[number];
 
 /** Zahl aus `meta` lesen, leer und ungültig werden zu undefined. */
 function metaZahl(v: unknown): number | undefined {
@@ -265,7 +272,8 @@ function getWohnungShare(objekt: any, wohnung?: any): number {
 }
 
 /**
- * Das Hausgeld gesamt der Einheit selbst, ohne Objektwert: gepflegt oder nach
+ * Das Hausgeld der Einheit selbst (umlagefähig + nicht umlagefähig, ohne
+ * Rücklage seit dem 28.10.2026), ohne Objektwert: gepflegt oder nach
  * der gemeinsamen Regel (`_shared/einheit-hausgeld.ts`) aus den Teilen, bei
  * Investagon-Einheiten aus `investagonRaw`. Bewusst nicht in
  * `dbRowToWohnung`: Sonst schriebe jedes Speichern den gerechneten Wert als
@@ -274,7 +282,7 @@ function getWohnungShare(objekt: any, wohnung?: any): number {
  */
 export function hausgeldMonatEinheit(wohnung?: any): number | undefined {
   if (!wohnung) return undefined;
-  return hausgeldTeile(wohnung).gesamt ?? hausgeldTeile(wohnung.meta).gesamt;
+  return hausgeldTeile(wohnung).hausgeld ?? hausgeldTeile(wohnung.meta).hausgeld;
 }
 
 /**
@@ -712,6 +720,8 @@ function dbRowToWohnung(w: any, tableBilder: any[] = [], mitDokumentenCache = tr
     verwaltungSevMonat: metaZahl(meta.verwaltungSevMonat),
     sevErstesJahrInklusive: meta.sevErstesJahrInklusive === true ? true : undefined,
     vermietetSeit: metaText(meta.vermietetSeit),
+    balkonArt: BALKON_ARTEN.includes(meta.balkonArt) ? meta.balkonArt : undefined,
+    badezimmer: metaZahl(meta.badezimmer),
     ...(meta.grundriss3d ? { grundriss3d: meta.grundriss3d } : {}),
     ...(Array.isArray(meta.interneHighlightsHand) ? { interneHighlightsHand: meta.interneHighlightsHand.filter((t: unknown) => typeof t === "string") } : {}),
   };
@@ -861,6 +871,8 @@ export function wohnungToDbRow(
       verwaltungSevMonat: w.verwaltungSevMonat ?? null,
       sevErstesJahrInklusive: w.sevErstesJahrInklusive ?? null,
       vermietetSeit: w.vermietetSeit ?? null,
+      balkonArt: w.balkonArt ?? null,
+      badezimmer: w.badezimmer || null,
       // Nur schreiben, wenn vorhanden: ein null wuerde beim Zusammenfuehren in
       // `updateWohnung` die vorhandene Kennung ueberschreiben.
       ...(w.investagonId ? { investagonId: w.investagonId } : {}),

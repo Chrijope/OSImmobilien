@@ -191,7 +191,8 @@ export interface InvestmentEingabe {
    */
   monthlyReserveContributionAuto: boolean;
   /*
-    Hausgeld in ganzer Höhe, seit dem 22.10.2026 (Christian): gesamt, davon
+    Hausgeld in ganzer Höhe, seit dem 22.10.2026 (Christian), ohne Rücklage
+    seit dem 28.10.2026: gesamt, davon
     umlagefähig (zahlt der Mieter, nur Anzeige) und nicht umlagefähig. Der
     nicht umlagefähige Teil rechnet mit: Er kommt zu `monthlyOperatingCosts`
     (weitere Kosten des Eigentümers) dazu. Die Rücklage steht in
@@ -2088,15 +2089,18 @@ export interface Hausgeldaufstellung {
   umlagefaehig: number;
   nichtUmlagefaehig: number;
   ruecklage: number;
-  /** Summe der Teile. */
+  /** Umlagefähig + nicht umlagefähig, ohne Rücklage (Regel seit dem 28.10.2026). */
   summeTeile: number;
+  /** Vorauszahlung an die WEG: Hausgeld + Rücklage. */
+  vorauszahlung: number;
   /** Gesamt minus Summe der Teile; `null`, wenn kein Gesamtbetrag eingetragen ist. */
   abweichung: number | null;
 }
 
 /**
- * Das Hausgeld in ganzer Höhe, seit dem 22.10.2026 (Christian): gesamt =
- * umlagefähig + nicht umlagefähig + Erhaltungsrücklage. Umlagefähig zahlt der
+ * Das Hausgeld in ganzer Höhe, seit dem 28.10.2026 (Christian): Hausgeld =
+ * umlagefähig + nicht umlagefähig; die Erhaltungsrücklage steht getrennt,
+ * Vorauszahlung = Hausgeld + Rücklage. Umlagefähig zahlt der
  * Mieter und belastet den Cashflow nicht; nicht umlagefähig belastet ihn und
  * ist steuerlich abziehbar; die Rücklage belastet ihn, steuerlich zählt sie
  * erst bei Verwendung. Die Rechnung nimmt den nicht umlagefähigen Teil und
@@ -2111,15 +2115,19 @@ export function hausgeldAufstellung(
   const umlagefaehig = zahl(t.housingFeeRecoverable);
   const nichtUmlagefaehig = zahl(t.housingFeeNonRecoverable);
   const ruecklage = zahl(t.monthlyReserveContribution);
-  const summeTeile = umlagefaehig + nichtUmlagefaehig + ruecklage;
+  const summeTeile = umlagefaehig + nichtUmlagefaehig;
+  // Gespeicherte Rechnungen vor dem 28.10.2026 trugen die Rücklage im Gesamtbetrag; das ist keine Abweichung.
+  const alteSumme = ruecklage > 0 && Math.abs(gesamt - summeTeile - ruecklage) < 0.5;
+  const hausgeld = alteSumme ? summeTeile : gesamt;
   return {
     vorhanden: gesamt > 0 || umlagefaehig > 0 || nichtUmlagefaehig > 0,
-    gesamt,
+    gesamt: hausgeld,
     umlagefaehig,
     nichtUmlagefaehig,
     ruecklage,
     summeTeile,
-    abweichung: gesamt > 0 ? gesamt - summeTeile : null,
+    vorauszahlung: (hausgeld > 0 ? hausgeld : summeTeile) + ruecklage,
+    abweichung: hausgeld > 0 ? hausgeld - summeTeile : null,
   };
 }
 

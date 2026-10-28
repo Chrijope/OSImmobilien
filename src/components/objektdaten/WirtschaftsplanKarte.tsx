@@ -66,7 +66,7 @@ export function WirtschaftsplanKarte({ objekt, wp, darfSchreiben }: { objekt: Ob
       const hg = hausgeldAusPlan(wp, listenZahl(listendatenFuerEinheit(w.id), "mea"));
       if (!hg) { ohneMea++; continue; }
       const fehler = await updateWohnung(objekt.id, w.id, {
-        hausgeldMonat: hg.gesamt, hausgeldUmlagefaehigEuro: hg.umlagefaehig,
+        hausgeldMonat: hg.hausgeld, hausgeldUmlagefaehigEuro: hg.umlagefaehig,
         hausgeldNichtUmlagefaehigEuro: hg.nichtUmlagefaehig, ruecklageZufuehrungMonat: hg.ruecklage,
       });
       if (!fehler) geschrieben++;

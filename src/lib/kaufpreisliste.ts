@@ -83,7 +83,10 @@ export interface KplZeilenErgebnis {
   hgHk: number | null;
   hgNuml: number | null;
   hgEr: number | null;
+  /** Hausgeld = umlagefähig (inkl. Heizkosten) + nicht umlagefähig, ohne Erhaltungsrücklage (Christian, 28.10.2026). */
   hg: number | null;
+  /** Vorauszahlung an die WEG = Hausgeld + Erhaltungsrücklage. */
+  vorauszahlung: number | null;
   ueberschuss: number | null;
   subvention: number | null;
 }
@@ -91,7 +94,7 @@ export interface KplZeilenErgebnis {
 export interface KplGesamt {
   flaeche: number; mea: number; ist: number; bk: number; hk: number; strom: number; wasser: number; nk: number; mwst: number;
   gesamtmiete: number; istJahr: number; soll: number; sollJahr: number; vk: number;
-  hgUml: number; hgHk: number; hgNuml: number; hgEr: number; hg: number; ueberschuss: number; subvention: number;
+  hgUml: number; hgHk: number; hgNuml: number; hgEr: number; hg: number; vorauszahlung: number; ueberschuss: number; subvention: number;
   istQm: number | null; sollQm: number | null; vkQm: number | null; renditeIst: number | null; renditeSoll: number | null;
   vermietet: number;
   einheiten: number;
@@ -147,7 +150,8 @@ export function berechneZeile(z: KplZeile, e: KplEingaben, summeVk: number): Kpl
     renditeIst: hatVk && hatFl ? n(istJahr) / n(z.vk) : null,
     renditeSoll: hatVk && hatFl ? n(sollJahr) / n(z.vk) : null,
     hgUml, hgHk, hgNuml, hgEr,
-    hg: leer(z.mea) ? null : n(hgUml) + n(hgHk) + n(hgNuml) + n(hgEr),
+    hg: leer(z.mea) ? null : n(hgUml) + n(hgHk) + n(hgNuml),
+    vorauszahlung: leer(z.mea) ? null : n(hgUml) + n(hgHk) + n(hgNuml) + n(hgEr),
     ueberschuss: hatFl && !leer(z.mea) ? n(soll) - n(hgNuml) - n(hgEr) : null,
     subvention: !leer(z.vk) && !leer(e.subventionGesamt) && summeVk !== 0 ? (n(e.subventionGesamt) * n(z.vk)) / summeVk : null,
   };
@@ -169,7 +173,7 @@ export function berechneKaufpreisliste(e: KplEingaben): KplErgebnis {
       flaeche, mea: sz((z) => z.mea), ist,
       bk: sz((z) => z.bk), hk: sz((z) => z.hk), strom: sz((z) => z.strom), wasser: sz((z) => z.wasser), nk: sz((z) => z.nk), mwst: sz((z) => z.mwst),
       gesamtmiete: sr((r) => r.gesamtmiete), istJahr, soll, sollJahr, vk: summeVk,
-      hgUml: sr((r) => r.hgUml), hgHk: sr((r) => r.hgHk), hgNuml: sr((r) => r.hgNuml), hgEr: sr((r) => r.hgEr), hg: sr((r) => r.hg),
+      hgUml: sr((r) => r.hgUml), hgHk: sr((r) => r.hgHk), hgNuml: sr((r) => r.hgNuml), hgEr: sr((r) => r.hgEr), hg: sr((r) => r.hg), vorauszahlung: sr((r) => r.vorauszahlung),
       ueberschuss: sr((r) => r.ueberschuss), subvention: sr((r) => r.subvention),
       istQm: flaeche ? ist / flaeche : null,
       sollQm: flaeche ? soll / flaeche : null,

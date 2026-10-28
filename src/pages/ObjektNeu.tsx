@@ -73,7 +73,8 @@ import {
   normalizeVerwaltungsart,
 } from "@/lib/verwaltungInfo";
 import { wizardStruktur, unterlagenRegeln } from "@/lib/objektUnterlagenRegeln";
-import { kaufnebenkostenPct } from "@/lib/kaufnebenkosten";
+import { gepflegteKaufnebenkostenTeile, kaufnebenkostenPct, kaufnebenkostenSaetze, type KaufnebenkostenTeile } from "@/lib/kaufnebenkosten";
+import { neubauAus, ohneLeere, standardannahmenAus, type NeubauAngaben, type Standardannahmen } from "@/lib/objektKalkulationsannahmen";
 
 const fmt = (v: number) => new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(v);
 
@@ -154,6 +155,10 @@ type ObjektNeuZusatz = {
   objektdatenForm: ObjektFormDaten | null;
   /** Name zu Nutzer-ID der Exklusivpartner, `meta.exklusivPartnerKennung`. */
   exklusivKennungen?: Record<string, string>;
+  /** Seit dem 28.10.2026, siehe `objektKalkulationsannahmen.ts` und `kaufnebenkostenSaetze`. */
+  knkTeile?: KaufnebenkostenTeile;
+  standardannahmen?: Standardannahmen;
+  neubau?: NeubauAngaben;
 };
 
 const initialNfState = {
@@ -237,6 +242,11 @@ const OBJEKT_DOC_CATEGORIES = [
   { id: "grundbuchauszug", name: "Grundbuchauszug" },
   { id: "teilungserklaerung", name: "Teilungserklärung" },
   { id: "wohnflaechenberechnung", name: "Wohnflächenberechnung" },
+  // Seit dem 28.10.2026; die Namen liest `finanzierungsObjektpaket.ts` als Kategorie.
+  { id: "wirtschaftsplan", name: "Wirtschaftsplan" },
+  { id: "weg_protokolle", name: "WEG-Protokolle" },
+  { id: "mietvertrag", name: "Mietvertrag" },
+  { id: "mieterliste", name: "Mieterliste" },
 ];
 
 // Auto-calculate related fields for a wohnung
@@ -452,6 +462,10 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
   const [kalkInstandhaltungQm, setKalkInstandhaltungQm] = useState<number>(0);
   const [kalkInstandhaltungMode, setKalkInstandhaltungMode] = useState<"qm" | "pct">("qm");
   const [kalkInstandhaltungPct, setKalkInstandhaltungPct] = useState<number>(1.0);
+  // Seit dem 28.10.2026: Kaufnebenkosten in drei Sätzen, Standardannahmen und Neubau, alle in `objekte.meta`.
+  const [knkTeile, setKnkTeile] = useState<KaufnebenkostenTeile>({});
+  const [standardannahmen, setStandardannahmen] = useState<Standardannahmen>({});
+  const [neubau, setNeubau] = useState<NeubauAngaben>({});
 
   // Load existing object data in edit mode
   const [editLoaded, setEditLoaded] = useState(false);
@@ -496,6 +510,9 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
       setKalkInstandhaltungMode((kalk.instandhaltungMode === "pct" ? "pct" : "qm"));
       setKalkInstandhaltungPct(Number(kalk.instandhaltungPctGebaeude ?? 1.0));
       setRuecklageWeg(Number((existingObjekt.meta as any)?.ruecklageWeg ?? 0));
+      setKnkTeile(gepflegteKaufnebenkostenTeile(existingObjekt.meta) ?? {});
+      setStandardannahmen(standardannahmenAus(existingObjekt.meta));
+      setNeubau(neubauAus(existingObjekt.meta));
       setGarantierteErstvermietungKalt(Number((existingObjekt.meta as any)?.garantierteErstvermietungKalt ?? 0));
       if (existingObjekt.verkaeuferDaten) {
         // Über die Vorbelegung gelegt, damit ein bestehendes Objekt ohne die
@@ -1008,6 +1025,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
       kalkHausgeldNuP, kalkHausgeldNuEuro, kalkHausgeldMonat, ruecklageWeg, garantierteErstvermietungKalt, kalkSevMonat,
       kalkMietausfallP, kalkInstandhaltungQm, kalkInstandhaltungMode, kalkInstandhaltungPct,
       objektUnterlagenLink, einzelProfilBildId, objektdatenForm, exklusivKennungen,
+      knkTeile, standardannahmen, neubau,
     },
     hasPendingLocalFiles: hasPersistedFiles({
       hauptbildFile,
@@ -1030,7 +1048,8 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
       anlageklasse, konzept, verwaltungsart, verwaltungskostenWeg, verwaltungskostenSev, verwaltungskostenSonstige,
       kalkHausgeldNuP, kalkHausgeldNuEuro, kalkHausgeldMonat, ruecklageWeg, garantierteErstvermietungKalt, kalkSevMonat,
       kalkMietausfallP, kalkInstandhaltungQm, kalkInstandhaltungMode, kalkInstandhaltungPct,
-      objektUnterlagenLink, einzelProfilBildId, objektdatenForm, exklusivKennungen]);
+      objektUnterlagenLink, einzelProfilBildId, objektdatenForm, exklusivKennungen,
+      knkTeile, standardannahmen, neubau]);
 
   const currentDraftBlobs = useMemo<Record<string, File>>(() => {
     const blobs: Record<string, File> = {};
@@ -1378,6 +1397,9 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
           setObjektUnterlagenLink(z.objektUnterlagenLink ?? "");
           setEinzelProfilBildId(z.einzelProfilBildId ?? "");
           setObjektdatenForm(z.objektdatenForm ?? null);
+          setKnkTeile(z.knkTeile ?? {});
+          setStandardannahmen(z.standardannahmen ?? {});
+          setNeubau(z.neubau ?? {});
           setExklusivKennungen(z.exklusivKennungen ?? {});
         }
         if (draft.bulkW) setBulkW(draft.bulkW);
@@ -2360,6 +2382,9 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
         verwaltungskostenSonstige: verwaltungskostenSonstige || undefined,
         ruecklageWeg: ruecklageWeg || undefined,
         garantierteErstvermietungKalt: garantierteErstvermietungKalt || undefined,
+        kaufnebenkostenTeile: ohneLeere(knkTeile),
+        standardannahmen: ohneLeere(standardannahmen),
+        neubau: ohneLeere(neubau),
         kalkulation: {
           hausgeldMonat: kalkHausgeldMonat,
           hausgeldNichtUmlagefaehigP: kalkHausgeldNuP,
@@ -2600,8 +2625,14 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {zahl("hausgeldUmlagefaehigEuro", "Umlagefähig (€)", { euro: true })}
               {zahl("hausgeldNichtUmlagefaehigEuro", "Nicht umlagefähig (€)", { euro: true })}
-              {zahl("ruecklageZufuehrungMonat", "Zuführung Rücklage (€)", { euro: true })}
-              {zahl("hausgeldMonat", "Hausgeld gesamt (€)", { euro: true, hinweis: teile.gesamt && !w.hausgeldMonat ? `Aus den drei Teilen: ${fmt(teile.gesamt)}` : "Leer lassen, wenn die drei Teile erfasst sind" })}
+              {zahl("ruecklageZufuehrungMonat", "Erhaltungsrücklage (separat, €)", { euro: true, hinweis: "Gehört nicht zum Hausgeld" })}
+              {zahl("hausgeldMonat", "Hausgeld (umlagef. + nicht umlagef., €)", { euro: true, hinweis: "Leer lassen, wenn beide Teile erfasst sind; ohne Rücklage" })}
+            </div>
+            {/* Seit dem 28.10.2026 (Christian): Hausgeld ohne Rücklage, die Zahlung an die WEG getrennt daneben. */}
+            <div className="mt-2 grid grid-cols-3 gap-3 text-xs" data-testid="hausgeld-anzeige">
+              <div><span className="text-muted-foreground">Hausgeld (umlagef. + nicht umlagef.): </span><span className="font-medium">{teile.hausgeld ? fmt(teile.hausgeld) : "–"}</span></div>
+              <div><span className="text-muted-foreground">Erhaltungsrücklage (separat): </span><span className="font-medium">{teile.ruecklage ? fmt(teile.ruecklage) : "–"}</span></div>
+              <div><span className="text-muted-foreground">Vorauszahlung gesamt: </span><span className="font-medium">{teile.vorauszahlung ? fmt(teile.vorauszahlung) : "–"}</span></div>
             </div>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -2652,6 +2683,20 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
         <div><Label className="text-xs">Etage *</Label><Input value={w.etage || ""} onChange={e => onChange("etage", e.target.value)} className="h-8" /></div>
         <div><Label className="text-xs">Lage</Label><Input value={w.lage || ""} onChange={e => onChange("lage", e.target.value)} className="h-8" /></div>
         <div><Label className="text-xs">Zimmer *</Label><Input type="number" value={w.zimmer || ""} onChange={e => onChange("zimmer", parseInt(e.target.value) || 0)} className="h-8" /></div>
+        <div><Label className="text-xs">Badezimmer</Label><Input type="number" min={0} value={w.badezimmer || ""} onChange={e => onChange("badezimmer", parseInt(e.target.value) || undefined)} className="h-8" /></div>
+        <div>
+          <Label className="text-xs">Balkon / Terrasse</Label>
+          <Select value={w.balkonArt || ""} onValueChange={v => onChange("balkonArt", v)}>
+            <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Bitte wählen" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="keiner">Keiner</SelectItem>
+              <SelectItem value="balkon">Balkon</SelectItem>
+              <SelectItem value="terrasse">Terrasse</SelectItem>
+              <SelectItem value="loggia">Loggia</SelectItem>
+              <SelectItem value="garten">Garten</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <div><Label className="text-xs">Größe (m²) *</Label><Input type="number" step="0.01" value={w.groesse || ""} onChange={e => onChange("groesse", parseFloat(e.target.value) || 0)} className="h-8" /></div>
@@ -3670,13 +3715,13 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <div>
-                      <Label className="text-xs">Hausgeld gesamt (€/Monat)</Label>
+                      <Label className="text-xs">Hausgeld (umlagef. + nicht umlagef., €/Monat)</Label>
                       <EuroInput value={kalkHausgeldMonat} onChange={v => {
                         setKalkHausgeldMonat(v);
                         if (isGlobalObjekt) updateGlobal("hausgeldMonat", v);
                         markDirty();
                       }} className="h-8" />
-                      <p className="text-bildunterschrift text-muted-foreground mt-1">Brutto-Hausgeld der Einheit/des Objekts (umlagefähig + nicht umlagefähig).</p>
+                      <p className="text-bildunterschrift text-muted-foreground mt-1">Hausgeld der Einheit/des Objekts (umlagefähig + nicht umlagefähig), ohne Erhaltungsrücklage.</p>
                     </div>
                     <div>
                       <Label className="text-xs">Hausgeld nicht umlagefähig (%)</Label>
@@ -3704,10 +3749,37 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
                       <Label className="text-xs">SEV / Monat (€)</Label>
                       <EuroInput value={kalkSevMonat} onChange={v => { setKalkSevMonat(v); markDirty(); }} className="h-8" />
                     </div>
-                    <div>
+                    {/*
+                      Seit dem 28.10.2026 drei Sätze statt einer Zahl. Die Summe
+                      steht weiter in `globalDaten.kaufnebenkosten`, so lesen
+                      Exposé und alle übrigen Rechner unverändert mit.
+                    */}
+                    <div className="col-span-2 md:col-span-4">
                       <Label className="text-xs">Kaufnebenkosten (%)</Label>
-                      <Input type="number" step="0.5" min={0} value={globalDaten.kaufnebenkosten || ""} onChange={e => updateGlobal("kaufnebenkosten", parseFloat(e.target.value) || 0)} className="h-8" />
-                      <p className="text-bildunterschrift text-muted-foreground mt-1">Grunderwerbsteuer, Notar, Grundbuch. Leer lassen: Satz nach Bundesland aus der Postleitzahl. Vorbelegung für Investmentrechner und Exposé.</p>
+                      <div className="grid grid-cols-3 gap-3">
+                        {([["grunderwerbsteuer", "Grunderwerbsteuer"], ["notar", "Notar"], ["grundbuch", "Grundbuch"]] as const).map(([feld, label]) => {
+                          const effektiv = kaufnebenkostenSaetze({ teile: knkTeile, gesamtPct: globalDaten.kaufnebenkosten, plz: nf.plz });
+                          return (
+                            <div key={feld}>
+                              <Label className="text-[11px] text-muted-foreground">{label} %</Label>
+                              <Input type="number" step="0.1" min={0} max={20} value={knkTeile[feld] || ""}
+                                placeholder={effektiv ? String(effektiv[feld]).replace(".", ",") : ""}
+                                onChange={e => {
+                                  const v = parseFloat(e.target.value) || undefined;
+                                  // Beim ersten Eintrag die übrigen Sätze festschreiben, wie sie bisher galten.
+                                  const neu = { ...(effektiv ? { grunderwerbsteuer: effektiv.grunderwerbsteuer, notar: effektiv.notar, grundbuch: effektiv.grundbuch } : {}), ...knkTeile, [feld]: v };
+                                  setKnkTeile(neu);
+                                  updateGlobal("kaufnebenkosten", kaufnebenkostenSaetze({ teile: neu, plz: nf.plz })?.summe ?? 0);
+                                }} className="h-8" />
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <p className="text-bildunterschrift text-muted-foreground mt-1">
+                        Leer: Grunderwerbsteuer nach Bundesland aus der Postleitzahl, Notar 1,5 %, Grundbuch 0,5 %.
+                        {(() => { const s = kaufnebenkostenSaetze({ teile: knkTeile, gesamtPct: globalDaten.kaufnebenkosten, plz: nf.plz }); return s ? ` Zusammen ${String(s.summe).replace(".", ",")} %.` : ""; })()}
+                        {" "}Vorbelegung für Investmentrechner und Exposé.
+                      </p>
                     </div>
                     <div>
                       <Label className="text-xs">Mietausfall (%)</Label>
@@ -3748,6 +3820,59 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
                            : "Branchenüblich 0,5–1,5 % vom Gebäudewert · Standard 1,0 %"}
                        </p>
                      </div>
+                  </div>
+                  {/*
+                    Standardannahmen je Objekt (28.10.2026): nur Vorbelegung des
+                    Investmentrechners. Sie ersetzen dessen Standard, eine
+                    Eingabe im Rechner ersetzt sie wieder; nichts wird addiert.
+                  */}
+                  <div>
+                    <p className="text-[11px] font-semibold text-muted-foreground mb-2">Standardannahmen (Vorbelegung Investmentrechner, leer = Rechner-Standard)</p>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      {([["wertsteigerung", "Wertsteigerung % p. a."], ["mietsteigerung", "Mietsteigerung % p. a."], ["kostensteigerung", "Kostensteigerung % p. a."], ["grenzsteuersatz", "Grenzsteuersatz %"]] as const).map(([feld, label]) => (
+                        <div key={feld}>
+                          <Label className="text-xs">{label}</Label>
+                          <Input type="number" step="0.1" value={standardannahmen[feld] ?? ""}
+                            onChange={e => { const v = e.target.value === "" ? undefined : Number(e.target.value); setStandardannahmen(s => ({ ...s, [feld]: Number.isFinite(v) ? v : undefined })); markDirty(); }} className="h-8" />
+                        </div>
+                      ))}
+                    </div>
+                    <p className="text-bildunterschrift text-muted-foreground mt-1">Der Grenzsteuersatz wirkt im Rechner nur, wenn dort „Grenzsteuersatz“ statt Steuertarif gewählt ist.</p>
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-semibold text-muted-foreground mb-2">Neubau und Sonderfälle</p>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      <div className="flex items-end gap-2 pb-1">
+                        <Switch checked={!!neubau.sonderAfa7b} onCheckedChange={v => { setNeubau(n => ({ ...n, sonderAfa7b: v || undefined })); markDirty(); }} />
+                        <Label className="text-xs">Sonder-AfA § 7b</Label>
+                      </div>
+                      {([
+                        ["sonderAfa7bBasisQm", "§ 7b Bemessungsgrundlage €/m²"], ["sonderAfa7bJahre", "§ 7b Jahre"],
+                        ["kfwKredit", "KfW Kredithöhe je Einheit €"], ["kfwZins", "KfW Zins %"], ["kfwTilgung", "KfW Tilgung %"],
+                        ["kfwTilgungszuschuss", "KfW Tilgungszuschuss %"], ["denkmalAnteil", "Denkmal-/Sanierungsanteil %"],
+                      ] as const).map(([feld, label]) => (
+                        <div key={feld}>
+                          <Label className="text-xs">{label}</Label>
+                          <Input type="number" step="0.01" min={0} value={neubau[feld] ?? ""}
+                            onChange={e => { const v = parseFloat(e.target.value); setNeubau(n => ({ ...n, [feld]: Number.isFinite(v) && v > 0 ? v : undefined })); markDirty(); }} className="h-8" />
+                        </div>
+                      ))}
+                      <div>
+                        <Label className="text-xs">KfW-Programm</Label>
+                        <Input value={neubau.kfwProgramm ?? ""} placeholder="z. B. KfW 297" onChange={e => { setNeubau(n => ({ ...n, kfwProgramm: e.target.value || undefined })); markDirty(); }} className="h-8" />
+                      </div>
+                      {([["fertigstellung", "Steuerl. Fertigstellung / Ende Bauphase"], ["mieteinnahmenAb", "Start Mieteinnahmen"]] as const).map(([feld, label]) => (
+                        <div key={feld}>
+                          <Label className="text-xs">{label}</Label>
+                          <Input type="date" value={neubau[feld] ?? ""} onChange={e => { setNeubau(n => ({ ...n, [feld]: e.target.value || undefined })); markDirty(); }} className="h-8" />
+                        </div>
+                      ))}
+                      <div className="flex items-end gap-2 pb-1">
+                        <Switch checked={!!neubau.vorverkauf} onCheckedChange={v => { setNeubau(n => ({ ...n, vorverkauf: v || undefined })); markDirty(); }} />
+                        <Label className="text-xs">Vorverkauf / Vorankündigung</Label>
+                      </div>
+                    </div>
+                    <p className="text-bildunterschrift text-muted-foreground mt-1">§ 7b und KfW (Kredit, Zins, Zuschuss) belegen den Investmentrechner vor; Bemessungsgrundlage und Deckel prüft der Rechner selbst.</p>
                   </div>
                 </Card>
               }

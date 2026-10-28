@@ -223,7 +223,7 @@ export function zusammengefuehrteObjektDaten(quelle: ObjektKarteQuelle): Partial
     baujahr: zahl(o?.globalDaten?.baujahr, inv.baujahr),
     miete: zahl(w?.mieteGesamt, inv.miete),
     // Gepflegt oder nach der gemeinsamen Regel aus den Teilen gerechnet.
-    hausgeld: zahl(hausgeldTeile(w).gesamt, inv.hausgeld),
+    hausgeld: zahl(hausgeldTeile(w).hausgeld, inv.hausgeld),
     hausgeldNichtUmlage: zahl(hausgeldTeile(w).nichtUmlagefaehig, inv.hausgeldNichtUmlage),
     bildUrl: text(o?.bildUrl, quelle.eigenesBild, inv.bildUrl),
     verkaeufer: {

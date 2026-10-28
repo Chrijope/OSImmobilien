@@ -1324,12 +1324,12 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
       <div className="subheading">Hausgeld</div>
       <div className="field-grid">
         <Zahlenfeld
-          label="Hausgeld gesamt p. M."
+          label="Hausgeld p. M. (umlagef. + nicht umlagef.)"
           value={input.housingFeeTotal}
           suffix="€"
           neu
           onChange={(wert) => setzeZahl("housingFeeTotal", wert)}
-          tooltip="Das ganze Hausgeld laut Wirtschaftsplan: umlagefähiger Teil, nicht umlagefähiger Teil und Zuführung zur Instandhaltungsrücklage. Es dient der Aufstellung und der Prüfung, ob die Teile zur Summe passen. Gerechnet wird mit den Teilen."
+          tooltip="Das Hausgeld laut Wirtschaftsplan: umlagefähiger und nicht umlagefähiger Teil. Die Erhaltungsrücklage gehört nicht dazu, sie steht im eigenen Feld. Der Wert dient der Aufstellung und der Prüfung, ob die Teile zur Summe passen. Gerechnet wird mit den Teilen."
           hint={quelle("housingFeeTotal")} markierung={feldmarkierung(herkunft, "housingFeeTotal")}
         />
         <Zahlenfeld
@@ -1351,11 +1351,11 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
           markierung={feldmarkierung(herkunft, "housingFeeNonRecoverable")}
         />
         <Zahlenfeld
-          label="davon Instandhaltungsrücklage p. M."
+          label="Erhaltungsrücklage p. M. (separat)"
           value={input.monthlyReserveContribution}
           suffix="€"
           onChange={(wert) => setzeZahl("monthlyReserveContribution", wert)}
-          tooltip={`Der Teil des Hausgelds, der in die Instandhaltungsrücklage der Gemeinschaft fließt. Vorbelegt mit ${formatEuro(RUECKLAGE_JE_QM_MONAT)} je m² Wohnfläche und Monat, solange weder Unterlagen noch Objektanlage einen Wert liefern; ein eigener Wert bleibt stehen. Er mindert den Cashflow jeden Monat. Steuerlich wird er hier nicht abgezogen: Nach dem Bundesfinanzhof ist er erst abziehbar, wenn die Gemeinschaft das Geld für Erhaltung ausgibt, nicht schon bei der Einzahlung.`}
+          tooltip={`Die Zuführung zur Erhaltungsrücklage; sie gehört nicht zum Hausgeld, wird aber mit ihm an die WEG gezahlt. Sie fließt in die Instandhaltungsrücklage der Gemeinschaft fließt. Vorbelegt mit ${formatEuro(RUECKLAGE_JE_QM_MONAT)} je m² Wohnfläche und Monat, solange weder Unterlagen noch Objektanlage einen Wert liefern; ein eigener Wert bleibt stehen. Er mindert den Cashflow jeden Monat. Steuerlich wird er hier nicht abgezogen: Nach dem Bundesfinanzhof ist er erst abziehbar, wenn die Gemeinschaft das Geld für Erhaltung ausgibt, nicht schon bei der Einzahlung.`}
           hint={
             quelle("monthlyReserveContribution") ??
             (input.monthlyReserveContributionAuto !== false
@@ -1379,8 +1379,8 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
             </>
           ) : (
             <>
-              <span>Umlagefähig + nicht umlagefähig + Rücklage</span>
-              <strong>{formatEuroCent(hausgeldAufstellung(input).summeTeile)}</strong>
+              <span>Vorauszahlung gesamt (Hausgeld + Rücklage)</span>
+              <strong>{formatEuroCent(hausgeldAufstellung(input).vorauszahlung)}</strong>
             </>
           )}
         </div>

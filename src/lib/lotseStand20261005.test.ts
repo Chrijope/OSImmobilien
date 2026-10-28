@@ -60,9 +60,10 @@ describe("Feste Zahlen der Einheit", () => {
     },
   };
 
-  it("rechnet das Hausgeld gesamt selbst und nennt deutsche Namen", () => {
+  it("rechnet das Hausgeld selbst, ohne Rücklage, und nennt deutsche Namen", () => {
     const { werte, fehlt } = festeZahlenEinheit(meta);
-    expect(werte["Hausgeld gesamt je Monat in Euro"]).toBe(145.52);
+    expect(werte["Hausgeld (umlagefähig + nicht umlagefähig, ohne Rücklage) je Monat in Euro"]).toBe(135.52);
+    expect(werte["Vorauszahlung gesamt (Hausgeld + Rücklage) je Monat in Euro"]).toBe(145.52);
     expect(werte["Rücklage (Zuführung) je Monat in Euro"]).toBe(10);
     expect(werte["Fertigstellung"]).toBe("01.01.2028");
     expect(werte["Sonder-AfA nach § 7b EStG"]).toBe("ja");
@@ -75,18 +76,18 @@ describe("Feste Zahlen der Einheit", () => {
   it("eine 0 ist nie ein Wert, sondern fehlt", () => {
     const { werte, fehlt } = festeZahlenEinheit({ hausgeldNichtUmlagefaehigEuro: 0, investagonRaw: { operation_cost_tenant_apartment: 100 } });
     expect(werte).not.toHaveProperty("Hausgeld nicht umlagefähig je Monat in Euro");
-    expect(fehlt).toEqual(expect.arrayContaining(["Hausgeld nicht umlagefähig je Monat in Euro", "Hausgeld gesamt je Monat in Euro"]));
+    expect(fehlt).toEqual(expect.arrayContaining(["Hausgeld nicht umlagefähig je Monat in Euro", "Hausgeld (umlagefähig + nicht umlagefähig, ohne Rücklage) je Monat in Euro"]));
   });
 
   it("steht im Prompt samt Rücklage in den Einheitsdaten", () => {
     const text = prompt({ einheit: { id: "w1", objekt_id: "o1", meta } });
     expect(text).toContain("FESTE ZAHLEN DER EINHEIT");
-    expect(text).toContain("- Hausgeld gesamt je Monat in Euro: 145.52");
+    expect(text).toContain("- Hausgeld (umlagefähig + nicht umlagefähig, ohne Rücklage) je Monat in Euro: 135.52");
     expect(text).toContain('"ruecklageZufuehrungMonat": 10');
   });
 
-  it("die Begrüßung zählt Hausgeld gesamt und Rücklage nur auf, wenn erfasst", () => {
-    expect(lotseBegruessung("Christian Peetz", true, meta)).toContain("das Hausgeld gesamt, das nicht umlagefähige Hausgeld und die Rücklage");
+  it("die Begrüßung zählt Hausgeld und Rücklage nur auf, wenn erfasst", () => {
+    expect(lotseBegruessung("Christian Peetz", true, meta)).toContain("das Hausgeld, das nicht umlagefähige Hausgeld und die Rücklage");
     const ohne = lotseBegruessung("Christian Peetz", true);
     expect(ohne).toContain("das nicht umlagefähige Hausgeld, die Verwaltungskosten");
     expect(ohne).not.toContain("Rücklage");

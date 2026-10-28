@@ -25,7 +25,10 @@ export function wirtschaftsplanFuerObjekt(objektId: string): Wirtschaftsplan | n
 }
 
 export interface HausgeldTeile {
-  gesamt: number;
+  /** Hausgeld = umlagefähig + nicht umlagefähig, ohne Erhaltungsrücklage (Christian, 28.10.2026). */
+  hausgeld: number;
+  /** Vorauszahlung an die WEG = Hausgeld + Erhaltungsrücklage. */
+  vorauszahlung: number;
   /** Umlagefähig einschließlich Heizkosten, wie in den Listen („davon umlagefähig inkl. Heizung“). */
   umlagefaehig: number;
   nichtUmlagefaehig: number;
@@ -39,12 +42,32 @@ export function hausgeldAusPlan(wp: Wirtschaftsplan, mea: number | null): Hausge
   const teil = (k: HausgeldKategorie) => hausgeldMonat(wp, mea, k);
   const gesamt = hausgeldMonat(wp, mea);
   if (gesamt === null) return null;
+  const umlagefaehig = rund((teil("umlagefähig") ?? 0) + (teil("Heizkosten") ?? 0));
+  const nichtUmlagefaehig = rund(teil("nicht umlagefähig") ?? 0);
   return {
-    gesamt: rund(gesamt),
-    umlagefaehig: rund((teil("umlagefähig") ?? 0) + (teil("Heizkosten") ?? 0)),
-    nichtUmlagefaehig: rund(teil("nicht umlagefähig") ?? 0),
+    hausgeld: rund(umlagefaehig + nichtUmlagefaehig),
+    vorauszahlung: rund(gesamt),
+    umlagefaehig,
+    nichtUmlagefaehig,
     ruecklage: rund(teil("Erhaltungsrücklage") ?? 0),
   };
+}
+
+/**
+ * Die Hausgeld-Spalten der Einheitenliste (Christian, 28.10.2026): Hausgeld =
+ * umlagefähig + nicht umlagefähig, Erhaltungsrücklage separat, Vorauszahlung =
+ * Hausgeld + Rücklage. Ohne beide Teile gilt das gepflegte Hausgeld der Einheit
+ * (`hausgeldMonatEinheit`), sonst die „Hausgeld gesamt“-Spalte der Liste, die
+ * die Vorauszahlung samt Rücklage ist. Was sich nicht ergibt, bleibt null (Strich).
+ */
+export function hausgeldSpalten(
+  uml: number | null, nichtUml: number | null, ruecklage: number | null,
+  gepflegt: number | null, listeVorauszahlung: number | null,
+) {
+  const hausgeld = uml !== null && nichtUml !== null ? rund(uml + nichtUml)
+    : gepflegt ?? (listeVorauszahlung !== null && ruecklage !== null ? rund(listeVorauszahlung - ruecklage) : null);
+  const vorauszahlung = hausgeld !== null && ruecklage !== null ? rund(hausgeld + ruecklage) : hausgeld === null ? listeVorauszahlung : null;
+  return { uml, nichtUml, ruecklage, hausgeld, vorauszahlung };
 }
 
 const norm = (s: unknown) => String(s ?? "").toLocaleLowerCase("de-DE").replace(/\s+/g, " ").trim();

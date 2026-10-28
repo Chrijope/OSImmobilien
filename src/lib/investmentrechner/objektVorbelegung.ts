@@ -40,7 +40,8 @@ import { exposeObjektdatenAus } from "@/lib/exposeInhalt";
 import { rohdaten } from "@/lib/investagonFelder";
 import { objektartInfo, objektseiteFelder } from "@/lib/objektseiteDaten";
 import { objektAnlageklasse } from "@/lib/objektKlassen";
-import { bundeslandFromPlz, GRUNDBUCH_PROZENT, NOTAR_PROZENT } from "@/lib/kaufnebenkosten";
+import { bundeslandFromPlz, gepflegteKaufnebenkostenTeile, GRUNDBUCH_PROZENT, kaufnebenkostenSaetze, NOTAR_PROZENT } from "@/lib/kaufnebenkosten";
+import { neubauAus, standardannahmenAus } from "@/lib/objektKalkulationsannahmen";
 import {
   getHausgeldMonatForWohnung,
   getHausgeldNichtUmlegbarP,
@@ -180,15 +181,19 @@ export function vorbelegungAusEinheit(
     "Objektbezeichnung": ["propertyTitle"], "Adresse": ["address"], "Objekttyp": ["propertyType"],
     "Kaufpreis": ["purchasePrice"], "davon Möbel/Inventar": ["furniturePrice"], "davon Stellplatz/Garage": ["garagePrice"],
     "Stellplatz-/Garagenmiete p. M.": ["monthlyGarageRent"],
-    "Hausgeld gesamt p. M.": ["housingFeeTotal", "housingFeeRecoverable"],
+    "Hausgeld p. M. (umlagef. + nicht umlagef.)": ["housingFeeTotal", "housingFeeRecoverable"],
     "Wohnfläche": ["area"], "Zimmer": ["rooms"], "Baujahr": ["constructionYear"],
     "Kaufnebenkosten": ["transferTaxRate", "notaryRate", "landRegisterRate"], "Kaltmiete p. M.": ["monthlyColdRent"],
     "Nicht umlagefähige Kosten p. M.": ["housingFeeNonRecoverable", "monthlyOperatingCosts"], "Gebäudeanteil": ["buildingShare"],
-    "davon Instandhaltungsrücklage p. M.": ["monthlyReserveContribution"],
+    "Erhaltungsrücklage p. M. (separat)": ["monthlyReserveContribution"],
     "Nutzungsdauer Möbel": ["furnitureDepreciationYears"],
     "Degressive AfA p. a.": ["buildingDepreciationRate", "depreciationMethod"], "Lineare AfA p. a.": ["buildingDepreciationRate", "depreciationMethod"],
     "davon Erhaltungsaufwand": ["rehabExpense", "rehabMode"], "Verteilung des Aufwands": ["rehabDistributionYears"],
     "KfW-Programm": ["kfwProgram"],
+    "Wertsteigerung p. a.": ["annualValueGrowth"], "Mietsteigerung p. a.": ["annualRentGrowth"],
+    "Kostensteigerung p. a.": ["annualCostGrowth"], "Grenzsteuersatz": ["marginalTaxRate"],
+    "Sonder-AfA § 7b": ["specialDepreciationRate", "specialDepreciationYears"],
+    "KfW-Darlehen": ["kfwEnabled", "kfwLoanAmount", "kfwInterestRate", "kfwGrantMode", "kfwGrantValue"],
   };
   const nimm = (feld: string, wert: string, woher: string) => {
     uebernommen.push({ feld, wert, woher });
@@ -302,7 +307,19 @@ export function vorbelegungAusEinheit(
    */
   const nkSchluessel = bundeslandFromPlz(objekt.plz || "");
   const nkGepflegt = positiv(daten.kaufnebenkostenProzent);
-  if (nkGepflegt > 0) {
+  // Seit dem 28.10.2026 als drei Sätze am Objekt; sie gehen dem Gesamtsatz vor.
+  const nkTeile = kaufnebenkostenSaetze({ teile: gepflegteKaufnebenkostenTeile(objekt.meta), plz: objekt.plz });
+  if (nkTeile?.quelle === "teile") {
+    eingabe.transferTaxRate = nkTeile.grunderwerbsteuer;
+    eingabe.notaryRate = nkTeile.notar;
+    eingabe.landRegisterRate = nkTeile.grundbuch;
+    knk = { weg: "manuell", bundesland: nkSchluessel ?? "" };
+    nimm(
+      "Kaufnebenkosten",
+      `${prozent(nkTeile.summe, 2)} (Grunderwerbsteuer ${prozent(nkTeile.grunderwerbsteuer, 2)}, Notar ${prozent(nkTeile.notar, 2)}, Grundbuch ${prozent(nkTeile.grundbuch, 2)})`,
+      "Objekt, drei Sätze",
+    );
+  } else if (nkGepflegt > 0) {
     const zerlegbar = nkGepflegt >= NOTAR_PROZENT + GRUNDBUCH_PROZENT;
     eingabe.transferTaxRate = zerlegbar ? nkGepflegt - NOTAR_PROZENT - GRUNDBUCH_PROZENT : nkGepflegt;
     eingabe.notaryRate = zerlegbar ? NOTAR_PROZENT : 0;
@@ -391,17 +408,14 @@ export function vorbelegungAusEinheit(
    * Einheit gepflegt (auch aus den Investagon-Rohdaten), als Eurobetrag am
    * Objekt, oder nur geschätzt als Prozentsatz vom Hausgeld gesamt. Eine
    * Schätzung wird genannt und als Lücke gemeldet, statt still mitzurechnen.
-   * Ist die Rücklage bekannt, läuft die Schätzung auf das Hausgeld ohne sie:
-   * Die Rücklage steht im eigenen Feld und zählte sonst zweimal.
+   * Seit dem 28.10.2026 enthält das Hausgeld die Rücklage nicht mehr
+   * (`einheit-hausgeld.ts`); die Schätzung läuft deshalb direkt darauf.
    */
   const zufuehrung = positiv(wohnung.ruecklageZufuehrungMonat ?? hausgeldTeile(wohnung).ruecklage ?? hausgeldTeile((wohnung as { meta?: unknown }).meta).ruecklage);
   const nuQuelle = hausgeldNichtUmlegbarQuelle(objekt, wohnung);
   const hausgeldGesamt = getHausgeldMonatForWohnung(objekt, wohnung);
   const nuSatz = getHausgeldNichtUmlegbarP(objekt, wohnung);
-  const hausgeldNu =
-    nuQuelle === "geschaetzt" && zufuehrung > 0
-      ? Math.round((Math.max(0, hausgeldGesamt - zufuehrung) * nuSatz) / 100)
-      : positiv(daten.hausgeldNichtUmlegbarMonat);
+  const hausgeldNu = positiv(daten.hausgeldNichtUmlegbarMonat);
   const mietverwaltung = positiv(daten.mietverwaltungMonat);
   /*
    * Seit dem 22.10.2026 getrennt: das nicht umlagefähige Hausgeld in seinem
@@ -421,7 +435,7 @@ export function vorbelegungAusEinheit(
     eingabe.housingFeeTotal = hausgeldGesamt;
     eingabe.housingFeeRecoverable = umlagefaehig;
     nimm(
-      "Hausgeld gesamt p. M.",
+      "Hausgeld p. M. (umlagef. + nicht umlagef.)",
       eur0(hausgeldGesamt),
       `Einheit, davon umlagefähig ${eur0(umlagefaehig)}, nicht umlagefähig ${eur0(hausgeldNu)}${nuQuelle === "geschaetzt" ? " (geschätzt)" : ""}`,
     );
@@ -436,12 +450,12 @@ export function vorbelegungAusEinheit(
    */
   if (zufuehrung > 0) {
     eingabe.monthlyReserveContribution = zufuehrung;
-    nimm("davon Instandhaltungsrücklage p. M.", eur0(zufuehrung), "Einheit, aus Investagon");
+    nimm("Erhaltungsrücklage p. M. (separat)", eur0(zufuehrung), "Einheit, aus Investagon");
   }
   if (nichtUmlagefaehigGesamt > 0) {
     const nuText =
       nuQuelle === "geschaetzt"
-        ? `geschätzt: ${prozent(nuSatz, 0)} des Hausgelds gesamt ${eur0(hausgeldGesamt)}${zufuehrung > 0 ? " ohne Rücklage" : ""}`
+        ? `geschätzt: ${prozent(nuSatz, 0)} des Hausgelds ${eur0(hausgeldGesamt)}`
         : "nicht umlegbarer Anteil des Hausgelds";
     nimm(
       "Nicht umlagefähige Kosten p. M.",
@@ -451,7 +465,7 @@ export function vorbelegungAusEinheit(
     if (nuQuelle === "geschaetzt") {
       fehlt(
         "Nicht umlagefähiges Hausgeld (nur geschätzt)",
-        `bekannt ist nur das Hausgeld gesamt; der Rechner nimmt ${prozent(nuSatz, 0)} davon als nicht umlagefähig an. Der umlagefähige Teil zahlt der Mieter und belastet den Cashflow nicht`,
+        `bekannt ist nur das Hausgeld; der Rechner nimmt ${prozent(nuSatz, 0)} davon als nicht umlagefähig an. Der umlagefähige Teil zahlt der Mieter und belastet den Cashflow nicht`,
         'Einheit über „Wohnung bearbeiten", Hausgeld umlagefähig, nicht umlagefähig und Zuführung Rücklage',
         "einheit",
       );
@@ -588,6 +602,47 @@ export function vorbelegungAusEinheit(
     nimm("KfW-Programm", eingabe.kfwProgram, "Investagon, nur der Programmname; Betrag und Zins trägst du unter Finanzierung ein");
   }
 
+  /*
+   * Standardannahmen und Neubau-Angaben am Objekt, seit dem 28.10.2026
+   * (`objektKalkulationsannahmen.ts`). Sie ERSETZEN den Rechner-Standard und
+   * werden nirgends aufgeschlagen; eine Eingabe im Rechner ersetzt sie wieder.
+   */
+  const std = standardannahmenAus(objekt.meta);
+  const setzeAnnahme = (feld: string, key: "annualValueGrowth" | "annualRentGrowth" | "annualCostGrowth" | "marginalTaxRate", wert?: number) => {
+    if (wert === undefined) return;
+    eingabe[key] = wert;
+    nimm(feld, prozent(wert, 2), "Objekt, Standardannahme");
+  };
+  setzeAnnahme("Wertsteigerung p. a.", "annualValueGrowth", std.wertsteigerung);
+  setzeAnnahme("Mietsteigerung p. a.", "annualRentGrowth", std.mietsteigerung);
+  setzeAnnahme("Kostensteigerung p. a.", "annualCostGrowth", std.kostensteigerung);
+  setzeAnnahme("Grenzsteuersatz", "marginalTaxRate", std.grenzsteuersatz);
+
+  const neubau = neubauAus(objekt.meta);
+  if (neubau.sonderAfa7b) {
+    // Satz 5 % (§ 7b EStG); Bemessungsgrundlage und Deckel prüft der Rechner selbst.
+    eingabe.specialDepreciationRate = 5;
+    eingabe.specialDepreciationYears = Math.min(4, Math.max(1, Math.round(neubau.sonderAfa7bJahre ?? 4)));
+    nimm("Sonder-AfA § 7b", `5 % über ${eingabe.specialDepreciationYears} Jahre`, "Objekt, Neubau");
+  }
+  if (neubau.kfwProgramm) eingabe.kfwProgram = neubau.kfwProgramm;
+  if (positiv(neubau.kfwKredit) > 0 && positiv(neubau.kfwZins) > 0) {
+    eingabe.kfwEnabled = true;
+    eingabe.kfwLoanAmount = positiv(neubau.kfwKredit);
+    eingabe.kfwInterestRate = positiv(neubau.kfwZins);
+    if (positiv(neubau.kfwTilgungszuschuss) > 0) {
+      eingabe.kfwGrantMode = "percent";
+      eingabe.kfwGrantValue = positiv(neubau.kfwTilgungszuschuss);
+      // Ohne Jahr der Gutschrift rechnet der Rechner den Zuschuss nicht, siehe `kfwGrantYear`.
+      fehlt("Jahr des Tilgungszuschusses", "der KfW-Tilgungszuschuss wird erst mit Jahr gerechnet", "Finanzierung im Rechner, KfW-Darlehen", "objekt");
+    }
+    nimm(
+      "KfW-Darlehen",
+      `${eur0(eingabe.kfwLoanAmount)} zu ${prozent(eingabe.kfwInterestRate, 2)}${eingabe.kfwGrantValue > 0 ? `, Tilgungszuschuss ${prozent(eingabe.kfwGrantValue, 1)}` : ""}`,
+      `Objekt, Neubau${neubau.kfwProgramm ? `, ${neubau.kfwProgramm}` : ""}`,
+    );
+  }
+
   // ── Vorgaben, die nicht am Objekt hängen ──────────────────────────────────
 
   const annahmen: VorbelegungAnnahme[] = [
@@ -602,7 +657,7 @@ export function vorbelegungAusEinheit(
     { feld: "Kostensteigerung p. a.", wert: prozent(eingabe.annualCostGrowth, 2) },
     { feld: "Wertsteigerung p. a.", wert: prozent(eingabe.annualValueGrowth, 2) },
     { feld: "Betrachtungszeitraum", wert: `${eingabe.forecastYears} Jahre` },
-  ];
+  ].filter((a) => !uebernommen.some((u) => u.feld === a.feld));
 
   return { eingabe, knk, unterlagen, bilder, uebernommen, luecken, annahmen, quellen: objektUnterlagenQuelle(objekt, wohnung), herkunft };
 }

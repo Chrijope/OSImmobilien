@@ -74,7 +74,7 @@ export function lotseBegruessung(name: string, mitEinheit: boolean, einheitMeta?
   // Dieselbe Rechnung wie im Prompt: Nur was erfasst ist, wird genannt (05.10.2026).
   const fest = festeZahlenEinheit(einheitMeta).werte;
   const hausgeld = [
-    HAUSGELD_GESAMT in fest ? "das Hausgeld gesamt" : "",
+    HAUSGELD_GESAMT in fest ? "das Hausgeld" : "",
     "das nicht umlagefähige Hausgeld",
     RUECKLAGE in fest ? "die Rücklage" : "",
   ].filter(Boolean);

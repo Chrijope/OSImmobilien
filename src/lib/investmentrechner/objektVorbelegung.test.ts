@@ -166,7 +166,7 @@ describe("Vorbelegung aus Objekt und Einheit", () => {
   it("zählt auf, was übernommen wurde", () => {
     expect(feldnamen(v.uebernommen)).toEqual([
       "Objektbezeichnung", "Adresse", "Objekttyp", "Kaufpreis", "davon Stellplatz/Garage", "Wohnfläche", "Zimmer",
-      "Baujahr", "Kaufnebenkosten", "Stellplatz-/Garagenmiete p. M.", "Kaltmiete p. M.", "Hausgeld gesamt p. M.", "Nicht umlagefähige Kosten p. M.",
+      "Baujahr", "Kaufnebenkosten", "Stellplatz-/Garagenmiete p. M.", "Kaltmiete p. M.", "Hausgeld p. M. (umlagef. + nicht umlagef.)", "Nicht umlagefähige Kosten p. M.",
       "Gebäudeanteil", "Lineare AfA p. a.", "davon Erhaltungsaufwand",
       "Verteilung des Aufwands", "Anteil der Einheit an der Rücklage",
       "Letzte Sanierungen",
@@ -362,14 +362,15 @@ describe("Hausgeld in der Vorbelegung", () => {
     expect(v.eingabe.monthlyReserveContribution).toBe(70);
   });
 
-  it("nur Hausgeld gesamt: geschätzt, ohne die Rücklage doppelt zu zählen, und als Lücke gemeldet", () => {
+  it("nur Hausgeld: geschätzt, ohne die Rücklage doppelt zu zählen, und als Lücke gemeldet", () => {
     const nurGesamt = mit({ hausgeldMonat: 300 } as Partial<ObjektWohnung>);
     expect(nurGesamt.eingabe.monthlyOperatingCosts + nurGesamt.eingabe.housingFeeNonRecoverable).toBe(90);
     expect(feldnamen(nurGesamt.luecken)).toContain("Nicht umlagefähiges Hausgeld (nur geschätzt)");
     expect(nurGesamt.uebernommen.find((u) => u.feld === "Nicht umlagefähige Kosten p. M.")?.woher).toMatch(/geschätzt/);
     const mitRuecklage = mit({ hausgeldMonat: 300, ruecklageZufuehrungMonat: 100 } as Partial<ObjektWohnung>);
-    // 30 % von 300 − 100, die Rücklage steht im eigenen Feld.
-    expect(mitRuecklage.eingabe.monthlyOperatingCosts + mitRuecklage.eingabe.housingFeeNonRecoverable).toBe(60);
+    // Seit dem 28.10.2026 enthält das Hausgeld die Rücklage nicht: 30 % von 300, nichts abgezogen, die Rücklage im eigenen Feld.
+    expect(mitRuecklage.eingabe.monthlyOperatingCosts + mitRuecklage.eingabe.housingFeeNonRecoverable).toBe(90);
+    expect(mitRuecklage.eingabe.housingFeeTotal).toBe(300);
     expect(mitRuecklage.eingabe.monthlyReserveContribution).toBe(100);
   });
 });
@@ -442,7 +443,7 @@ describe("Rechenwerte aus Investagon: Sigmundstraße 2, Einheit 6b", () => {
     expect(v.eingabe.furnitureDepreciationYears).toBe(10);
     expect(v.herkunft.monthlyReserveContribution?.quelle).toBe("objekt");
     expect(feldnamen(v.uebernommen)).toEqual(
-      expect.arrayContaining(["davon Instandhaltungsrücklage p. M.", "Nutzungsdauer Möbel"]),
+      expect.arrayContaining(["Erhaltungsrücklage p. M. (separat)", "Nutzungsdauer Möbel"]),
     );
   });
 
@@ -499,5 +500,50 @@ describe("Vorbelegung im All-inclusive-Modell (09.10.2026)", () => {
     const normal = vorbelegungAusEinheit(objekt, w, heute);
     expect(normal.eingabe.allInclusive).toBe(false);
     expect(berechneInvestment(normal.eingabe).eigenkapital).toBeGreaterThan(0);
+  });
+});
+
+/*
+ * Kaufnebenkosten in drei Sätzen, Standardannahmen und Neubau am Objekt
+ * (28.10.2026). Alles nur Vorbelegung: Die Werte ERSETZEN den Rechner-Standard,
+ * nichts wird aufgeschlagen.
+ */
+describe("Objekt-Standards in der Vorbelegung (keine Doppelrechnung)", () => {
+  const mitMeta = (meta: Record<string, unknown>) =>
+    vorbelegungAusEinheit({ ...objekt, meta: { ...objekt.meta, ...meta } } as ObjektData, w, heute);
+
+  it("nimmt die drei KNK-Sätze statt des Landessatzes", () => {
+    const v = mitMeta({ kaufnebenkostenTeile: { grunderwerbsteuer: 3.5, notar: 2, grundbuch: 0.5 } });
+    expect(v.eingabe).toMatchObject({ transferTaxRate: 3.5, notaryRate: 2, landRegisterRate: 0.5 });
+    expect(v.knk.weg).toBe("manuell");
+  });
+
+  it("ein fehlender KNK-Satz fällt auf Land (Bayern 3,5), 1,5 und 0,5 zurück", () => {
+    const v = mitMeta({ kaufnebenkostenTeile: { notar: 2 } });
+    expect(v.eingabe).toMatchObject({ transferTaxRate: 3.5, notaryRate: 2, landRegisterRate: 0.5 });
+  });
+
+  it("Standardannahmen ersetzen den Rechner-Standard genau einmal", () => {
+    const v = mitMeta({ standardannahmen: { wertsteigerung: 0, mietsteigerung: 1.5, kostensteigerung: 2.5, grenzsteuersatz: 35 } });
+    expect(v.eingabe).toMatchObject({ annualValueGrowth: 0, annualRentGrowth: 1.5, annualCostGrowth: 2.5, marginalTaxRate: 35 });
+    // Kein Aufschlag auf den Standard (2 + 1,5 wäre 3,5).
+    expect(v.eingabe.annualRentGrowth).not.toBe(standardEingabe.annualRentGrowth + 1.5);
+    expect(v.herkunft.annualRentGrowth?.quelle).toBe("objekt");
+    // Als Objektwert genannt, nicht mehr als Rechner-Vorgabe.
+    expect(feldnamen(v.annahmen)).not.toContain("Mietsteigerung p. a.");
+    // Ohne Angabe bleibt der Rechner-Standard.
+    const ohne = vorbelegungAusEinheit(objekt, w, heute);
+    expect(ohne.eingabe.annualRentGrowth).toBe(standardEingabe.annualRentGrowth);
+    expect(feldnamen(ohne.annahmen)).toContain("Mietsteigerung p. a.");
+  });
+
+  it("Neubau: § 7b und KfW gehen in die passenden Rechnerfelder", () => {
+    const v = mitMeta({ neubau: { sonderAfa7b: true, sonderAfa7bJahre: 4, kfwProgramm: "KfW 297", kfwKredit: 100000, kfwZins: 1.2, kfwTilgungszuschuss: 5 } });
+    expect(v.eingabe).toMatchObject({
+      specialDepreciationRate: 5, specialDepreciationYears: 4,
+      kfwEnabled: true, kfwProgram: "KfW 297", kfwLoanAmount: 100000, kfwInterestRate: 1.2, kfwGrantMode: "percent", kfwGrantValue: 5,
+    });
+    expect(feldnamen(v.luecken)).toContain("Jahr des Tilgungszuschusses");
+    expect(vorbelegungAusEinheit(objekt, w, heute).eingabe.kfwEnabled).toBe(false);
   });
 });

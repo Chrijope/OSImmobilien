@@ -71,7 +71,7 @@ export interface ExposeObjektdaten {
   kaltmieteMonat: number;
   /** Davon die Stellplatzmiete je Monat. Zählt für die Mietrendite nicht mit. */
   stellplatzMieteMonat?: number;
-  /** Hausgeld gesamt je Monat, nur zur Anzeige und für den umlegbaren Rest. */
+  /** Hausgeld je Monat (umlagefähig + nicht umlagefähig, ohne Rücklage seit 28.10.2026), nur zur Anzeige und für den umlegbaren Rest. */
   hausgeldGesamtMonat?: number;
   /** Nicht umlegbarer Anteil des Hausgelds je Monat (Verwaltung, Kontoführung), steuerlich abziehbar. */
   hausgeldNichtUmlegbarMonat?: number;
@@ -831,7 +831,8 @@ export function berechneExpose(objekt: ExposeObjektdaten, annahmen: ExposeAnnahm
     mieteJeQm: wohnflaeche > 0 ? kaltmieteJahr / 12 / wohnflaeche : null,
     hausgeldUmlegbarMonat: Math.max(
       0,
-      hausgeldGesamtMonat - hausgeldNichtUmlegbarJahr / 12 - ruecklageJahr / 12,
+      // Seit dem 28.10.2026 enthält das Hausgeld die Rücklage nicht mehr.
+      hausgeldGesamtMonat - hausgeldNichtUmlegbarJahr / 12,
     ),
   };
 
