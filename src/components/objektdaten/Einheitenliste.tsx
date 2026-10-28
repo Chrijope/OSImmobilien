@@ -19,11 +19,11 @@ import {
   type EinheitGarage, type ObjektMietgarantie, type SubventionsArt,
 } from "@/lib/mietgarantie";
 import { getMieter, updateMieter } from "@/lib/mieterStore";
-import { objektMetaErgaenzen, updateWohnung, wohnungMetaErgaenzen, type ObjektData, type ObjektWohnung } from "@/lib/objekteStore";
+import { hausgeldMonatEinheit, objektMetaErgaenzen, updateWohnung, wohnungMetaErgaenzen, type ObjektData, type ObjektWohnung } from "@/lib/objekteStore";
 import { aktuellerMieter, einheitZeile } from "@/lib/objektdaten";
 import { listendatenFuerEinheit, listenZahl } from "@/lib/listendaten";
 import { bruttoRendite, nettoRendite, renditeEingabe } from "@/lib/renditeBruttoNetto";
-import { hausgeldAusPlan, wirtschaftsplanFuerObjekt } from "@/lib/wirtschaftsplanObjekt";
+import { hausgeldAusPlan, hausgeldSpalten, wirtschaftsplanFuerObjekt } from "@/lib/wirtschaftsplanObjekt";
 import { WirtschaftsplanKarte } from "@/components/objektdaten/WirtschaftsplanKarte";
 import { SortKopf } from "@/components/objektdaten/sortierung";
 import { SPALTEN, spaltenName } from "@/lib/objektdatenSpalten";
@@ -130,9 +130,9 @@ function ZahlZelle({ wert, anzeige, speichern, gesperrt, art = "zahl" }: {
  * Investagon von dort und wird dort geändert. Alles andere ist hier pflegbar.
  */
 const BERECHNET = new Set(["VK €/m²", "Brutto Ist", "Brutto", "Netto", "Ist €/m²", "Soll €/m²", "Zielmiete", "Garantie mtl.", "Garantie Laufzeit",
-  "Eigentümerlast", "Überschuss mtl.", "laut Plan", "Garagen-Subv. mtl.", "Mehrertrag mtl.", "Hinweise", "Einmalanteil",
+  "Eigentümerlast", "Überschuss mtl.", "laut Plan", "Hausgeld", "Vorauszahlung gesamt", "Garagen-Subv. mtl.", "Mehrertrag mtl.", "Hinweise", "Einmalanteil",
   "Erhöhung ab", "neue Miete", "+ mtl.", "Grenze"]);
-const AUS_INVESTAGON = new Set(["Fläche m²", "Kaufpreis", "Miete Vertrieb", "KP Garage", "Hausgeld gesamt", "umlagefähig", "nicht umlagefähig", "Rücklage"]);
+const AUS_INVESTAGON = new Set(["Fläche m²", "Kaufpreis", "Miete Vertrieb", "KP Garage", "umlagefähig", "nicht umlagefähig", "Rücklage"]);
 
 function GarageDialog({ einheit, garage, onClose }: { einheit: ObjektWohnung | null; garage: EinheitGarage | null; onClose: () => void }) {
   const [form, setForm] = useState({ nr: "", art: "garage", status: "frei", istMiete: "" });
@@ -378,12 +378,13 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
       const l = listendatenFuerEinheit(w.id);
       const garantie = regel && z.flaeche ? berechneGarantie(regel, z.flaeche, ist ?? 0, garage) : null;
       // Hausgeld: die Felder des CRM zuerst (bei Investagon von dort), sonst die Liste.
-      const hg = {
-        gesamt: w.hausgeldMonat ?? listenZahl(l, "hausgeldGesamt"),
-        uml: w.hausgeldUmlagefaehigEuro ?? listenZahl(l, "hausgeldUmlagefaehig"),
-        nichtUml: w.hausgeldNichtUmlagefaehigEuro ?? listenZahl(l, "hausgeldNichtUmlagefaehig"),
-        ruecklage: w.ruecklageZufuehrungMonat ?? listenZahl(l, "ruecklage"),
-      };
+      // Seit dem 28.10.2026 (Christian): Hausgeld = umlagefähig + nicht umlagefähig,
+      // die Erhaltungsrücklage getrennt, Vorauszahlung = Hausgeld + Rücklage.
+      // „Hausgeld gesamt“ der Liste ist die Vorauszahlung samt Rücklage.
+      const uml = w.hausgeldUmlagefaehigEuro ?? listenZahl(l, "hausgeldUmlagefaehig");
+      const nichtUml = w.hausgeldNichtUmlagefaehigEuro ?? listenZahl(l, "hausgeldNichtUmlagefaehig");
+      const ruecklage = w.ruecklageZufuehrungMonat ?? listenZahl(l, "ruecklage");
+      const hg = hausgeldSpalten(uml, nichtUml, ruecklage, hausgeldMonatEinheit(w) ?? null, listenZahl(l, "hausgeldGesamt"));
       const wp = wirtschaftsplanFuerObjekt(o.id);
       const hgPlan = wp ? hausgeldAusPlan(wp, listenZahl(l, "mea")) : null;
       const eingabe = renditeEingabe(o, w, z.mieteMonat ?? 0);
@@ -435,9 +436,10 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
     Zielmiete: (x) => x.garantie?.zielMiete, "Garantie mtl.": (x) => x.garantie?.garantieMonat, "Garantie Laufzeit": (x) => x.garantie?.summeLaufzeit,
     "laut Liste": (x) => listenZahl(x.l, "garantieLaufzeitListe"), "Letzte Erhöhung": (x) => String(x.l?.werte.letzteErhoehung ?? ""),
     "Nächste ab": (x) => String(x.l?.werte.naechsteErhoehungAb ?? ""), "Miete danach": (x) => listenZahl(x.l, "naechsteErhoehungMiete"),
-    "in 3 Jahren": (x) => listenZahl(x.l, "mieteIn3Jahren"), "Hausgeld gesamt": (x) => x.hg.gesamt, umlagefähig: (x) => x.hg.uml,
-    "nicht umlagefähig": (x) => x.hg.nichtUml, Rücklage: (x) => x.hg.ruecklage, Eigentümerlast: (x) => x.last,
-    "Überschuss mtl.": (x) => (x.last !== null && x.z.mieteMonat ? x.z.mieteMonat - x.last : null), "laut Plan": (x) => x.hgPlan?.gesamt,
+    "in 3 Jahren": (x) => listenZahl(x.l, "mieteIn3Jahren"), umlagefähig: (x) => x.hg.uml,
+    "nicht umlagefähig": (x) => x.hg.nichtUml, Hausgeld: (x) => x.hg.hausgeld, Rücklage: (x) => x.hg.ruecklage,
+    "Vorauszahlung gesamt": (x) => x.hg.vorauszahlung, Eigentümerlast: (x) => x.last,
+    "Überschuss mtl.": (x) => (x.last !== null && x.z.mieteMonat ? x.z.mieteMonat - x.last : null), "laut Plan": (x) => x.hgPlan?.hausgeld,
     "Garage/SP": (x) => x.garage?.nr, "KP Garage": (x) => x.w.stellplatzPreis, "Ist-Miete Garage": (x) => x.garage?.istMiete,
     "Sollmiete Garage": (x) => listenZahl(x.l, "garageSollMiete"), "Garagen-Subv. mtl.": (x) => x.garantie?.garagenSubventionMonat, Einmalanteil: (x) => x.einmal || null,
     "Miete vorher": (x) => listenZahl(x.l, "mieteVorErhoehung"), "Erhöhung ab": (x) => x.erhoehung?.ab, "neue Miete": (x) => x.erhoehung?.neueMiete,
@@ -528,7 +530,8 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
     }), ausweis ? excelDatumIso(ausweis) || (/^\d{4}$/.test(ausweis) ? `${ausweis}-12-31` : "") : "", aufteilungFuerObjekt(o.id).meilensteine?.abnahme).map((f) => ({ ...f, objekt: o.titel }));
   });
   const kostenBerechnen = () => kostenJahr(zeilen.filter((x) => x.w.status !== "verkauft" || x.inv).map((x) => ({
-    istMiete: x.ist, eigentuemerlast: x.last, hausgeldGesamt: x.hg.gesamt,
+    // Leerstand: der Eigentümer zahlt die ganze Vorauszahlung an die WEG, Rücklage eingeschlossen.
+    istMiete: x.ist, eigentuemerlast: x.last, hausgeldGesamt: x.hg.vorauszahlung,
     uebergabe: x.inv ? getAbwicklungDaten(x.inv.id).uebergabeDatum || "" : "",
     subventionMonat: x.regel?.art !== "einmal" ? x.garantie?.garantieMonat ?? 0 : 0, subventionMonate: x.regel?.laufzeitMonate ?? 0,
     garagenSubventionMonat: x.garantie?.garagenSubventionMonat ?? 0, garagenSubventionMonate: x.regel?.garagenSubventionMonate ?? 0,
@@ -541,7 +544,7 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
     preise: ["WE", "Lage", "Status", "Fläche m²", "MEA", "Kaufpreis", "VK €/m²", "Miete Vertrieb", "Brutto Ist", "Brutto", "Netto", "Mietsubvention", "Käufer"],
     miete: ["WE", "Lage", "Ist-Kaltmiete", "Ist €/m²", "Sollmiete", "Soll €/m²", "Letzte Erhöhung", "Miete vorher", "Erhöhung ab", "neue Miete", "+ mtl.", "Grenze", "Nächste ab", "Miete danach", "in 3 Jahren"],
     subvention: ["WE", "Lage", "Ist-Kaltmiete", "Zielmiete", "Garantie mtl.", "Garantie Laufzeit", "Garagen-Subv. mtl.", "Einmalanteil", "Mietsubvention", "laut Liste"],
-    hausgeld: ["WE", "Lage", "Hausgeld gesamt", "umlagefähig", "nicht umlagefähig", "Rücklage", "Eigentümerlast", "Überschuss mtl.", "laut Plan"],
+    hausgeld: ["WE", "Lage", "umlagefähig", "nicht umlagefähig", "Hausgeld", "Rücklage", "Vorauszahlung gesamt", "Eigentümerlast", "Überschuss mtl.", "laut Plan"],
     garagen: ["WE", "Lage", "Garage/SP", "KP Garage", "Ist-Miete Garage", "Sollmiete Garage", "Garagen-Subv. mtl.", "gekündigt zum", "Unterlagen versendet"],
     verkauf: ["WE", "Lage", "Status", "Reserviert am", "Käufer", "Finanzierung", "Stufe", "Notartermin", "Fälligkeit", "Kaufpreis da", "Grundbuch am", "Grundbuch erfolgt", "Übergabe", "Vorkaufsrecht mitgeteilt"],
     marge: ["WE", "Lage", "Status", "Kaufpreis", "Kostenanteil", "Provision", "Marge", "Marge %"],
@@ -797,9 +800,9 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
                   {kopf("Mietsubvention", true, "Mietsubvention laut Excel-Liste")}{kopf("laut Liste", true, "Garantie über die Laufzeit laut Excel, mit Mieterhöhungen")}
                 </>}
                 {ansicht === "hausgeld" && <>
-                  {kopf("Hausgeld gesamt")}{kopf("umlagefähig")}{kopf("nicht umlagefähig")}{kopf("Rücklage")}
+                  {kopf("umlagefähig")}{kopf("nicht umlagefähig")}{kopf("Hausgeld")}{kopf("Rücklage")}{kopf("Vorauszahlung gesamt")}
                   {kopf("Eigentümerlast", true, "nicht umlagefähig plus Rücklage")}{kopf("Überschuss mtl.", true, "Miete Vertrieb minus Eigentümerlast")}
-                  {kopf("laut Plan", true, "Hausgeld gesamt aus dem Wirtschaftsplan über die MEA der Einheit")}
+                  {kopf("laut Plan", true, "Hausgeld (ohne Rücklage) aus dem Wirtschaftsplan über die MEA der Einheit")}
                 </>}
                 {ansicht === "marge" && <>
                   {kopf("Status", false)}{kopf("Kaufpreis")}{kopf("Kostenanteil")}{kopf("Provision")}{kopf("Marge")}{kopf("Marge %")}
@@ -882,15 +885,16 @@ export function Einheitenliste({ objekte, objektWahl }: { objekte: ObjektData[];
                       <TableCell className={r}>{listenZelle(x, "garantieLaufzeitListe", 0)}</TableCell>
                     </>}
                     {ansicht === "hausgeld" && <>
-                      <TableCell className={r}>{hausgeldZelle(x, hg.gesamt, "hausgeldMonat")}</TableCell>
                       <TableCell className={r}>{hausgeldZelle(x, hg.uml, "hausgeldUmlagefaehigEuro")}</TableCell>
                       <TableCell className={r}>{hausgeldZelle(x, hg.nichtUml, "hausgeldNichtUmlagefaehigEuro")}</TableCell>
+                      <TableCell className={cn(r, "font-medium")}>{eur(hg.hausgeld, 2)}</TableCell>
                       <TableCell className={r}>{hausgeldZelle(x, hg.ruecklage, "ruecklageZufuehrungMonat")}</TableCell>
+                      <TableCell className={r}>{eur(hg.vorauszahlung, 2)}</TableCell>
                       <TableCell className={r}>{eur(last, 2)}</TableCell>
                       <TableCell className={r}>{last !== null && z.mieteMonat ? eur(z.mieteMonat - last, 2) : "–"}</TableCell>
-                      <TableCell className={cn(r, x.hgPlan && hg.gesamt !== null && Math.abs(x.hgPlan.gesamt - hg.gesamt) > 0.01 && "text-amber-600 font-medium")}
-                        title={x.hgPlan ? `umlagefähig ${eur(x.hgPlan.umlagefaehig, 2)}, nicht umlagefähig ${eur(x.hgPlan.nichtUmlagefaehig, 2)}, Rücklage ${eur(x.hgPlan.ruecklage, 2)}` : "Ohne Wirtschaftsplan oder MEA"}>
-                        {x.hgPlan ? eur(x.hgPlan.gesamt, 2) : "–"}
+                      <TableCell className={cn(r, x.hgPlan && hg.hausgeld !== null && Math.abs(x.hgPlan.hausgeld - hg.hausgeld) > 0.01 && "text-amber-600 font-medium")}
+                        title={x.hgPlan ? `umlagefähig ${eur(x.hgPlan.umlagefaehig, 2)}, nicht umlagefähig ${eur(x.hgPlan.nichtUmlagefaehig, 2)}, Erhaltungsrücklage separat ${eur(x.hgPlan.ruecklage, 2)}, Vorauszahlung gesamt ${eur(x.hgPlan.vorauszahlung, 2)}` : "Ohne Wirtschaftsplan oder MEA"}>
+                        {x.hgPlan ? eur(x.hgPlan.hausgeld, 2) : "–"}
                       </TableCell>
                     </>}
                     {ansicht === "verkauf" && (() => {

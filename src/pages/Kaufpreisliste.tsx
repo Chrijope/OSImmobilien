@@ -210,7 +210,10 @@ const Kaufpreisliste = () => {
     ["Rendite Ist / Soll", `${leer(g.renditeIst, (n) => prozent(n, 2))} / ${leer(g.renditeSoll, (n) => prozent(n, 2))}`],
     ["Vermietet", `${g.vermietet} von ${g.einheiten} WE`],
   ];
+  // Vorauszahlung samt Rücklage; das Hausgeld ist sie ohne die Rücklage (28.10.2026).
   const pruef = hausgeldMonat(wp, wp.pruefMea);
+  const pruefRuecklage = hausgeldMonat(wp, wp.pruefMea, "Erhaltungsrücklage");
+  const pruefHausgeld = pruef === null ? null : pruef - (pruefRuecklage ?? 0);
   const th = "font-medium pb-1 px-1 whitespace-nowrap";
   const tdZahl = "py-1 px-1 text-right tabular-nums whitespace-nowrap";
 
@@ -324,7 +327,7 @@ const Kaufpreisliste = () => {
                     {["WE", "Lage / Nutzung", "Status", "Mieter", "MV-Beginn"].map((t) => <th key={t} className={cn(th, "text-left")}>{t}</th>)}
                     {["Fläche m²", "MEA", "Nettokalt", "Ist €/m²", "BK-Vor.", "HK-Vor.", "Strom p.", "Wasser/Hzg. p.", "NK p.", "MwSt.", "Gesamtmiete", "Ist Jahr",
                       "Soll €/m²", "Soll mtl.", "Soll Jahr", "Verkaufspreis", "VK €/m²", "Rend. Ist", "Rend. Soll",
-                      "HG uml.", "HG Heiz.", "HG n. uml.", "HG Rückl.", "Hausgeld", "Überschuss Soll", "Subvention"].map((t) => <th key={t} className={cn(th, "text-right")}>{t}</th>)}
+                      "HG uml.", "HG Heiz.", "HG n. uml.", "Hausgeld (uml. + n. uml.)", "Erhaltungsrückl. (separat)", "Vorauszahlung gesamt", "Überschuss Soll", "Subvention"].map((t) => <th key={t} className={cn(th, "text-right")}>{t}</th>)}
                     <th className={cn(th, "text-left")}>Reserviert</th>
                     <th className="w-9" />
                   </tr>
@@ -373,8 +376,9 @@ const Kaufpreisliste = () => {
                         {ergebnis(zr.hgUml)}
                         {ergebnis(zr.hgHk)}
                         {ergebnis(zr.hgNuml)}
-                        {ergebnis(zr.hgEr)}
                         <td className={cn(tdZahl, "font-semibold")}>{leer(zr.hg, (n) => eur(n, 2))}</td>
+                        {ergebnis(zr.hgEr)}
+                        {ergebnis(zr.vorauszahlung)}
                         <td className={cn(tdZahl, zr.ueberschuss !== null && zr.ueberschuss < 0 && "text-destructive")}>{leer(zr.ueberschuss, (n) => eur(n, 2))}</td>
                         {ergebnis(zr.subvention)}
                         <td className="py-1 px-1"><Input aria-label="Reserviert" value={z.reserviert} onChange={(ev) => setzeZeile(z.id, { reserviert: ev.target.value })} className={cn(textFeld, "w-40")} /></td>
@@ -395,7 +399,7 @@ const Kaufpreisliste = () => {
                       `${zahl(g.flaeche, 2)}`, zahl(g.mea, 1), eur(g.ist, 2), leer(g.istQm, (n) => eur(n, 2)), eur(g.bk, 2), eur(g.hk, 2), eur(g.strom, 2),
                       eur(g.wasser, 2), eur(g.nk, 2), eur(g.mwst, 2), eur(g.gesamtmiete, 2), eur(g.istJahr, 2), leer(g.sollQm, (n) => eur(n, 2)),
                       eur(g.soll, 2), eur(g.sollJahr, 2), eur(g.vk), leer(g.vkQm, (n) => eur(n, 2)), leer(g.renditeIst, (n) => prozent(n, 2)),
-                      leer(g.renditeSoll, (n) => prozent(n, 2)), eur(g.hgUml, 2), eur(g.hgHk, 2), eur(g.hgNuml, 2), eur(g.hgEr, 2), eur(g.hg, 2),
+                      leer(g.renditeSoll, (n) => prozent(n, 2)), eur(g.hgUml, 2), eur(g.hgHk, 2), eur(g.hgNuml, 2), eur(g.hg, 2), eur(g.hgEr, 2), eur(g.vorauszahlung, 2),
                       eur(g.ueberschuss, 2), eur(g.subvention, 2),
                     ].map((t, i) => <td key={i} className={cn(tdZahl, "py-2")}>{t}</td>)}
                     <td colSpan={2} />
@@ -499,7 +503,11 @@ const Kaufpreisliste = () => {
                   <ZahlFeld label="MEA der Einheit für die Prüfung" wert={wp.pruefMea} setze={(v) => setzeWp({ pruefMea: v })} className="w-24" />
                 </div>
                 <div className="text-sm">
-                  Hausgeld pro Monat: <span className="font-semibold tabular-nums">{leer(pruef, (n) => eur(n, 2))}</span>
+                  Hausgeld pro Monat (uml. + n. uml.): <span className="font-semibold tabular-nums">{leer(pruefHausgeld, (n) => eur(n, 2))}</span>
+                </div>
+                <div className="text-sm">
+                  Erhaltungsrücklage (separat): <span className="tabular-nums">{leer(pruefRuecklage, (n) => eur(n, 2))}</span>
+                  {" · "}Vorauszahlung gesamt: <span className="tabular-nums">{leer(pruef, (n) => eur(n, 2))}</span>
                 </div>
                 <p className="text-xs text-muted-foreground">Zum Abgleich mit dem Einzelwirtschaftsplan einer Einheit.</p>
               </div>

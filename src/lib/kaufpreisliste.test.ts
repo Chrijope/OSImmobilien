@@ -94,9 +94,13 @@ describe("Kaufpreisliste, Beispiel Marktstraße 6", () => {
     expect(hausgeldMonat(e.wirtschaftsplan, 39)).toBeCloseTo(193.33, 2);
   });
 
-  it("Hausgeld je Einheit: Summe der vier Kategorien, Überschuss Soll ohne umlagefähige Teile", () => {
+  it("Hausgeld je Einheit ohne Rücklage, Vorauszahlung samt Rücklage, Überschuss Soll ohne umlagefähige Teile", () => {
     const z = r.zeilen[0];
-    expect(z.hg).toBeCloseTo(hausgeldMonat(e.wirtschaftsplan, e.zeilen[0].mea)!, 9);
+    // Seit dem 28.10.2026 (Christian): Hausgeld = umlagefähig (inkl. Heizkosten) + nicht umlagefähig.
+    expect(z.hg).toBeCloseTo(z.hgUml! + z.hgHk! + z.hgNuml!, 9);
+    expect(z.vorauszahlung).toBeCloseTo(hausgeldMonat(e.wirtschaftsplan, e.zeilen[0].mea)!, 9);
+    expect(z.vorauszahlung! - z.hg!).toBeCloseTo(z.hgEr!, 9);
+    expect(r.gesamt.vorauszahlung - r.gesamt.hg).toBeCloseTo(r.gesamt.hgEr, 6);
     expect(z.ueberschuss).toBeCloseTo(z.soll! - z.hgNuml! - z.hgEr!, 9);
     expect(z.gesamtmiete).toBeCloseTo(325 + 50 + 70, 9);
     expect(r.zeilen[10].gesamtmiete).toBeCloseTo(400 + 250 + 200 + 161.5, 9);
@@ -109,6 +113,7 @@ describe("Kaufpreisliste, leere Felder wie in der Excel", () => {
     const z = berechneKaufpreisliste(e).zeilen[0];
     expect(z.soll).toBeNull();
     expect(z.hg).toBeNull();
+    expect(z.vorauszahlung).toBeNull();
     expect(z.subvention).toBeNull();
   });
 

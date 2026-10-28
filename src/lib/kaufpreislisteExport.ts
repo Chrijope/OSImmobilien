@@ -163,8 +163,10 @@ const SP: Sp[] = [
   { k: "hg_uml", titel: "umlagefähig mtl.", breite: 10, fmt: EUR, art: "f", gruppe: "Hausgeld (aus Wirtschaftsplan)" },
   { k: "hg_hk", titel: "Heizkosten mtl.", breite: 10, fmt: EUR, art: "f", gruppe: "Hausgeld (aus Wirtschaftsplan)" },
   { k: "hg_numl", titel: "nicht umlagef. mtl.", breite: 10, fmt: EUR, art: "f", gruppe: "Hausgeld (aus Wirtschaftsplan)" },
-  { k: "hg_er", titel: "Erhaltungsrückl. mtl.", breite: 10, fmt: EUR, art: "f", gruppe: "Hausgeld (aus Wirtschaftsplan)" },
-  { k: "hg", titel: "Hausgeld gesamt mtl.", breite: 11, fmt: EUR, art: "f", gruppe: "Hausgeld (aus Wirtschaftsplan)" },
+  // Seit dem 28.10.2026: Hausgeld ohne Rücklage, Rücklage und Vorauszahlung getrennt daneben.
+  { k: "hg", titel: "Hausgeld mtl. (uml. + n. uml.)", breite: 11, fmt: EUR, art: "f", gruppe: "Hausgeld (aus Wirtschaftsplan)" },
+  { k: "hg_er", titel: "Erhaltungsrückl. mtl. (separat)", breite: 11, fmt: EUR, art: "f", gruppe: "Hausgeld (aus Wirtschaftsplan)" },
+  { k: "hg_vz", titel: "Vorauszahlung gesamt mtl.", breite: 11, fmt: EUR, art: "f", gruppe: "Hausgeld (aus Wirtschaftsplan)" },
   { k: "ueber", titel: "Überschuss Soll mtl.", breite: 11, fmt: EUR, art: "f", gruppe: "Hausgeld (aus Wirtschaftsplan)" },
   { k: "subv", titel: "Mietsubvention", breite: 12, fmt: EUR, art: "f", gruppe: "Vertrieb" },
   { k: "res", titel: "Reserviert (Name/Datum)", breite: 20, art: "e", gruppe: "Vertrieb" },
@@ -187,7 +189,7 @@ function ergebnis(r: KplZeilenErgebnis | undefined, k: string): Wert {
   if (!r) return "";
   const w: Record<string, number | null> = {
     istqm: r.istQm, gesmiete: r.gesamtmiete, istjahr: r.istJahr, soll: r.soll, solljahr: r.sollJahr, vkqm: r.vkQm,
-    rist: r.renditeIst, rsoll: r.renditeSoll, hg_uml: r.hgUml, hg_hk: r.hgHk, hg_numl: r.hgNuml, hg_er: r.hgEr, hg: r.hg,
+    rist: r.renditeIst, rsoll: r.renditeSoll, hg_uml: r.hgUml, hg_hk: r.hgHk, hg_numl: r.hgNuml, hg_er: r.hgEr, hg: r.hg, hg_vz: r.vorauszahlung,
     ueber: r.ueberschuss, subv: r.subvention,
   };
   return w[k] ?? "";
@@ -239,7 +241,8 @@ export function baueKaufpreislisteXlsxDateien(e: KplEingaben): Record<string, st
   w.wert(pr, 1, "Prüfung: Hausgeld einer Einheit", { b: true, farbe: GRUEN, sz: 10 });
   w.wert(pr + 1, 1, "MEA der Einheit");
   w.wert(pr + 1, 2, wp.pruefMea, { fill: HELLGOLD, rand: "duenn", offen: true, fmt: ZAHL });
-  w.wert(pr + 2, 1, "Hausgeld pro Monat");
+  // Alle Kategorien samt Rücklage: das ist die Vorauszahlung, nicht das Hausgeld (28.10.2026).
+  w.wert(pr + 2, 1, "Vorauszahlung gesamt pro Monat (Hausgeld + Rücklage)");
   w.formel(pr + 2, 2,
     `IF(OR(B${pr + 1}="",$B$4="",$B$4=0),"",(SUMPRODUCT((${bereich("D")}="MEA")*${bereich("C")})*B${pr + 1}/$B$4+IF(OR($B$5="",$B$5=0),0,SUMPRODUCT((${bereich("D")}="WE")*${bereich("C")})/$B$5))/12)`,
     hausgeldMonat(wp, wp.pruefMea) ?? "", { b: true, fmt: EUR });
@@ -304,7 +307,8 @@ export function baueKaufpreislisteXlsxDateien(e: KplEingaben): Record<string, st
       rist: `IF(OR(${C.vk}${zr}="",${C.vk}${zr}=0,${fl}=""),"",${C.istjahr}${zr}/${C.vk}${zr})`,
       rsoll: `IF(OR(${C.vk}${zr}="",${C.vk}${zr}=0,${fl}=""),"",${C.solljahr}${zr}/${C.vk}${zr})`,
       hg_uml: hg("umlagefähig", zr), hg_hk: hg("Heizkosten", zr), hg_numl: hg("nicht umlagefähig", zr), hg_er: hg("Erhaltungsrücklage", zr),
-      hg: `IF(${C.mea}${zr}="","",SUM(${C.hg_uml}${zr}:${C.hg_er}${zr}))`,
+      hg: `IF(${C.mea}${zr}="","",SUM(${C.hg_uml}${zr}:${C.hg_numl}${zr}))`,
+      hg_vz: `IF(${C.mea}${zr}="","",${C.hg}${zr}+${C.hg_er}${zr})`,
       ueber: `IF(OR(${fl}="",${C.mea}${zr}=""),"",${C.soll}${zr}-${C.hg_numl}${zr}-${C.hg_er}${zr})`,
       subv: `IF(OR(${C.vk}${zr}="",$K$3="",SUM($${C.vk}$${D0}:$${C.vk}$${E})=0),"",$K$3*${C.vk}${zr}/SUM($${C.vk}$${D0}:$${C.vk}$${E}))`,
     };
@@ -323,7 +327,7 @@ export function baueKaufpreislisteXlsxDateien(e: KplEingaben): Record<string, st
   const summen: Record<string, number> = {
     flaeche: g.flaeche, mea: g.mea, ist: g.ist, bk: g.bk, hk: g.hk, strom: g.strom, wasser: g.wasser, nk: g.nk, mwst: g.mwst,
     gesmiete: g.gesamtmiete, istjahr: g.istJahr, soll: g.soll, solljahr: g.sollJahr, vk: g.vk,
-    hg_uml: g.hgUml, hg_hk: g.hgHk, hg_numl: g.hgNuml, hg_er: g.hgEr, hg: g.hg, ueber: g.ueberschuss, subv: g.subvention,
+    hg_uml: g.hgUml, hg_hk: g.hgHk, hg_numl: g.hgNuml, hg_er: g.hgEr, hg: g.hg, hg_vz: g.vorauszahlung, ueber: g.ueberschuss, subv: g.subvention,
   };
   const quote = (zaehler: string, nenner: string, wert: number | null) => [`IF(${nenner}${S}=0,"",${zaehler}${S}/${nenner}${S})`, wert ?? ""] as const;
   const besondere: Record<string, readonly [string, Wert]> = {
@@ -339,7 +343,7 @@ export function baueKaufpreislisteXlsxDateien(e: KplEingaben): Record<string, st
     else if (s.k in besondere) k.formel(S, i + 1, besondere[s.k][0], besondere[s.k][1], st);
     else k.wert(S, i + 1, null, st);
   });
-  k.wert(S + 2, 1, "Hinweise: Hausgeld je Einheit = Ansätze des Wirtschaftsplans nach Verteiler (MEA-Anteil bzw. je Einheit) / 12. Mietrendite = Jahresmiete / Verkaufspreis. Überschuss Soll = Sollmiete – nicht umlagefähiges Hausgeld – Erhaltungsrücklage. Mietsubvention = Gesamtbetrag anteilig nach Verkaufspreis. Alle Angaben ohne Gewähr.", { i: true, farbe: "666666", sz: 8 });
+  k.wert(S + 2, 1, "Hinweise: Hausgeld je Einheit = umlagefähige und nicht umlagefähige Ansätze des Wirtschaftsplans nach Verteiler (MEA-Anteil bzw. je Einheit) / 12, ohne Erhaltungsrücklage; Vorauszahlung gesamt = Hausgeld + Erhaltungsrücklage. Mietrendite = Jahresmiete / Verkaufspreis. Überschuss Soll = Sollmiete – nicht umlagefähiges Hausgeld – Erhaltungsrücklage. Mietsubvention = Gesamtbetrag anteilig nach Verkaufspreis. Alle Angaben ohne Gewähr.", { i: true, farbe: "666666", sz: 8 });
 
   const fuss = "OS Immobilien Holding GmbH · Am Ostbahnhof 1 · 15749 Mittenwalde";
   const ns = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";

@@ -69,9 +69,11 @@ export async function buildKaufpreislistePdf(e: KplEingaben): Promise<jsPDF> {
   // ── Tabelle je Einheit ──
   // [Überschrift, Breite in mm, linksbündig]
   const spalten: [string, number, boolean?][] = [
-    ["WE", 10, true], ["Lage / Nutzung", 26, true], ["Status", 15, true], ["Mieter", 25, true],
-    ["Fläche", 14], ["MEA", 9], ["Ist mtl.", 15], ["Ist/m²", 11], ["Gesamtm.", 16], ["Soll mtl.", 15],
-    ["Kaufpreis", 18], ["VK/m²", 13], ["Rend. Ist", 12], ["Rend. Soll", 12], ["Hausgeld", 15], ["Überschuss", 15], ["Subvention", 16],
+    ["WE", 10, true], ["Lage / Nutzung", 20, true], ["Status", 12, true], ["Mieter", 18, true],
+    ["Fläche", 14], ["MEA", 9], ["Ist mtl.", 15], ["Ist/m²", 11], ["Gesamtm.", 14], ["Soll mtl.", 15],
+    ["Kaufpreis", 16], ["VK/m²", 13], ["Rend. Ist", 12], ["Rend. Soll", 12],
+    // Seit dem 28.10.2026: Hausgeld ohne Rücklage, Rücklage und Vorauszahlung getrennt.
+    ["Hausgeld", 13], ["Rücklage", 12], ["Vorausz.", 14], ["Überschuss", 13], ["Subvention", 14],
   ];
   const kanten: { x: number; b: number; links: boolean }[] = [];
   let x = M;
@@ -88,7 +90,7 @@ export async function buildKaufpreislistePdf(e: KplEingaben): Promise<jsPDF> {
   };
   const zeileZeichnen = (werte: string[], fett: boolean) => {
     werte.forEach((t, i) => {
-      schrift(6.8, fett, i === 16 || i === 11 ? BRAND.primary : BRAND.text);
+      schrift(6.8, fett, i === 18 || i === 11 ? BRAND.primary : BRAND.text);
       const k = kanten[i];
       if (k.links) textInBreite(doc, t, k.x, y + 4.2, k.b, 6.8, 5);
       else doc.text(s(t), k.x, y + 4.2, { align: "right" });
@@ -108,7 +110,7 @@ export async function buildKaufpreislistePdf(e: KplEingaben): Promise<jsPDF> {
       leerOder(z.ist, (n) => eur(n, 2)), leerOder(zr.istQm, (n) => eur(n, 2)), leerOder(zr.gesamtmiete, (n) => eur(n, 2)),
       leerOder(zr.soll, (n) => eur(n, 2)), leerOder(z.vk, (n) => eur(n)), leerOder(zr.vkQm, (n) => eur(n, 0)),
       leerOder(zr.renditeIst, (n) => prozent(n, 2)), leerOder(zr.renditeSoll, (n) => prozent(n, 2)),
-      leerOder(zr.hg, (n) => eur(n, 2)), leerOder(zr.ueberschuss, (n) => eur(n, 2)), leerOder(zr.subvention, (n) => eur(n, 2)),
+      leerOder(zr.hg, (n) => eur(n, 2)), leerOder(zr.hgEr, (n) => eur(n, 2)), leerOder(zr.vorauszahlung, (n) => eur(n, 2)), leerOder(zr.ueberschuss, (n) => eur(n, 2)), leerOder(zr.subvention, (n) => eur(n, 2)),
     ], false);
     doc.setDrawColor(...BRAND.separator);
     doc.setLineWidth(0.15);
@@ -121,7 +123,7 @@ export async function buildKaufpreislistePdf(e: KplEingaben): Promise<jsPDF> {
     "GESAMT", "", `${g.vermietet} verm. / ${g.einheiten} WE`, "", `${zahl(g.flaeche, 2)} m²`, zahl(g.mea, 1),
     eur(g.ist, 2), leerOder(g.istQm, (n) => eur(n, 2)), eur(g.gesamtmiete, 2), eur(g.soll, 2), eur(g.vk), leerOder(g.vkQm, (n) => eur(n, 0)),
     leerOder(g.renditeIst, (n) => prozent(n, 2)), leerOder(g.renditeSoll, (n) => prozent(n, 2)),
-    eur(g.hg, 2), eur(g.ueberschuss, 2), eur(g.subvention, 2),
+    eur(g.hg, 2), eur(g.hgEr, 2), eur(g.vorauszahlung, 2), eur(g.ueberschuss, 2), eur(g.subvention, 2),
   ], true);
   y += 4;
 
@@ -135,7 +137,7 @@ export async function buildKaufpreislistePdf(e: KplEingaben): Promise<jsPDF> {
     ["Gesamt-MEA / Einheiten (Verteiler WE)", `${leerOder(wp.gesamtMea, (n) => zahl(n, 1))} / ${leerOder(wp.anzahlEinheiten, (n) => zahl(n))}`],
   ];
   const pruef = hausgeldMonat(wp, wp.pruefMea);
-  if (pruef !== null) wpZeilen.push([`Prüfung: Hausgeld bei ${zahl(wp.pruefMea!, 1)} MEA`, `${eur(pruef, 2)} / Monat`]);
+  if (pruef !== null) wpZeilen.push([`Prüfung: Vorauszahlung gesamt (Hausgeld + Rücklage) bei ${zahl(wp.pruefMea!, 1)} MEA`, `${eur(pruef, 2)} / Monat`]);
   const breiteWp = (CW - 8) / 2;
   wpZeilen.forEach(([label, wert], i) => {
     const sx = M + (i % 2) * (breiteWp + 8);

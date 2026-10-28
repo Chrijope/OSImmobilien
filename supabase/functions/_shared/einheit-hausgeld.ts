@@ -65,7 +65,8 @@ export function hausgeldTeile(meta: unknown): HausgeldTeile {
     : undefined;
   const gepflegt = positiv(m.hausgeldMonat);
   const alteSumme = summe !== undefined && ruecklage !== undefined && gepflegt !== undefined &&
-    Math.abs(gepflegt - (summe + ruecklage)) < 0.01;
+    // Bis 2 Cent Spiel: je Teil auf Cent gerundete Werte (Wirtschaftsplan-Übernahme) weichen von der gerundeten Summe ab.
+    Math.abs(gepflegt - (summe + ruecklage)) < 0.02;
   const hausgeld = alteSumme ? summe : gepflegt ?? summe;
   return {
     umlagefaehig,
