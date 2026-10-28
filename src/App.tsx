@@ -136,6 +136,7 @@ const Shop = lazyRoute(() => import("./pages/Shop"));
 const Bonitaetsrechner = lazyRoute(() => import("./pages/Bonitaetsrechner"));
 const Investmentrechner = lazyRoute(() => import("./pages/Investmentrechner"));
 const Ankaufstool = lazyRoute(() => import("./pages/Ankaufstool"));
+const VideoStudio = lazyRoute(() => import("./pages/VideoStudio"));
 const Mietsubvention = lazyRoute(() => import("./pages/Mietsubvention"));
 const Kaufpreisliste = lazyRoute(() => import("./pages/Kaufpreisliste"));
 const Objektdaten = lazyRoute(() => import("./pages/Objektdaten"));
@@ -697,6 +698,7 @@ const App = () => (
                   {/* Seit dem 11.10.2026 ein Schalter im Rechner statt einer eigenen Seite. Alte Links und Lesezeichen starten mit eingeschaltetem Schalter. */}
                   <Route path="/investmentrechner-plus" element={<InvestmentrechnerPlusWeiterleitung />} />
                   <Route path="/ankaufstool" element={<Ankaufstool />} />
+                  <Route path="/video-studio" element={<VideoStudio />} />
                   <Route path="/mietsubvention" element={<Mietsubvention />} />
                   <Route path="/kaufpreisliste" element={<Kaufpreisliste />} />
                   {/* Objektdaten (17.10.2026): Listen aus Bauträger-Sicht, Rechte in `objektdaten.ts`. */}
