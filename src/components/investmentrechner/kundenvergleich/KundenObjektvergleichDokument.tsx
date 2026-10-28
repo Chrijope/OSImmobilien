@@ -15,7 +15,13 @@ import {
   type EinheitErgebnis, type KundenObjektvergleich, type VergleichObjekt,
 } from "@/lib/investmentrechner/kundenObjektvergleich";
 
-const LOGO = "/images/objektvergleich/logo-hell.png";
+// Importiert statt als Adresse, damit die Bilder auch im Artefakt (eine HTML-Datei) mitkommen.
+import LOGO from "../../../../public/images/objektvergleich/logo-hell.png";
+import P39A_1 from "../../../../public/images/objektvergleich/p39a-1.png";
+import P39A_2 from "../../../../public/images/objektvergleich/p39a-2.png";
+import P39A_3 from "../../../../public/images/objektvergleich/p39a-3.png";
+import P39A_4 from "../../../../public/images/objektvergleich/p39a-4.png";
+const P39A = [P39A_1, P39A_2, P39A_3, P39A_4];
 const SEITEN = 12;
 const SEITE_FREIBETRAG = 11;
 
@@ -28,10 +34,10 @@ export function de(x: number, d = 2): string {
   const s = q.toLocaleString("de-DE", { minimumFractionDigits: d, maximumFractionDigits: d });
   return (x < 0 && q !== 0 ? "−" : "") + s;
 }
-export const eur = (x: number, d = 2) => `${de(x, d)} €`;
-export const tsd = (x: number) => `${de(Math.round(x / 1000) * 1000, 0)} €`;
-const pz = (x: number, d = 1) => `${de(x * 100, d)} %`;
-const pzGanz = (x: number) => `${de(x * 100, x * 100 === Math.round(x * 100) ? 0 : 1)} %`;
+export const eur = (x: number, d = 2) => `${de(x, d)}\u00a0€`;
+export const tsd = (x: number) => `${de(Math.round(x / 1000) * 1000, 0)}\u00a0€`;
+const pz = (x: number, d = 1) => `${de(x * 100, d)}\u00a0%`;
+const pzGanz = (x: number) => `${de(x * 100, x * 100 === Math.round(x * 100) ? 0 : 1)}\u00a0%`;
 const tagDe = (iso: string) => (/^\d{4}-\d{2}-\d{2}/.test(iso) ? iso.slice(0, 10).split("-").reverse().join(".") : iso);
 
 interface Kontext {
@@ -181,13 +187,13 @@ function Ausgangslage({ k }: { k: Kontext }) {
   const hundert = (x: number) => de(Math.round(x / 100) * 100, 0);
   const leit: Array<[string, string]> = [
     ["Nebenkosten aus Ihrem Ersparten.",
-      `Beim Kauf zahlen Sie einmalig rund ${hundert(A.nk)} € (Wohnung ${A.einheit.nr}) bzw. ${hundert(B.nk)} € (Wohnung ${B.einheit.nr}) für Grunderwerbsteuer, Notar und Grundbuch. `
+      `Beim Kauf zahlen Sie einmalig rund ${hundert(A.nk)}\u00a0€ (Wohnung ${A.einheit.nr}) bzw. ${hundert(B.nk)}\u00a0€ (Wohnung ${B.einheit.nr}) für Grunderwerbsteuer, Notar und Grundbuch. `
       + (ku.kapital ? `Das bezahlen Sie aus Ihren ${eur(ku.kapital, 0)} Erspartem. ` : "")
       + (Math.min(...ueber) > 0
-        ? `Danach legen Sie jeden Monat wieder etwas zurück: Von Ihrem Gehalt bleiben nach Miete, Lebenshaltung und Wohnung rund ${hundert(Math.min(...ueber))} € übrig. So ist Ihr Erspartes nach etwa ${Math.min(...monate)} bis ${Math.max(...monate)} Monaten wieder aufgefüllt.`
+        ? `Danach legen Sie jeden Monat wieder etwas zurück: Von Ihrem Gehalt bleiben nach Miete, Lebenshaltung und Wohnung rund ${hundert(Math.min(...ueber))}\u00a0€ übrig. So ist Ihr Erspartes nach etwa ${Math.min(...monate)} bis ${Math.max(...monate)} Monaten wieder aufgefüllt.`
         : "")],
     ["Monatlich spürbar, nicht belastend.",
-      `Ihr Eigenanteil nach Steuer liegt je nach Wohnung bei rund ${de(-Math.max(A.monat.nach, B.monat.nach), 0)} € bis ${de(-Math.min(A.monat.nach, B.monat.nach), 0)} € im Monat.`
+      `Ihr Eigenanteil nach Steuer liegt je nach Wohnung bei rund ${de(-Math.max(A.monat.nach, B.monat.nach), 0)}\u00a0€ bis ${de(-Math.min(A.monat.nach, B.monat.nach), 0)}\u00a0€ im Monat.`
       + (frei > 0 ? " Das ist ein kleiner Teil dessen, was Ihnen heute frei bleibt." : "")],
     ["Der Steuerhebel.", `Jeder Euro Verlust aus der Vermietung senkt die Steuer in dieser Rechnung um ${de(v.annahmen.steuer * 100, 0)} Cent. Mit einem Freibetrag beim Finanzamt kommt das jeden Monat mit dem Gehalt (wann genau: Seite ${SEITE_FREIBETRAG}).`],
     ...(ku.jahreBisRente ? [["Ihr langer Horizont.", `Bei rund ${ku.jahreBisRente} Jahren bis zur Rente zählt nicht nur der günstigste Start, sondern eine Belastung, die über die nächsten 30 Jahre gut passt.`] as [string, string]] : []),
@@ -340,13 +346,13 @@ function Vergleich({ k }: { k: Kontext }) {
   const kg = (e: EinheitErgebnis) => (e.einheit.garagen ? ` + ${garagenText(e, false)}` : "");
   const mietLabel = k.haeuser && (A.einheit.mieteSubQm !== B.einheit.mieteSubQm || A.einheit.garageMiete1 !== B.einheit.garageMiete1)
     ? "Miete im Monat, 1. Jahr (gerechnet, inkl. Garage)"
-    : `Miete im Monat, 1. Jahr (${de(A.einheit.mieteSubQm)} €/m²${g ? ` + ${g > 1 ? `${g} × ${de(A.einheit.garageMiete1, 0)} € Garage` : `Garage ${de(A.einheit.garageMiete1, 0)} €`}` : ""})`;
+    : `Miete im Monat, 1. Jahr (${de(A.einheit.mieteSubQm)} €/m²${g ? ` + ${g > 1 ? `${g} × ${de(A.einheit.garageMiete1, 0)}\u00a0€ Garage` : `Garage ${de(A.einheit.garageMiete1, 0)}\u00a0€`}` : ""})`;
   const afaPz = de(100 / A.einheit.afaJahre, 1);
   const guenstiger = A.monat.nach >= B.monat.nach ? A : B;
   const staerke = (e: EinheitErgebnis, o: EinheitErgebnis): [string, string] => {
     const teile: string[] = [];
     if (e.nk < o.nk) teile.push(`rund ${eur(o.nk - e.nk, 0)} weniger Nebenkosten`);
-    if (e.monat.nach > o.monat.nach) teile.push(`rund ${de(Math.abs(e.monat.nach - o.monat.nach), 0)} € weniger Eigenanteil im Monat`);
+    if (e.monat.nach > o.monat.nach) teile.push(`rund ${de(Math.abs(e.monat.nach - o.monat.nach), 0)}\u00a0€ weniger Eigenanteil im Monat`);
     if (e.einheit.zimmer > o.einheit.zimmer) teile.push(`${e.einheit.zimmer} Zimmer`);
     if (e.qmPreis < o.qmPreis) teile.push("günstiger je m²");
     if (e.lueckeQuote < o.lueckeQuote) teile.push(e.luecke > 0 ? `eine Mietlücke von nur ${eur(e.luecke)}` : "keine Mietlücke");
@@ -432,9 +438,9 @@ function freibetragText(k: Kontext): ReactNode {
 function garageZeile(k: Kontext, e: EinheitErgebnis): [string, string, string] | null {
   const x = e.einheit;
   if (!x.garagen) return null;
-  const ist = x.garageIstVon ? `Heute ${de(x.garageIstVon, 0)}${x.garageIstBis && x.garageIstBis !== x.garageIstVon ? ` bis ${de(x.garageIstBis, 0)}` : ""} €; ` : "";
-  if (x.garagen > 1) return [`Garagenmiete, ${x.garagen} Garagen, 1. Jahr`, `${x.garagen} × ${de(x.garageMiete1, 0)} €; im 1. Jahr vom Bauträger aufgestockt bzw. getragen, danach Vermietung.`, `Zusätzliche Einnahme aus ${x.garagen} Garagen.`];
-  return ["Garagenmiete, 1. Jahr", `${ist}${x.garageIstVon ? `der Bauträger stockt 12 Monate auf ${de(x.garageMiete1, 0)} € auf.` : `${de(x.garageMiete1, 0)} € im Monat.`}`, "Zusätzliche Einnahme aus der eigenen Garage."];
+  const ist = x.garageIstVon ? `Heute ${de(x.garageIstVon, 0)}${x.garageIstBis && x.garageIstBis !== x.garageIstVon ? ` bis ${de(x.garageIstBis, 0)}` : ""}\u00a0€; ` : "";
+  if (x.garagen > 1) return [`Garagenmiete, ${x.garagen} Garagen, 1. Jahr`, `${x.garagen} × ${de(x.garageMiete1, 0)}\u00a0€; im 1. Jahr vom Bauträger aufgestockt bzw. getragen, danach Vermietung.`, `Zusätzliche Einnahme aus ${x.garagen} Garagen.`];
+  return ["Garagenmiete, 1. Jahr", `${ist}${x.garageIstVon ? `der Bauträger stockt 12 Monate auf ${de(x.garageMiete1, 0)}\u00a0€ auf.` : `${de(x.garageMiete1, 0)}\u00a0€ im Monat.`}`, "Zusätzliche Einnahme aus der eigenen Garage."];
 }
 
 function Einnahmen({ k, e }: { k: Kontext; e: EinheitErgebnis }) {
@@ -534,7 +540,7 @@ function Rechnung({ k, e, nr, b }: { k: Kontext; e: EinheitErgebnis; nr: number;
     [`AfA: ≈ ${afaPz} % (1/${x.afaJahre})${x.afaJahre < 50 ? `, kürzere tatsächliche Nutzungsdauer ${x.afaJahre} J., Gutachten nötig` : ""}`, `${eur(j.afa, 0)} / Jahr`],
     [`Bemessungsgrundlage (Gebäudeanteil ${pzGanz(an.gebaeudeanteil)} inkl. Nebenkosten)`, eur(e.afaBasis, 0)],
     [`Miete im Szenario (Jahr 1 = ${an.startJahr})`, `${de(x.mieteSubQm)} €/m² auf ${de(x.mieteZielQm || an.mieteZielQm, (x.mieteZielQm || an.mieteZielQm) % 1 ? 2 : 0)} €/m² im Jahr ${an.mieteZielJahr}`],
-    ...(x.garagen ? [[x.garagen > 1 ? "Garagen im Szenario" : "Garage im Szenario", `${x.garagen > 1 ? "je " : ""}${de(x.garageMiete1, 0)} € auf ${de(x.garageMieteZiel, 0)} € im Jahr ${an.mieteZielJahr}`] as [string, string]] : []),
+    ...(x.garagen ? [[x.garagen > 1 ? "Garagen im Szenario" : "Garage im Szenario", `${x.garagen > 1 ? "je " : ""}${de(x.garageMiete1, 0)}\u00a0€ auf ${de(x.garageMieteZiel, 0)}\u00a0€ im Jahr ${an.mieteZielJahr}`] as [string, string]] : []),
   ];
   const e30 = e.entw[30];
   const h = e.hausgeld;
@@ -659,7 +665,7 @@ function Entwicklung({ k }: { k: Kontext }) {
           ...([25, 30, 35] as const).map((y) => {
             const x = e.entw[y];
             return (
-              <tr key={`${i}-${y}`}><td>nach {y} Jahren</td><td className="r">{tsd(x.wert)}</td><td className="r">{Math.round(x.rest) ? `− ${tsd(x.rest)}` : "0 €"}</td>
+              <tr key={`${i}-${y}`}><td>nach {y} Jahren</td><td className="r">{tsd(x.wert)}</td><td className="r">{Math.round(x.rest) ? `− ${tsd(x.rest)}` : "0\u00a0€"}</td>
                 <td className="r">{tsd(x.erloes)}</td><td className="r">{tsd(x.zuzahlung)}</td><td className="r" style={{ fontWeight: 500 }}>{tsd(x.plus)}</td></tr>
             );
           }),
@@ -780,7 +786,7 @@ function Sheet({ k, e, nr }: { k: Kontext; e: EinheitErgebnis; nr: number }) {
         <div className="grid" style={{ gridTemplateColumns: "1fr 1fr", gap: "8mm", marginTop: "5.5mm", alignItems: "start" }}>
           <div><div className="label">Einnahmen je Monat</div>
             {zl("Kaltmiete Wohnung", e.luecke > 0 ? `subventioniert auf ${de(x.mieteSubQm)} €/m²` : `${de(x.mieteSubQm)} €/m²`, m.miete)}
-            {x.garagen > 0 && zl(x.garagen > 1 ? `Garagenmiete, ${x.garagen} Garagen` : "Garagenmiete", x.garagen > 1 ? `je ${de(x.garageMiete1, 0)} €, im 1. Jahr vom Bauträger getragen bzw. aufgestockt` : `1. Jahr${x.garageIstVon ? `, der Bauträger stockt auf ${de(x.garageMiete1, 0)} € auf` : ""}`, m.garage)}
+            {x.garagen > 0 && zl(x.garagen > 1 ? `Garagenmiete, ${x.garagen} Garagen` : "Garagenmiete", x.garagen > 1 ? `je ${de(x.garageMiete1, 0)}\u00a0€, im 1. Jahr vom Bauträger getragen bzw. aufgestockt` : `1. Jahr${x.garageIstVon ? `, der Bauträger stockt auf ${de(x.garageMiete1, 0)}\u00a0€ auf` : ""}`, m.garage)}
             <div className="sb ein"><span>Einnahmen</span><b>{eur(m.einnahmen)}</b></div></div>
           <div><div className="label">Ausgaben je Monat</div>
             {zl("Zins Bankdarlehen", `${pz(an.zins)}, senkt Ihre Steuer`, m.zins)}
@@ -816,7 +822,7 @@ function Hinweis({ k }: { k: Kontext }) {
     ["Ersparnis kommt mit dem Gehalt", "Das Finanzamt verteilt den Jahresbetrag auf die Monate. Ihr Arbeitgeber zieht weniger Lohnsteuer ab: Sie zahlen Schritt 3."],
     ["Bis dahin: Steuererklärung", "Bis der Freibetrag wirkt, zahlen Sie den Betrag aus Schritt 1. Die Differenz erhalten Sie mit der Steuererklärung zurück, nach den tatsächlichen Werten des Kaufjahres."],
   ];
-  const bild = (i: number) => <img src={`/images/objektvergleich/p39a-${i}.png`} alt={`Auszug § 39a EStG, Teil ${i}`} style={{ width: "100%", display: "block", borderRadius: "1mm" }} />;
+  const bild = (i: number) => <img src={P39A[i - 1]} alt={`Auszug § 39a EStG, Teil ${i}`} style={{ width: "100%", display: "block", borderRadius: "1mm" }} />;
   return (
     <Seite nr={11} kick="Wann die Steuerersparnis bei Ihnen ankommt" fuss={k.fuss}>
       <h2>Monatlich mit dem Gehalt: <em>so wirkt der Freibetrag.</em></h2>
