@@ -71,6 +71,8 @@ export interface VergleichEinheit {
   r: number;
   /** AfA-Dauer in Jahren (Restnutzungsdauer), z. B. 32. */
   afaJahre: number;
+  /** Zielmiete €/m² dieser Wohnung, sonst die der Annahmen (häuserübergreifend je Haus verschieden). */
+  mieteZielQm?: number;
 }
 
 /** Kaufmännisch auf Cent (HALF_UP auf die kürzeste Dezimaldarstellung, wie Python `Decimal(repr(x))`). */
@@ -148,7 +150,7 @@ export function rechneEinheit(e: VergleichEinheit, a: VergleichAnnahmen): Einhei
   let ruecklage = e.r * 12;
   const J: Jahr[] = [];
   for (let j = 1; j <= JAHRE; j++) {
-    const mieteQm = linear(m0, a.mieteZielQm, j - 1, a);
+    const mieteQm = linear(m0, e.mieteZielQm || a.mieteZielQm, j - 1, a);
     const garage = garage1 ? linear(garage1, garageZiel, j - 1, a) : 0;
     const miete = (mieteQm * e.qm + garage) * 12;
     const zins = rest * a.zins;
@@ -214,8 +216,12 @@ const besser = (a: number, b: number, kleinerBesser: boolean, toleranz = 0.005):
   return (kleinerBesser ? a < b : a > b) ? "A" : "B";
 };
 
-/** Die Kriterien der Einhauser-Vorlage, gerechnet statt von Hand gesetzt. */
-export function kriterien(A: EinheitErgebnis, B: EinheitErgebnis): Kriterium[] {
+/**
+ * Die Kriterien der Einhauser-Vorlage, gerechnet statt von Hand gesetzt.
+ * Häuserübergreifend fällt „Lage, Haus …“ weg: Das ist dann eine persönliche
+ * Abwägung und kein Gleichstand.
+ */
+export function kriterien(A: EinheitErgebnis, B: EinheitErgebnis, gleichesHaus = true): Kriterium[] {
   const zimmer = besser(A.einheit.zimmer, B.einheit.zimmer, false, 0);
   return [
     { text: "Niedrige Monatsbelastung in den ersten Jahren", gewinner: besser(-A.monat.nach, -B.monat.nach, true) },
@@ -225,13 +231,13 @@ export function kriterien(A: EinheitErgebnis, B: EinheitErgebnis): Kriterium[] {
     { text: zimmer === "=" ? "Zimmerzahl" : `${Math.max(A.einheit.zimmer, B.einheit.zimmer)} Zimmer: breitere Mieterschaft`, gewinner: zimmer },
     { text: "Höhere Tilgung, schnellerer Vermögensaufbau", gewinner: besser(A.monat.tilgung, B.monat.tilgung, false) },
     { text: "Erlös nach 30 Jahren", gewinner: besser(A.entw[30].erloes, B.entw[30].erloes, false) },
-    { text: "Lage, Haus, Garage, Abschreibung", gewinner: "=" },
+    ...(gleichesHaus ? [{ text: "Lage, Haus, Garage, Abschreibung", gewinner: "=" as Gewinner }] : []),
   ];
 }
 
 /** Die Einheit mit mehr Kriterienpunkten, bei Gleichstand die mit dem höheren Erlös. */
-export function empfohlen(A: EinheitErgebnis, B: EinheitErgebnis): "A" | "B" {
-  const k = kriterien(A, B);
+export function empfohlen(A: EinheitErgebnis, B: EinheitErgebnis, gleichesHaus = true): "A" | "B" {
+  const k = kriterien(A, B, gleichesHaus);
   const a = k.filter((x) => x.gewinner === "A").length;
   const b = k.filter((x) => x.gewinner === "B").length;
   if (a !== b) return a > b ? "A" : "B";
@@ -294,7 +300,10 @@ export interface KundenObjektvergleich {
   /** Zusatz im Titel und Dateinamen, z. B. „Kaufpreis angepasst“. */
   variante: string;
   kunde: VergleichKunde;
+  /** Haus der Wohnung A (und B, solange `objekt2` fehlt). */
   objekt: VergleichObjekt;
+  /** Haus der Wohnung B, nur häuserübergreifend (28.10.2026). */
+  objekt2?: VergleichObjekt | null;
   annahmen: VergleichAnnahmen;
   einheiten: VergleichEinheit[];
   /** Leer = automatisch aus den Kriterien. */
@@ -321,11 +330,21 @@ export function vergleichAusJson(roh: unknown): KundenObjektvergleich | null {
   };
 }
 
-/** Dateiname wie bei der Vorlage. */
+/** Das Haus der Wohnung `i` (0 = A, 1 = B). */
+export function objektVon(v: Pick<KundenObjektvergleich, "objekt" | "objekt2">, i: number): VergleichObjekt {
+  return i === 1 && v.objekt2 ? v.objekt2 : v.objekt;
+}
+
+export const haeuseruebergreifend = (v: Pick<KundenObjektvergleich, "objekt2">) => !!v.objekt2;
+
+const strasseOhneNr = (o: VergleichObjekt) => o.strasse.replace(/\s+\d.*$/, "") || "Objekt";
+
+/** Dateiname wie bei der Vorlage; häuserübergreifend mit beiden Straßen. */
 export function vergleichDateiname(v: KundenObjektvergleich, datumDe: string): string {
-  const wes = v.einheiten.map((e) => `WE ${e.nr}`).join(" und ");
   const name = v.kunde.nachname || "Kunde";
-  const strasse = v.objekt.strasse.replace(/\s+\d.*$/, "") || "Objekt";
   const titel = v.einheiten.length > 1 ? "Objektvergleich" : "Objektrechnung";
-  return `${titel} ${name} ${strasse} ${wes}${v.variante ? ` – ${v.variante}` : ""} (${datumDe}).pdf`.replace(/[/\\:*?"<>|]/g, "-");
+  const was = haeuseruebergreifend(v)
+    ? v.einheiten.map((e, i) => `${strasseOhneNr(objektVon(v, i))} WE ${e.nr}`).join(" und ")
+    : `${strasseOhneNr(v.objekt)} ${v.einheiten.map((e) => `WE ${e.nr}`).join(" und ")}`;
+  return `${titel} ${name} ${was}${v.variante ? ` \u2013 ${v.variante}` : ""} (${datumDe}).pdf`.replace(/[/\\:*?"<>|]/g, "-");
 }

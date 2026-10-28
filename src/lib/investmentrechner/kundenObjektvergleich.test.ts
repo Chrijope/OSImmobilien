@@ -95,3 +95,24 @@ describe("vergleichDateiname", () => {
     expect(vergleichDateiname({ ...v, variante: "Kaufpreis angepasst" }, "28.10.2026")).toContain("WE 13 – Kaufpreis angepasst (");
   });
 });
+
+describe("häuserübergreifend", () => {
+  const v = {
+    einheiten: [we12(1), { ...we13(1), nr: "7" }], kunde: { nachname: "Muster" }, variante: "",
+    objekt: { strasse: "Hauffstraße 38 c" }, objekt2: { strasse: "Barfusstraße 12" },
+  } as unknown as KundenObjektvergleich;
+  it("nennt beide Straßen im Dateinamen", () => {
+    expect(vergleichDateiname(v, "28.10.2026")).toBe("Objektvergleich Muster Hauffstraße WE 12 und Barfusstraße WE 7 (28.10.2026).pdf");
+  });
+  it("lässt das Kriterium „gleiches Haus“ weg", () => {
+    const A = rechneEinheit(we12(220000), STANDARD_ANNAHMEN);
+    const B = rechneEinheit(we13(270000), STANDARD_ANNAHMEN);
+    expect(kriterien(A, B, false).some((k) => k.gewinner === "=" && k.text.startsWith("Lage"))).toBe(false);
+  });
+  it("rechnet mit der Zielmiete der Wohnung, wenn sie eine hat", () => {
+    const mitZiel = rechneEinheit({ ...we12(220000), mieteZielQm: 25 }, STANDARD_ANNAHMEN);
+    const ohne = rechneEinheit(we12(220000), STANDARD_ANNAHMEN);
+    expect(mitZiel.monat).toEqual(ohne.monat);
+    expect(mitZiel.miete30).toBeGreaterThan(ohne.miete30);
+  });
+});

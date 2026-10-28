@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import { KundenObjektvergleichDokument } from "@/components/investmentrechner/kundenvergleich/KundenObjektvergleichDokument";
 import {
   LEERE_TEXTE, STANDARD_ANNAHMEN, rechneEinheit, vergleichDateiname, type KundenObjektvergleich,
@@ -32,19 +33,35 @@ const BEISPIEL: KundenObjektvergleich = {
   texte: LEERE_TEXTE,
 };
 
+/** ?haeuser: Wohnung B in einem anderen Haus (häuserübergreifend), Zahlen erfunden. */
+const HAEUSERUEBERGREIFEND: KundenObjektvergleich = {
+  ...BEISPIEL,
+  objekt2: {
+    strasse: "Barfusstraße 12", ortZeile: "13349 Berlin", fotoTitel: "", fotoHaus: "",
+    hausPunkte: ["Baujahr 1960, saniert 2024", "Berlin-Wedding, U-Bahn in 5 Minuten"],
+    verwaltung: "Beispiel Hausverwaltung Berlin", vergleichsmieteQm: 0, vergleichsmieteQuelle: "", wirtschaftsplan: "Wirtschaftsplan 2026",
+  },
+  einheiten: [BEISPIEL.einheiten[0], {
+    nr: "7", zimmer: 2, qm: 61.5, lage: "2. OG", kpWohnung: 229000, kpListe: 0, garagen: 0, garageKp: 0, garageMiete1: 0, garageMieteZiel: 0,
+    garageIstVon: 0, garageIstBis: 0, mieteIst: 830.25, mieteSubQm: 13.5, u: 180, n: 75, r: 40, afaJahre: 25, mieteZielQm: 22,
+  }],
+};
+
 export default function VorschauObjektvergleich() {
   const ref = useRef<HTMLDivElement>(null);
-  const [A, B] = BEISPIEL.einheiten.map((e) => rechneEinheit(e, BEISPIEL.annahmen));
+  const [params] = useSearchParams();
+  const v = params.has("haeuser") ? HAEUSERUEBERGREIFEND : BEISPIEL;
+  const [A, B] = v.einheiten.map((e) => rechneEinheit(e, v.annahmen));
   const pdf = async () => {
     const { erzeugeBerechnungsansichtPdf } = await import("@/lib/investmentrechner/berechnungAnsichtPdf");
     ref.current!.classList.add("kov-export");
-    try { (await erzeugeBerechnungsansichtPdf(ref.current!)).save(vergleichDateiname(BEISPIEL, "28.10.2026")); }
+    try { (await erzeugeBerechnungsansichtPdf(ref.current!)).save(vergleichDateiname(v, "28.10.2026")); }
     finally { ref.current!.classList.remove("kov-export"); }
   };
   return (
     <div className="kov-vorschau" style={{ background: "#e9ece9", padding: 24 }}>
       <button type="button" id="vorschau-pdf" onClick={pdf} style={{ marginBottom: 12 }}>PDF</button>
-      <div ref={ref}><KundenObjektvergleichDokument v={BEISPIEL} A={A} B={B} /></div>
+      <div ref={ref}><KundenObjektvergleichDokument v={v} A={A} B={B} /></div>
     </div>
   );
 }

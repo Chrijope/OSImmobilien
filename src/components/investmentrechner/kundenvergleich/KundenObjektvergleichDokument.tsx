@@ -11,8 +11,8 @@
 import type { ReactNode } from "react";
 import "./kundenObjektvergleich.css";
 import {
-  STANDARD_SCHRITTE, empfohlen, kriterien, rundeHalbAuf,
-  type EinheitErgebnis, type KundenObjektvergleich,
+  STANDARD_SCHRITTE, empfohlen, haeuseruebergreifend, kriterien, objektVon, rundeHalbAuf,
+  type EinheitErgebnis, type KundenObjektvergleich, type VergleichObjekt,
 } from "@/lib/investmentrechner/kundenObjektvergleich";
 
 const LOGO = "/images/objektvergleich/logo-hell.png";
@@ -41,7 +41,19 @@ interface Kontext {
   stand: string;
   anrede: string;
   fuss: string;
+  /** Häuserübergreifend: Wohnung A und B liegen in verschiedenen Objekten. */
+  haeuser: boolean;
+  /** Das Haus einer Wohnung. */
+  haus: (e: EinheitErgebnis) => VergleichObjekt;
 }
+
+/** „des Wirtschaftsplans 2027“ bzw. „laut …“, für den Satz auf dem Deckblatt. */
+const wpGenitiv = (wp: string) => (/^Wirtschaftsplan \d{4}$/.test(wp) ? `des Wirtschaftsplans ${wp.slice(-4)}` : `laut ${wp}`);
+/** Wirtschaftsplan beider Häuser, gleich oder verschieden. */
+const wpBeide = (k: Kontext) => {
+  const a = k.haus(k.A).wirtschaftsplan, b = k.haus(k.B).wirtschaftsplan;
+  return a === b ? a : `${a} bzw. ${b}`;
+};
 
 /** „Frau Muster“, ohne Anrede „Anna Muster“. */
 function anredeName(v: KundenObjektvergleich): string {
@@ -103,7 +115,7 @@ function Deckblatt({ k }: { k: Kontext }) {
       {o.fotoTitel && <div style={{ position: "absolute", left: 0, right: 0, top: 0, height: "150mm", background: `url("${o.fotoTitel}") center 40%/cover` }} />}
       <div style={{ position: "absolute", left: 0, right: 0, top: "95mm", height: "56mm", background: "linear-gradient(rgba(18,54,42,0),var(--navy))" }} />
       <div style={{ position: "absolute", left: "16mm", top: "12mm", fontSize: "6.6pt", letterSpacing: ".2em", textTransform: "uppercase", background: "rgba(18,54,42,.75)", color: "#fff", padding: "1.2mm 3mm", borderRadius: 999 }}>
-        {o.strasse}{o.ortZeile ? ` · ${o.ortZeile.replace(/^\d{5}\s*/, "")}` : ""}
+        {k.haeuser ? `${o.strasse} · ${k.haus(B).strasse}` : `${o.strasse}${o.ortZeile ? ` · ${o.ortZeile.replace(/^\d{5}\s*/, "")}` : ""}`}
       </div>
       <LogoBox breite={24} lage={{ right: "14mm", top: "9mm" }} />
       <div style={{ position: "absolute", left: "16mm", right: "16mm", top: "150mm" }}>
@@ -112,7 +124,7 @@ function Deckblatt({ k }: { k: Kontext }) {
           Ihr Objektvergleich,<br />{k.anrede}
         </div>
         <div style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontSize: "14pt", color: "var(--champ)", marginTop: "4mm" }}>
-          Ein Haus, zwei Wohnungen: welche passt besser zu Ihnen?
+          {k.haeuser ? "Zwei Häuser, zwei Wohnungen" : "Ein Haus, zwei Wohnungen"}: welche passt besser zu Ihnen?
         </div>
         <div style={{ height: ".2mm", background: "rgba(167,215,197,.35)", margin: "9mm 0 6mm" }} />
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1.15fr", gap: "7mm" }}>
@@ -121,7 +133,7 @@ function Deckblatt({ k }: { k: Kontext }) {
               <div className="label" style={{ color: "var(--champ)" }}>Objekt {i ? "B" : "A"}</div>
               <div style={{ fontFamily: "var(--serif)", fontSize: "15pt", color: "#fff", marginTop: "1.5mm" }}>Wohnung {e.einheit.nr}</div>
               <div style={{ fontSize: "7.2pt", color: "#B8C2BC", marginTop: "1mm" }}>
-                {[o.strasse, `${e.einheit.zimmer} Zimmer`, `${de(e.einheit.qm)} m²`, e.einheit.lage, garagenText(e)].filter(Boolean).join(" · ")}
+                {[k.haus(e).strasse, `${e.einheit.zimmer} Zimmer`, `${de(e.einheit.qm)} m²`, e.einheit.lage, garagenText(e)].filter(Boolean).join(" · ")}
               </div>
             </div>
           ))}
@@ -134,7 +146,7 @@ function Deckblatt({ k }: { k: Kontext }) {
           </div>
         </div>
         <div style={{ fontSize: "7pt", color: "#B8C2BC", marginTop: "12mm" }}>
-          Erstellt am {k.stand} auf Grundlage {v.kunde.saDatum ? `Ihrer Selbstauskunft vom ${tagDe(v.kunde.saDatum)}, ` : ""}der Exposés (Stand {k.stand}) und {/^Wirtschaftsplan \d{4}$/.test(o.wirtschaftsplan) ? `des Wirtschaftsplans ${o.wirtschaftsplan.slice(-4)}` : `laut ${o.wirtschaftsplan}`}.<br />
+          Erstellt am {k.stand} auf Grundlage {v.kunde.saDatum ? `Ihrer Selbstauskunft vom ${tagDe(v.kunde.saDatum)}, ` : ""}der Exposés (Stand {k.stand}) und {k.haeuser && k.haus(B).wirtschaftsplan !== o.wirtschaftsplan ? `der Wirtschaftspläne beider Häuser` : wpGenitiv(o.wirtschaftsplan)}.<br />
           Beispielrechnung, keine Zusage. Keine Steuer- oder Rechtsberatung.
         </div>
       </div>
@@ -223,15 +235,14 @@ function Ausgangslage({ k }: { k: Kontext }) {
 // ---------------------------------------------------------------------------
 
 function Wohnungen({ k }: { k: Kontext }) {
-  const { v, A, B } = k;
-  const o = v.objekt;
+  const { A, B } = k;
   const karte = (e: EinheitErgebnis, b: boolean) => {
     const x = e.einheit;
     const rows: Array<[ReactNode, ReactNode]> = [
       ["Wohnung", `${x.zimmer} Zimmer · ${de(x.qm)} m² · ${x.lage}`],
       ["Kaufpreis Wohnung", eur(x.kpWohnung, 0) + (x.kpListe > x.kpWohnung ? ` statt ${eur(x.kpListe, 0)}` : "")],
       ...(x.garagen ? [[x.garagen > 1 ? "Garage 1 (im Kaufpreis)" : "Garage (im Kaufpreis)", eur(x.garageKp, 0)] as [string, string]] : []),
-      ...(x.garagen > 1 ? [[`Garage 2${x.garagen > 2 ? ` bis ${x.garagen}` : ""} (ohne Aufpreis)`, "0 €"] as [string, string]] : []),
+      ...(x.garagen > 1 ? [[`Garage 2${x.garagen > 2 ? ` bis ${x.garagen}` : ""} (ohne Aufpreis)`, "0\u00a0€"] as [string, string]] : []),
       ["Kaufpreis gesamt", eur(e.kp, 0)],
       ["Preis je m² Wohnung", eur(e.qmPreis)],
       ["Kaltmiete heute (Mieter)", `${eur(x.mieteIst)} · ${de(e.mieteIstQm)} €/m²`],
@@ -241,32 +252,66 @@ function Wohnungen({ k }: { k: Kontext }) {
       <div>
         <span className={`badge${b ? " b" : ""}`}>Objekt {b ? "B" : "A"}</span>
         <div style={{ fontFamily: "var(--serif)", fontSize: "14pt", color: "var(--navy)", marginTop: "2mm" }}>Wohnung {x.nr}</div>
-        <div className="small" style={{ marginBottom: "2mm" }}>{o.strasse}, {x.lage}</div>
+        <div className="small" style={{ marginBottom: "2mm" }}>{k.haus(e).strasse}, {x.lage}</div>
         <Zeilen rows={rows} />
       </div>
     );
   };
-  const vm = o.vergleichsmieteQm;
-  const mieteQm = A.einheit.mieteSubQm;
-  const haus = [
-    ...o.hausPunkte,
-    A.einheit.garagen ? (A.einheit.garagen > 1 ? `Je Wohnung ${A.einheit.garagen} Garagen: eine im Kaufpreis, weitere ohne Aufpreis` : "Je Wohnung eine eigene Garage im Kaufpreis") : "",
-    vm ? `Vergleichsmiete am Ort${o.vergleichsmieteQuelle ? ` laut ${o.vergleichsmieteQuelle}` : ""} ${de(vm)} €/m²${vm > mieteQm ? `, über den gerechneten ${de(mieteQm)} €/m²` : ""}` : "",
-    o.verwaltung && !o.hausPunkte.some((p) => p.includes(o.verwaltung)) ? `Verwaltung ${o.verwaltung}` : "",
-  ].filter(Boolean);
+  /** Die Punkte zum Haus der Wohnung `e`; `jeWohnung` für den Satz zur Garage. */
+  const hausListe = (e: EinheitErgebnis, jeWohnung: boolean) => {
+    const o = k.haus(e);
+    const vm = o.vergleichsmieteQm;
+    const mieteQm = e.einheit.mieteSubQm;
+    const g = e.einheit.garagen;
+    return [
+      ...o.hausPunkte,
+      g ? (jeWohnung
+        ? (g > 1 ? `Je Wohnung ${g} Garagen: eine im Kaufpreis, weitere ohne Aufpreis` : "Je Wohnung eine eigene Garage im Kaufpreis")
+        : (g > 1 ? `${g} Garagen: eine im Kaufpreis, weitere ohne Aufpreis` : "Eigene Garage im Kaufpreis")) : "",
+      vm ? `Vergleichsmiete am Ort${o.vergleichsmieteQuelle ? ` laut ${o.vergleichsmieteQuelle}` : ""} ${de(vm)} €/m²${vm > mieteQm ? `, über den gerechneten ${de(mieteQm)} €/m²` : ""}` : "",
+      o.verwaltung && !o.hausPunkte.some((p) => p.includes(o.verwaltung)) ? `Verwaltung ${o.verwaltung}` : "",
+    ].filter(Boolean);
+  };
+  const luecke = A.luecke > 0 || B.luecke > 0 ? " und damit die Lücke, die der Bauträger ausgleicht" : "";
+
+  if (k.haeuser) {
+    const spalte = (e: EinheitErgebnis, b: boolean) => {
+      const o = k.haus(e);
+      return (
+        <div>
+          <div style={{ height: "64mm", borderRadius: "2.5mm", background: o.fotoHaus ? `url("${o.fotoHaus}") center/cover` : "var(--paper)" }} />
+          <div className="label" style={{ margin: "3mm 0 1mm" }}>Haus {b ? "B" : "A"}</div>
+          <div style={{ fontFamily: "var(--serif)", fontSize: "11pt", color: "var(--navy)", marginBottom: "2mm" }}>{o.strasse}{o.ortZeile ? `, ${o.ortZeile}` : ""}</div>
+          <ul className="li" style={{ marginBottom: "4mm", minHeight: "30mm" }}>{hausListe(e, false).map((x) => <li key={x}>{x}</li>)}</ul>
+          {karte(e, b)}
+        </div>
+      );
+    };
+    return (
+      <Seite nr={3} kick="Die beiden Wohnungen" fuss={k.fuss}>
+        <h2>Zwei Häuser, zwei Wohnungen: <em>Lage, Haus und Wohnung im Vergleich.</em></h2>
+        <p className="lead">
+          Wohnung {A.einheit.nr} liegt in {k.haus(A).strasse}, Wohnung {B.einheit.nr} in {k.haus(B).strasse}. Unterschiedlich sind Haus und Lage,
+          Größe, Preis, die heutige Miete{luecke}.
+        </p>
+        <div className="grid" style={{ gridTemplateColumns: "1fr 1fr", gap: "9mm", marginTop: "5mm" }}>{spalte(A, false)}{spalte(B, true)}</div>
+      </Seite>
+    );
+  }
+
+  const o = k.haus(A);
   return (
     <Seite nr={3} kick="Die beiden Wohnungen" fuss={k.fuss}>
       <h2>Ein Haus, zwei Wohnungen: <em>gleiche Lage, verschiedene Größe.</em></h2>
       <p className="lead">
-        Beide Wohnungen liegen in {o.strasse}. Lage, Haus und Hausverwaltung sind gleich. Unterschiedlich sind Größe, Preis, die heutige Miete
-        {A.luecke > 0 || B.luecke > 0 ? " und damit die Lücke, die der Bauträger ausgleicht" : ""}.
+        Beide Wohnungen liegen in {o.strasse}. Lage, Haus und Hausverwaltung sind gleich. Unterschiedlich sind Größe, Preis, die heutige Miete{luecke}.
       </p>
       <div className="grid" style={{ gridTemplateColumns: "1.05fr 1fr", gap: "6mm", marginTop: "5mm" }}>
         <div style={{ height: "78mm", borderRadius: "2.5mm", background: o.fotoHaus ? `url("${o.fotoHaus}") center/cover` : "var(--paper)" }} />
         <div>
           <div className="label" style={{ marginBottom: "2mm" }}>Das Haus: für beide Wohnungen gleich</div>
           <div style={{ fontFamily: "var(--serif)", fontSize: "12pt", color: "var(--navy)", marginBottom: "2.5mm" }}>{o.strasse}{o.ortZeile ? `, ${o.ortZeile}` : ""}</div>
-          <ul className="li">{haus.map((x) => <li key={x}>{x}</li>)}</ul>
+          <ul className="li">{hausListe(A, true).map((x) => <li key={x}>{x}</li>)}</ul>
         </div>
       </div>
       <div className="grid" style={{ gridTemplateColumns: "1fr 1fr", gap: "9mm", marginTop: "7mm" }}>{karte(A, false)}{karte(B, true)}</div>
@@ -293,7 +338,9 @@ function Vergleich({ k }: { k: Kontext }) {
     </tr>
   );
   const kg = (e: EinheitErgebnis) => (e.einheit.garagen ? ` + ${garagenText(e, false)}` : "");
-  const mietLabel = `Miete im Monat, 1. Jahr (${de(A.einheit.mieteSubQm)} €/m²${g ? ` + ${g > 1 ? `${g} × ${de(A.einheit.garageMiete1, 0)} € Garage` : `Garage ${de(A.einheit.garageMiete1, 0)} €`}` : ""})`;
+  const mietLabel = k.haeuser && (A.einheit.mieteSubQm !== B.einheit.mieteSubQm || A.einheit.garageMiete1 !== B.einheit.garageMiete1)
+    ? "Miete im Monat, 1. Jahr (gerechnet, inkl. Garage)"
+    : `Miete im Monat, 1. Jahr (${de(A.einheit.mieteSubQm)} €/m²${g ? ` + ${g > 1 ? `${g} × ${de(A.einheit.garageMiete1, 0)} € Garage` : `Garage ${de(A.einheit.garageMiete1, 0)} €`}` : ""})`;
   const afaPz = de(100 / A.einheit.afaJahre, 1);
   const guenstiger = A.monat.nach >= B.monat.nach ? A : B;
   const staerke = (e: EinheitErgebnis, o: EinheitErgebnis): [string, string] => {
@@ -305,19 +352,20 @@ function Vergleich({ k }: { k: Kontext }) {
     if (e.lueckeQuote < o.lueckeQuote) teile.push(e.luecke > 0 ? `eine Mietlücke von nur ${eur(e.luecke)}` : "keine Mietlücke");
     if (e.entw[30].erloes > o.entw[30].erloes) teile.push(`nach 30 Jahren rund ${tsd(e.entw[30].erloes - o.entw[30].erloes)} mehr Erlös nach Kreditablösung`);
     const titel = e === guenstiger ? "Der kleinere Einstieg" : "Mehr Wohnung, mehr Vermögen";
+    if (k.haeuser && e.einheit.afaJahre < o.einheit.afaJahre) teile.push(`die schnellere Abschreibung (${e.einheit.afaJahre} statt ${o.einheit.afaJahre} Jahre)`);
     const satz = teile.length ? `${teile.join(", ").replace(/^./, (c) => c.toUpperCase())}.` : "Gleichwertig in den gerechneten Kriterien.";
     return [titel, satz];
   };
   return (
     <Seite nr={4} kick="Vergleich nebeneinander" fuss={k.fuss}>
-      <h2>Gleiches Haus, gleiche Lage. <em>Der Unterschied liegt im Detail.</em></h2>
-      <p className="lead" style={{ fontSize: "8pt" }}>Grün markiert, wo eine Wohnung vorne liegt. Alle Zahlen gelten für Sie persönlich im 1. Jahr, wenn nicht anders angegeben. Hausgeld laut {v.objekt.wirtschaftsplan}.</p>
+      <h2>{k.haeuser ? <>Zwei Häuser im direkten Vergleich. <em>Der Unterschied liegt im Detail.</em></> : <>Gleiches Haus, gleiche Lage. <em>Der Unterschied liegt im Detail.</em></>}</h2>
+      <p className="lead" style={{ fontSize: "8pt" }}>Grün markiert, wo eine Wohnung vorne liegt. Alle Zahlen gelten für Sie persönlich im 1. Jahr, wenn nicht anders angegeben. Hausgeld laut {wpBeide(k)}.</p>
       <table className="t v" style={{ marginTop: "3mm" }}>
         <tbody>
-          <tr><th /><th><span className="badge">A</span> {v.objekt.strasse}, WE {A.einheit.nr}</th><th><span className="badge b">B</span> {v.objekt.strasse}, WE {B.einheit.nr}</th></tr>
-          {z("Lage im Haus", A.einheit.lage, B.einheit.lage)}
+          <tr><th /><th><span className="badge">A</span> {k.haus(A).strasse}, WE {A.einheit.nr}</th><th><span className="badge b">B</span> {k.haus(B).strasse}, WE {B.einheit.nr}</th></tr>
+          {z(k.haeuser ? "Haus und Lage" : "Lage im Haus", k.haeuser ? `${k.haus(A).strasse}, ${A.einheit.lage}` : A.einheit.lage, k.haeuser ? `${k.haus(B).strasse}, ${B.einheit.lage}` : B.einheit.lage)}
           {z("Wohnung", `${A.einheit.zimmer} Zimmer, ${de(A.einheit.qm)} m²${kg(A)}`, `${B.einheit.zimmer} Zimmer, ${de(B.einheit.qm)} m²${kg(B)}`, sieger(A.einheit.qm, B.einheit.qm, false))}
-          {z(g > 1 ? "Kaufpreis (weitere Garagen ohne Aufpreis)" : "Kaufpreis", `${eur(A.kp, 0)}${g ? " inkl. Garage" : ""}`, `${eur(B.kp, 0)}${g ? " inkl. Garage" : ""}`)}
+          {z(g > 1 ? "Kaufpreis (weitere Garagen ohne Aufpreis)" : "Kaufpreis", `${eur(A.kp, 0)}${A.einheit.garagen ? " inkl. Garage" : ""}`, `${eur(B.kp, 0)}${B.einheit.garagen ? " inkl. Garage" : ""}`)}
           {z("Preis je m² Wohnung", eur(A.qmPreis), eur(B.qmPreis), sieger(A.qmPreis, B.qmPreis, true))}
           {z(`Kaufnebenkosten (aus Eigenkapital, ${pz(an.knk)})`, eur(A.nk, 0), eur(B.nk, 0), sieger(A.nk, B.nk, true))}
           {z("Kaltmiete heute (zahlt der Mieter)", `${eur(A.einheit.mieteIst)} (${de(A.mieteIstQm)} €/m²)`, `${eur(B.einheit.mieteIst)} (${de(B.mieteIstQm)} €/m²)`)}
@@ -325,7 +373,7 @@ function Vergleich({ k }: { k: Kontext }) {
           {(A.luecke > 0 || B.luecke > 0) && z("davon Mietlücke, die der Bauträger zahlt", `${eur(Math.max(0, A.luecke))} (${pz(Math.max(0, A.lueckeQuote))})`, `${eur(Math.max(0, B.luecke))} (${pz(Math.max(0, B.lueckeQuote))})`, sieger(A.lueckeQuote, B.lueckeQuote, true), "sub")}
           {z("Hausgeld umlagefähig (zahlt der Mieter)", eur(ah.u), eur(bh.u), null, "sub")}
           {z("Hausgeld nicht umlagefähig (Verwaltung u. a.)", eur(ah.n), eur(bh.n), null, "sub")}
-          {z(`= Hausgeld (${v.objekt.wirtschaftsplan})`, eur(ah.summe), eur(bh.summe))}
+          {z(`= Hausgeld (${wpBeide(k)})`, eur(ah.summe), eur(bh.summe))}
           {z("Erhaltungsrücklage (separat)", eur(ah.r), eur(bh.r), null, "sub")}
           {z("= Vorauszahlung gesamt an die Verwaltung", eur(ah.voraus), eur(bh.voraus))}
           {z("Ihr Anteil: nicht umlagefähig + Rücklage", eur(ah.eigentuemer), eur(bh.eigentuemer), sieger(ah.eigentuemer, bh.eigentuemer, true))}
@@ -344,7 +392,8 @@ function Vergleich({ k }: { k: Kontext }) {
         {g > 1 && <b style={{ fontWeight: 500, color: "var(--navy)" }}>Weitere Garage ohne Aufpreis; Miete {eur(A.einheit.garageMiete1, 0)} im 1. Jahr vom Bauträger getragen, danach Vermietung. </b>}
         Verkaufssumme: angenommener Verkaufspreis bei {pzGanz(an.wertPa)} Wertentwicklung im Jahr, vor Verkaufskosten. Nach mehr als zehn Jahren Haltedauer ist der Gewinn aus
         dem Verkauf einer privat vermieteten Wohnung nach § 23 EStG in der Regel steuerfrei (Hinweis, keine Steuerberatung).
-        {A.einheit.afaJahre >= 30 ? ` Die Abschreibung läuft bei beiden Wohnungen ${A.einheit.afaJahre} Jahre, also länger als die Betrachtung; ein früher Verkauf ist deshalb nicht nötig.` : ""}
+        {Math.min(A.einheit.afaJahre, B.einheit.afaJahre) >= 30
+          ? ` Die Abschreibung läuft bei beiden Wohnungen ${A.einheit.afaJahre === B.einheit.afaJahre ? `${A.einheit.afaJahre} Jahre` : `${A.einheit.afaJahre} bzw. ${B.einheit.afaJahre} Jahre`}, also länger als die Betrachtung; ein früher Verkauf ist deshalb nicht nötig.` : ""}
       </p>
       <div className="grid" style={{ gridTemplateColumns: "1fr 1fr", marginTop: "3.5mm" }}>
         {[A, B].map((e, i) => {
@@ -407,7 +456,7 @@ function Einnahmen({ k, e }: { k: Kontext; e: EinheitErgebnis }) {
 function Ausgaben({ k, e }: { k: Kontext; e: EinheitErgebnis }) {
   const m = e.monat;
   const an = k.v.annahmen;
-  const wp = k.v.objekt.wirtschaftsplan;
+  const wp = k.haus(e).wirtschaftsplan;
   const zeilen: Array<[string, string, number]> = [
     ["Zins Bankdarlehen", `${pz(an.zins)} auf ${eur(e.darlehen, 0)}`, m.zins],
     ["Tilgung Bankdarlehen", `${pz(an.tilgung)} anfänglich`, m.tilgung],
@@ -444,7 +493,7 @@ function Treppe({ k, e }: { k: Kontext; e: EinheitErgebnis }) {
 function subventionText(k: Kontext, e: EinheitErgebnis): ReactNode {
   const x = e.einheit;
   const an = k.v.annahmen;
-  const vm = k.v.objekt.vergleichsmieteQm;
+  const vm = k.haus(e).vergleichsmieteQm;
   if (e.luecke <= 0) {
     return <>Gerechnet ist mit der heutigen Miete von {de(e.mieteIstQm)} €/m²; eine Subvention ist nicht eingerechnet. In 36 Monatsraten tilgen Sie rund {tsd(e.tilgung36)}.</>;
   }
@@ -484,14 +533,14 @@ function Rechnung({ k, e, nr, b }: { k: Kontext; e: EinheitErgebnis; nr: number;
     [`Kaufnebenkosten aus Eigenkapital (${pz(an.knk)})`, eur(e.nk, 0)],
     [`AfA: ≈ ${afaPz} % (1/${x.afaJahre})${x.afaJahre < 50 ? `, kürzere tatsächliche Nutzungsdauer ${x.afaJahre} J., Gutachten nötig` : ""}`, `${eur(j.afa, 0)} / Jahr`],
     [`Bemessungsgrundlage (Gebäudeanteil ${pzGanz(an.gebaeudeanteil)} inkl. Nebenkosten)`, eur(e.afaBasis, 0)],
-    [`Miete im Szenario (Jahr 1 = ${an.startJahr})`, `${de(x.mieteSubQm)} €/m² auf ${de(an.mieteZielQm, an.mieteZielQm % 1 ? 2 : 0)} €/m² im Jahr ${an.mieteZielJahr}`],
+    [`Miete im Szenario (Jahr 1 = ${an.startJahr})`, `${de(x.mieteSubQm)} €/m² auf ${de(x.mieteZielQm || an.mieteZielQm, (x.mieteZielQm || an.mieteZielQm) % 1 ? 2 : 0)} €/m² im Jahr ${an.mieteZielJahr}`],
     ...(x.garagen ? [[x.garagen > 1 ? "Garagen im Szenario" : "Garage im Szenario", `${x.garagen > 1 ? "je " : ""}${de(x.garageMiete1, 0)} € auf ${de(x.garageMieteZiel, 0)} € im Jahr ${an.mieteZielJahr}`] as [string, string]] : []),
   ];
   const e30 = e.entw[30];
   const h = e.hausgeld;
   return (
     <Seite nr={nr} kick={`Ihre persönliche Rechnung · Objekt ${b ? "B" : "A"}`} fuss={k.fuss} klasse="sh">
-      <h2>{v.objekt.strasse}, Wohnung {x.nr}: <em>{eur(-m.nach)} im Monat für Ihre Kapitalanlage.</em></h2>
+      <h2>{k.haus(e).strasse}, Wohnung {x.nr}: <em>{eur(-m.nach)} im Monat für Ihre Kapitalanlage.</em></h2>
       <div className="grid" style={{ gridTemplateColumns: "1fr 1fr 1fr", gap: "4mm", marginTop: "4mm" }}>
         <div className="tile or"><div className="label">Ihre Steuerersparnis im 1. Jahr</div><div className="n">{eur(j.ersparnis, 0)}</div><div className="s">{eur(m.ersparnis)} im Monat; in 30 Jahren zusammen rund {tsd(e.steuer30)}</div></div>
         <div className="tile"><div className="label">Tilgung im Monat</div><div className="n">{eur(m.tilgung)}</div><div className="s">im 1. Jahr, steigt jedes Jahr. Senkt die Restschuld, das Geld bleibt Ihr Vermögen.</div></div>
@@ -506,7 +555,7 @@ function Rechnung({ k, e, nr, b }: { k: Kontext; e: EinheitErgebnis; nr: number;
         <div>
           <div className="label" style={{ marginBottom: "1mm" }}>Einmalig und Annahmen</div>
           <Zeilen rows={an_} />
-          <div className="label" style={{ marginTop: "3mm" }}>Hausgeld laut {v.objekt.wirtschaftsplan}</div>
+          <div className="label" style={{ marginTop: "3mm" }}>Hausgeld laut {k.haus(e).wirtschaftsplan}</div>
           <table className="t" style={{ marginTop: ".5mm" }}><tbody>
             <tr><td>umlagefähig (zahlt der Mieter)</td><td className="r">{eur(h.u)}</td></tr>
             <tr><td>nicht umlagefähig (tragen Sie)</td><td className="r">{eur(h.n)}</td></tr>
@@ -606,7 +655,7 @@ function Entwicklung({ k }: { k: Kontext }) {
       <table className="t" style={{ marginTop: "3mm" }}><tbody>
         <tr><th /><th className="r">Verkaufssumme</th><th className="r">Restschuld</th><th className="r">Ihr Erlös</th><th className="r">Ihre Zuzahlung</th><th className="r">Ihr Plus</th></tr>
         {[A, B].map((e, i) => [
-          <tr key={`k${i}`}><td colSpan={6} style={{ fontWeight: 500, paddingTop: "2mm" }}><span className={`badge${i ? " b" : ""}`}>{i ? "B" : "A"}</span> {v.objekt.strasse}, WE {e.einheit.nr}</td></tr>,
+          <tr key={`k${i}`}><td colSpan={6} style={{ fontWeight: 500, paddingTop: "2mm" }}><span className={`badge${i ? " b" : ""}`}>{i ? "B" : "A"}</span> {k.haus(e).strasse}, WE {e.einheit.nr}</td></tr>,
           ...([25, 30, 35] as const).map((y) => {
             const x = e.entw[y];
             return (
@@ -638,8 +687,8 @@ function Entwicklung({ k }: { k: Kontext }) {
 
 function Empfehlung({ k }: { k: Kontext }) {
   const { v, A, B } = k;
-  const krit = kriterien(A, B);
-  const wahl = empfohlen(A, B);
+  const krit = kriterien(A, B, !k.haeuser);
+  const wahl = empfohlen(A, B, !k.haeuser);
   const E = wahl === "A" ? A : B, O = wahl === "A" ? B : A;
   const t = v.texte;
   const punkt = (w: string, s: "A" | "B") => {
@@ -648,11 +697,23 @@ function Empfehlung({ k }: { k: Kontext }) {
   };
   const guenstigerStart = A.monat.nach >= B.monat.nach ? A : B;
   const auto1 = guenstigerStart === E
-    ? `Wohnung ${E.einheit.nr} startet günstiger: rund ${eur(-E.monat.nach, 0)} statt ${eur(-O.monat.nach, 0)} im Monat. Nach 30 Jahren bleiben nach Ablösung des Kredits rund ${tsd(E.entw[30].erloes)} gegenüber ${tsd(O.entw[30].erloes)}.`
-    : `Wohnung ${O.einheit.nr} startet etwas günstiger: rund ${eur(-O.monat.nach, 0)} statt ${eur(-E.monat.nach, 0)} im Monat, also nur rund ${de(Math.abs(O.monat.nach - E.monat.nach), 0)} € Unterschied.`
+    ? `Wohnung ${E.einheit.nr} startet günstiger: rund ${eur(-E.monat.nach, 0)} statt ${eur(-O.monat.nach, 0)} im Monat.`
+      + (E.luecke > 0 ? ` Gerechnet ist dabei mit der subventionierten Miete; die Lücke von ${eur(E.luecke, 0)} trägt der Bauträger höchstens ${v.annahmen.subventionMonate} Monate.` : "")
+    : `Wohnung ${O.einheit.nr} startet etwas günstiger: rund ${eur(-O.monat.nach, 0)} statt ${eur(-E.monat.nach, 0)} im Monat, also nur rund ${de(Math.abs(O.monat.nach - E.monat.nach), 0)}\u00a0€ Unterschied.`
       + (O.luecke > 0 ? ` Dafür zahlt der Mieter dort heute ${eur(O.einheit.mieteIst, 0)}, die Lücke von ${eur(O.luecke, 0)} trägt der Bauträger höchstens ${v.annahmen.subventionMonate} Monate.` : "");
-  const auto2 = `Wohnung ${E.einheit.nr}${E.luecke > 0 && E.lueckeQuote < O.lueckeQuote ? ` hat die kleinere Mietlücke (${eur(E.luecke)})` : ""}${E.einheit.zimmer > O.einheit.zimmer ? `${E.luecke > 0 && E.lueckeQuote < O.lueckeQuote ? "," : ""} bietet ein Zimmer mehr` : ""}`
-    + `${E.qmPreis < O.qmPreis ? " und kostet weniger je m²" : ""}; nach 30 Jahren haben Sie nach Ablösung des Kredits rund ${tsd(E.entw[30].erloes)} statt ${tsd(O.entw[30].erloes)}. Eine Wohnung für Ihre Altersvorsorge.`;
+  const vorteile = [
+    E.luecke > 0 && E.lueckeQuote < O.lueckeQuote ? `hat die kleinere Mietlücke (${eur(E.luecke)})` : "",
+    E.luecke <= 0 && O.luecke > 0 ? "ist ohne Mietlücke vermietet" : "",
+    E.einheit.zimmer > O.einheit.zimmer ? "bietet ein Zimmer mehr" : "",
+    E.qmPreis < O.qmPreis ? "kostet weniger je m²" : "",
+    E.monat.tilgung > O.monat.tilgung ? "tilgt schneller" : "",
+  ].filter(Boolean);
+  const liste = vorteile.length > 1 ? `${vorteile.slice(0, -1).join(", ")} und ${vorteile[vorteile.length - 1]}` : vorteile[0];
+  const mehrErloes = E.entw[30].erloes > O.entw[30].erloes;
+  const auto2 = (liste ? `Wohnung ${E.einheit.nr} ${liste}. ` : "")
+    + (mehrErloes
+      ? `Nach 30 Jahren haben Sie nach Ablösung des Kredits rund ${tsd(E.entw[30].erloes)} statt ${tsd(O.entw[30].erloes)}. Eine Wohnung für Ihre Altersvorsorge.`
+      : `Nach 30 Jahren liegt der Erlös nach Ablösung des Kredits mit rund ${tsd(E.entw[30].erloes)} etwas unter den ${tsd(O.entw[30].erloes)} von Wohnung ${O.einheit.nr}.`);
   const autoAndere = `Wenn Sie ${O.nk < E.nk ? `Ihr Guthaben stärker schonen wollen (rund ${eur(E.nk - O.nk, 0)} weniger Nebenkosten)` : "andere Schwerpunkte setzen"}${O.monat.nach > E.monat.nach ? " und im Monat weniger zuzahlen möchten" : ""}.`;
   const schritte = t.naechsteSchritte.length ? t.naechsteSchritte : STANDARD_SCHRITTE;
   return (
@@ -712,7 +773,7 @@ function Sheet({ k, e, nr }: { k: Kontext; e: EinheitErgebnis; nr: number }) {
         <LogoBox breite={17} lage={{ right: 0, top: "-8mm" }} />
         <div className="kick"><b>{String(nr).padStart(2, "0")}</b>Investmentsheet · Wohnung {x.nr}</div>
         <h2 style={{ fontSize: "22pt" }}>Wohnung {x.nr}: <em>Ihre Zahlen im Monat.</em></h2>
-        <div style={{ fontSize: "9pt", color: "var(--muted)", marginTop: "1.5mm" }}>Für {[v.kunde.anrede, v.kunde.vorname, v.kunde.nachname].filter(Boolean).join(" ") || "Sie"} · {v.objekt.strasse}{v.objekt.ortZeile ? `, ${v.objekt.ortZeile}` : ""}</div>
+        <div style={{ fontSize: "9pt", color: "var(--muted)", marginTop: "1.5mm" }}>Für {[v.kunde.anrede, v.kunde.vorname, v.kunde.nachname].filter(Boolean).join(" ") || "Sie"} · {k.haus(e).strasse}{k.haus(e).ortZeile ? `, ${k.haus(e).ortZeile}` : ""}</div>
         <div className="grid" style={{ gridTemplateColumns: "repeat(4,1fr)", gap: "3.5mm", marginTop: "5mm" }}>
           {kpi.map(([a, b, c]) => <div className="kt" key={a}><div className="label">{a}</div><div className="n">{b}</div><div className="s">{c}</div></div>)}
         </div>
@@ -724,7 +785,7 @@ function Sheet({ k, e, nr }: { k: Kontext; e: EinheitErgebnis; nr: number }) {
           <div><div className="label">Ausgaben je Monat</div>
             {zl("Zins Bankdarlehen", `${pz(an.zins)}, senkt Ihre Steuer`, m.zins)}
             {zl("Tilgung Bankdarlehen", `${pz(an.tilgung)}, baut Ihr Vermögen auf`, m.tilgung)}
-            {zl("Hausgeld, nicht umlagefähig", v.objekt.wirtschaftsplan, m.n)}
+            {zl("Hausgeld, nicht umlagefähig", k.haus(e).wirtschaftsplan, m.n)}
             {zl("Erhaltungsrücklage", "Sparkonto des Hauses für Reparaturen", m.r)}
             <div className="sb aus"><span>Ausgaben</span><b>{eur(m.ausgaben)}</b></div></div>
         </div>
@@ -736,7 +797,7 @@ function Sheet({ k, e, nr }: { k: Kontext; e: EinheitErgebnis; nr: number }) {
         <div className="note" style={{ marginTop: "4.5mm", fontSize: "8.6pt", padding: "3mm 4.5mm" }}><div className="label" style={{ marginBottom: "1.5mm" }}>Das Wichtigste in Kürze</div>
           <ul className="li">{kurz.map((s) => <li key={s} style={{ fontSize: "8.6pt", marginBottom: "1mm" }}>{s}</li>)}</ul></div>
       </div>
-      <Fuss text={`Investmentsheet ${k.anrede} · ${v.objekt.strasse}, Wohnung ${x.nr} · Stand ${k.stand}`} nr={nr} />
+      <Fuss text={`Investmentsheet ${k.anrede} · ${k.haus(e).strasse}, Wohnung ${x.nr} · Stand ${k.stand}`} nr={nr} />
     </section>
   );
 }
@@ -817,7 +878,7 @@ function SteuerDetail({ k }: { k: Kontext }) {
     <><b>Nicht absetzbar:</b> Tilgung (sie baut Ihr Vermögen auf) und Erhaltungsrücklage (erst, wenn das Geld für Reparaturen verwendet wird).</>,
     <><b>Abschreibung:</b> ≈ {de(100 / afaJ, 1)} % (1/{afaJ}) auf {pzGanz(an.gebaeudeanteil)} von Kaufpreis und Nebenkosten{afaJ < 50 ? "; setzt ein anerkanntes Gutachten zur Restnutzungsdauer voraus, gesetzlich wären es 2 %" : ""}.</>,
     <><b>Finanzierung:</b> Bankdarlehen über den Kaufpreis, Zins {pz(an.zins)}, Tilgung {pz(an.tilgung)}. Kaufnebenkosten ({pz(an.knk)}: Grunderwerbsteuer, Notar und Grundbuch) aus Eigenkapital.</>,
-    <><b>Miete:</b> gerechnet mit {de(A.einheit.mieteSubQm)} €/m²; der Mieter zahlt heute {eur(A.einheit.mieteIst)} (Wohnung {A.einheit.nr}) bzw. {eur(B.einheit.mieteIst)} (Wohnung {B.einheit.nr}).
+    <><b>Miete:</b> gerechnet mit {A.einheit.mieteSubQm === B.einheit.mieteSubQm ? de(A.einheit.mieteSubQm) : `${de(A.einheit.mieteSubQm)} bzw. ${de(B.einheit.mieteSubQm)}`} €/m²; der Mieter zahlt heute {eur(A.einheit.mieteIst)} (Wohnung {A.einheit.nr}) bzw. {eur(B.einheit.mieteIst)} (Wohnung {B.einheit.nr}).
       {A.luecke > 0 || B.luecke > 0 ? ` Die Lücke trägt der Bauträger bis zur nächsten Mieterhöhung, längstens ${an.subventionMonate} Monate.` : ""}
       {A.einheit.garagen ? ` Garage${A.einheit.garagen > 1 ? " 1" : ""} im 1. Jahr ${eur(A.einheit.garageMiete1, 0)}.` : ""}
       {A.einheit.garagen > 1 ? ` Weitere Garage ohne Aufpreis; Miete ${eur(A.einheit.garageMiete1, 0)} im 1. Jahr vom Bauträger getragen, danach Vermietung.` : ""}</>,
@@ -841,7 +902,9 @@ function SteuerDetail({ k }: { k: Kontext }) {
         Musterrechnung der Exposés; die tatsächliche Ersparnis hängt vom persönlichen Steuersatz ab. Ohne Kirchensteuer und ohne Solidaritätszuschlag, Einkommen über die Laufzeit gleich.
         {afaJ < 50 ? " Die AfA wegen kürzerer tatsächlicher Nutzungsdauer setzt ein Gutachten voraus; ob und in welcher Höhe sie anerkannt wird, entscheidet das Finanzamt." : ""}
         {A.luecke > 0 || B.luecke > 0 || A.einheit.garagen ? " Mietsubvention und Garagenmiete laut Vereinbarungen des Bauträgers; maßgeblich sind die Verträge." : ""}
-        {" "}Hausgeld laut {v.objekt.wirtschaftsplan}{v.objekt.verwaltung ? ` (Verwaltung ${v.objekt.verwaltung})` : ""}. Heutige Mieten laut Exposés (Stand {k.stand}). Verfügbarkeit der Wohnungen vorbehalten.
+        {" "}Hausgeld laut {k.haeuser
+          ? [A, B].map((e) => `${k.haus(e).wirtschaftsplan}${k.haus(e).verwaltung ? ` (${k.haus(e).strasse}, Verwaltung ${k.haus(e).verwaltung})` : ` (${k.haus(e).strasse})`}`).join(" und ")
+          : `${v.objekt.wirtschaftsplan}${v.objekt.verwaltung ? ` (Verwaltung ${v.objekt.verwaltung})` : ""}`}. Heutige Mieten laut Exposés (Stand {k.stand}). Verfügbarkeit der Wohnungen vorbehalten.
       </p>
     </Seite>
   );
@@ -852,7 +915,10 @@ function SteuerDetail({ k }: { k: Kontext }) {
 export function KundenObjektvergleichDokument({ v, A, B }: { v: KundenObjektvergleich; A: EinheitErgebnis; B: EinheitErgebnis }) {
   const stand = tagDe(v.stand);
   const anrede = anredeName(v) || "Sie";
-  const k: Kontext = { v, A, B, stand, anrede, fuss: `Persönlicher Objektvergleich für ${anrede} · Stand ${stand}` };
+  const k: Kontext = {
+    v, A, B, stand, anrede, fuss: `Persönlicher Objektvergleich für ${anrede} · Stand ${stand}`,
+    haeuser: haeuseruebergreifend(v), haus: (e) => objektVon(v, e === B ? 1 : 0),
+  };
   return (
     <div className="kov">
       <Deckblatt k={k} />

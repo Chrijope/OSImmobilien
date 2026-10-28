@@ -11,7 +11,7 @@ import { objektseiteFelder } from "@/lib/objektseiteDaten";
 import { num } from "@/lib/kundenkontextHelper";
 import { vorbelegungAusEinheit } from "./objektVorbelegung";
 import {
-  LEERE_TEXTE, STANDARD_ANNAHMEN,
+  LEERE_TEXTE, STANDARD_ANNAHMEN, objektVon,
   type KundenObjektvergleich, type VergleichAnnahmen, type VergleichEinheit, type VergleichKunde, type VergleichObjekt,
 } from "./kundenObjektvergleich";
 
@@ -70,6 +70,7 @@ export function einheitAus(objekt: ObjektData, wohnung: ObjektWohnung, vorgaben:
     n: positiv(e.housingFeeNonRecoverable) + positiv(e.monthlyOperatingCosts),
     r: positiv(e.monthlyReserveContribution),
     afaJahre,
+    mieteZielQm: positiv(vorgaben.mieteZielQm) || undefined,
   };
 }
 
@@ -165,17 +166,21 @@ export function annahmenAus(vorgaben: ObjektvergleichVorgaben, heute = new Date(
   };
 }
 
-/** Ein neuer Vergleich aus Objekt, zwei Einheiten und (optional) Kunde. */
+/**
+ * Ein neuer Vergleich aus zwei Wohnungen und (optional) Kunde. Liegen sie in
+ * verschiedenen Objekten, ist er häuserübergreifend (`objekt2`).
+ */
 export function neuerVergleich(p: {
-  objekt: ObjektData;
-  wohnungen: ObjektWohnung[];
+  wohnungen: Array<{ objekt: ObjektData; wohnung: ObjektWohnung }>;
   kontaktId: string | null;
   investmentId: string | null;
   kunde: VergleichKunde;
   heute?: Date;
 }): KundenObjektvergleich {
   const heute = p.heute ?? new Date();
-  const vorgaben = vorgabenAus(p.objekt);
+  const erstes = p.wohnungen[0].objekt;
+  const zweites = p.wohnungen[1]?.objekt;
+  const vorgaben = vorgabenAus(erstes);
   return {
     version: 1,
     stand: heute.toLocaleDateString("sv-SE", { timeZone: "Europe/Berlin" }),
@@ -183,21 +188,23 @@ export function neuerVergleich(p: {
     investmentId: p.investmentId,
     variante: "",
     kunde: p.kunde,
-    objekt: objektAus(p.objekt, vorgaben),
+    objekt: objektAus(erstes, vorgaben),
+    objekt2: zweites && zweites.id !== erstes.id ? objektAus(zweites, vorgabenAus(zweites)) : null,
     annahmen: annahmenAus(vorgaben, heute),
-    einheiten: p.wohnungen.map((w) => einheitAus(p.objekt, w, vorgaben, heute)),
+    einheiten: p.wohnungen.map(({ objekt, wohnung }) => einheitAus(objekt, wohnung, vorgabenAus(objekt), heute)),
     texte: { ...LEERE_TEXTE },
   };
 }
 
-/** Was „Als Standard am Objekt speichern“ schreibt. */
-export function vorgabenAusVergleich(v: KundenObjektvergleich): ObjektvergleichVorgaben {
-  const e = v.einheiten[0];
+/** Was „Als Standard am Objekt speichern“ für das Haus der Wohnung `i` schreibt. */
+export function vorgabenAusVergleich(v: KundenObjektvergleich, i = 0): ObjektvergleichVorgaben {
+  const e = v.einheiten[i];
+  const o = objektVon(v, i);
   return {
     mieteSubQm: e?.mieteSubQm, subventionMonate: v.annahmen.subventionMonate,
-    mieteZielQm: v.annahmen.mieteZielQm, mieteZielJahr: v.annahmen.mieteZielJahr,
-    vergleichsmieteQm: v.objekt.vergleichsmieteQm, vergleichsmieteQuelle: v.objekt.vergleichsmieteQuelle,
+    mieteZielQm: e?.mieteZielQm || v.annahmen.mieteZielQm, mieteZielJahr: v.annahmen.mieteZielJahr,
+    vergleichsmieteQm: o.vergleichsmieteQm, vergleichsmieteQuelle: o.vergleichsmieteQuelle,
     garageMiete1: e?.garageMiete1, garageMieteZiel: e?.garageMieteZiel, garageIstVon: e?.garageIstVon, garageIstBis: e?.garageIstBis,
-    hausPunkte: v.objekt.hausPunkte,
+    hausPunkte: o.hausPunkte,
   };
 }
