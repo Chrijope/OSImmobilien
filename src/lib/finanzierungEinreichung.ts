@@ -75,11 +75,11 @@ export function laeuft(e: Pick<Einreichung, "status">): boolean {
 
 /**
  * Wer den Zuschlag gibt und Einreichungen zurueckzieht. Gleiche Liste wie
- * `darf_finanzierung_steuern`. Einreichen darf zusaetzlich die Vertriebsleitung
- * (`FINANZIERUNG_MELDEN_ROLLEN`).
+ * `darf_finanzierung_steuern`; die Vertriebsleitung seit dem 28.10.2026
+ * (Christian: „Vertriebsleitung darf auch den Zuschlag geben“).
  */
 export function darfFinanzierungSteuern(rolle: string | null | undefined): boolean {
-  return rolle === "admin" || rolle === "inhaber" || rolle === "backoffice";
+  return rolle === "admin" || rolle === "inhaber" || rolle === "backoffice" || rolle === "vertriebsleiter";
 }
 
 /**

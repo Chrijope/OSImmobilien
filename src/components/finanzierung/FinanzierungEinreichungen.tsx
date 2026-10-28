@@ -27,7 +27,7 @@ import {
  *
  * Die Leitung (admin, inhaber, backoffice, seit 28.10.2026 auch die
  * Vertriebsleitung) sieht alle Einreichungen mit Stand, Frist, Zielbanken und
- * Angebotsvergleich; den Zuschlag vergeben admin, inhaber, backoffice. Der
+ * Angebotsvergleich und vergibt den Zuschlag. Der
  * Finanzierer sieht nur seine eigene: Die Datenbank liefert ihm keine andere
  * Zeile, die Oberflaeche muss also nichts ausblenden. Alle anderen Rollen
  * bekommen keine Zeile und sehen nichts.

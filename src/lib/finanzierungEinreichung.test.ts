@@ -95,19 +95,25 @@ describe("Kennzahlen je Finanzierer", () => {
 });
 
 describe("Rechte an Einreichungen (28.10.2026)", () => {
-  it("Vertriebsleitung sieht Zielbanken und Vergleich, gibt aber keinen Zuschlag", () => {
-    for (const r of ["admin", "inhaber", "backoffice", "vertriebsleiter"]) expect(darfFinanzierungEinsehen(r)).toBe(true);
-    for (const r of ["vertriebspartner", "finanzierungspartner", "buchhaltung", null, undefined]) expect(darfFinanzierungEinsehen(r)).toBe(false);
-    expect(darfFinanzierungSteuern("vertriebsleiter")).toBe(false);
-    expect(darfFinanzierungSteuern("backoffice")).toBe(true);
+  it("Vertriebsleitung sieht Zielbanken und Vergleich und gibt den Zuschlag", () => {
+    for (const r of ["admin", "inhaber", "backoffice", "vertriebsleiter"]) {
+      expect(darfFinanzierungEinsehen(r)).toBe(true);
+      expect(darfFinanzierungSteuern(r)).toBe(true);
+    }
+    for (const r of ["vertriebspartner", "finanzierungspartner", "buchhaltung", null, undefined]) {
+      expect(darfFinanzierungEinsehen(r)).toBe(false);
+      expect(darfFinanzierungSteuern(r)).toBe(false);
+    }
   });
 
   it("nennt in der Migration dieselben Rollen wie die Oberflaeche", () => {
     const sql = readFileSync("supabase/migrations/20261028120000_finanzierung_chat_verlauf.sql", "utf8");
-    const einsehen = sql.match(/FUNCTION public\.darf_finanzierung_einsehen[\s\S]*?IN \(([^)]*)\)/)![1];
-    const rollen = einsehen.match(/'([a-z]+)'/g)!.map((r) => r.replace(/'/g, "")).sort();
-    expect(rollen).toEqual(["admin", "backoffice", "inhaber", "vertriebsleiter"]);
-    expect(rollen.every((r) => darfFinanzierungEinsehen(r))).toBe(true);
+    for (const fn of ["darf_finanzierung_einsehen", "darf_finanzierung_steuern"]) {
+      const liste = sql.match(new RegExp(`FUNCTION public\\.${fn}[\\s\\S]*?IN \\(([^)]*)\\)`))![1];
+      const rollen = liste.match(/'([a-z]+)'/g)!.map((r) => r.replace(/'/g, "")).sort();
+      expect(rollen).toEqual(["admin", "backoffice", "inhaber", "vertriebsleiter"]);
+      expect(rollen.every((r) => darfFinanzierungSteuern(r) && darfFinanzierungEinsehen(r))).toBe(true);
+    }
   });
 });
 

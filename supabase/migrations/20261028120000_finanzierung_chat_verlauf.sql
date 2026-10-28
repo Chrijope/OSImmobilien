@@ -6,9 +6,9 @@
 -- WAS SIE TUT
 --
 --   1. Vertriebsleitung sieht Einreichungen, Zielbanken, Angebotsvergleich
---      und das Download-Protokoll wie admin, inhaber und backoffice. Neue
---      Lesefunktion `darf_finanzierung_einsehen`. Zuschlag, Zurueckziehen und
---      Aendern bleiben bei `darf_finanzierung_steuern` (unveraendert).
+--      und das Download-Protokoll wie admin, inhaber und backoffice (neue
+--      Lesefunktion `darf_finanzierung_einsehen`) und gibt wie diese den
+--      Zuschlag und zieht zurueck (`darf_finanzierung_steuern` erweitert).
 --   2. Verlauf der Angebote: Beim Zuschlag kopiert `finanzierung_zuschlag`
 --      die bisher in der Finanzierung stehenden Angebote (von Hand
 --      eingetragene) in die neue Tabelle `finanzierung_angebote_verlauf`,
@@ -58,6 +58,25 @@ COMMENT ON FUNCTION public.darf_finanzierung_einsehen(uuid) IS
   'vertriebsleiter (Christian, 28.10.2026). Steuern (Zuschlag) bleibt bei darf_finanzierung_steuern.';
 REVOKE ALL ON FUNCTION public.darf_finanzierung_einsehen(uuid) FROM public, anon;
 GRANT EXECUTE ON FUNCTION public.darf_finanzierung_einsehen(uuid) TO authenticated;
+
+-- Christian, 28.10.2026: „Vertriebsleitung darf auch den Zuschlag geben.“
+-- Damit auch Zurueckziehen, Einreichungen anlegen und aendern (alle Regeln
+-- und finanzierung_zuschlag fragen diese Funktion). Wortlaut sonst wie
+-- 20261027120000.
+CREATE OR REPLACE FUNCTION public.darf_finanzierung_steuern(_user_id uuid)
+RETURNS boolean
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public
+AS $$
+  SELECT COALESCE((
+    SELECT EXISTS (
+      SELECT 1 FROM public.user_roles ur
+       WHERE ur.user_id = _user_id
+         AND ur.role::text IN ('admin', 'inhaber', 'backoffice', 'vertriebsleiter')
+    )
+  ), false)
+$$;
+REVOKE ALL ON FUNCTION public.darf_finanzierung_steuern(uuid) FROM public, anon;
+GRANT EXECUTE ON FUNCTION public.darf_finanzierung_steuern(uuid) TO authenticated;
 
 DROP POLICY IF EXISTS "Einreichungen lesen" ON public.finanzierung_einreichungen;
 CREATE POLICY "Einreichungen lesen" ON public.finanzierung_einreichungen
