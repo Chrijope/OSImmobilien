@@ -2171,7 +2171,7 @@ Deno.serve(async (req: Request) => {
           }
         }
         /*
-         * Hausgeld gesamt der Einheit, seit dem 05.10.2026 nach der Regel in
+         * Hausgeld der Einheit (ohne Rücklage seit dem 28.10.2026), seit dem 05.10.2026 nach der Regel in
          * `_shared/einheit-hausgeld.ts`, gerechnet nur aus Investagons Teilen.
          * Das Feld ist im CRM von Hand pflegbar, deshalb derselbe Schutz wie
          * beim Sanierungsanteil. Als unberührt gilt auch die Summe aus den
@@ -2184,12 +2184,13 @@ Deno.serve(async (req: Request) => {
               typeof bisherMeta[RECHENWERTE_META_SCHLUESSEL] === "object"
             ? bisherMeta[RECHENWERTE_META_SCHLUESSEL] as Record<string, unknown>
             : {};
-          const bisherSumme = hausgeldTeile({ investagonRaw: bisherMeta.investagonRaw }).gesamt;
+          // Unberührt ist auch die alte Summe samt Rücklage, die der Import bis zum 28.10.2026 schrieb.
+          const bisher = hausgeldTeile({ investagonRaw: bisherMeta.investagonRaw });
           const hausgeld = rechenwertNachImport(
-            hausgeldTeile({ investagonRaw: e.roh }).gesamt,
+            hausgeldTeile({ investagonRaw: e.roh }).hausgeld,
             bisherMeta.hausgeldMonat,
             bisherVermerk.hausgeldMonat,
-            bisherSumme === undefined ? [0] : [0, bisherSumme],
+            [0, bisher.hausgeld, bisher.vorauszahlung].filter((n): n is number => n !== undefined),
           );
           if (hausgeld.schreiben && hausgeld.wert !== undefined) {
             importMeta.hausgeldMonat = hausgeld.wert;

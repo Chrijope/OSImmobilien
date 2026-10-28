@@ -245,7 +245,8 @@ describe("Kaufpreisblock und Nebenkosten", () => {
     );
     expect(e.kennzahlen.preisJeQm).toBeCloseTo(232000 / 61.4, 6);
     expect(e.kennzahlen.mieteJeQm).toBeCloseTo(790 / 61.4, 6);
-    expect(e.kennzahlen.hausgeldUmlegbarMonat).toBeCloseTo(95, 6);
+    // Seit dem 28.10.2026 ohne Rücklage im Hausgeld: 185 − 45 nicht umlegbar.
+    expect(e.kennzahlen.hausgeldUmlegbarMonat).toBeCloseTo(140, 6);
     const ohneFlaeche = berechneExpose(objekt, standardAnnahmen(2026));
     expect(ohneFlaeche.kennzahlen.preisJeQm).toBeNull();
   });

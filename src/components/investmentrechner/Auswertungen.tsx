@@ -747,10 +747,11 @@ export function hausgeldZeilen(input: InvestmentEingabe, sprache: FormatSprache 
   const en = sprache === "en";
   const euro = (wert: number) => formatEuroCent(wert, sprache);
   return [
-    { label: en ? "Service charge total per month" : "Hausgeld gesamt je Monat", wert: h.gesamt > 0 ? euro(h.gesamt) : en ? "not stated" : "nicht angegeben", summe: true },
+    { label: en ? "Service charge per month (recoverable + non-recoverable)" : "Hausgeld je Monat (umlagef. + nicht umlagef.)", wert: h.gesamt > 0 ? euro(h.gesamt) : en ? "not stated" : "nicht angegeben", summe: true },
     { label: en ? "of which recoverable (paid by the tenant, no cash-flow burden)" : "davon umlagefähig (zahlt der Mieter, belastet den Cashflow nicht)", wert: euro(h.umlagefaehig) },
     { label: en ? "of which non-recoverable (cash-flow burden, tax-deductible)" : "davon nicht umlagefähig (belastet den Cashflow, steuerlich abziehbar)", wert: euro(h.nichtUmlagefaehig) },
-    { label: en ? "of which maintenance reserve (cash-flow burden, deductible only when spent)" : "davon Erhaltungsrücklage (belastet den Cashflow, steuerlich erst bei Verwendung)", wert: euro(h.ruecklage) },
+    { label: en ? "Maintenance reserve, separate (cash-flow burden, deductible only when spent)" : "Erhaltungsrücklage, separat (belastet den Cashflow, steuerlich erst bei Verwendung)", wert: euro(h.ruecklage) },
+    { label: en ? "Total monthly payment to the owners' association" : "Vorauszahlung gesamt je Monat (Hausgeld + Rücklage)", wert: euro(h.vorauszahlung), summe: true },
   ];
 }
 
@@ -764,7 +765,7 @@ export function hausgeldHinweis(input: InvestmentEingabe, sprache: FormatSprache
     teile.push(
       en
         ? `The parts add up to ${formatEuroCent(h.summeTeile, sprache)}, the total is ${formatEuroCent(h.gesamt, sprache)} (difference ${formatEuroCent(h.abweichung, sprache)}).`
-        : `Die Teile ergeben ${formatEuroCent(h.summeTeile, sprache)}, das Hausgeld gesamt ist ${formatEuroCent(h.gesamt, sprache)} (Abweichung ${formatEuroCent(h.abweichung, sprache)}).`,
+        : `Die Teile ergeben ${formatEuroCent(h.summeTeile, sprache)}, das Hausgeld ist ${formatEuroCent(h.gesamt, sprache)} (Abweichung ${formatEuroCent(h.abweichung, sprache)}).`,
     );
   }
   return teile.length ? teile.join(" ") : null;

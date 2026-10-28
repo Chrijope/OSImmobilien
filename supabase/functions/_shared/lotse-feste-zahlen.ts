@@ -1,8 +1,9 @@
 /**
  * Feste Zahlen der Einheit für den OS Lotsen (05.10.2026).
  *
- * Das Hausgeld gesamt rechnet das CRM, nicht die KI: umlagefähig plus nicht
- * umlagefähig plus Rücklage, nur wenn alle drei erfasst sind. Dazu die
+ * Das Hausgeld rechnet das CRM, nicht die KI: umlagefähig plus nicht
+ * umlagefähig, ohne Rücklage (seit 28.10.2026); die Vorauszahlung samt
+ * Rücklage steht getrennt. Dazu die
  * Steuer- und Neubauangaben aus den Investagon-Rohdaten mit deutschen
  * Namen. Eine 0 gilt bei diesen Angaben als „nicht erfasst“ und steht in
  * `fehlt`, nie als echter Wert.
@@ -46,7 +47,9 @@ const r2 = (n: number) => Math.round(n * 100) / 100;
 export const HAUSGELD_UMLAGEFAEHIG = "Hausgeld umlagefähig je Monat in Euro";
 export const HAUSGELD_NICHT_UMLAGEFAEHIG = "Hausgeld nicht umlagefähig je Monat in Euro";
 export const RUECKLAGE = "Rücklage (Zuführung) je Monat in Euro";
-export const HAUSGELD_GESAMT = "Hausgeld gesamt je Monat in Euro";
+/** Seit dem 28.10.2026 ohne Rücklage; die Zahlung an die WEG steht in `VORAUSZAHLUNG`. */
+export const HAUSGELD_GESAMT = "Hausgeld (umlagefähig + nicht umlagefähig, ohne Rücklage) je Monat in Euro";
+export const VORAUSZAHLUNG = "Vorauszahlung gesamt (Hausgeld + Rücklage) je Monat in Euro";
 
 export interface FesteZahlen {
   /** Deutscher Name und Wert, nur erfasste Angaben. */
@@ -75,7 +78,8 @@ export function festeZahlenEinheit(meta: unknown): FesteZahlen {
   setze(HAUSGELD_UMLAGEFAEHIG, hausgeld.umlagefaehig);
   setze(HAUSGELD_NICHT_UMLAGEFAEHIG, hausgeld.nichtUmlagefaehig);
   setze(RUECKLAGE, hausgeld.ruecklage);
-  setze(HAUSGELD_GESAMT, hausgeld.gesamt);
+  setze(HAUSGELD_GESAMT, hausgeld.hausgeld);
+  setze(VORAUSZAHLUNG, hausgeld.vorauszahlung, false);
 
   const denkmalAnteil = positiv(roh.share_monument);
   const denkmal18 = positiv(roh.depreciation_rate_monument_y1y8);

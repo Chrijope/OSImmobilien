@@ -2,9 +2,19 @@
  * Das Hausgeld einer Einheit, eine Regel für CRM, Functions und Import
  * (05.10.2026).
  *
- * Hausgeld gesamt je Monat = umlagefähig + nicht umlagefähig + Rücklage
- * (Zuführung), nur die Werte der Wohnung, und nur wenn alle drei erfasst
- * sind. Ein von Hand gepflegtes `meta.hausgeldMonat` geht vor.
+ * Seit dem 28.10.2026 (Christian): Hausgeld je Monat = umlagefähig + nicht
+ * umlagefähig, nur wenn beide erfasst sind. Die Erhaltungsrücklage
+ * (Zuführung) gehört nicht dazu, sie steht getrennt in `ruecklage`. Was der
+ * Eigentümer monatlich an die WEG überweist, ist die `vorauszahlung` =
+ * Hausgeld + Rücklage. Die Rücklage kostet also weiter Liquidität, wird aber
+ * nicht als Hausgeld ausgewiesen.
+ *
+ * Ein von Hand gepflegtes `meta.hausgeldMonat` geht vor. Bis zum 28.10.2026
+ * war das Feld „Hausgeld gesamt“ samt Rücklage, und der Import schrieb diese
+ * Summe dorthin. Ein gepflegter Wert, der genau umlagefähig + nicht
+ * umlagefähig + Rücklage ist, gilt deshalb als alte Summe: Hausgeld ist dann
+ * die Summe der beiden Hausgeld-Teile. So braucht der Bestand keine
+ * Datenänderung.
  *
  * Bewusst ohne die `*_parking`-Werte: Der Stellplatz ist im CRM optional,
  * Kaufpreis (`vk_gesamt`) und Miete (`miete_gesamt`) enthalten ihn nicht.
@@ -35,8 +45,10 @@ export interface HausgeldTeile {
   umlagefaehig?: number;
   nichtUmlagefaehig?: number;
   ruecklage?: number;
-  /** Auf Cent gerundet. */
-  gesamt?: number;
+  /** Hausgeld = umlagefähig + nicht umlagefähig, ohne Rücklage. Auf Cent gerundet. */
+  hausgeld?: number;
+  /** Vorauszahlung an die WEG = Hausgeld + Rücklage; nur wenn beide bekannt. Auf Cent gerundet. */
+  vorauszahlung?: number;
   /** Kein Hausgeld, nur zur getrennten Anzeige. */
   sevVerwaltung?: number;
 }
@@ -48,21 +60,29 @@ export function hausgeldTeile(meta: unknown): HausgeldTeile {
   const umlagefaehig = positiv(m.hausgeldUmlagefaehigEuro) ?? positiv(roh.operation_cost_tenant_apartment);
   const nichtUmlagefaehig = positiv(m.hausgeldNichtUmlagefaehigEuro) ?? positiv(roh.operation_cost_landlord_apartment);
   const ruecklage = positiv(m.ruecklageZufuehrungMonat) ?? positiv(roh.operation_cost_reserve_apartment);
-  const summe = umlagefaehig !== undefined && nichtUmlagefaehig !== undefined && ruecklage !== undefined
-    ? r2(umlagefaehig + nichtUmlagefaehig + ruecklage)
+  const summe = umlagefaehig !== undefined && nichtUmlagefaehig !== undefined
+    ? r2(umlagefaehig + nichtUmlagefaehig)
     : undefined;
+  const gepflegt = positiv(m.hausgeldMonat);
+  const alteSumme = summe !== undefined && ruecklage !== undefined && gepflegt !== undefined &&
+    Math.abs(gepflegt - (summe + ruecklage)) < 0.01;
+  const hausgeld = alteSumme ? summe : gepflegt ?? summe;
   return {
     umlagefaehig,
     nichtUmlagefaehig,
     ruecklage,
-    gesamt: positiv(m.hausgeldMonat) ?? summe,
+    hausgeld,
+    vorauszahlung: hausgeld !== undefined && ruecklage !== undefined ? r2(hausgeld + ruecklage) : undefined,
     sevVerwaltung: positiv(m.verwaltungSevMonat) ?? positiv(roh.property_management_fee_sev),
   };
 }
 
-/** `meta` einer Einheit mit `hausgeldMonat`, falls es fehlt und sich rechnen lässt. Für gefilterte Antworten. */
+/**
+ * `meta` einer Einheit mit `hausgeldMonat` nach der Regel oben, ohne Rücklage.
+ * Für gefilterte Antworten. Überschreibt auch ein gespeichertes, weil das alte
+ * Summen samt Rücklage sein können; ein Handwert kommt unverändert durch.
+ */
 export function mitHausgeldMonat(gefiltert: Record<string, unknown>, quelle: unknown): Record<string, unknown> {
-  if (positiv(gefiltert.hausgeldMonat) !== undefined) return gefiltert;
-  const gesamt = hausgeldTeile(quelle).gesamt;
-  return gesamt === undefined ? gefiltert : { ...gefiltert, hausgeldMonat: gesamt };
+  const hausgeld = hausgeldTeile(quelle).hausgeld;
+  return hausgeld === undefined ? gefiltert : { ...gefiltert, hausgeldMonat: hausgeld };
 }

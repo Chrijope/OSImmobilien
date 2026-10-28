@@ -131,3 +131,62 @@ export function nebenkostenBasis(gesamtkaufpreis: number, erhaltungsaufwand: num
   const gesamt = sicher(gesamtkaufpreis);
   return gesamt - Math.min(gesamt, sicher(erhaltungsaufwand) + sicher(moebel));
 }
+
+/** Die drei Sätze der Kaufnebenkosten in Prozent, wie am Objekt gepflegt (`objekte.meta.kaufnebenkostenTeile`). 0 oder leer heißt nicht gepflegt. */
+export interface KaufnebenkostenTeile {
+  grunderwerbsteuer?: number;
+  notar?: number;
+  grundbuch?: number;
+}
+
+export interface KaufnebenkostenSaetze {
+  grunderwerbsteuer: number;
+  notar: number;
+  grundbuch: number;
+  summe: number;
+  /** Woher: die drei gepflegten Sätze, der alte Gesamtsatz zerlegt, oder das Land aus der Postleitzahl. */
+  quelle: "teile" | "gesamt" | "bundesland";
+}
+
+const satz = (v: unknown) => {
+  const n = Number(v);
+  return Number.isFinite(n) && n > 0 && n <= 20 ? n : undefined;
+};
+const r3 = (n: number) => Math.round(n * 1000) / 1000;
+
+/** Die gepflegten Teile aus `objekte.meta`, oder `undefined`, wenn keiner gepflegt ist. */
+export function gepflegteKaufnebenkostenTeile(meta: unknown): KaufnebenkostenTeile | undefined {
+  const roh = meta && typeof meta === "object" ? (meta as Record<string, unknown>).kaufnebenkostenTeile : undefined;
+  if (!roh || typeof roh !== "object") return undefined;
+  const r = roh as Record<string, unknown>;
+  const teile = { grunderwerbsteuer: satz(r.grunderwerbsteuer), notar: satz(r.notar), grundbuch: satz(r.grundbuch) };
+  return Object.values(teile).some((v) => v !== undefined) ? teile : undefined;
+}
+
+/**
+ * Grunderwerbsteuer, Notar und Grundbuch eines Objekts, seit dem 28.10.2026
+ * als drei Felder. Reihenfolge:
+ *   1. gepflegte Teile; ein fehlender Teil fällt auf den Landessatz aus der
+ *      Postleitzahl, 1,5 (Notar) und 0,5 (Grundbuch) zurück;
+ *   2. der alte Gesamtsatz, zerlegt in Gesamt − 2,0 plus 1,5 plus 0,5 (unter
+ *      2,0 alles als Grunderwerbsteuer, damit die Summe stimmt);
+ *   3. das Land aus der Postleitzahl.
+ * Ohne alles `undefined`.
+ */
+export function kaufnebenkostenSaetze(opts: { teile?: KaufnebenkostenTeile; gesamtPct?: number; plz?: string }): KaufnebenkostenSaetze | undefined {
+  const land = BUNDESLAND_NK.find((b) => b.value === bundeslandFromPlz(opts.plz || ""));
+  const landGrEst = land && land.grEstP > 0 ? land.grEstP : undefined;
+  const mit = (g: number, n: number, b: number, quelle: KaufnebenkostenSaetze["quelle"]): KaufnebenkostenSaetze =>
+    ({ grunderwerbsteuer: g, notar: n, grundbuch: b, summe: r3(g + n + b), quelle });
+  const t = opts.teile;
+  if (t && (satz(t.grunderwerbsteuer) || satz(t.notar) || satz(t.grundbuch))) {
+    return mit(satz(t.grunderwerbsteuer) ?? landGrEst ?? 0, satz(t.notar) ?? NOTAR_PROZENT, satz(t.grundbuch) ?? GRUNDBUCH_PROZENT, "teile");
+  }
+  const gesamt = satz(opts.gesamtPct);
+  if (gesamt !== undefined) {
+    return gesamt >= NOTAR_PROZENT + GRUNDBUCH_PROZENT
+      ? mit(r3(gesamt - NOTAR_PROZENT - GRUNDBUCH_PROZENT), NOTAR_PROZENT, GRUNDBUCH_PROZENT, "gesamt")
+      : mit(gesamt, 0, 0, "gesamt");
+  }
+  return landGrEst !== undefined ? mit(landGrEst, NOTAR_PROZENT, GRUNDBUCH_PROZENT, "bundesland") : undefined;
+}

@@ -62,16 +62,19 @@ describe("Sprache der rechten Seite", () => {
 });
 
 describe("Hausgeld in ganzer Höhe", () => {
-  it("prüft gesamt = umlagefähig + nicht umlagefähig + Rücklage", () => {
-    expect(hausgeldAufstellung(eingabe)).toMatchObject({ gesamt: 300, summeTeile: 300, abweichung: 0 });
+  it("prüft Hausgeld = umlagefähig + nicht umlagefähig, die Rücklage getrennt (28.10.2026)", () => {
+    expect(hausgeldAufstellung({ ...eingabe, housingFeeTotal: 260 })).toMatchObject({ gesamt: 260, summeTeile: 260, ruecklage: 40, vorauszahlung: 300, abweichung: 0 });
+    // Ein gespeicherter Stand mit Rücklage im Gesamtbetrag (300) ist keine Abweichung.
+    expect(hausgeldAufstellung(eingabe)).toMatchObject({ gesamt: 260, vorauszahlung: 300, abweichung: 0 });
     const falsch = hausgeldAufstellung({ ...eingabe, housingFeeTotal: 320 });
-    expect(falsch.abweichung).toBe(20);
+    expect(falsch.abweichung).toBe(60);
     expect(hausgeldAufstellung(standardEingabe).vorhanden).toBe(false);
   });
 
   it("zeigt die Aufstellung und eine Abweichung, deutsch und englisch", () => {
     const { container, unmount } = render(<Hausgeldaufstellung input={{ ...eingabe, housingFeeTotal: 320 }} />);
-    expect(container.textContent).toContain("Hausgeld gesamt je Monat");
+    expect(container.textContent).toContain("Hausgeld je Monat (umlagef. + nicht umlagef.)");
+    expect(container.textContent).toContain("Vorauszahlung gesamt je Monat");
     expect(screen.getByTestId("hausgeld-abweichung").textContent).toMatch(/Abweichung/);
     unmount();
     const en = render(
@@ -79,7 +82,7 @@ describe("Hausgeld in ganzer Höhe", () => {
         <Hausgeldaufstellung input={eingabe} />
       </RechnerSpracheContext.Provider>,
     );
-    expect(en.container.textContent).toContain("Service charge total per month");
+    expect(en.container.textContent).toContain("Service charge per month");
     expect(en.queryByTestId("hausgeld-abweichung")).toBeNull();
   });
 

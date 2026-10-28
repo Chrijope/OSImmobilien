@@ -22,7 +22,7 @@
  * ist, erscheint nicht; eine Zeile „nicht vorhanden“ gibt es nicht.
  */
 
-import { objektDetails } from "@/lib/investagonFelder";
+import { beschreibungsTexte, objektDetails } from "@/lib/investagonFelder";
 import { linearerAfaSatz } from "@/lib/afaSaetze";
 import { dez, eur0, eur2, kaltmieteVon, preisJeQm, prozent } from "@/lib/objektKennzahlen";
 import { objektseiteFelder } from "@/lib/objektseiteDaten";
@@ -189,6 +189,12 @@ export function interneHighlights(objekt: ObjektFuerHighlights, wohnung?: Objekt
   // einträgt, will sie sehen.
   const hand = [...(wohnung ? handHighlights(wohnung) : []), ...handHighlights(objekt)]
     .map((text): HighlightZeile => ({ text, herkunft: "hand" }));
+  // Investagons „Extras“ der Einheit gehören zu den internen Highlights der
+  // Einheit (Christian, 28.10.2026). Nur gelesen, nicht ins Handfeld kopiert:
+  // So überschreibt kein Import, was jemand von Hand pflegt.
+  const extras = (wohnung ? beschreibungsTexte({ meta: { investagonRaw: wohnung.investagonRaw } }) : [])
+    .filter((text) => !hand.some((h) => h.text === text))
+    .map((text): HighlightZeile => ({ text, herkunft: "daten" }));
   const fest = (wohnung ? einheitPunkte(objekt, wohnung) : objektPunkte(objekt))
     .map((text): HighlightZeile => ({ text, herkunft: "daten" }));
   // Die KI-Punkte der beiden hervorgehobenen Arten stehen schon oben oder
@@ -196,7 +202,7 @@ export function interneHighlights(objekt: ObjektFuerHighlights, wohnung?: Objekt
   const sonstige = kiPunkte
     .filter((p) => p.art === "sonstiges")
     .map((p): HighlightZeile => ({ text: p.punkt, beleg: p.beleg, herkunft: "ki" }));
-  const punkte = [...hand, ...fest, ...sonstige].slice(0, Math.max(0, MAX_PUNKTE_KARTE - oben));
+  const punkte = [...hand, ...extras, ...fest, ...sonstige].slice(0, Math.max(0, MAX_PUNKTE_KARTE - oben));
 
   const stand = ki ? "fertig" : objektTexteStand(objekt) === "offen" ? "wird-erstellt" : "ohne-grundlage";
   return { ...(erhaltungsaufwand ? { erhaltungsaufwand } : {}), ...(restnutzungsdauer ? { restnutzungsdauer } : {}), punkte, stand };

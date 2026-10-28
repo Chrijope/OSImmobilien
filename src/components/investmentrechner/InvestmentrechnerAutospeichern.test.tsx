@@ -34,10 +34,10 @@ describe("Autospeichern im Browser", () => {
     fireEvent.click(screen.getByRole("button", { name: /Objekt & Kaufpreis/ }));
     expect(feld(/^Wohnfläche/).value).toBe("72");
     fireEvent.click(screen.getByRole("button", { name: /Miete & Entwicklung/ }));
-    expect(feld(/^davon Instandhaltungsrücklage/).value).toBe("72");
+    expect(feld(/^Erhaltungsrücklage p\. M\./).value).toBe("72");
 
     // Ein eigener Wert bleibt, auch wenn sich die Fläche danach ändert.
-    fireEvent.change(feld(/^davon Instandhaltungsrücklage/), { target: { value: "40" } });
+    fireEvent.change(feld(/^Erhaltungsrücklage p\. M\./), { target: { value: "40" } });
     fireEvent.click(screen.getByRole("button", { name: /Objekt & Kaufpreis/ }));
     fireEvent.change(feld(/^Wohnfläche/), { target: { value: "90" } });
     expect(entwurfLaden("frei")?.objekte[0].eingabe.monthlyReserveContribution).toBe(40);

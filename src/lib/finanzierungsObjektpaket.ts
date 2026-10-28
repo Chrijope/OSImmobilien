@@ -22,6 +22,12 @@ interface Pflichtunterlage {
   name: string;
   /** Investagon-Kategorien (Rohwert), die diese Unterlage eindeutig meinen. */
   kategorien: string[];
+  /**
+   * Feste Dokumentkategorie im CRM (Name des Fachs, seit dem 28.10.2026). Eine
+   * Datei in diesem Fach zählt vor jeder Titelprüfung und ohne `mindestens`:
+   * Wer sie dort ablegt, hat sie zugeordnet.
+   */
+  crmKategorie?: string;
   /** Passt der normalisierte Titel? */
   titelPasst: (titel: string) => boolean;
   /** Nur bei einer vermieteten oder gekündigten Einheit nötig. */
@@ -54,6 +60,7 @@ export const FINANZIERUNG_PFLICHTUNTERLAGEN: readonly Pflichtunterlage[] = [
   {
     name: "Mietvertrag",
     kategorien: ["rental_agreement"],
+    crmKategorie: "Mietvertrag",
     titelPasst: (t) => t.includes("mietvertrag"),
     nurVermietet: true,
   },
@@ -65,11 +72,13 @@ export const FINANZIERUNG_PFLICHTUNTERLAGEN: readonly Pflichtunterlage[] = [
   {
     name: "Wirtschaftsplan",
     kategorien: ["economic_plan"],
+    crmKategorie: "Wirtschaftsplan",
     titelPasst: (t) => t.includes("wirtschaftsplan"),
   },
   {
     name: "WEG-Protokolle der letzten 3 Jahre",
     kategorien: [],
+    crmKategorie: "WEG-Protokolle",
     // „Übergabeprotokoll" ist kein WEG-Protokoll, deshalb braucht „protokoll" einen Bezug zur Gemeinschaft.
     titelPasst: (t) => t.includes("eigentuemerversammlung")
       || (t.includes("protokoll") && (wort(t, "weg") || wort(t, "etv") || t.includes("eigentuemer") || t.includes("versammlung"))),
@@ -102,6 +111,7 @@ export function einheitIstVermietet(w: Pick<ObjektWohnung, "vermietet" | "vermie
 type Datei = Pick<EinheitUnterlage, "name" | "investagonKategorie">;
 
 function liegtVor(p: Pflichtunterlage, dateien: Datei[]): boolean {
+  if (p.crmKategorie && dateien.some((d) => d.name === p.crmKategorie)) return true;
   const treffer = dateien.filter((d) =>
     (!!d.investagonKategorie && p.kategorien.includes(d.investagonKategorie)) || p.titelPasst(normalisiereTitel(d.name)));
   const noetig = p.mindestens ?? 1;
