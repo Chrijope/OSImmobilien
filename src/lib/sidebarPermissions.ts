@@ -1,7 +1,7 @@
 import { getVisibleStatistikTabs } from './statistikenTabs';
 import type { UserRole } from "@/types/user";
 import { supabase } from "@/integrations/supabase/client";
-import { INVESTMENTRECHNER_PLUS_ROUTE, INVESTMENTRECHNER_ROUTE, canAccessInvestmentrechner } from "@/lib/investmentrechnerAccess";
+import { INVESTMENTRECHNER_PLUS_ROUTE, INVESTMENTRECHNER_ROUTE, OBJEKTVERGLEICH_ROUTE, canAccessInvestmentrechner } from "@/lib/investmentrechnerAccess";
 import {
   darfBewerberprozess,
   darfVideocallBereich,
@@ -637,7 +637,7 @@ export function isUrlAllowedForRole(
   // der Datenbank, weil die Rollenfreigaben dort gepflegt werden und eine
   // Freischaltung im Code sonst nicht ankaeme.
   // /investmentrechner-plus leitet seit dem 11.10.2026 auf den Rechner mit Schalter weiter, dieselben Rollen.
-  if ((cleanUrl === INVESTMENTRECHNER_ROUTE || cleanUrl === INVESTMENTRECHNER_PLUS_ROUTE) && canAccessInvestmentrechner(role)) return true;
+  if ((cleanUrl === INVESTMENTRECHNER_ROUTE || cleanUrl === INVESTMENTRECHNER_PLUS_ROUTE || cleanUrl === OBJEKTVERGLEICH_ROUTE) && canAccessInvestmentrechner(role)) return true;
   // Das Ankaufstool ebenso im Code, damit es ohne Migration ankommt.
   if ((cleanUrl === ANKAUFSTOOL_ROUTE || cleanUrl === MIETSUBVENTION_ROUTE || cleanUrl === KAUFPREISLISTE_ROUTE) && ANKAUFSTOOL_ROLLEN.includes(role)) return true;
   if (customPermissions?.includes(url) || customPermissions?.includes(cleanUrl)) return true;

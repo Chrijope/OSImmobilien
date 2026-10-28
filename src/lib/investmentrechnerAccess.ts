@@ -20,6 +20,8 @@ import type { UserRole } from "@/types/user";
  */
 export const INVESTMENTRECHNER_ROUTE = "/investmentrechner";
 export const INVESTMENTRECHNER_PLUS_ROUTE = "/investmentrechner-plus";
+/** Persönlicher Objektvergleich (28.10.2026), dieselben Rollen wie der Rechner. */
+export const OBJEKTVERGLEICH_ROUTE = "/investmentrechner/objektvergleich";
 
 /** Rollen, fuer die der Investmentrechner regulaer offen ist. */
 export const INVESTMENTRECHNER_ROLLEN: ReadonlyArray<UserRole> = [

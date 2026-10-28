@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { Calculator, FilePlus2, LoaderCircle } from "lucide-react";
+import { Link, useSearchParams } from "react-router-dom";
+import { Calculator, Columns2, FilePlus2, LoaderCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { OBJEKTVERGLEICH_ROUTE } from "@/lib/investmentrechnerAccess";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageHeader } from "@/components/PageHeader";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -229,6 +231,14 @@ const Investmentrechner = () => {
           <AlertDescription>{hinweis}</AlertDescription>
         </Alert>
       )}
+      {/* Persönlicher Objektvergleich zweier Wohnungen (28.10.2026), eigene Seite. */}
+      <div className="mb-3 flex justify-end">
+        <Button asChild size="sm" variant="outline">
+          <Link to={`${OBJEKTVERGLEICH_ROUTE}${vorbereitet.start?.investmentId ? `?investment=${vorbereitet.start.investmentId}` : ""}`}>
+            <Columns2 className="h-4 w-4 mr-1.5" /> Persönlicher Objektvergleich
+          </Link>
+        </Button>
+      </div>
       <InvestmentrechnerInhalt
         key={vorbereitet.start?.berechnung?.id || vorbereitet.start?.investmentId || "leer"}
         start={vorbereitet.start}

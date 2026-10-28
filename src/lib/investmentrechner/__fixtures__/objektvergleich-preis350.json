@@ -1,0 +1,194 @@
+{
+ "stand": "28.10.2026",
+ "annahmen": {
+  "steuer": 0.42,
+  "zins": 0.048,
+  "tilgung": 0.012,
+  "knk": 0.085,
+  "gebaeudeanteil": 0.8,
+  "afa": "1/32",
+  "wert_pa": 0.02,
+  "kosten_pa": 0.02,
+  "miete_ziel_qm": 20.0,
+  "garage": "80 -> 150 im Jahr 2060 (Jahr 35)",
+  "jahr_1": 2026,
+  "miete_ziel_jahr": "2060 = Jahr 35",
+  "afa_jahre": 32
+ },
+ "WE12": {
+  "kaufpreis": 205000,
+  "kaufpreis_wohnung": 190000,
+  "garage_kp": 15000,
+  "qm": 56.0,
+  "zimmer": 2,
+  "knk": 17425.0,
+  "darlehen": 205000,
+  "afa_basis": 177940.0,
+  "miete_ist": 544.0,
+  "miete_sub": 728.0,
+  "mietluecke": 184.0,
+  "hausgeld": {
+   "u": 242.53,
+   "n": 81.83,
+   "summe": 324.36,
+   "r": 48.65,
+   "voraus": 373.01,
+   "eigentuemer": 130.48
+  },
+  "monat": {
+   "miete": 728.0,
+   "garage": 80.0,
+   "zins": 820.0,
+   "tilgung": 205.0,
+   "n": 81.83,
+   "r": 48.65,
+   "einnahmen": 808.0,
+   "ausgaben": 1155.48,
+   "vor": -347.48,
+   "ersparnis": 234.03,
+   "nach": -113.45
+  },
+  "herleitung_monat": {
+   "einnahmen": "728.00 + 80.00",
+   "zins": "205000 × 4,8 % / 12",
+   "tilgung": "205000 × 1,2 % / 12",
+   "ausgaben": "820.00 + 205.00 + 81.83 + 48.65",
+   "vor": "Einnahmen − Ausgaben",
+   "ersparnis": "42 % × (−Ergebnis Jahr) / 12",
+   "nach": "vor + ersparnis"
+  },
+  "jahr": {
+   "miete": 9696.0,
+   "zins": 9840.0,
+   "n": 981.96,
+   "afa": 5560.63,
+   "ergebnis": -6686.59,
+   "ersparnis": 2808.37
+  },
+  "herleitung_jahr": {
+   "miete": "(Miete + Garage) × 12",
+   "zins": "Darlehen × 4,8 %",
+   "n": "nicht umlagefähig × 12",
+   "afa": "Kaufpreis × 1,085 × 0,8 / 32",
+   "ergebnis": "Miete − Zins − N − AfA"
+  },
+  "steuer_30_jahre": 23482,
+  "miete_30_monat": 1202.06,
+  "tilgung_36_monate": 7739.91,
+  "entwicklung": {
+   "25": {
+    "wert": 336324,
+    "rest": 90777,
+    "erloes": 245547,
+    "zuzahlung": 53339,
+    "plus": 192207
+   },
+   "30": {
+    "wert": 371329,
+    "rest": 47064,
+    "erloes": 324265,
+    "zuzahlung": 64653,
+    "plus": 259612
+   },
+   "35": {
+    "wert": 409977,
+    "rest": 0,
+    "erloes": 409977,
+    "zuzahlung": 78286,
+    "plus": 331691
+   }
+  },
+  "nach_steuer_min_max_30": [
+   -208.7,
+   -106.02
+  ]
+ },
+ "WE13": {
+  "kaufpreis": 242000,
+  "kaufpreis_wohnung": 227000,
+  "garage_kp": 15000,
+  "qm": 72.36,
+  "zimmer": 3,
+  "knk": 20570.0,
+  "darlehen": 242000,
+  "afa_basis": 210056.0,
+  "miete_ist": 900.0,
+  "miete_sub": 940.68,
+  "mietluecke": 40.68,
+  "hausgeld": {
+   "u": 202.8,
+   "n": 96.3,
+   "summe": 299.1,
+   "r": 62.81,
+   "voraus": 361.91,
+   "eigentuemer": 159.11
+  },
+  "monat": {
+   "miete": 940.68,
+   "garage": 80.0,
+   "zins": 968.0,
+   "tilgung": 242.0,
+   "n": 96.3,
+   "r": 62.81,
+   "einnahmen": 1020.68,
+   "ausgaben": 1369.11,
+   "vor": -348.43,
+   "ersparnis": 248.07,
+   "nach": -100.36
+  },
+  "herleitung_monat": {
+   "einnahmen": "940.68 + 80.00",
+   "zins": "242000 × 4,8 % / 12",
+   "tilgung": "242000 × 1,2 % / 12",
+   "ausgaben": "968.00 + 242.00 + 96.30 + 62.81",
+   "vor": "Einnahmen − Ausgaben",
+   "ersparnis": "42 % × (−Ergebnis Jahr) / 12",
+   "nach": "vor + ersparnis"
+  },
+  "jahr": {
+   "miete": 12248.16,
+   "zins": 11616.0,
+   "n": 1155.6,
+   "afa": 6564.25,
+   "ergebnis": -7087.69,
+   "ersparnis": 2976.83
+  },
+  "herleitung_jahr": {
+   "miete": "(Miete + Garage) × 12",
+   "zins": "Darlehen × 4,8 %",
+   "n": "nicht umlagefähig × 12",
+   "afa": "Kaufpreis × 1,085 × 0,8 / 32",
+   "ergebnis": "Miete − Zins − N − AfA"
+  },
+  "steuer_30_jahre": 15544,
+  "miete_30_monat": 1512.42,
+  "tilgung_36_monate": 9136.87,
+  "entwicklung": {
+   "25": {
+    "wert": 397027,
+    "rest": 107162,
+    "erloes": 289865,
+    "zuzahlung": 51424,
+    "plus": 238441
+   },
+   "30": {
+    "wert": 438350,
+    "rest": 55559,
+    "erloes": 382791,
+    "zuzahlung": 62126,
+    "plus": 320665
+   },
+   "35": {
+    "wert": 483973,
+    "rest": 0,
+    "erloes": 483973,
+    "zuzahlung": 75463,
+    "plus": 408510
+   }
+  },
+  "nach_steuer_min_max_30": [
+   -201.44,
+   -88.31
+  ]
+ }
+}

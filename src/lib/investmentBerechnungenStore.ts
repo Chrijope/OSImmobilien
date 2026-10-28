@@ -404,6 +404,8 @@ export async function ladeBerechnungen(investmentId: string): Promise<Berechnung
     .from("investment_berechnungen")
     .select(SPALTEN)
     .eq("investment_id", investmentId)
+    // Gespeicherte Objektvergleiche liegen in derselben Tabelle (kundenObjektvergleichStore.ts).
+    .is("vergleich", null)
     .order("geaendert_am", { ascending: false });
   if (error) return { berechnungen: [], ...alsFehler(error) };
   const zeilen = Array.isArray(data) ? data : [];

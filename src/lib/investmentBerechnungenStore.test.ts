@@ -13,7 +13,7 @@ const db = vi.hoisted(() => ({
 vi.mock("@/integrations/supabase/client", () => {
   const kette = (tabelle: string) => {
     const k: Record<string, unknown> = {};
-    for (const m of ["select", "eq", "order", "insert", "update", "delete", "maybeSingle", "single"]) {
+    for (const m of ["select", "eq", "is", "order", "insert", "update", "delete", "maybeSingle", "single"]) {
       k[m] = (...args: unknown[]) => { db.aufrufe.push({ tabelle, methode: m, args }); return k; };
     }
     k.then = (res: (v: unknown) => unknown) => Promise.resolve(res(db.antwort));

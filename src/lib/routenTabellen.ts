@@ -233,8 +233,10 @@ export const ROUTEN_TABELLEN: Record<string, readonly string[]> = {
   "/immorechner": [],
   "/investmentrechner": [...KONTAKT_TABELLEN, ...OBJEKT_TABELLEN],
   "/investmentrechner-plus": [...KONTAKT_TABELLEN, ...OBJEKT_TABELLEN],
+  "/investmentrechner/objektvergleich": [...KONTAKT_TABELLEN, ...OBJEKT_TABELLEN],
   // Lokale Vorschau, nur im Entwicklungsmodus und ohne Datenbank (vorschauRouten.ts).
   "/vorschau/investmentrechner": [],
+  "/vorschau/objektvergleich": [],
   "/vorschau/investmentrechner-plus": [],
   "/vorschau/beratungspraesentation": [],
   "/vorschau/erstgespraech": [],

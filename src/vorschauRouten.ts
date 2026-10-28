@@ -104,3 +104,8 @@ export const VorschauBeratungDruck = import.meta.env.DEV
 export const VorschauCrm = import.meta.env.DEV
   ? lazy(() => import("./pages/VorschauCrm"))
   : null;
+
+/** /vorschau/objektvergleich: persönlicher Objektvergleich mit Beispielzahlen (28.10.2026). */
+export const VorschauObjektvergleich = import.meta.env.DEV
+  ? lazy(() => import("./pages/VorschauObjektvergleich"))
+  : null;

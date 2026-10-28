@@ -22,7 +22,7 @@ import { KundenMfaGuard } from "@/components/kunde/KundenMfaGuard";
 
 // Oeffentliche Seiten (eager, klein und immer noetig)
 import Login from "./pages/Login";
-import { VorschauCrm, VorschauBeratungspraesentation, VorschauErstgespraech, VorschauInvestmentrechner, VorschauNaechsteAktionen, VorschauMikroseite, VorschauPipeline, VorschauProvision, VorschauRechnungsvorlage, VorschauKundeKomplett, VorschauKundenchat, VorschauObjektAnlegen, VorschauHandbuchEntwurf, VorschauGrundriss3d, VorschauAnalysetoolErgebnis, VorschauBeratungsprotokoll, VorschauKundenprofilLinks, VorschauBeratungDruck } from "./vorschauRouten";
+import { VorschauCrm, VorschauBeratungspraesentation, VorschauErstgespraech, VorschauInvestmentrechner, VorschauNaechsteAktionen, VorschauMikroseite, VorschauPipeline, VorschauProvision, VorschauRechnungsvorlage, VorschauKundeKomplett, VorschauKundenchat, VorschauObjektAnlegen, VorschauHandbuchEntwurf, VorschauGrundriss3d, VorschauAnalysetoolErgebnis, VorschauBeratungsprotokoll, VorschauKundenprofilLinks, VorschauBeratungDruck, VorschauObjektvergleich } from "./vorschauRouten";
 
 /** /investmentrechner-plus → /investmentrechner mit Schalter „Bankgespräch & Bankunterlagen“, Parameter bleiben. */
 function InvestmentrechnerPlusWeiterleitung() {
@@ -135,6 +135,7 @@ const Marketing = lazyRoute(() => import("./pages/Marketing"));
 const Shop = lazyRoute(() => import("./pages/Shop"));
 const Bonitaetsrechner = lazyRoute(() => import("./pages/Bonitaetsrechner"));
 const Investmentrechner = lazyRoute(() => import("./pages/Investmentrechner"));
+const KundenObjektvergleich = lazyRoute(() => import("./pages/KundenObjektvergleich"));
 const Ankaufstool = lazyRoute(() => import("./pages/Ankaufstool"));
 const VideoStudio = lazyRoute(() => import("./pages/VideoStudio"));
 const Mietsubvention = lazyRoute(() => import("./pages/Mietsubvention"));
@@ -377,6 +378,7 @@ const App = () => (
                 <Route path="/login" element={<Login />} />
                 {/* Lokale Vorschau der Investmentkalkulation, nur im Entwicklungsmodus
                     und ohne Anmeldung (siehe vorschauRouten.ts). */}
+                {VorschauObjektvergleich && <Route path="/vorschau/objektvergleich" element={<VorschauObjektvergleich />} />}
                 {VorschauInvestmentrechner && (
                   <>
                     <Route path="/vorschau/investmentrechner" element={<VorschauInvestmentrechner />} />
@@ -695,6 +697,7 @@ const App = () => (
                   <Route path="/bonitaetsrechner" element={<Bonitaetsrechner />} />
                   <Route path="/immorechner" element={<Navigate to="/investmentrechner" replace />} />
                   <Route path="/investmentrechner" element={<Investmentrechner />} />
+                  <Route path="/investmentrechner/objektvergleich" element={<KundenObjektvergleich />} />
                   {/* Seit dem 11.10.2026 ein Schalter im Rechner statt einer eigenen Seite. Alte Links und Lesezeichen starten mit eingeschaltetem Schalter. */}
                   <Route path="/investmentrechner-plus" element={<InvestmentrechnerPlusWeiterleitung />} />
                   <Route path="/ankaufstool" element={<Ankaufstool />} />
