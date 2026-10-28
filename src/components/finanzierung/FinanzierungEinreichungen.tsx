@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { AlertTriangle, Award, Download, Loader2, MessageSquare, Send, Undo2, Upload } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { AlertTriangle, Award, Download, Loader2, MessageSquare, Undo2, Upload } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,11 +12,12 @@ import { useUser } from "@/contexts/UserContext";
 import { confirmDialog } from "@/lib/confirm";
 import { loadAllUsers } from "@/lib/loadAllUsers";
 import { openUnterlage } from "@/lib/storage";
+import { finanzierungChatOeffnen } from "@/lib/chatStore";
 import { createAngebot, saveFinanzierung, updateAngebot, updateDokumentStatus } from "@/lib/finanzierungStore";
 import {
-  STATUS_TEXT, aendereEinreichung, angeboteImVergleich, bankenKollisionen, darfFinanzierungSteuern,
-  fehlendeAngaben, fristAmpel, gibZuschlag, ladeEinreichungen, ladeNachrichten, ladeZugriffe, laeuft,
-  monatsrate, schreibeNachricht,
+  STATUS_TEXT, aendereEinreichung, angeboteNachZuschlag, bankenKollisionen, darfFinanzierungEinsehen,
+  darfFinanzierungSteuern, fehlendeAngaben, fristAmpel, gibZuschlag, ladeEinreichungen, ladeNachrichten,
+  ladeZugriffe, laeuft, monatsrate,
   type Einreichung, type EinreichungAngebot, type EinreichungNachricht,
 } from "@/lib/finanzierungEinreichung";
 
@@ -24,11 +25,16 @@ import {
  * Einreichungen eines Investments bei mehreren Finanzierern (Christian,
  * 27.10.2026).
  *
- * Die Leitung (admin, inhaber, backoffice) sieht alle Einreichungen mit
- * Stand, Frist, Zielbanken, Angebotsvergleich und vergibt den Zuschlag. Der
+ * Die Leitung (admin, inhaber, backoffice, seit 28.10.2026 auch die
+ * Vertriebsleitung) sieht alle Einreichungen mit Stand, Frist, Zielbanken und
+ * Angebotsvergleich; den Zuschlag vergeben admin, inhaber, backoffice. Der
  * Finanzierer sieht nur seine eigene: Die Datenbank liefert ihm keine andere
  * Zeile, die Oberflaeche muss also nichts ausblenden. Alle anderen Rollen
  * bekommen keine Zeile und sehen nichts.
+ *
+ * Rueckfragen laufen seit dem 28.10.2026 im CRM-Chat (ein Chat je Kunde und
+ * Finanzierer, Knopf „Chat“). Der alte Verlauf `finanzierung_nachrichten`
+ * bleibt gespeichert; hier steht nur noch seine letzte Nachricht.
  */
 
 const eur = (v: number) => new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(v);
@@ -63,7 +69,7 @@ function Frist({ e }: { e: Einreichung }) {
 
 export function FinanzierungEinreichungen({ investmentId }: { investmentId: string }) {
   const { user } = useUser();
-  const steuern = darfFinanzierungSteuern(user.role);
+  const einsehen = darfFinanzierungEinsehen(user.role);
   const [liste, setListe] = useState<Einreichung[] | null>(null);
 
   const laden = useCallback(() => {
@@ -80,12 +86,12 @@ export function FinanzierungEinreichungen({ investmentId }: { investmentId: stri
   }, [laden]);
 
   if (!liste || liste.length === 0) {
-    return steuern && liste ? (
+    return einsehen && liste ? (
       <p className="mb-4 text-xs text-muted-foreground">Noch bei keinem Finanzierer eingereicht.</p>
     ) : null;
   }
-  return steuern
-    ? <LeitungsAnsicht investmentId={investmentId} liste={liste} neuLaden={laden} />
+  return einsehen
+    ? <LeitungsAnsicht investmentId={investmentId} liste={liste} neuLaden={laden} steuern={darfFinanzierungSteuern(user.role)} />
     : <>{liste.map((e) => <FinanziererAnsicht key={e.id} e={e} neuLaden={laden} />)}</>;
 }
 
@@ -93,19 +99,20 @@ export function FinanzierungEinreichungen({ investmentId }: { investmentId: stri
 // Leitung
 // ---------------------------------------------------------------------------
 
-function LeitungsAnsicht({ investmentId, liste, neuLaden }: { investmentId: string; liste: Einreichung[]; neuLaden: () => void }) {
+function LeitungsAnsicht({ investmentId, liste, neuLaden, steuern }: { investmentId: string; liste: Einreichung[]; neuLaden: () => void; steuern: boolean }) {
   const namen = new Map(loadAllUsers().map((u) => [u.id, u.name || "Unbekannt"]));
   const name = (id: string) => namen.get(id) || "Unbekannt";
   const kollisionen = bankenKollisionen(liste);
-  const vergleich = angeboteImVergleich(liste);
-  const [offen, setOffen] = useState<string | null>(null);
+  // Nach dem Zuschlag nur das gewonnene Angebot, die anderen im Verlauf der
+  // Finanzierungskarte (AngeboteVerlauf).
+  const { sichtbar: vergleich, verlauf } = angeboteNachZuschlag(liste);
   const [zugriffe, setZugriffe] = useState<Array<{ user_id: string; aktion: string; am: string }> | null>(null);
   const [arbeitet, setArbeitet] = useState(false);
 
   const zuschlag = async (e: Einreichung) => {
     const ok = await confirmDialog({
       title: `Zuschlag an ${name(e.finanzierer_id)}?`,
-      description: "Alle anderen laufenden Einreichungen dieses Kunden werden abgesagt, die Finanzierer bekommen eine Glocke. Das Angebot ersetzt die bisherigen Angebote in der Finanzierung (im Vergleich hier bleiben alle erhalten); für den Kunden sichtbar wird es erst, wenn es dort freigegeben ist.",
+      description: "Alle anderen laufenden Einreichungen dieses Kunden werden abgesagt, die Finanzierer bekommen eine Glocke. Das Angebot ersetzt die bisherigen Angebote in der Finanzierung; diese und die anderen Angebote bleiben gespeichert und stehen im Verlauf der Finanzierungskarte. Für den Kunden sichtbar wird es erst, wenn es dort freigegeben ist.",
       confirmText: "Zuschlag geben",
       cancelText: "Abbrechen",
     });
@@ -161,10 +168,8 @@ function LeitungsAnsicht({ investmentId, liste, neuLaden }: { investmentId: stri
               <Frist e={e} />
               {!e.gesichtet_am && laeuft(e) && <span className="text-xs text-muted-foreground">noch nicht geöffnet</span>}
               <span className="ml-auto flex gap-1">
-                <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setOffen(offen === e.id ? null : e.id)}>
-                  <MessageSquare className="h-3.5 w-3.5 mr-1" /> Verlauf
-                </Button>
-                {laeuft(e) && (
+                <ChatKnopf einreichung={e} />
+                {steuern && laeuft(e) && (
                   <>
                     <Button size="sm" variant="outline" className="h-7 text-xs" disabled={arbeitet} onClick={() => zuschlag(e)}>
                       <Award className="h-3.5 w-3.5 mr-1" /> Zuschlag
@@ -184,14 +189,16 @@ function LeitungsAnsicht({ investmentId, liste, neuLaden }: { investmentId: stri
                 : "noch nicht angegeben"}
               {e.status === "abgelehnt" && e.grund ? ` · Ablehnungsgrund: ${e.grund}` : ""}
             </p>
-            {offen === e.id && <Verlauf einreichung={e} namen={namen} />}
+            <LetzteAlteNachricht einreichung={e} namen={namen} />
           </li>
         ))}
       </ul>
 
       {vergleich.length > 0 && (
         <div className="space-y-1.5">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Angebote im Vergleich</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            {verlauf.length > 0 ? "Angebot mit Zuschlag" : "Angebote im Vergleich"}
+          </p>
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead className="text-muted-foreground">
@@ -228,6 +235,11 @@ function LeitungsAnsicht({ investmentId, liste, neuLaden }: { investmentId: stri
               </tbody>
             </table>
           </div>
+          {verlauf.length > 0 && (
+            <p className="text-xs text-muted-foreground">
+              {verlauf.length === 1 ? "Ein weiteres Angebot steht" : `${verlauf.length} weitere Angebote stehen`} im Verlauf der Finanzierungskarte.
+            </p>
+          )}
         </div>
       )}
 
@@ -257,7 +269,10 @@ function LeitungsAnsicht({ investmentId, liste, neuLaden }: { investmentId: stri
  * gewohnt. Die PDF kommt an den Ort, an dem die Finanzierung ihre Dateien
  * sucht.
  *
- * Die Finanzierung haelt danach nur noch dieses Angebot: Der Gewinner sieht
+ * Die bisherigen Angebote hat `finanzierung_zuschlag` vorher in
+ * `finanzierung_angebote_verlauf` kopiert (Migration 20261028120000); sie
+ * stehen im Verlauf der Karte. Die Finanzierung haelt danach nur noch dieses
+ * Angebot: Der Gewinner sieht
  * sie mit dem Zuschlag und soll keine fremden Angebote lesen. Seine Dateien
  * gibt die Datenbank auch nur fuer Angebote frei, die hier stehen
  * (`finanzierer_darf_pfad`).
@@ -378,10 +393,12 @@ function FinanziererAnsicht({ e, neuLaden }: { e: Einreichung; neuLaden: () => v
           )}
           {e.status !== "rueckfrage" && (
             <Button size="sm" variant="outline" className="h-8 text-xs" disabled={arbeitet}
-              onClick={() => speichern({ status: "rueckfrage" }, "Stand: Rückfrage. Bitte die Frage im Verlauf unten stellen.")}>Rückfrage</Button>
+              onClick={() => speichern({ status: "rueckfrage" }, "Stand: Rückfrage. Bitte die Frage im Chat stellen.")}>Rückfrage</Button>
           )}
+          <ChatKnopf einreichung={e} />
         </div>
       )}
+      {!offen && e.status === "zuschlag" && <div><ChatKnopf einreichung={e} /></div>}
 
       <div className="space-y-1">
         <Label className="text-xs">Banken, bei denen angefragt wird (durch Komma getrennt)</Label>
@@ -444,71 +461,52 @@ function FinanziererAnsicht({ e, neuLaden }: { e: Einreichung; neuLaden: () => v
         </div>
       )}
 
-      <Verlauf einreichung={e} namen={new Map(loadAllUsers().map((u) => [u.id, u.name || "Unbekannt"]))} alsFinanzierer />
+      <LetzteAlteNachricht einreichung={e} namen={new Map(loadAllUsers().map((u) => [u.id, u.name || "Unbekannt"]))} />
     </div>
   );
 }
 
 // ---------------------------------------------------------------------------
-// Verlauf (Rueckfragen) je Einreichung
+// Chat je Kunde und Finanzierer, alter Verlauf nur als Vorschau
 // ---------------------------------------------------------------------------
 
-function Verlauf({ einreichung, namen, alsFinanzierer }: { einreichung: Einreichung; namen: Map<string, string>; alsFinanzierer?: boolean }) {
-  const [nachrichten, setNachrichten] = useState<EinreichungNachricht[]>([]);
-  const [text, setText] = useState("");
-  const [nachforderung, setNachforderung] = useState(false);
-  const [sendet, setSendet] = useState(false);
-  const offen = laeuft(einreichung) || einreichung.status === "zuschlag";
-
-  const laden = useCallback(() => {
-    ladeNachrichten(einreichung.id).then(setNachrichten).catch(() => setNachrichten([]));
-  }, [einreichung.id]);
-  useEffect(laden, [laden]);
-
-  const senden = async () => {
-    if (!text.trim()) return;
-    setSendet(true);
+/** Oeffnet den CRM-Chat zu Kunde und Finanzierer; legt ihn an, wenn es keinen gibt. */
+function ChatKnopf({ einreichung }: { einreichung: Einreichung }) {
+  const navigate = useNavigate();
+  const [laeuftGerade, setLaeuftGerade] = useState(false);
+  const oeffnen = async () => {
+    setLaeuftGerade(true);
     try {
-      await schreibeNachricht(einreichung.id, text.trim(), nachforderung);
-      setText("");
-      setNachforderung(false);
-      laden();
+      const chatId = await finanzierungChatOeffnen(einreichung.id);
+      navigate(`/chat?id=${chatId}`);
     } catch (f: any) {
-      toast.error(f?.message || "Nachricht nicht gesendet.");
+      toast.error(f?.message || "Chat konnte nicht geöffnet werden.");
     } finally {
-      setSendet(false);
+      setLaeuftGerade(false);
     }
   };
-
   return (
-    <div className="rounded-md bg-muted/40 p-3 space-y-2">
-      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Verlauf</p>
-      {nachrichten.length === 0 && <p className="text-xs text-muted-foreground">Noch keine Nachrichten.</p>}
-      {nachrichten.map((n) => (
-        <div key={n.id} className="text-sm">
-          <span className="text-xs text-muted-foreground">
-            {namen.get(n.von) || "Unbekannt"}, {new Date(n.erstellt_am).toLocaleString("de-DE", { dateStyle: "short", timeStyle: "short" })}
-            {n.nachforderung && <span className="ml-1 font-semibold text-[hsl(var(--warning))]">Unterlage nachgefordert</span>}
-          </span>
-          <p className="whitespace-pre-wrap">{n.text}</p>
-        </div>
-      ))}
-      {offen && (
-        <div className="space-y-1.5">
-          <Textarea rows={2} value={text} onChange={(ev) => setText(ev.target.value)} placeholder={alsFinanzierer ? "Frage oder Hinweis an OS" : "Nachricht an den Finanzierer"} />
-          <div className="flex items-center gap-3">
-            {alsFinanzierer && (
-              <label className="flex items-center gap-1.5 text-xs">
-                <Checkbox checked={nachforderung} onCheckedChange={(v) => setNachforderung(v === true)} />
-                Unterlage nachfordern
-              </label>
-            )}
-            <Button size="sm" className="h-7 text-xs ml-auto" disabled={sendet || !text.trim()} onClick={senden}>
-              <Send className="h-3.5 w-3.5 mr-1" /> Senden
-            </Button>
-          </div>
-        </div>
-      )}
-    </div>
+    <Button size="sm" variant="outline" className="h-7 text-xs" disabled={laeuftGerade} onClick={oeffnen}>
+      {laeuftGerade ? <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" /> : <MessageSquare className="h-3.5 w-3.5 mr-1" />} Chat
+    </Button>
+  );
+}
+
+/**
+ * Die letzte Nachricht aus dem alten Verlauf vor dem Chat, damit nichts
+ * Offenes untergeht. Ohne alte Nachrichten zeigt sie nichts.
+ */
+function LetzteAlteNachricht({ einreichung, namen }: { einreichung: Einreichung; namen: Map<string, string> }) {
+  const [alt, setAlt] = useState<EinreichungNachricht[]>([]);
+  useEffect(() => {
+    ladeNachrichten(einreichung.id).then(setAlt).catch(() => setAlt([]));
+  }, [einreichung.id]);
+  const letzte = alt[alt.length - 1];
+  if (!letzte) return null;
+  return (
+    <p className="text-xs text-muted-foreground truncate" title={letzte.text}>
+      Ältere Nachrichten ({alt.length}), zuletzt {namen.get(letzte.von) || "Unbekannt"} am{" "}
+      {new Date(letzte.erstellt_am).toLocaleDateString("de-DE")}: „{letzte.text}“
+    </p>
   );
 }

@@ -229,6 +229,27 @@ export async function kundenchatSicherstellen(kontaktId: string): Promise<Kunden
 }
 
 /**
+ * Der Chat zu Kunde und Finanzierer einer Einreichung, ueber
+ * `finanzierung_chat_oeffnen` (Migration 20261028120000). Gibt es ihn schon,
+ * kommt er zurueck, sonst legt die Datenbank ihn an. Die Leitung (admin,
+ * inhaber, vertriebsleiter, backoffice) traegt die Datenbank beim ersten
+ * Finanzierer selbst ein, einmal je Chat. Wirft mit Meldung, wenn es nicht geht.
+ */
+export async function finanzierungChatOeffnen(einreichungId: string): Promise<string> {
+  const { supabase: sb } = await import("@/integrations/supabase/client");
+  const { data, error } = await (sb as unknown as {
+    rpc: (name: string, args: Record<string, unknown>) => Promise<{ data: unknown; error: { code?: string; message?: string } | null }>;
+  }).rpc("finanzierung_chat_oeffnen", { _einreichung_id: einreichungId });
+  if (error) {
+    if (funktionFehlt(error)) throw new Error("Der Chat zur Finanzierung ist noch nicht eingerichtet.");
+    throw new Error(error.message || "Chat konnte nicht geöffnet werden.");
+  }
+  if (typeof data !== "string" || !data) throw new Error("Chat konnte nicht geöffnet werden.");
+  await Promise.all([cacheReload("chat_gruppen"), cacheReload("chat_teilnehmer"), cacheReload("chat_nachrichten")]);
+  return data;
+}
+
+/**
  * Beendet die eigene Teilnahme an einem Chat.
  *
  * Vorher entfernte die Oberfläche den Teilnehmer nur im Arbeitsspeicher und
@@ -468,7 +489,9 @@ export function updateChat(chat: ChatData) {
     cacheUpdate("chat_gruppen", chat.id, {
       name: chat.kundeName,
       typ: chat.typ,
-      meta: { kundeId: chat.kundeId, kundeStatus: chat.kundeStatus, erstelltVon: chat.erstelltVon, typ: chat.typ, angepinnt: chat.angepinnt, ungelesen: chat.ungelesen, stummgeschaltet: chat.stummgeschaltet, archiviert: chat.archiviert },
+      // `kind` mitschreiben: Sonst verloere ein Admin beim Anpinnen die Bauart
+      // (Tippgeber-, Finanzierungschat), die Nicht-Admins die Datenbank haelt.
+      meta: { kundeId: chat.kundeId, kundeStatus: chat.kundeStatus, erstelltVon: chat.erstelltVon, typ: chat.typ, angepinnt: chat.angepinnt, ungelesen: chat.ungelesen, stummgeschaltet: chat.stummgeschaltet, archiviert: chat.archiviert, ...(chat.kind ? { kind: chat.kind } : {}) },
     });
   }
 }

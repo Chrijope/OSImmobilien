@@ -151,6 +151,9 @@ export default function Chat() {
     // bliebe im alten liegen. Soll jemand anders zustaendig sein, aendert man
     // die Zuordnung, nicht die Teilnahme.
     if (chat.kind === "tippgeber_vp") return false;
+    // Finanzierungschats (Kunde und Finanzierer): Jeder darf austreten, auch
+    // wer den Chat ueber den Knopf angelegt hat (Christian, 28.10.2026).
+    if (chat.kind === "finanzierung") return chat.teilnehmer.some(t => t.id === myId);
     const istErsteller = chat.erstelltVonId
       ? chat.erstelltVonId === myId
       : chat.erstelltVon === user.name;
@@ -383,7 +386,7 @@ export default function Chat() {
     const isCreator = activeChat.erstelltVonId
       ? activeChat.erstelltVonId === myId
       : activeChat.erstelltVon === user.name;
-    if (isCreator) {
+    if (isCreator && activeChat.kind !== "finanzierung") {
       toast.error("Der Chat-Ersteller kann den Chat nicht verlassen");
       return;
     }

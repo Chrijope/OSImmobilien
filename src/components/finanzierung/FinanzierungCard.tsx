@@ -30,6 +30,7 @@ import {
 } from "@/lib/finanzierungStore";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { MischzinsRechner } from "@/components/objekte/MischzinsRechner";
+import { AngeboteVerlauf } from "@/components/finanzierung/AngeboteVerlauf";
 
 const fmt = (v: number) =>
   new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(v);
@@ -539,6 +540,8 @@ export function FinanzierungCard({ investmentId, kundeName, berater, beraterId, 
               </Button>
             )}
           </div>
+
+          <AngeboteVerlauf investmentId={investmentId} />
         </TabsContent>
 
         <TabsContent value="mischzins" className="mt-4">
