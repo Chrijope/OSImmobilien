@@ -69,6 +69,18 @@ export function teamleiterVon(einstellungen: unknown, selbst: string): string | 
   return typeof id === "string" && id && id !== selbst ? id : null;
 }
 
+/** Teamleiter je Nutzer aus dem Zwischenspeicher `user_settings`, nur gesetzte. */
+export function teamleiterKarte(
+  zeilen: Array<{ user_id: string; einstellungen: unknown }> = cacheGet<any>("user_settings"),
+): Map<string, string> {
+  const karte = new Map<string, string>();
+  for (const z of zeilen) {
+    const tl = teamleiterVon(z.einstellungen, z.user_id);
+    if (tl) karte.set(z.user_id, tl);
+  }
+  return karte;
+}
+
 /**
  * Alle Nutzer unter `leiterId`, über alle Ebenen, mit Ebene und direktem
  * Teamleiter. Liest den Zwischenspeicher `user_settings`; was die Datenbank

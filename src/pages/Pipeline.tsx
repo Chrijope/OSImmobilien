@@ -10,7 +10,11 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Archive, Search, User, Users, Calendar, Building2, Banknote, Scale, Clock, Info } from "lucide-react";
+import { Archive, Search, User, Users, Calendar, Building2, Banknote, Scale, Clock, Info, ChevronRight } from "lucide-react";
+import { EinblickReihe } from "@/components/kunden/EinblickReihe";
+import { kundenEinblick, type EinblickPerson } from "@/lib/kundenEinblick";
+import { useEinblickTeamleiter } from "@/hooks/useEinblickTeamleiter";
+import { laufendeFinanziererJeInvestment } from "@/lib/finanzierungEinreichung";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { getInvestmentById, getInvestmentsByKontakt, isGrundschuldUploaded } from "@/lib/investmentsStore";
 import { cn } from "@/lib/utils";
@@ -326,7 +330,7 @@ function getDocStatus(meta: any): { label: string; className: string } {
   return { label: "Ausstehend", className: "text-muted-foreground" };
 }
 
-function KundeCard({ kunde, stufe, investmentId, zusatzBereit, datenstand, onClick, onDragStartCard }: { kunde: KundeData; stufe: PipelineStufe; investmentId?: string; zusatzBereit: boolean; datenstand: number; onClick: () => void; onDragStartCard?: (e: React.DragEvent) => void }) {
+function KundeCard({ kunde, stufe, investmentId, zusatzBereit, datenstand, einblick, onClick, onDragStartCard }: { kunde: KundeData; stufe: PipelineStufe; investmentId?: string; zusatzBereit: boolean; datenstand: number; einblick?: EinblickPerson[]; onClick: () => void; onDragStartCard?: (e: React.DragEvent) => void }) {
   const isArchived = kunde.archiviert;
   /*
    * Termine, Aufgaben und Follow-ups dieses Kunden, genau einmal je Kachel.
@@ -740,6 +744,8 @@ function KundeCard({ kunde, stufe, investmentId, zusatzBereit, datenstand, onCli
             )}
             <div className="text-xs text-muted-foreground"><span className="font-medium">Vertriebspartner:</span> {tarnName(kunde.berater, "partner") || "–"}</div>
             <div className="text-xs text-muted-foreground"><span className="font-medium">Quelle:</span> {kunde.quelle || "–"}</div>
+            {/* Wer hat Einblick in den Kunden (Christian, 29.10.2026). */}
+            {einblick && <EinblickReihe personen={einblick} className="pt-1" />}
           </div>
         );
       })()}
@@ -1107,6 +1113,24 @@ export default function Pipeline() {
    * bisher ausschliesslich auf die eigene Kennung.
    */
   const teamVersion = useLiveVersion(["user_settings", "profiles", "bewerbungen"]);
+  /*
+   * Bildreihe „Wer hat Einblick“: Nutzer, Teamkette und Empfehler einmal je
+   * Datenstand, nicht je Kachel. Die Finanzierer kommen aus den Einreichungen
+   * (seit 27.10.2026 sieht ein Finanzierer nur eingereichte Kunden).
+   */
+  const alleNutzer = useMemo(() => loadAllUsers(), [teamVersion]);
+  const teamleiter = useEinblickTeamleiter(myUserId);
+  const empfehlerJeKontakt = useMemo(
+    () => new Map<string, string | undefined>(cacheGet("kontakte").map((r: any) => [r.id, r.meta?.empfehlungsgeberVpId])),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [liveVersion],
+  );
+  const [finanziererJeInvestment, setFinanziererJeInvestment] = useState<Map<string, string[]>>(new Map());
+  useEffect(() => {
+    let aktiv = true;
+    void laufendeFinanziererJeInvestment().then((karte) => { if (aktiv) setFinanziererJeInvestment(karte); });
+    return () => { aktiv = false; };
+  }, [liveVersion]);
   const teamIds = useMemo(
     () => (umfang === "team" ? teamMitgliederIds(myUserId) : new Set<string>()),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1411,7 +1435,7 @@ export default function Pipeline() {
                   </div>
                 ))
               ) : (
-              RENDER_STUFEN.map((stufe) => {
+              RENDER_STUFEN.map((stufe, spaltenIndex) => {
                 const entries = getEntriesForStufe(stufe.key);
                 // Gezeichnet wird nur das Sichtfenster (siehe
                 // pipelineSichtfenster.ts). Die Anzahl im Spaltenkopf
@@ -1439,7 +1463,7 @@ export default function Pipeline() {
                     key={stufe.key}
                     data-pruefung="pipeline-spalte"
                     data-stufe={stufe.key}
-                    className={`relative w-56 flex-shrink-0 flex flex-col min-h-0 rounded-md transition-colors before:pointer-events-none before:absolute before:inset-y-0 before:-left-2 before:w-px before:bg-border/60 first:before:hidden ${isBlurred ? "select-none pointer-events-none" : ""} ${isDropTarget ? "ring-2 ring-primary bg-primary/5" : ""}`}
+                    className={`relative w-56 flex-shrink-0 flex flex-col min-h-0 rounded-md transition-colors before:pointer-events-none before:absolute before:top-10 before:bottom-0 before:-left-2 before:w-px before:bg-border/60 first:before:hidden ${isBlurred ? "select-none pointer-events-none" : ""} ${isDropTarget ? "ring-2 ring-primary bg-primary/5" : ""}`}
                     onDragOver={(e) => {
                       if (!dragEntry || isBlurred) return;
                       e.preventDefault();
@@ -1449,6 +1473,14 @@ export default function Pipeline() {
                     onDragLeave={() => { if (dragOverStufe === stufe.key) setDragOverStufe(null); }}
                     onDrop={(e) => { e.preventDefault(); handleDropOnStufe(stufe.key, stufe.label); }}
                   >
+                    {/* Laufrichtung der Pipeline, auf Höhe der Anzahl; die Trennlinie beginnt erst darunter. */}
+                    {spaltenIndex > 0 && (
+                      <ChevronRight
+                        data-pruefung="pipeline-richtung"
+                        aria-hidden="true"
+                        className="pointer-events-none absolute -left-2 top-[11px] h-3.5 w-3.5 -translate-x-1/2 text-muted-foreground/70"
+                      />
+                    )}
                     <div data-pruefung="pipeline-kopf" className={`flex items-center gap-2 mb-3 py-2 ${isBlurred ? "blur-[3px] opacity-40" : ""}`}>
                       <div className={`w-2 h-2 rounded-full shrink-0 ${headerColor(stufe.key)}`} />
                       <h3 className="font-semibold text-sm">{stufe.label}</h3>
@@ -1490,6 +1522,17 @@ export default function Pipeline() {
                           investmentId={entry.investmentId}
                           zusatzBereit={zusatzBereit}
                           datenstand={liveVersion}
+                          einblick={kundenEinblick(
+                            {
+                              ...entry.kunde,
+                              empfehlungsgeberVpId: empfehlerJeKontakt.get(entry.kunde.id),
+                              stufe: stufe.key,
+                              finanzierer: entry.investmentId ? finanziererJeInvestment.get(entry.investmentId) : undefined,
+                            },
+                            alleNutzer,
+                            user.role,
+                            teamleiter,
+                          )}
                           onClick={() => !isBlurred && navigate(entry.investmentId ? `/kunden/${entry.kunde.id}?investment=${entry.investmentId}` : `/kunden/${entry.kunde.id}`)}
                           onDragStartCard={(e) => {
                             if (isBlurred) { e.preventDefault(); return; }

@@ -238,6 +238,29 @@ export async function ladeEinreichungen(investmentId?: string): Promise<Einreich
   return (data || []) as Einreichung[];
 }
 
+/**
+ * Finanzierer mit aktiver Einreichung je Investment, für die Bildreihe
+ * „Wer hat Einblick“. Wer die Einreichungen nicht lesen darf (etwa ein
+ * Vertriebspartner), bekommt eine leere Karte; er sieht Finanzierer dort ohnehin nicht.
+ */
+export async function laufendeFinanziererJeInvestment(investmentIds?: readonly string[]): Promise<Map<string, string[]>> {
+  const karte = new Map<string, string[]>();
+  if (investmentIds && investmentIds.length === 0) return karte;
+  let q = db.from("finanzierung_einreichungen").select("investment_id, finanzierer_id, status");
+  if (investmentIds) q = q.in("investment_id", investmentIds);
+  const { data, error } = await q;
+  if (error) {
+    console.warn("[Einblick] Einreichungen nicht lesbar", error);
+    return karte;
+  }
+  for (const e of (data || []) as Pick<Einreichung, "investment_id" | "finanzierer_id" | "status">[]) {
+    // Wie `finanzierer_aktiv`: alles außer abgelehnt, abgesagt, zurückgezogen (also auch der Zuschlag).
+    if (["abgelehnt", "abgesagt", "zurueckgezogen"].includes(e.status)) continue;
+    karte.set(e.investment_id, [...(karte.get(e.investment_id) ?? []), e.finanzierer_id]);
+  }
+  return karte;
+}
+
 export async function aendereEinreichung(id: string, aenderung: Partial<Einreichung>): Promise<void> {
   const { error } = await db.from("finanzierung_einreichungen").update(aenderung).eq("id", id);
   if (error) throw error;

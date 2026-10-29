@@ -197,11 +197,14 @@ describe("Summenleiste der Kunden-Pipeline", () => {
     stand.kontakte = [kontakt("k1", "neuer_lead")];
     render(<MemoryRouter><Pipeline /></MemoryRouter>);
 
-    for (const spalte of document.querySelectorAll<HTMLElement>('[data-pruefung="pipeline-spalte"]')) {
+    // Seit dem 29.10.2026 beginnt der Strich unter dem Kopf; dort steht der Richtungspfeil.
+    const spalten = [...document.querySelectorAll<HTMLElement>('[data-pruefung="pipeline-spalte"]')];
+    spalten.forEach((spalte, i) => {
       expect(spalte.className).toContain("before:bg-border/60");
-      expect(spalte.className).toContain("before:inset-y-0");
+      expect(spalte.className).toContain("before:top-10");
       expect(spalte.className).toContain("first:before:hidden");
-    }
+      expect(!!spalte.querySelector('[data-pruefung="pipeline-richtung"]')).toBe(i > 0);
+    });
   });
 
   it("liegt ausserhalb der scrollenden Kartenlisten, aber im selben waagerechten Scrollbereich", () => {

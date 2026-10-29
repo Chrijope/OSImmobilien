@@ -36,6 +36,8 @@ export interface SystemUser {
   telefon?: string;
   /** Adresse des Profilbildes, so wie sie in `profiles.avatar_url` steht. */
   bildUrl?: string;
+  /** `profiles.gesperrt`: gesperrte oder ausgeschiedene Nutzer. */
+  gesperrt?: boolean;
 }
 
 /**
@@ -99,6 +101,7 @@ export function loadAllUsers(): SystemUser[] {
       email: p.email || "",
       telefon: p.telefon || "",
       bildUrl: p.avatar_url || "",
+      gesperrt: p.gesperrt === true,
     };
   });
 }

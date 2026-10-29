@@ -186,6 +186,10 @@ import { useNaechsteAktionKachel } from "@/components/kunden/profil/useOffeneAuf
 import { ToastAction } from "@/components/ui/toast";
 import { getNextSteps } from "@/lib/nextStepsGuide";
 import { loadBeraterUsers, loadAllUsers } from "@/lib/loadAllUsers";
+import { kundenEinblick } from "@/lib/kundenEinblick";
+import { EinblickReihe } from "@/components/kunden/EinblickReihe";
+import { useEinblickTeamleiter } from "@/hooks/useEinblickTeamleiter";
+import { laufendeFinanziererJeInvestment } from "@/lib/finanzierungEinreichung";
 import { useToast } from "@/hooks/use-toast";
 import { selbstauskunftFortschrittProzent } from "@/components/selbstauskunft/SelbstauskunftForm";
 import { hatAngefangenenStand } from "@/lib/selbstauskunftEinladung";
@@ -1715,6 +1719,17 @@ export default function KundenDetail() {
 
   // ── Investment state ──
   const [investments, setInvestments] = useState<Investment[]>(() => getInvestmentsByKontakt(id || ""));
+  const einblickTeamleiter = useEinblickTeamleiter(authUser?.id);
+  // Finanzierer mit aktiver Einreichung zu irgendeinem Investment, für „Wer hat Einblick“.
+  const [einblickFinanzierer, setEinblickFinanzierer] = useState<string[]>([]);
+  const investmentIdsText = investments.map((i) => i.id).join(",");
+  useEffect(() => {
+    let aktiv = true;
+    void laufendeFinanziererJeInvestment(investmentIdsText ? investmentIdsText.split(",") : []).then((karte) => {
+      if (aktiv) setEinblickFinanzierer([...new Set([...karte.values()].flat())]);
+    });
+    return () => { aktiv = false; };
+  }, [investmentIdsText]);
 
   // Refresh investments from DB to catch server-side meta updates (e.g. saSigned from finalize)
   const refreshInvestmentsFromDb = async (kontaktId: string) => {
@@ -5274,6 +5289,13 @@ export default function KundenDetail() {
     // Dieselbe Sicht wie `EmpfehlungsprogrammKnoepfe`: nur wer das Programm pflegt, und erst mit Investment.
     const zeigeEmpfehlung = !isFinanzierer && investments.length > 0 && darfEmpfehlungsprogrammPflegen(user.role);
     const portal = <KundenportalZugang {...kundenportalAngaben} darstellung="profil" />;
+    const einblick = kundenEinblick(
+      // Bei mehreren Investments zählt das am weitesten fortgeschrittene.
+      { ...kunde, empfehlungsgeberVpId: rawMeta.empfehlungsgeberVpId, stufe: getEffectivePipelineStufe(kunde), finanzierer: einblickFinanzierer },
+      loadAllUsers(),
+      user.role,
+      einblickTeamleiter,
+    );
     const abschnitte: KundenprofilAbschnittDef[] = [
       ...(kunde.person2 ? [{
         schluessel: "person2",
@@ -5286,6 +5308,13 @@ export default function KundenDetail() {
         titel: "Lead- und Verwaltungsdaten",
         hinweis: vertriebspartnerName || undefined,
         inhalt: (
+          <>
+          {einblick.length > 0 && (
+            <div data-pruefung="kundenprofil-einblick" className="mb-3 space-y-1.5">
+              <p className="text-xs text-muted-foreground">Diese Partner haben Einblick in den Kunden</p>
+              <EinblickReihe personen={einblick} />
+            </div>
+          )}
           <LeadFelder
             kunde={kunde}
             meta={rawMeta}
@@ -5310,6 +5339,7 @@ export default function KundenDetail() {
               </div>
             ) : undefined}
           />
+          </>
         ),
       },
       /*
