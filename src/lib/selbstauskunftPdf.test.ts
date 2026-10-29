@@ -290,3 +290,29 @@ describe("generateSelbstauskunftPDF, Unterschrift auf Papier (eigenständige Fas
     expect(alles).toContain("Unterschrift Antragsteller 1");
   });
 });
+
+describe("generateSelbstauskunftPDF, Unterlagen-Checkliste", () => {
+  it("fehlt ohne die Option", async () => {
+    await generateSelbstauskunftPDF(saDaten({ beschaeftigungsart: "angestellt" }), kunde);
+    expect(alleTexte()).not.toContain("Unterlagen-Checkliste");
+  });
+
+  it("hängt die Liste passend zur Beschäftigungsart an", async () => {
+    await generateSelbstauskunftPDF(saDaten({ beschaeftigungsart: "selbstaendig" }), kunde, undefined, { unterlagenCheckliste: true });
+    const alles = alleTexte();
+    expect(alles).toContain("Unterlagen-Checkliste Selbstständige");
+    expect(alles).not.toContain("Unterlagen-Checkliste Angestellte");
+  });
+
+  it("bringt bei gemischten Antragstellern beide Listen", async () => {
+    const daten = saDaten({
+      beschaeftigungsart: "angestellt",
+      person2: true,
+      person2Data: { ...EMPTY_PERSON, vorname: "Ben", nachname: "Muster", beschaeftigungsart: "selbstaendig" },
+    });
+    await generateSelbstauskunftPDF(daten, kunde, undefined, { unterlagenCheckliste: true });
+    const alles = alleTexte();
+    expect(alles).toContain("Unterlagen-Checkliste Angestellte");
+    expect(alles).toContain("Unterlagen-Checkliste Selbstständige");
+  });
+});

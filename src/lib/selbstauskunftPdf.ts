@@ -273,6 +273,51 @@ export interface SelbstauskunftPdfOptionen {
    * „Unterschrift ausstehend“. Nur die eigenständige Fassung ohne CRM.
    */
   papierUnterschrift?: boolean;
+  /**
+   * Hängt je Beschäftigungsart der Antragsteller die passende
+   * Unterlagen-Checkliste als eigene Seite an (Artefakte, Christian, 29.10.2026).
+   */
+  unterlagenCheckliste?: boolean;
+}
+
+/** Die Unterlagen-Checklisten, Stand der Vorlagen vom 29.10.2026. */
+export const UNTERLAGEN_CHECKLISTE: Record<"angestellt" | "selbstaendig", { titel: string; punkte: string[] }> = {
+  angestellt: {
+    titel: "Angestellte",
+    punkte: [
+      "Selbstauskunft vollständig ausgefüllt und unterschrieben",
+      "Personalausweis oder Reisepass (Vorder- und Rückseite, gültig)",
+      "Gehaltsabrechnungen der letzten 3 Monate",
+      "Gehaltsabrechnung Dezember des Vorjahres bzw. Lohnsteuerbescheinigung",
+      "Arbeitsvertrag (bei Probezeit oder Befristung zwingend)",
+      "Kontoauszüge des Gehaltskontos der letzten 3 Monate",
+      "Eigenkapitalnachweis (Name, Datum und Betrag erkennbar)",
+      "Nachweise laufender Kredite mit aktuellem Saldo und Rate (falls vorhanden)",
+      "Letzter Einkommensteuerbescheid (falls vorhanden)",
+      "Bei Immobilienbesitz: Mietverträge und Darlehensstand je Objekt",
+    ],
+  },
+  selbstaendig: {
+    titel: "Selbstständige",
+    punkte: [
+      "Selbstauskunft vollständig ausgefüllt und unterschrieben",
+      "Personalausweis oder Reisepass (Vorder- und Rückseite, gültig)",
+      "Einkommensteuerbescheide der letzten 2 Jahre",
+      "Einkommensteuererklärungen der letzten 2 Jahre",
+      "Bilanzen bzw. Einnahmen-Überschuss-Rechnungen der letzten 2 Jahre",
+      "Aktuelle BWA mit Summen- und Saldenliste",
+      "Kontoauszüge privat und geschäftlich der letzten 3 Monate",
+      "Eigenkapitalnachweis (Name, Datum und Betrag erkennbar)",
+      "Nachweise laufender Kredite mit aktuellem Saldo und Rate (falls vorhanden)",
+      "Bei Immobilienbesitz: Mietverträge und Darlehensstand je Objekt",
+    ],
+  },
+};
+
+/** Welche Checklisten zu den Antragstellern passen, ohne Doppelte. */
+export function checklistenFuer(data: Pick<SelbstauskunftData, "beschaeftigungsart" | "person2" | "person2Data">): ("angestellt" | "selbstaendig")[] {
+  const arten = [data.beschaeftigungsart, data.person2 ? data.person2Data?.beschaeftigungsart : undefined];
+  return (["angestellt", "selbstaendig"] as const).filter((a) => arten.includes(a));
 }
 
 /**
@@ -1445,6 +1490,82 @@ export async function generateSelbstauskunftPDF(
     col1, sigLineY + 20, { maxWidth: contentW },
   );
   doc.setTextColor(0, 0, 0);
+
+  // ─── Unterlagen-Checkliste je Beschäftigungsart ───
+  if (optionen.unterlagenCheckliste) {
+    const ORANGE: [number, number, number] = [184, 76, 28];
+    for (const art of checklistenFuer(data)) {
+      const liste = UNTERLAGEN_CHECKLISTE[art];
+      neueSeite();
+      doc.setFont(PDF_FONT, "bold");
+      doc.setFontSize(6.5);
+      doc.setTextColor(...BRAND.muted);
+      gesperrt(`UNTERLAGEN · ${liste.titel.toUpperCase()}`, col1 + contentW, y, 0.8, "rechts");
+      y += 12;
+      doc.setFont(PDF_FONT, "normal");
+      doc.setFontSize(18);
+      doc.setTextColor(...BRAND.primary);
+      doc.text(`Unterlagen-Checkliste ${liste.titel}`, col1, y);
+      y += 6;
+      doc.setFontSize(9);
+      doc.setTextColor(...BRAND.text);
+      doc.text("Diese Unterlagen brauchen wir zusätzlich zur Selbstauskunft für die Bonitäts- und Finanzierungsprüfung.", col1, y, { maxWidth: contentW });
+      y += 7;
+      // Hinweiskasten: nur PDF-Dateien
+      const hinweis = umbrechen(
+        "Keine Fotos, keine Screenshots, keine Word- oder Bilddateien. Vermögens- und Einkommensnachweise nur als Kontoauszug oder gleichwertiger Nachweis der Bank, auf dem Name des Kunden, Datum und Betrag klar erkennbar sind. Ansichten aus Wallet- oder Banking-Apps ohne Name und Datum werden nicht anerkannt.",
+        contentW - 10,
+      );
+      const kastenH = 12 + hinweis.length * 4;
+      doc.setFillColor(...ORANGE);
+      doc.rect(col1, y, contentW, kastenH, "F");
+      doc.setTextColor(...BRAND.white);
+      doc.setFont(PDF_FONT, "bold");
+      doc.setFontSize(10);
+      doc.text("WICHTIG: WIR AKZEPTIEREN AUSSCHLIESSLICH PDF-DATEIEN", col1 + 5, y + 7);
+      doc.setFont(PDF_FONT, "normal");
+      doc.setFontSize(8);
+      hinweis.forEach((z, i) => doc.text(z, col1 + 5, y + 12.5 + i * 4));
+      y += kastenH + 8;
+      // Tabelle
+      doc.setFillColor(...BRAND.light);
+      doc.rect(col1, y, contentW, 7, "F");
+      doc.setFontSize(8);
+      doc.setTextColor(...BRAND.text);
+      doc.text("Unterlage", col1 + 3, y + 4.7);
+      doc.text("liegt vor", col1 + contentW - 3, y + 4.7, { align: "right" });
+      y += 7;
+      liste.punkte.forEach((punkt, i) => {
+        doc.setFontSize(9);
+        doc.setTextColor(...ORANGE);
+        doc.text(String(i + 1).padStart(2, "0"), col1 + 3, y + 6);
+        doc.setTextColor(...BRAND.text);
+        doc.text(punkt, col1 + 13, y + 6, { maxWidth: contentW - 28 });
+        doc.setDrawColor(...BRAND.muted);
+        doc.setLineWidth(0.3);
+        doc.rect(col1 + contentW - 8, y + 2.2, 5, 5);
+        y += 9;
+        doc.setDrawColor(...BRAND.separator);
+        doc.setLineWidth(0.2);
+        doc.line(col1, y, col1 + contentW, y);
+      });
+      y += 7;
+      doc.setFontSize(7.5);
+      doc.setTextColor(...BRAND.muted);
+      doc.text("Je nach Bank können einzelne Unterlagen zusätzlich angefordert werden. Bitte alles gesammelt an Ihren Ansprechpartner senden.", col1, y, { maxWidth: contentW });
+      y += 9;
+      doc.text("Kunde (Name)", col1, y);
+      doc.text("Vertriebspartner", col2, y);
+      doc.setDrawColor(...BRAND.muted);
+      doc.rect(col1, y + 1.5, spaltenB, 8);
+      doc.rect(col2, y + 1.5, spaltenB, 8);
+      doc.setFontSize(9);
+      doc.setTextColor(...BRAND.text);
+      const namen = [nameP1, nameP2].filter(Boolean).join(", ");
+      if (namen) doc.text(namen, col1 + 2.5, y + 6.8, { maxWidth: spaltenB - 5 });
+      doc.setTextColor(0, 0, 0);
+    }
+  }
 
   // ─── Fußzeile auf allen Inhaltsseiten ───
   // Das Deckblatt bekommt keine Fusszeile und zaehlt nicht mit.

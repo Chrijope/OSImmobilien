@@ -45,7 +45,7 @@ function Abschluss({ data, onNeu }: { data: SelbstauskunftData; onNeu: () => voi
         data,
         { vorname: data.vorname || "", nachname: data.nachname || "", osImmoId: "" },
         undefined,
-        { papierUnterschrift: true },
+        { papierUnterschrift: true, unterlagenCheckliste: true },
       );
       const ergebnis = await speichereDatei(dateiname(data), doc.output("blob"));
       if (ergebnis === "gespeichert") toast({ title: "PDF gespeichert ✓", description: "Schicke es jetzt dem Kunden zur Unterschrift." });
