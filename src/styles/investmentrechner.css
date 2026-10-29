@@ -4854,3 +4854,44 @@
   line-height: 1.2;
   white-space: normal;
 }
+
+/* Kalkulationsbasis (29.10.2026): „Empfohlen“ bis zum Ausfüllen, „optional“ für Felder, die frei bleiben dürfen. */
+.investmentrechner .feld-empfohlen,
+.investmentrechner .feld-optional {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 6px;
+  border-radius: 999px;
+  font-size: 0.64rem;
+  font-weight: 600;
+  line-height: 1.5;
+  vertical-align: middle;
+}
+.investmentrechner .feld-empfohlen {
+  color: var(--gold-tief);
+  background: var(--gold-soft);
+  border: 1px solid var(--gold-linie);
+}
+.investmentrechner .feld-optional {
+  color: var(--muted);
+  font-weight: 500;
+  padding: 0;
+}
+/* Felder nebeneinander bündig: Bezeichnungen bis zu zwei Zeilen hoch, unten ausgerichtet, damit die Eingabefelder auf einer Linie stehen. */
+.investmentrechner .field-grid > .field > .field-label {
+  min-height: 2.9em;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  align-content: flex-end;
+  column-gap: 0;
+}
+.investmentrechner .field-grid {
+  align-items: start;
+}
+/* Beispielwerte in den Feldern ganz hell, damit sie nicht wie Eingaben wirken. */
+.investmentrechner input::placeholder,
+.investmentrechner textarea::placeholder {
+  color: var(--text-schwach);
+  opacity: 1;
+}

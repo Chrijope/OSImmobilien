@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ASSETKLASSEN } from "@/lib/steuerRechner";
 import { OBJEKTTYP_VORSCHLAEGE } from "@/lib/investmentrechner/objekttypVorschlaege";
@@ -124,8 +124,9 @@ describe("Erklärungen zum Antippen", () => {
     // Vor dem Klick steht der Satz nirgends, die Titel der drei Arten dagegen
     // schon, denn sie stehen in der Auswahlliste.
     expect(document.body.textContent).not.toContain("Um welche Art von Objekt");
-    const infos = screen.getAllByRole("button", { name: "Erklärung" });
-    fireEvent.click(infos[1]);
+    // Der Knopf am Feld „Objekttyp“ selbst, nicht der n-te der Seite (davor stehen je nach Stand weitere Erklärungen).
+    const feld = screen.getAllByText("Objekttyp").map((el) => el.closest(".field")).find(Boolean) as HTMLElement;
+    fireEvent.click(within(feld).getByRole("button", { name: "Erklärung" }));
     // Der Radix-Tooltip setzt den Text zusätzlich unsichtbar für Vorleseprogramme ein.
     const erklaerung = screen.getAllByText(/Um welche Art von Objekt/)[0].textContent ?? "";
     for (const vorschlag of OBJEKTTYP_VORSCHLAEGE) expect(erklaerung).toContain(vorschlag);

@@ -89,6 +89,8 @@ export function EingabeKunde({ input, result, setzeZahl, setzeText, aendere, her
       {kundenbereich}
       <Textfeld
         label="Kundenname"
+        empfohlen
+        tooltip="Steht auf dem Deckblatt und in jedem PDF als „Erstellt für“. Ohne Namen steht dort nur „Kundin oder Kunde“."
         value={input.clientName}
         onChange={(wert) => setzeText("clientName", wert)}
         placeholder="Vor- und Nachname"
@@ -96,6 +98,8 @@ export function EingabeKunde({ input, result, setzeZahl, setzeText, aendere, her
       <div className="field-grid">
         <Zahlenfeld
           label="Jahresbrutto Kunde"
+          placeholder="z. B. 68.000"
+          optional
           value={input.annualGrossIncome}
           suffix="€"
           onChange={(wert) => setzeZahl("annualGrossIncome", wert)}
@@ -131,6 +135,8 @@ export function EingabeKunde({ input, result, setzeZahl, setzeText, aendere, her
       <div className="field-grid">
         <Zahlenfeld
           label="Zu versteuerndes Einkommen"
+          placeholder="z. B. 52.000"
+          empfohlen
           value={input.taxableIncomeCustomer}
           suffix="€"
           onChange={(wert) => setzeZahl("taxableIncomeCustomer", wert)}
@@ -140,6 +146,8 @@ export function EingabeKunde({ input, result, setzeZahl, setzeText, aendere, her
         {input.jointAssessment && (
           <Zahlenfeld
             label="Zu versteuerndes Einkommen Ehe-/Lebenspartner"
+            placeholder="z. B. 40.000"
+            empfohlen
             value={input.taxableIncomeSpouse}
             suffix="€"
             onChange={(wert) => setzeZahl("taxableIncomeSpouse", wert)}
@@ -155,6 +163,7 @@ export function EingabeKunde({ input, result, setzeZahl, setzeText, aendere, her
         */}
         <Zahlenfeld
           label="Anteil am Investment"
+          placeholder="100"
           value={input.investmentShare}
           suffix="%"
           onChange={(wert) => setzeZahl("investmentShare", Math.min(100, wert))}
@@ -208,6 +217,8 @@ export function EingabeKunde({ input, result, setzeZahl, setzeText, aendere, her
       {input.taxCalculationMode === "manual" && (
         <Zahlenfeld
           label="Persönlicher Grenzsteuersatz, gesamt"
+          placeholder="z. B. 42"
+          empfohlen
           value={input.marginalTaxRate}
           suffix="%"
           onChange={(wert) => setzeZahl("marginalTaxRate", Math.min(60, wert))}
@@ -274,16 +285,21 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
     <div className="input-section">
       <Bereichstitel nummer="02" titel="Objekt & Kaufpreis" untertitel="Grunddaten und Erwerbsnebenkosten" />
       {unterlagen}
-      <Textfeld label="Objektbezeichnung" value={input.propertyTitle} onChange={(wert) => setzeText("propertyTitle", wert)}
+      <Textfeld label="Objektbezeichnung"
+      empfohlen value={input.propertyTitle} onChange={(wert) => setzeText("propertyTitle", wert)}
         placeholder="z. B. 3-Zimmerwohnung"
         tooltip="Wie die Wohnung im Exposé heißen soll, zum Beispiel „3-Zimmerwohnung“ oder „2-Zimmerwohnung mit Balkon“. Kommt der Rechner von einer Einheit, steht hier schon der Objektname mit der Wohnungsnummer. Die Bezeichnung geht nicht in die Rechnung ein, sie erscheint nur im Exposé."
         hint={quelle("propertyTitle")} markierung={feldmarkierung(herkunft, "propertyTitle")}
       />
-      <Textfeld label="Adresse" value={input.address} onChange={(wert) => setzeText("address", wert)}
+      <Textfeld label="Adresse"
+      placeholder="Musterstraße 12, 04109 Leipzig"
+      empfohlen
+      tooltip="Steht auf dem Deckblatt und in der Berechnung bei Haus und Wohnung. Die Straße ohne Hausnummer erscheint auch im Dateinamen des PDF." value={input.address} onChange={(wert) => setzeText("address", wert)}
         hint={quelle("address")} markierung={feldmarkierung(herkunft, "address")}
       />
       <AuswahlOderText
         label="Objekttyp"
+        empfohlen
         value={input.propertyType}
         onChange={(wert) => setzeText("propertyType", wert)}
         vorschlaege={OBJEKTTYP_VORSCHLAEGE}
@@ -298,6 +314,8 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
       <div className="field-grid three">
         <Zahlenfeld
           label="Wohnfläche"
+          placeholder="z. B. 56"
+          empfohlen
           value={input.area}
           suffix="m²"
           onChange={(wert) => setzeZahl("area", wert)}
@@ -306,6 +324,9 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
         />
         <Zahlenfeld
           label="Zimmer"
+          placeholder="z. B. 2"
+          empfohlen
+          tooltip="Zimmerzahl laut Exposé. Sie steht in der Berechnung bei der Wohnung und zählt im Vergleich zweier Wohnungen als Kriterium (breitere Mieterschaft)."
           value={input.rooms}
           step="1"
           onChange={(wert) => setzeZahl("rooms", wert)}
@@ -313,6 +334,8 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
         />
         <Zahlenfeld
           label="Baujahr"
+          placeholder="z. B. 1994"
+          empfohlen
           value={input.constructionYear}
           step="1"
           onChange={(wert) => {
@@ -340,6 +363,8 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
       */}
       <Zahlenfeld
         label="Kaufpreis"
+        placeholder="z. B. 224.000"
+        empfohlen
         value={input.purchasePrice}
         suffix="€"
         onChange={(wert) => setzeZahl("purchasePrice", wert)}
@@ -349,6 +374,8 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
       <div className="field-grid">
         <Zahlenfeld
           label="davon Möbel/Inventar"
+          placeholder="0"
+          optional
           value={input.furniturePrice}
           suffix="€"
           onChange={(wert) => setzeZahl("furniturePrice", wert)}
@@ -357,6 +384,8 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
         />
         <Zahlenfeld
           label="davon Stellplatz/Garage"
+          placeholder="z. B. 15.000"
+          optional
           value={input.garagePrice}
           suffix="€"
           neu
@@ -371,6 +400,8 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
         />
         <Zahlenfeld
           label="davon Erhaltungsaufwand"
+          placeholder="0"
+          optional
           value={input.rehabExpense}
           suffix="€"
           onChange={(wert) => setzeZahl("rehabExpense", wert)}
@@ -379,6 +410,8 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
         />
         <Zahlenfeld
           label="davon Anteil Instandhaltungsrücklage"
+          placeholder="0"
+          optional
           value={input.maintenanceReserve}
           suffix="€"
           onChange={(wert) => setzeZahl("maintenanceReserve", wert)}
@@ -470,6 +503,8 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
           </div>
           <Zahlenfeld
             label="Sonstige KNK"
+            placeholder="0"
+            optional
             value={input.otherPurchaseCostRate}
             suffix="%"
             onChange={(wert) => setzeZahl("otherPurchaseCostRate", wert)}
@@ -481,6 +516,7 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
         <div className="field-grid">
           <Zahlenfeld
             label="Grunderwerbsteuer"
+            placeholder="z. B. 5,5"
             value={input.transferTaxRate}
             suffix="%"
             onChange={(wert) => setzeZahl("transferTaxRate", wert)}
@@ -489,6 +525,7 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
           />
           <Zahlenfeld
             label="Notar"
+            placeholder="z. B. 1,5"
             value={input.notaryRate}
             suffix="%"
             onChange={(wert) => setzeZahl("notaryRate", wert)}
@@ -497,6 +534,7 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
           />
           <Zahlenfeld
             label="Grundbuch"
+            placeholder="z. B. 0,5"
             value={input.landRegisterRate}
             suffix="%"
             onChange={(wert) => setzeZahl("landRegisterRate", wert)}
@@ -505,6 +543,8 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
           />
           <Zahlenfeld
             label="Sonstige KNK"
+            placeholder="0"
+            optional
             value={input.otherPurchaseCostRate}
             suffix="%"
             onChange={(wert) => setzeZahl("otherPurchaseCostRate", wert)}
@@ -653,6 +693,8 @@ export function EingabeUnterlagen({ documentData, setDocumentData }: EingabeUnte
       <div className="field-grid">
         <Zahlenfeld
           label="Rücklagenbestand gesamt"
+          placeholder="z. B. 250.000"
+          optional
           value={documentData.reserveAmount}
           suffix="€"
           onChange={(wert) => setDocumentData((bisher) => ({ ...bisher, reserveAmount: wert }))}
@@ -660,6 +702,8 @@ export function EingabeUnterlagen({ documentData, setDocumentData }: EingabeUnte
         />
         <Zahlenfeld
           label="Anteil der Einheit"
+          placeholder="z. B. 4.800"
+          optional
           value={documentData.reserveUnitShare}
           suffix="€"
           onChange={(wert) => setDocumentData((bisher) => ({ ...bisher, reserveUnitShare: wert }))}
@@ -668,6 +712,7 @@ export function EingabeUnterlagen({ documentData, setDocumentData }: EingabeUnte
       </div>
       <Textfeld
         label="Stand der Rücklage"
+        optional
         value={documentData.reserveAsOf}
         onChange={(wert) => setDocumentData((bisher) => ({ ...bisher, reserveAsOf: wert }))}
         placeholder="z. B. 31.12.2025"
@@ -735,6 +780,8 @@ function Darlehensbetrag({
     <>
       <Zahlenfeld
         label="Betrag in % des Kaufpreises"
+        placeholder="100"
+        empfohlen
         value={art === "percent" ? wert : Math.round(prozent * 100) / 100}
         suffix="%"
         onChange={(neu) => onChange("percent", neu)}
@@ -743,6 +790,8 @@ function Darlehensbetrag({
       />
       <Zahlenfeld
         label="Betrag in €"
+        placeholder="z. B. 224.000"
+        empfohlen
         value={art === "euro" ? wert : Math.round(euro * 100) / 100}
         suffix="€"
         onChange={(neu) => onChange("euro", neu)}
@@ -784,6 +833,7 @@ function Tilgungsfelder({
       {art !== "annuitaet" && (
         <Zahlenfeld
           label="Laufzeit"
+          placeholder="z. B. 30"
           value={laufzeit}
           suffix="Jahre"
           step="1"
@@ -800,6 +850,8 @@ function Tilgungsfelder({
       )}
       <Zahlenfeld
         label="Tilgungsfreie Anlaufjahre"
+        placeholder="0"
+        optional
         value={tilgungsfrei}
         suffix="Jahre"
         step="1"
@@ -839,6 +891,8 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
         />
         <Zahlenfeld
           label="Sollzins p. a."
+          placeholder="z. B. 4,0"
+          empfohlen
           value={input.seniorInterestRate}
           suffix="%"
           onChange={(wert) => setzeZahl("seniorInterestRate", wert)}
@@ -847,6 +901,8 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
         />
         <Zahlenfeld
           label="Anfängliche Tilgung p. a."
+          placeholder="z. B. 1,5"
+          empfohlen
           value={input.seniorRepaymentRate}
           suffix="%"
           onChange={(wert) => setzeZahl("seniorRepaymentRate", wert)}
@@ -855,6 +911,8 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
         />
         <Zahlenfeld
           label="Zinsbindung"
+          placeholder="z. B. 10"
+          empfohlen
           value={input.seniorFixedRateYears}
           suffix="Jahre"
           step="1"
@@ -884,6 +942,8 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
           <>
             <Zahlenfeld
               label="Sollzins p. a."
+              placeholder="z. B. 4,0"
+              empfohlen
               value={input.juniorInterestRate}
               suffix="%"
               onChange={(wert) => setzeZahl("juniorInterestRate", wert)}
@@ -891,6 +951,8 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
             />
             <Zahlenfeld
               label="Anfängliche Tilgung p. a."
+              placeholder="z. B. 1,5"
+              empfohlen
               value={input.juniorRepaymentRate}
               suffix="%"
               onChange={(wert) => setzeZahl("juniorRepaymentRate", wert)}
@@ -898,6 +960,8 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
             />
             <Zahlenfeld
               label="Zinsbindung"
+              placeholder="z. B. 10"
+              empfohlen
               value={input.juniorFixedRateYears}
               suffix="Jahre"
               step="1"
@@ -912,6 +976,8 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
       <div className="field-grid">
         <Zahlenfeld
           label="Betrag"
+          placeholder="z. B. 50.000"
+          optional
           value={input.secondLoanAmount}
           suffix="€"
           onChange={(wert) => setzeZahl("secondLoanAmount", wert)}
@@ -921,6 +987,8 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
           <>
             <Zahlenfeld
               label="Sollzins p. a."
+              placeholder="z. B. 4,0"
+              empfohlen
               value={input.secondInterestRate}
               suffix="%"
               onChange={(wert) => setzeZahl("secondInterestRate", wert)}
@@ -928,6 +996,8 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
             />
             <Zahlenfeld
               label="Anfängliche Tilgung p. a."
+              placeholder="z. B. 1,5"
+              empfohlen
               value={input.secondRepaymentRate}
               suffix="%"
               onChange={(wert) => setzeZahl("secondRepaymentRate", wert)}
@@ -935,6 +1005,8 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
             />
             <Zahlenfeld
               label="Zinsbindung"
+              placeholder="z. B. 10"
+              empfohlen
               value={input.secondFixedRateYears}
               suffix="Jahre"
               step="1"
@@ -976,6 +1048,8 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
           <div className="field-grid">
             <Zahlenfeld
               label="Betrag"
+              placeholder="z. B. 50.000"
+              optional
               value={input.kfwLoanAmount}
               suffix="€"
               onChange={(wert) => setzeZahl("kfwLoanAmount", wert)}
@@ -983,6 +1057,8 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
             />
             <Zahlenfeld
               label="Sollzins p. a."
+              placeholder="z. B. 4,0"
+              empfohlen
               value={input.kfwInterestRate}
               suffix="%"
               onChange={(wert) => setzeZahl("kfwInterestRate", wert)}
@@ -990,6 +1066,8 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
             />
             <Zahlenfeld
               label="Zinsbindung"
+              placeholder="z. B. 10"
+              empfohlen
               value={input.kfwFixedRateYears}
               suffix="Jahre"
               onChange={(wert) => setzeZahl("kfwFixedRateYears", wert)}
@@ -998,6 +1076,8 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
             />
             <Zahlenfeld
               label="Anschlusszins p. a."
+              placeholder="leer: Zins von heute"
+              optional
               value={input.kfwFollowUpRate}
               suffix="%"
               onChange={(wert) => setzeZahl("kfwFollowUpRate", wert)}
@@ -1006,6 +1086,7 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
             />
             <Zahlenfeld
               label="Gesamtlaufzeit"
+              placeholder="z. B. 30"
               value={input.kfwTermYears}
               suffix="Jahre"
               onChange={(wert) => setzeZahl("kfwTermYears", wert)}
@@ -1013,6 +1094,8 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
             />
             <Zahlenfeld
               label="Tilgungsfreie Jahre"
+              placeholder="0"
+              optional
               value={input.kfwGracePeriodYears}
               suffix="Jahre"
               onChange={(wert) => setzeZahl("kfwGracePeriodYears", wert)}
@@ -1036,6 +1119,8 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
             </Auswahlfeld>
             <Zahlenfeld
               label="Tilgungszuschuss"
+              placeholder="0"
+              optional
               value={input.kfwGrantValue}
               suffix={input.kfwGrantMode === "euro" ? "€" : "%"}
               onChange={(wert) => setzeZahl("kfwGrantValue", wert)}
@@ -1290,6 +1375,8 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
       <div className="field-grid">
         <Zahlenfeld
           label="Kaltmiete Wohnung p. M."
+          placeholder="z. B. 728"
+          empfohlen
           value={input.monthlyColdRent}
           suffix="€"
           onChange={(wert) => setzeZahl("monthlyColdRent", wert)}
@@ -1298,6 +1385,8 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
         />
         <Zahlenfeld
           label="Stellplatz-/Garagenmiete p. M."
+          placeholder="z. B. 80"
+          optional
           value={input.monthlyGarageRent}
           suffix="€"
           onChange={(wert) => setzeZahl("monthlyGarageRent", wert)}
@@ -1306,6 +1395,8 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
         />
         <Zahlenfeld
           label="Weitere nicht umlagefähige Kosten p. M."
+          placeholder="z. B. 25"
+          optional
           value={input.monthlyOperatingCosts}
           suffix="€"
           onChange={(wert) => setzeZahl("monthlyOperatingCosts", wert)}
@@ -1328,6 +1419,8 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
       <div className="field-grid">
         <Zahlenfeld
           label="Hausgeld p. M. (umlagef. + nicht umlagef.)"
+          placeholder="z. B. 324"
+          empfohlen
           value={input.housingFeeTotal}
           suffix="€"
           neu
@@ -1337,6 +1430,8 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
         />
         <Zahlenfeld
           label="davon umlagefähig p. M."
+          placeholder="z. B. 243"
+          empfohlen
           value={input.housingFeeRecoverable}
           suffix="€"
           neu
@@ -1345,6 +1440,8 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
         />
         <Zahlenfeld
           label="davon nicht umlagefähig p. M."
+          placeholder="z. B. 82"
+          empfohlen
           value={input.housingFeeNonRecoverable}
           suffix="€"
           neu
@@ -1355,6 +1452,8 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
         />
         <Zahlenfeld
           label="Erhaltungsrücklage p. M. (separat)"
+          placeholder="z. B. 49"
+          empfohlen
           value={input.monthlyReserveContribution}
           suffix="€"
           onChange={(wert) => setzeZahl("monthlyReserveContribution", wert)}
@@ -1391,6 +1490,8 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
       <div className="field-grid">
         <Zahlenfeld
           label="Leerstand / Mietausfall"
+          placeholder="z. B. 2"
+          optional
           value={input.vacancyRate}
           suffix="%"
           onChange={(wert) => setzeZahl("vacancyRate", wert)}
@@ -1398,6 +1499,7 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
         />
         <Zahlenfeld
           label="Mietsteigerung p. a."
+          placeholder="z. B. 2"
           value={input.annualRentGrowth}
           suffix="%"
           min={-20}
@@ -1406,6 +1508,7 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
         />
         <Zahlenfeld
           label="Kostensteigerung p. a."
+          placeholder="z. B. 2"
           value={input.annualCostGrowth}
           suffix="%"
           min={-20}
@@ -1414,6 +1517,7 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
         />
         <Zahlenfeld
           label="Wertsteigerung p. a."
+          placeholder="z. B. 2"
           value={input.annualValueGrowth}
           suffix="%"
           min={-20}
@@ -1424,6 +1528,7 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
       <div className="field-grid">
         <Zahlenfeld
           label="Startjahr"
+          placeholder="z. B. 2026"
           value={input.startYear}
           step="1"
           onChange={(wert) => setzeZahl("startYear", wert)}
@@ -1441,6 +1546,7 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
         </Auswahlfeld>
         <Zahlenfeld
           label="Betrachtungszeitraum"
+          placeholder="z. B. 30"
           value={input.forecastYears}
           suffix="Jahre"
           step="1"
@@ -1453,6 +1559,8 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
       <div className="field-grid">
         <Zahlenfeld
           label="Alter des Kunden heute"
+          placeholder="z. B. 40"
+          optional
           value={input.clientAge}
           suffix="Jahre"
           step="1"
@@ -1462,6 +1570,8 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
         />
         <Zahlenfeld
           label="Geplanter Rentenbeginn mit"
+          placeholder="67"
+          optional
           value={input.retirementAge}
           suffix="Jahren"
           step="1"
@@ -1471,6 +1581,8 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
         />
         <Zahlenfeld
           label="Inflation p. a."
+          placeholder="z. B. 2"
+          optional
           value={input.inflationRate}
           suffix="%"
           onChange={(wert) => setzeZahl("inflationRate", wert)}
@@ -1509,6 +1621,8 @@ export function EingabeSteuer({ input, result, setzeZahl, aendere, herkunft }: E
       <div className="field-grid">
         <Zahlenfeld
           label="Gebäudeanteil"
+          placeholder="z. B. 80"
+          empfohlen
           value={input.buildingShare}
           suffix="%"
           onChange={(wert) => setzeZahl("buildingShare", Math.min(100, wert))}
@@ -1536,6 +1650,7 @@ export function EingabeSteuer({ input, result, setzeZahl, aendere, herkunft }: E
         {input.furniturePrice > 0 && (
         <Zahlenfeld
           label="Möbel-Nutzungsdauer"
+          placeholder="z. B. 10"
           value={input.furnitureDepreciationYears}
           suffix="Jahre"
           step="1"
@@ -1551,6 +1666,8 @@ export function EingabeSteuer({ input, result, setzeZahl, aendere, herkunft }: E
         )}
         <Zahlenfeld
           label="Sonder-AfA § 7b p. a."
+          placeholder="0"
+          optional
           value={input.specialDepreciationRate}
           suffix="%"
           onChange={(wert) => setzeZahl("specialDepreciationRate", wert)}
@@ -1566,6 +1683,7 @@ export function EingabeSteuer({ input, result, setzeZahl, aendere, herkunft }: E
         {input.specialDepreciationRate > 0 && (
           <Zahlenfeld
             label="Dauer Sonder-AfA"
+            placeholder="4"
             value={input.specialDepreciationYears}
             suffix="Jahre"
             step="1"
@@ -1618,6 +1736,7 @@ export function EingabeSteuer({ input, result, setzeZahl, aendere, herkunft }: E
       {input.rehabScenario !== "durchVerkaeufer" && (
         <Zahlenfeld
           label="Umsatzsteuer im Sanierungsanteil"
+          placeholder="19"
           value={input.rehabVatRate}
           suffix="%"
           neu
@@ -1673,6 +1792,7 @@ export function EingabeSteuer({ input, result, setzeZahl, aendere, herkunft }: E
       {input.rehabScenario !== "durchVerkaeufer" && !result.sanierungAktiviert && (
         <Zahlenfeld
           label="Verteilung des Aufwands"
+          placeholder="1"
           value={input.rehabDistributionYears}
           suffix="Jahre"
           step="1"

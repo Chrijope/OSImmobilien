@@ -122,7 +122,25 @@ export function Feldetikett({ art = "manuell" }: { art?: Feldmarkierung }) {
   );
 }
 
-interface ZahlenfeldProps {
+/**
+ * Kennzeichnung der Kalkulationsbasis (Christian, 29.10.2026): „Empfohlen“ an
+ * Feldern, ohne die die Rechnung nur ein Beispiel ist; es verschwindet, sobald
+ * etwas eingetragen ist. „optional“ an Feldern, die frei bleiben dürfen, etwa
+ * Garage oder Erhaltungsaufwand. Gesperrt wird nichts, jeder Bereich bleibt
+ * anklickbar.
+ */
+export interface Feldbedarf {
+  empfohlen?: boolean;
+  optional?: boolean;
+}
+
+export function Bedarf({ empfohlen, optional, leer }: Feldbedarf & { leer: boolean }) {
+  if (empfohlen && leer) return <span className="feld-empfohlen" title="Für eine belastbare Rechnung bitte ausfüllen">Empfohlen</span>;
+  if (optional) return <span className="feld-optional" title="Darf frei bleiben">optional</span>;
+  return null;
+}
+
+interface ZahlenfeldProps extends Feldbedarf {
   label: string;
   value: number;
   onChange: (wert: number) => void;
@@ -140,9 +158,11 @@ interface ZahlenfeldProps {
   markierung?: Feldmarkierung;
   /** Etikett „NEU“ in der lokalen Vorschau, siehe `Neu`. */
   neu?: boolean;
+  /** Beispiel in hellem Grau, solange das Feld leer ist. */
+  placeholder?: string;
 }
 
-export function Zahlenfeld({ label, value, onChange, suffix, step = "any", min = 0, hint, tooltip, gesperrt, markierung, neu }: ZahlenfeldProps) {
+export function Zahlenfeld({ label, value, onChange, suffix, step = "any", min = 0, hint, tooltip, gesperrt, markierung, neu, empfohlen, optional, placeholder }: ZahlenfeldProps) {
   return (
     <label className="field" data-gesperrt={gesperrt ? "ja" : undefined}>
       <span className="field-label">
@@ -150,6 +170,7 @@ export function Zahlenfeld({ label, value, onChange, suffix, step = "any", min =
         {tooltip && <FeldInfo text={tooltip} />}
         <Feldetikett art={markierung} />
         {neu && <Neu />}
+        <Bedarf empfohlen={empfohlen} optional={optional} leer={!value} />
       </span>
       <span className="input-shell">
         <input
@@ -158,6 +179,7 @@ export function Zahlenfeld({ label, value, onChange, suffix, step = "any", min =
           step={step}
           type="number"
           value={value || ""}
+          placeholder={placeholder}
           disabled={gesperrt}
           onChange={(e) => onChange(Number(e.target.value))}
         />
@@ -168,7 +190,7 @@ export function Zahlenfeld({ label, value, onChange, suffix, step = "any", min =
   );
 }
 
-interface TextfeldProps {
+interface TextfeldProps extends Feldbedarf {
   label: string;
   value: string;
   onChange: (wert: string) => void;
@@ -179,13 +201,14 @@ interface TextfeldProps {
   markierung?: Feldmarkierung;
 }
 
-export function Textfeld({ label, value, onChange, placeholder, hint, tooltip, markierung }: TextfeldProps) {
+export function Textfeld({ label, value, onChange, placeholder, hint, tooltip, markierung, empfohlen, optional }: TextfeldProps) {
   return (
     <label className="field">
       <span className="field-label">
         {label}
         {tooltip && <FeldInfo text={tooltip} />}
         <Feldetikett art={markierung} />
+        <Bedarf empfohlen={empfohlen} optional={optional} leer={!value.trim()} />
       </span>
       <span className="input-shell">
         <input type="text" value={value} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} />
@@ -195,7 +218,7 @@ export function Textfeld({ label, value, onChange, placeholder, hint, tooltip, m
   );
 }
 
-interface AuswahlOderTextProps {
+interface AuswahlOderTextProps extends Feldbedarf {
   label: string;
   value: string;
   onChange: (wert: string) => void;
@@ -239,6 +262,8 @@ export function AuswahlOderText({
   hint,
   tooltip,
   markierung,
+  empfohlen,
+  optional,
 }: AuswahlOderTextProps) {
   const [freiGewaehlt, setFreiGewaehlt] = useState(false);
   // Ein vorhandener Wert außerhalb der Liste öffnet das Textfeld von selbst.
@@ -250,6 +275,7 @@ export function AuswahlOderText({
         {label}
         {tooltip && <FeldInfo text={tooltip} />}
         <Feldetikett art={markierung} />
+        <Bedarf empfohlen={empfohlen} optional={optional} leer={!value.trim()} />
       </span>
       <span className="select-shell">
         <select
@@ -317,7 +343,7 @@ export function Textbereich({ label, value, onChange, placeholder, hint, rows = 
   );
 }
 
-interface AuswahlfeldProps {
+interface AuswahlfeldProps extends Feldbedarf {
   label: string;
   value: string | number;
   onChange: (wert: string) => void;
@@ -328,13 +354,14 @@ interface AuswahlfeldProps {
   markierung?: Feldmarkierung;
 }
 
-export function Auswahlfeld({ label, value, onChange, children, hint, tooltip, markierung }: AuswahlfeldProps) {
+export function Auswahlfeld({ label, value, onChange, children, hint, tooltip, markierung, empfohlen, optional }: AuswahlfeldProps) {
   return (
     <label className="field">
       <span className="field-label">
         {label}
         {tooltip && <FeldInfo text={tooltip} />}
         <Feldetikett art={markierung} />
+        <Bedarf empfohlen={empfohlen} optional={optional} leer={value === "" || value === 0} />
       </span>
       <span className="select-shell">
         <select value={value} onChange={(e) => onChange(e.target.value)}>
