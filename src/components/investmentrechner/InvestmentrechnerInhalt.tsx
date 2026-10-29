@@ -1688,8 +1688,13 @@ export function InvestmentrechnerInhalt({
                     <span className="feldetikett feldetikett-manuell">Manuell</span> selbst eintragen
                   </p>
                 )}
-                {bereich === "kunde" && <EingabeKunde {...eingabeProps} kundenbereich={kundenbereich} />}
-                {bereich === "kunde" && kundeVonHand && <EingabeAusgangslage input={input} aendere={aendere} vorgaben={vorgabenFuer(sicherIndex)} />}
+                {bereich === "kunde" && (
+                  <EingabeKunde
+                    {...eingabeProps}
+                    kundenbereich={kundenbereich}
+                    zusatzAngaben={kundeVonHand ? <EingabeAusgangslage input={input} aendere={aendere} vorgaben={vorgabenFuer(sicherIndex)} /> : undefined}
+                  />
+                )}
                 {bereich === "objekt" && (
                   <EingabeObjekt
                     {...eingabeProps}

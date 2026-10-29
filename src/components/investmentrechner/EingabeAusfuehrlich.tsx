@@ -115,42 +115,39 @@ export function EingabeAusfuehrlich({ input, aendere, vorgaben, nummer }: Props)
 /*
  * Angaben zum Kunden für die Seite „Ihre Ausgangslage“, nur in der
  * Artefaktfassung (29.10.2026): Dort gibt es keine Selbstauskunft. Im CRM
- * kommen sie aus der Selbstauskunft des gewählten Investments. Name,
- * Jahresbrutto und Steuerklasse stehen schon in „Kunde & Einkommen“, Alter
- * und Rentenalter in „Miete & Entwicklung“; sie werden hier nicht noch
- * einmal abgefragt.
+ * kommen sie aus der Selbstauskunft des gewählten Investments. Sie stehen
+ * im Bereich „Kunde & Einkommen“ direkt unter Name, Jahresbrutto und
+ * Steuerklasse; Alter und Rentenalter stehen unter „Miete & Entwicklung“.
+ *
+ * Nettoeinkommen und zu versteuerndes Einkommen sind keine doppelte Angabe:
+ * Das zu versteuernde Einkommen (Jahr) bestimmt den Steuersatz und damit die
+ * Steuerersparnis, das Nettoeinkommen (Monat) nur die Haushaltsrechnung der
+ * Ausgangslage („frei im Monat“, Erspartes wieder aufgefüllt).
  */
 export function EingabeAusgangslage({ input, aendere, vorgaben }: Omit<Props, "nummer">) {
   const eigen = input.ausfuehrlich ?? {};
   const kunde: VergleichKunde = { ...LEERER_KUNDE, ...(vorgaben.kunde ?? {}), ...(eigen.kunde ?? {}) };
   const setzeKunde = (teil: Partial<VergleichKunde>) => aendere({ ausfuehrlich: { ...eigen, kunde: { ...(eigen.kunde ?? {}), ...teil } } });
-  const kText = (k: "anrede" | "familienstand" | "kinder" | "beschaeftigung" | "antrag" | "wohnsituation" | "kredite" | "saDatum", label: string, platzhalter?: string) => (
+  const kText = (k: "anrede" | "familienstand" | "kinder" | "beschaeftigung" | "antrag" | "wohnsituation" | "kredite", label: string, platzhalter?: string) => (
     <Textfeld label={label} value={kunde[k]} placeholder={platzhalter} onChange={(w) => setzeKunde({ [k]: w })} />
   );
-  const kZahl = (k: "netto" | "mieteWarm" | "lebenshaltung" | "kreditRaten" | "kapital", label: string) => (
-    <Zahlenfeld label={label} value={kunde[k]} suffix="€" onChange={(w) => setzeKunde({ [k]: w })} />
+  const kZahl = (k: "netto" | "mieteWarm" | "lebenshaltung" | "kreditRaten" | "kapital", label: string, hint?: string) => (
+    <Zahlenfeld label={label} value={kunde[k]} suffix="€" onChange={(w) => setzeKunde({ [k]: w })} hint={hint} />
   );
   return (
-    <div className="input-section" data-testid="eingabe-ausgangslage">
-      <div className="subheading">Weitere Angaben für die ausführliche Berechnung</div>
-      <p className="field-hint" style={{ marginBottom: 8 }}>
-        Für die Seite „Ihre Ausgangslage“. Ohne Nettoeinkommen entfällt sie. Name, Jahresbrutto und Steuerklasse stehen oben, Alter und Rentenalter unter „Miete &amp; Entwicklung“.
-      </p>
-      <div className="field-grid">
-        {kText("anrede", "Anrede", "Frau")}
-        {kZahl("netto", "Nettoeinkommen im Monat")}
-        {kText("familienstand", "Familienstand", "ledig")}
-        {kText("kinder", "Kinder", "keine")}
-        {kText("beschaeftigung", "Beschäftigung", "Angestellt, unbefristet, seit 2015")}
-        {kText("antrag", "Antrag", "allein, ohne Mitantragsteller")}
-        {kText("wohnsituation", "Wohnsituation", "zur Miete, 950 € warm")}
-        {kZahl("mieteWarm", "Warmmiete heute")}
-        {kZahl("lebenshaltung", "Lebenshaltung im Monat")}
-        {kText("kredite", "Laufende Kredite", "keine")}
-        {kZahl("kreditRaten", "Kreditraten im Monat")}
-        {kZahl("kapital", "Bank- und Sparguthaben")}
-        {kText("saDatum", "Stand der Angaben", "JJJJ-MM-TT")}
-      </div>
+    <div className="field-grid" data-testid="eingabe-ausgangslage">
+      {kText("anrede", "Anrede", "Frau")}
+      {kZahl("netto", "Nettoeinkommen im Monat", "Für „Ihre Ausgangslage“ im PDF; ohne Wert entfällt die Seite")}
+      {kText("familienstand", "Familienstand", "ledig")}
+      {kText("kinder", "Kinder", "keine")}
+      {kText("beschaeftigung", "Beschäftigung", "Angestellt, unbefristet, seit 2015")}
+      {kText("antrag", "Antrag", "allein, ohne Mitantragsteller")}
+      {kText("wohnsituation", "Wohnsituation", "zur Miete, 950 € warm")}
+      {kZahl("mieteWarm", "Warmmiete heute")}
+      {kZahl("lebenshaltung", "Lebenshaltung im Monat")}
+      {kText("kredite", "Laufende Kredite", "keine")}
+      {kZahl("kreditRaten", "Kreditraten im Monat")}
+      {kZahl("kapital", "Bank- und Sparguthaben")}
     </div>
   );
 }

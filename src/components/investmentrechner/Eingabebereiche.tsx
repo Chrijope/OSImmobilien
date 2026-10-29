@@ -77,9 +77,11 @@ export interface EingabeKundeProps extends EingabeProps {
    * Eingabebereich.
    */
   kundenbereich?: ReactNode;
+  /** Weitere Angaben zum Kunden (Artefakt, ausführliche Berechnung), direkt unter Name, Jahresbrutto und Steuerklasse. */
+  zusatzAngaben?: ReactNode;
 }
 
-export function EingabeKunde({ input, result, setzeZahl, setzeText, aendere, herkunft, kundenbereich }: EingabeKundeProps) {
+export function EingabeKunde({ input, result, setzeZahl, setzeText, aendere, herkunft, kundenbereich, zusatzAngaben }: EingabeKundeProps) {
   const quelle = quelleFuer(herkunft);
   return (
     <div className="input-section">
@@ -115,6 +117,7 @@ export function EingabeKunde({ input, result, setzeZahl, setzeText, aendere, her
           <option value="VI">VI</option>
         </Auswahlfeld>
       </div>
+      {zusatzAngaben}
       <Auswahlfeld
         label="Veranlagung / Einkommensteuertarif"
         value={input.jointAssessment ? "splitting" : "basic"}
