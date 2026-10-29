@@ -414,7 +414,7 @@ export const OS_TEXTE = {
     portalSatz: "Nach der gemeinsam ausgefüllten und von Ihnen unterschriebenen Selbstauskunft laden Sie Personalausweis und letzte Gehaltsabrechnung im Kundenportal hoch.",
     antwortenKopf: "Ihre Antworten als Kopie",
     antwortenText: "Alle Fragen von heute und Ihre Antworten, Abschnitt für Abschnitt, als PDF für Ihre Unterlagen.",
-    antwortenKnopf: "Antworten als PDF",
+    antwortenKnopf: "Zusammenfassung als PDF",
     portalKnopf: "Kundenportal freigeben",
     portalVorUnterschrift: "Erst nach der unterschriebenen Selbstauskunft",
     portalFreigegeben: "Kundenportal ist freigegeben",

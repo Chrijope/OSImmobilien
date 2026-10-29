@@ -239,7 +239,7 @@ describe("Zweite Stufe vom 20.10.2026", () => {
         <BeratungspraesentationHV vorschau={ohneKunde} speichereDatei={gespeichert} />
       </MemoryRouter>,
     );
-    fireEvent.click(screen.getByRole("button", { name: /Antworten als PDF/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Zusammenfassung als PDF/ }));
     await waitFor(() => expect(gespeichert).toHaveBeenCalledTimes(1));
     const [name, blob] = gespeichert.mock.calls[0] as unknown as [string, Blob];
     expect(name).toMatch(/^Beratung_Antworten_\d{4}-\d{2}-\d{2}\.pdf$/);

@@ -58,7 +58,7 @@ import {
 } from "@/lib/kreditPflichtfelder";
 import { PFLICHT_OFFEN_RAHMEN } from "@/lib/pflichtRahmen";
 import {
-  TrendingUp, DollarSign, Users, ShieldCheck, Home, Wallet, Building2, Landmark, CheckCircle2, X, Plus, Send, Loader2, Info, Save, AlertTriangle, FileText,
+  TrendingUp, DollarSign, Users, ShieldCheck, Home, Wallet, Building2, Landmark, CheckCircle2, X, Plus, Send, Loader2, Info, Save, AlertTriangle, FileText, RotateCcw,
 } from "lucide-react";
 import { parse, isValid } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -1366,7 +1366,11 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
  * Eigenständige Fassung ohne CRM und ohne Server (src/artefakt): Der letzte
  * Schritt zeigt `abschluss` statt Versand und digitaler Unterschrift, und
  * Person 2 abwählen ändert nur das Formular, nicht die Stammdaten.
- */ ohneBackend?: { abschluss: (data: SelbstauskunftData) => React.ReactNode } }) {
+ * Seit dem 29.10.2026 speichert sie nur auf „Zwischenspeichern“, nicht
+ * automatisch: Das Artefakt nutzen mehrere Partner, jede Selbstauskunft
+ * beginnt leer, außer es wurde ausdrücklich gespeichert. `zuruecksetzen`
+ * zeigt in der Knopfleiste „Daten zurücksetzen“.
+ */ ohneBackend?: { abschluss: (data: SelbstauskunftData) => React.ReactNode; zuruecksetzen?: () => void } }) {
   const [step, setStep] = useState(0);
   /*
    * Texte und Beträge in der Kundensprache. `t` übersetzt einen deutschen
@@ -1873,6 +1877,7 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
 
     const now = new Date().toISOString();
     setDraftSaved(now);
+    setUngespeichert(false);
     toast({
       title: t("Zwischenstand gespeichert ✓"),
       description: backendOk
@@ -1908,6 +1913,11 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
     // Kundenmodus und Korrekturmodus haben ihre eigenen Wege.
     if (customerMode || korrekturMode) return;
     if (eingereicht.current) return;
+    // Ohne Backend (Artefakt) kein Autospeichern, nur „Zwischenspeichern“ (siehe `ohneBackend`); ungespeichert ist jede Eingabe des Nutzers.
+    if (ohneBackend) {
+      if (nutzerHatGeaendert.current) setUngespeichert(true);
+      return;
+    }
     // Der erste Durchlauf ist der geladene Stand, nicht eine Eingabe.
     if (ersterLauf.current) {
       ersterLauf.current = false;
@@ -1935,7 +1945,7 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
     return () => {
       if (autoSpeicherTimer.current) clearTimeout(autoSpeicherTimer.current);
     };
-  }, [data, customerMode, korrekturMode, kundeId, propInvestmentId]);
+  }, [data, customerMode, korrekturMode, kundeId, propInvestmentId, ohneBackend]);
 
   /**
    * Warnung, solange etwas noch nicht gespeichert ist.
@@ -4490,6 +4500,12 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
             <Button variant="outline" onClick={prev}>{t("Zurück")}</Button>
           ) : (
             <div />
+          )}
+          {ohneBackend?.zuruecksetzen && (
+            <Button variant="ghost" onClick={ohneBackend.zuruecksetzen} className="gap-1.5 text-muted-foreground" data-testid="sa-zuruecksetzen">
+              <RotateCcw className="h-4 w-4" />
+              <span className="hidden sm:inline">{t("Daten zurücksetzen")}</span>
+            </Button>
           )}
         </div>
         <div className="flex items-center gap-2">

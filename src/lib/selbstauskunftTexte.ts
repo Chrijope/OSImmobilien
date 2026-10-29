@@ -73,6 +73,7 @@ export const SA_UI_EN: Readonly<Record<string, string>> = {
   Weiter: "Next",
   Zurück: "Back",
   Zwischenspeichern: "Save progress",
+  "Daten zurücksetzen": "Reset data",
   Speichern: "Save",
   "An Kunde senden": "Send to customer",
   "Wird gesendet ...": "Sending...",

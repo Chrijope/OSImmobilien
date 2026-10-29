@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeft, CheckCircle2, Download, Loader2, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,7 +10,7 @@ import {
   type SelbstauskunftData,
 } from "@/components/selbstauskunft/SelbstauskunftForm";
 import { generateSelbstauskunftPDF } from "@/lib/selbstauskunftPdf";
-import { confirmDialog } from "@/lib/confirm";
+import { auswahlDialog, confirmDialog } from "@/lib/confirm";
 import { useToast } from "@/hooks/use-toast";
 import { speichereDatei } from "./speichern";
 
@@ -18,6 +18,12 @@ import { speichereDatei } from "./speichern";
  * Die Selbstauskunft aus dem CRM, ohne Kunde und ohne Server. Der Stand liegt
  * nur im Browser (localStorage, über das Formular selbst). Am Ende ersetzt
  * „Als PDF speichern“ den Versand mit digitaler Unterschrift.
+ *
+ * Seit dem 29.10.2026 (Christian): Das Artefakt nutzen mehrere Partner, auch
+ * am selben Gerät. Gespeichert wird deshalb nur auf „Zwischenspeichern“ (kein
+ * Autospeichern, siehe `ohneBackend` im Formular); sonst beginnt jede
+ * Selbstauskunft leer. Der Pfeil zurück fragt bei Ungespeichertem nach,
+ * „Daten zurücksetzen“ in der Knopfleiste löscht nach Rückfrage alles.
  */
 const KUNDE_ID = "artefakt";
 const ABSCHLUSS_SCHRITT = SA_FORMULAR_TEXTE.schritte.indexOf("Abschluss");
@@ -104,17 +110,37 @@ export default function SelbstauskunftArtefakt() {
   const [hinweisSchritt, setHinweisSchritt] = useState(0);
   const breit = useBreit();
 
+  const navigate = useNavigate();
+  const api = useRef<{ saveDraft: () => Promise<void>; hatUngespeichertes: () => boolean } | null>(null);
+  const registerApi = useCallback((a: { saveDraft: () => Promise<void>; hatUngespeichertes: () => boolean }) => { api.current = a; }, []);
+
   const neuBeginnen = async () => {
     const ja = await confirmDialog({
-      title: "Neue Selbstauskunft beginnen?",
-      description: "Alle Angaben in diesem Browser werden gelöscht. Speichern Sie vorher das PDF, wenn Sie es noch brauchen.",
-      confirmText: "Angaben löschen und neu beginnen",
-      cancelText: "Zurück zum Formular",
+      title: "Daten wirklich komplett zurücksetzen?",
+      description: "Alle Angaben dieser Selbstauskunft werden gelöscht, auch ein zwischengespeicherter Stand in diesem Browser. Speichern Sie vorher das PDF, wenn Sie es noch brauchen.",
+      confirmText: "Ja, alles zurücksetzen",
+      cancelText: "Abbrechen",
       variant: "destructive",
     });
     if (!ja) return;
     loescheLokalenSaEntwurf(KUNDE_ID);
     setRunde((r) => r + 1);
+  };
+
+  const zurueck = async () => {
+    if (api.current?.hatUngespeichertes()) {
+      const wahl = await auswahlDialog({
+        title: "Einträge zwischenspeichern?",
+        description: "Sie haben Angaben gemacht, die noch nicht gespeichert sind. Gespeichert stehen sie beim nächsten Öffnen der Selbstauskunft in diesem Browser wieder da, sonst beginnt sie leer.",
+        optionen: [
+          { wert: "speichern", text: "Zwischenspeichern und zurück" },
+          { wert: "verwerfen", text: "Ohne Speichern zurück" },
+        ],
+      });
+      if (!wahl) return;
+      if (wahl === "speichern") await api.current.saveDraft();
+    }
+    navigate("/praesentation");
   };
 
   return (
@@ -131,10 +157,8 @@ export default function SelbstauskunftArtefakt() {
       <div className="flex min-h-0 flex-1 flex-col gap-4 px-4 pt-4 sm:px-6 sm:pt-6 xl:flex-row xl:gap-6">
         <main className="flex min-h-0 w-full flex-1 flex-col gap-4 xl:min-w-0">
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" aria-label="Zurück zur Beratungspräsentation" asChild>
-              <Link to="/praesentation">
-                <ArrowLeft className="h-5 w-5" />
-              </Link>
+            <Button variant="ghost" size="icon" aria-label="Zurück zur Beratungspräsentation" onClick={() => void zurueck()}>
+              <ArrowLeft className="h-5 w-5" />
             </Button>
             <div className="min-w-0">
               <h1 className="text-xl font-bold">Online-Selbstauskunft</h1>
@@ -148,7 +172,8 @@ export default function SelbstauskunftArtefakt() {
               vorgewaehltesZiel={ziel}
               // Schmal: Hinweise im Formular (scrollen mit). Breit: eigene Spalte rechts.
               onHinweisSchritt={breit ? setHinweisSchritt : undefined}
-              ohneBackend={{ abschluss: (data) => <Abschluss data={data} onNeu={neuBeginnen} /> }}
+              registerApi={registerApi}
+              ohneBackend={{ abschluss: (data) => <Abschluss data={data} onNeu={neuBeginnen} />, zuruecksetzen: () => void neuBeginnen() }}
             />
           </div>
         </main>

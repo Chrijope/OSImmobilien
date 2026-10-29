@@ -99,3 +99,36 @@ describe("Selbstauskunft über den Link: automatisch gespeichert wird erst nach 
     await waitFor(() => expect(speicherAufrufe().length).toBeGreaterThan(0), { timeout: 3000 });
   });
 });
+
+/*
+ * Artefakt (ohne Backend, 29.10.2026): Mehrere Partner nutzen dasselbe
+ * Artefakt, eine Selbstauskunft beginnt leer. Gespeichert wird nur auf
+ * „Zwischenspeichern“, nie automatisch.
+ */
+describe("Selbstauskunft ohne Backend: nur „Zwischenspeichern“ speichert", () => {
+  beforeEach(() => {
+    Object.defineProperty(globalThis, "localStorage", { value: speicherErsatz(), configurable: true, writable: true });
+    cleanup();
+  });
+
+  const zeige = (zuruecksetzen = vi.fn()) => {
+    render(<SelbstauskunftForm kundeId="artefakt" ohneBackend={{ abschluss: () => null, zuruecksetzen }} />);
+    return zuruecksetzen;
+  };
+  const entwurf = () => Array.from({ length: localStorage.length }, (_, i) => localStorage.key(i)).filter((k) => k && k.includes("artefakt") && localStorage.getItem(k)!.startsWith("{"));
+
+  it("eine Änderung schreibt nichts, „Zwischenspeichern“ schon", async () => {
+    zeige();
+    fireEvent.click(screen.getByRole("button", { name: /Steuervorteile sichern/ }));
+    await new Promise((r) => setTimeout(r, 2000));
+    expect(entwurf()).toHaveLength(0);
+    fireEvent.click(screen.getByRole("button", { name: /Zwischenspeichern/ }));
+    await waitFor(() => expect(entwurf().length).toBeGreaterThan(0));
+  });
+
+  it("zeigt „Daten zurücksetzen“ in der Knopfleiste", () => {
+    const zuruecksetzen = zeige();
+    fireEvent.click(screen.getByTestId("sa-zuruecksetzen"));
+    expect(zuruecksetzen).toHaveBeenCalledTimes(1);
+  });
+});
