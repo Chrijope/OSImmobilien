@@ -10,7 +10,7 @@ vi.stubGlobal("localStorage", {
   removeItem: (schluessel: string) => void speicher.delete(schluessel),
 });
 
-const { eingabeLaden, eingabeSpeichern } = await import("./ablage");
+const { eingabeLaden, eingabeSpeichern, BEISPIEL_EINGABE } = await import("./ablage");
 const { berechneInvestment, EINGABE_VERSION } = await import("@/lib/investmentrechner/rechenkern");
 
 /*
@@ -37,5 +37,11 @@ describe("Ablage der Artefaktfassung", () => {
     expect(eingabe.garagePrice).toBe(15000);
     eingabeSpeichern(eingabe);
     expect(eingabeLaden()).toEqual(eingabe);
+  });
+});
+
+describe("Beispielzahlen beim ersten Öffnen", () => {
+  it("ohne Maklercourtage: das Feld ist im Rechner nicht bedienbar (Gegencheck Einhauser, 29.10.2026)", () => {
+    expect(BEISPIEL_EINGABE.brokerRate).toBe(0);
   });
 });

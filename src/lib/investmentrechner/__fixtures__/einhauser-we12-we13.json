@@ -1,0 +1,194 @@
+{
+ "stand": "28.10.2026",
+ "annahmen": {
+  "steuer": 0.42,
+  "zins": 0.05,
+  "tilgung": 0.01,
+  "knk": 0.085,
+  "gebaeudeanteil": 0.8,
+  "afa": "3,2 %",
+  "wert_pa": 0.02,
+  "kosten_pa": 0.02,
+  "miete_ziel_qm": 20.0,
+  "garage": "80 -> 150 im Jahr 2060 (Jahr 35)",
+  "jahr_1": 2026,
+  "miete_ziel_jahr": "2060 = Jahr 35",
+  "afa_jahre": 31.25
+ },
+ "WE12": {
+  "kaufpreis": 224000,
+  "kaufpreis_wohnung": 209000,
+  "garage_kp": 15000,
+  "qm": 56.0,
+  "zimmer": 2,
+  "knk": 19040.0,
+  "darlehen": 224000,
+  "afa_basis": 194432.0,
+  "miete_ist": 544.0,
+  "miete_sub": 728.0,
+  "mietluecke": 184.0,
+  "hausgeld": {
+   "u": 242.53,
+   "n": 81.83,
+   "summe": 324.36,
+   "r": 48.65,
+   "voraus": 373.01,
+   "eigentuemer": 130.48
+  },
+  "monat": {
+   "miete": 728.0,
+   "garage": 80.0,
+   "zins": 933.33,
+   "tilgung": 186.67,
+   "n": 81.83,
+   "r": 48.65,
+   "einnahmen": 808.0,
+   "ausgaben": 1250.48,
+   "vor": -442.48,
+   "ersparnis": 304.77,
+   "nach": -137.71
+  },
+  "herleitung_monat": {
+   "einnahmen": "728.00 + 80.00",
+   "zins": "224000 × 5 % / 12",
+   "tilgung": "224000 × 1 % / 12",
+   "ausgaben": "933.33 + 186.67 + 81.83 + 48.65",
+   "vor": "Einnahmen − Ausgaben",
+   "ersparnis": "42 % × (−Ergebnis Jahr) / 12",
+   "nach": "vor + ersparnis"
+  },
+  "jahr": {
+   "miete": 9696.0,
+   "zins": 11200.0,
+   "n": 981.96,
+   "afa": 6221.82,
+   "ergebnis": -8707.78,
+   "ersparnis": 3657.27
+  },
+  "herleitung_jahr": {
+   "miete": "(Miete + Garage) × 12",
+   "zins": "Darlehen × 5 %",
+   "n": "nicht umlagefähig × 12",
+   "afa": "Kaufpreis × 1,085 × 0,8 × 3,2 %",
+   "ergebnis": "Miete − Zins − N − AfA"
+  },
+  "steuer_30_jahre": 50004,
+  "miete_30_monat": 1202.06,
+  "tilgung_36_monate": 7061.6,
+  "entwicklung": {
+   "25": {
+    "wert": 367496,
+    "rest": 117091,
+    "erloes": 250404,
+    "zuzahlung": 61470,
+    "plus": 188934
+   },
+   "30": {
+    "wert": 405745,
+    "rest": 75177,
+    "erloes": 330568,
+    "zuzahlung": 73945,
+    "plus": 256623
+   },
+   "35": {
+    "wert": 447975,
+    "rest": 21683,
+    "erloes": 426293,
+    "zuzahlung": 99744,
+    "plus": 326549
+   }
+  },
+  "nach_steuer_min_max_30": [
+   -228.03,
+   -128.59
+  ]
+ },
+ "WE13": {
+  "kaufpreis": 285000,
+  "kaufpreis_wohnung": 270000,
+  "garage_kp": 15000,
+  "qm": 72.36,
+  "zimmer": 3,
+  "knk": 24225.0,
+  "darlehen": 285000,
+  "afa_basis": 247380.0,
+  "miete_ist": 900.0,
+  "miete_sub": 940.68,
+  "mietluecke": 40.68,
+  "hausgeld": {
+   "u": 202.8,
+   "n": 96.3,
+   "summe": 299.1,
+   "r": 62.81,
+   "voraus": 361.91,
+   "eigentuemer": 159.11
+  },
+  "monat": {
+   "miete": 940.68,
+   "garage": 80.0,
+   "zins": 1187.5,
+   "tilgung": 237.5,
+   "n": 96.3,
+   "r": 62.81,
+   "einnahmen": 1020.68,
+   "ausgaben": 1584.11,
+   "vor": -563.43,
+   "ersparnis": 387.58,
+   "nach": -175.85
+  },
+  "herleitung_monat": {
+   "einnahmen": "940.68 + 80.00",
+   "zins": "285000 × 5 % / 12",
+   "tilgung": "285000 × 1 % / 12",
+   "ausgaben": "1187.50 + 237.50 + 96.30 + 62.81",
+   "vor": "Einnahmen − Ausgaben",
+   "ersparnis": "42 % × (−Ergebnis Jahr) / 12",
+   "nach": "vor + ersparnis"
+  },
+  "jahr": {
+   "miete": 12248.16,
+   "zins": 14250.0,
+   "n": 1155.6,
+   "afa": 7916.16,
+   "ergebnis": -11073.6,
+   "ersparnis": 4650.91
+  },
+  "herleitung_jahr": {
+   "miete": "(Miete + Garage) × 12",
+   "zins": "Darlehen × 5 %",
+   "n": "nicht umlagefähig × 12",
+   "afa": "Kaufpreis × 1,085 × 0,8 × 3,2 %",
+   "ergebnis": "Miete − Zins − N − AfA"
+  },
+  "steuer_30_jahre": 63864,
+  "miete_30_monat": 1512.42,
+  "tilgung_36_monate": 8984.62,
+  "entwicklung": {
+   "25": {
+    "wert": 467573,
+    "rest": 148978,
+    "erloes": 318595,
+    "zuzahlung": 78791,
+    "plus": 239804
+   },
+   "30": {
+    "wert": 516238,
+    "rest": 95649,
+    "erloes": 420589,
+    "zuzahlung": 94861,
+    "plus": 325728
+   },
+   "35": {
+    "wert": 569969,
+    "rest": 27587,
+    "erloes": 542381,
+    "zuzahlung": 127902,
+    "plus": 414480
+   }
+  },
+  "nach_steuer_min_max_30": [
+   -293.55,
+   -165.17
+  ]
+ }
+}

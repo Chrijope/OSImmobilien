@@ -30,6 +30,9 @@ export const BEISPIEL_EINGABE: InvestmentEingabe = {
   seniorFixedRateYears: 5,
   secondLoanAmount: 0,
   bankgespraechAktiv: false,
+  // Die Golden-Werte rechnen mit 3,57 % Makler. Das Feld ist im Rechner nicht mehr bedienbar
+  // (Eingabebereiche.tsx), stand aber unsichtbar in den Kaufnebenkosten (Gegencheck Einhauser, 29.10.2026).
+  brokerRate: 0,
   garagePrice: 15000,
   monthlyGarageRent: 60,
 };

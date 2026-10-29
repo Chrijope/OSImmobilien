@@ -495,7 +495,8 @@ function VergleichTabelle({ k }: { k: Kontext }) {
     ? t("Miete im Monat, 1. Jahr (gerechnet, inkl. Garage)", "Rent per month, year 1 (calculated, incl. garage)")
     : t(`Miete im Monat, 1. Jahr (${de(A.einheit.mieteSubQm)} €/m²${garageMiete})`, `Rent per month, year 1 (${de(A.einheit.mieteSubQm)} €/m²${garageMiete})`);
   const lage = (e: EinheitErgebnis) => (k.haeuser ? [k.haus(e).strasse, e.einheit.lage].filter(Boolean).join(", ") : e.einheit.lage);
-  const auszahlungJahr = an.startJahr + 29;
+  // Wie in der Einhauser-PDF: Auszahlung nach 30 Jahren, also 2026 + 30 = 2056.
+  const auszahlungJahr = an.startJahr + 30;
   return (
     <table className={`t v${B ? "" : " v1"}`} style={{ marginTop: "3mm" }}>
       <tbody>
