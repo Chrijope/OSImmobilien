@@ -217,6 +217,10 @@
 .investmentrechner button {
   color: inherit;
 }
+/* Orange Hauptknöpfe (etwa „Weiter“ in der Kalkulationsbasis) behalten ihre weiße Schrift wie „Berechnung herunterladen“. */
+.investmentrechner button.btn-brand {
+  color: hsl(var(--brand-orange-foreground));
+}
 /*
  * Tailwind setzt Überschriften auf font-weight: inherit, das Original verlässt
  * sich auf die fette Browservorgabe. Deshalb hier ausdrücklich fett.
