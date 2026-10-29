@@ -178,6 +178,7 @@ export function EingabeKunde({ input, result, setzeZahl, setzeText, aendere, her
       <div className="field-grid">
         <Auswahlfeld
           label="Kirchensteuersatz"
+          empfohlen
           value={input.churchTaxRate}
           onChange={(wert) => setzeZahl("churchTaxRate", Number(wert))}
           tooltip="Kirchensteuer wird auf die Einkommensteuer aufgeschlagen, 8 Prozent in Bayern und Baden-Württemberg, sonst 9 Prozent. Ohne Kirchenmitgliedschaft bleibt es bei null. Der Satz erhöht die Steuerlast vor und nach dem Kauf und damit auch die Ersparnis."
@@ -473,6 +474,7 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
         <>
           <Auswahlfeld
             label="Bundesland des Objekts"
+            empfohlen
             value={knk.bundesland}
             onChange={(wert) => setzeKnk({ ...knk, bundesland: wert })}
             tooltip="Die Grunderwerbsteuer ist Ländersache und liegt zwischen 3,5 und 6,5 Prozent. Aus der Auswahl werden Grunderwerbsteuer, Notar mit 1,5 Prozent und Grundbuch mit 0,5 Prozent gesetzt. Passt ein Satz im Einzelfall nicht, hilft der Weg mit eigener Eingabe."
@@ -1528,6 +1530,7 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
       <div className="field-grid">
         <Zahlenfeld
           label="Startjahr"
+          empfohlen
           placeholder="z. B. 2026"
           value={input.startYear}
           step="1"
@@ -1566,7 +1569,7 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
           step="1"
           min={0}
           onChange={(wert) => setzeZahl("clientAge", wert)}
-          tooltip="Nur für das Deckblatt „Vermögensaufbau & Altersvorsorge“. Daraus und aus dem Rentenbeginn ergibt sich, wie viele Jahre bis zum Ruhestand gerechnet werden. Leer gelassen zeigt das Deckblatt einen Hinweis statt Zahlen."
+          tooltip="Aus Alter und Rentenbeginn ergibt sich, wie viele Jahre der Kunde bis zur Rente hat. Das steht auf der Seite „Ihre Ausgangslage“ der ausführlichen Berechnung („rund 27 Jahre bis zur Rente“); gerechnet wird damit nichts. Leer gelassen entfällt der Satz."
         />
         <Zahlenfeld
           label="Geplanter Rentenbeginn mit"
@@ -1577,7 +1580,7 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
           step="1"
           min={0}
           onChange={(wert) => setzeZahl("retirementAge", wert)}
-          tooltip="Alter, ab dem die Miete als Zusatzeinkommen im Ruhestand dienen soll. Die Rechnung läuft dafür bei Bedarf über die dreißig Jahre des Betrachtungszeitraums hinaus, mit denselben Annahmen."
+          tooltip="Rentenalter des Kunden, meist 67. Zusammen mit dem Alter ergibt es die Jahre bis zur Rente auf der Seite „Ihre Ausgangslage“; gerechnet wird damit nichts."
         />
         <Zahlenfeld
           label="Inflation p. a."
@@ -1640,6 +1643,7 @@ export function EingabeSteuer({ input, result, setzeZahl, aendere, herkunft }: E
         </Auswahlfeld>
         <Zahlenfeld
           label={input.depreciationMethod === "declining" ? "Degressive AfA p. a." : "Lineare AfA p. a."}
+          empfohlen
           value={input.buildingDepreciationRate}
           suffix="%"
           onChange={(wert) => setzeZahl("buildingDepreciationRate", wert)}

@@ -124,8 +124,8 @@ export function Feldetikett({ art = "manuell" }: { art?: Feldmarkierung }) {
 
 /**
  * Kennzeichnung der Kalkulationsbasis (Christian, 29.10.2026): „Wichtig“ (hellorange) an
- * Feldern, ohne die die Rechnung nur ein Beispiel ist; es verschwindet, sobald
- * etwas eingetragen ist. „optional“ an Feldern, die frei bleiben dürfen, etwa
+ * Feldern, die Analyse und PDF brauchen; ausgefüllt wird daraus ein gedämpftes
+ * „Wichtig ✓“, damit man die wichtigen Felder weiter erkennt. „optional“ an Feldern, die frei bleiben dürfen, etwa
  * Garage oder Erhaltungsaufwand. Gesperrt wird nichts, jeder Bereich bleibt
  * anklickbar.
  */
@@ -135,7 +135,9 @@ export interface Feldbedarf {
 }
 
 export function Bedarf({ empfohlen, optional, leer }: Feldbedarf & { leer: boolean }) {
+  // Wichtige Felder bleiben erkennbar, auch ausgefüllt: dann gedämpft mit Haken (Christian, 29.10.2026).
   if (empfohlen && leer) return <span className="feld-empfohlen" title="Für eine belastbare Rechnung bitte ausfüllen">Wichtig</span>;
+  if (empfohlen) return <span className="feld-empfohlen feld-erledigt" title="Wichtig, ausgefüllt">Wichtig ✓</span>;
   if (optional) return <span className="feld-optional" title="Darf frei bleiben">optional</span>;
   return null;
 }
@@ -361,7 +363,7 @@ export function Auswahlfeld({ label, value, onChange, children, hint, tooltip, m
         {label}
         {tooltip && <FeldInfo text={tooltip} />}
         <Feldetikett art={markierung} />
-        <Bedarf empfohlen={empfohlen} optional={optional} leer={value === "" || value === 0} />
+        <Bedarf empfohlen={empfohlen} optional={optional} leer={value === ""} />
       </span>
       <span className="select-shell">
         <select value={value} onChange={(e) => onChange(e.target.value)}>

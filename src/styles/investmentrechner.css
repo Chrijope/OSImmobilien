@@ -4896,3 +4896,8 @@
   color: var(--text-schwach);
   opacity: 1;
 }
+.investmentrechner .feld-empfohlen.feld-erledigt {
+  color: var(--muted);
+  background: transparent;
+  border-color: color-mix(in srgb, var(--orange-beitrag) 30%, transparent);
+}

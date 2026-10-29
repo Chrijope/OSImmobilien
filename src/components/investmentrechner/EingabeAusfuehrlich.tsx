@@ -67,7 +67,6 @@ export function EingabeAusfuehrlich({ input, aendere, vorgaben, nummer }: Props)
       <div className="field-grid">
         {text("nr", "Wohnungsnummer (WE)", { placeholder: "z. B. 12", empfohlen: true, tooltip: "Steht in Überschriften, Tabellen und im Dateinamen des PDF („Wohnung 12“). Ohne Nummer heißt die Wohnung dort „Wohnung 1“." })}
         {text("lage", "Lage im Haus", { placeholder: "z. B. 3. OG links", empfohlen: true, tooltip: "Etage und Seite der Wohnung. Steht auf der Seite „Haus und Wohnung“ und im Vergleich; gerechnet wird damit nichts." })}
-        {zahl("kpListe", "Listenpreis vor Anpassung", "€", { sonst: "Nur wenn der Kaufpreis angepasst wurde („statt …“)", placeholder: "z. B. 220.000", optional: true, tooltip: "Nur wenn der Kaufpreis für diesen Kunden gesenkt wurde: Dann steht in der Berechnung „209.000 € statt 220.000 €“. Gerechnet wird immer mit dem Kaufpreis aus „Objekt & Kaufpreis“." })}
         {zahl("garagen", "Anzahl Garagen/Stellplätze", "", { sonst: "Nur die erste hat einen Kaufpreis", placeholder: "z. B. 1", optional: true, tooltip: "Wie viele Garagen oder Stellplätze zur Wohnung gehören. Die Garagenmiete wird mit dieser Zahl multipliziert; einen Kaufpreis hat nur die erste (aus „Objekt & Kaufpreis“)." })}
       </div>
 
@@ -155,16 +154,16 @@ export function EingabeAusgangslage({ input, aendere, vorgaben }: Omit<Props, "n
     <div className="field-grid" data-testid="eingabe-ausgangslage">
       {wahl("anrede", "Anrede", ["Frau", "Herr"], "Für die Anrede im PDF, etwa „Frau Muster“ in Fußzeile und Investmentsheet.", { empfohlen: true })}
       {kZahl("netto", "Nettoeinkommen im Monat", "z. B. 3.500", "Für die Seite „Ihre Ausgangslage“: was dem Kunden im Monat frei bleibt und wann sein Erspartes nach den Kaufnebenkosten wieder aufgefüllt ist. Ohne Wert entfällt die Seite. Den Steuersatz bestimmt das zu versteuernde Einkommen.", { empfohlen: true })}
-      {wahl("familienstand", "Familienstand", ["ledig", "verheiratet", "eingetragene Lebenspartnerschaft", "geschieden", "verwitwet"], "Steht in den Eckdaten der Ausgangslage.", { optional: true })}
+      {wahl("familienstand", "Familienstand", ["ledig", "verheiratet", "eingetragene Lebenspartnerschaft", "geschieden", "verwitwet"], "Steht in den Eckdaten der Ausgangslage.", { empfohlen: true })}
       {wahl("kinder", "Kinder", ["keine", "1", "2", "3", "4"], "Steht in den Eckdaten der Ausgangslage.", { optional: true })}
       {wahl("beschaeftigung", "Beschäftigung", ["Angestellt, unbefristet", "Angestellt, befristet", "Beamtet", "Selbstständig", "Rente oder Pension"], "Steht in den Eckdaten. „unbefristet“ ändert die Überschrift der Ausgangslage („Sicheres Einkommen …“).", { optional: true })}
       {wahl("antrag", "Antrag", ["allein, ohne Mitantragsteller", "zu zweit, mit Mitantragsteller"], "Steht in den Eckdaten der Ausgangslage.", { optional: true })}
-      {wahl("wohnsituation", "Wohnsituation", ["mietfrei", "zur Miete", "Eigentum"], "Steht in den Eckdaten der Ausgangslage. Die Warmmiete daneben zählt in die Haushaltsrechnung.", { optional: true })}
-      {kZahl("mieteWarm", "Warmmiete heute", "z. B. 950", "Zählt in die Haushaltsrechnung der Ausgangslage („frei im Monat“). Bei mietfrei oder Eigentum 0 lassen.", { optional: true })}
-      {kZahl("lebenshaltung", "Lebenshaltung im Monat", "z. B. 1.000", "Zählt in die Haushaltsrechnung der Ausgangslage („frei im Monat“).", { optional: true })}
+      {wahl("wohnsituation", "Wohnsituation", ["mietfrei", "zur Miete", "Eigentum"], "Steht in den Eckdaten der Ausgangslage. Die Warmmiete daneben zählt in die Haushaltsrechnung.", { empfohlen: true })}
+      {kZahl("mieteWarm", "Warmmiete heute", "z. B. 950", "Zählt in die Haushaltsrechnung der Ausgangslage („frei im Monat“). Bei mietfrei oder Eigentum 0 lassen.", { empfohlen: true })}
+      {kZahl("lebenshaltung", "Lebenshaltung im Monat", "z. B. 1.000", "Zählt in die Haushaltsrechnung der Ausgangslage („frei im Monat“).", { empfohlen: true })}
       {wahl("kredite", "Laufende Kredite", ["keine"], "Steht in den Eckdaten. „keine“ oder kurz beschreiben, etwa „1 Kredit, 249 € im Monat“; die Rate gehört ins Feld daneben.", { optional: true })}
       {kZahl("kreditRaten", "Kreditraten im Monat", "z. B. 0", "Zählt in die Haushaltsrechnung der Ausgangslage („frei im Monat“).", { optional: true })}
-      {kZahl("kapital", "Bank- und Sparguthaben", "z. B. 40.000", "Zeigt, ob das Ersparte die Kaufnebenkosten trägt, und steht als „Ihr Kapital“ in der Ausgangslage.", { optional: true })}
+      {kZahl("kapital", "Bank- und Sparguthaben", "z. B. 40.000", "Zeigt, ob das Ersparte die Kaufnebenkosten trägt, und steht als „Ihr Kapital“ in der Ausgangslage.", { empfohlen: true })}
     </div>
   );
 }
