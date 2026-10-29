@@ -1146,7 +1146,33 @@
   gap: 16px;
 }
 .investmentrechner .result-kopf > div { min-width: 0; }
-.investmentrechner .result-kopf .rechner-zuruecksetzen { flex: none; }
+/* Live-Berechnung oben rechts im Kopf; der Punkt pulsiert sichtbar (Christian, 29.10.2026). */
+.investmentrechner .live-berechnung {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+.investmentrechner .live-berechnung > i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: hsl(var(--success));
+  animation: livePuls 1.8s ease-out infinite;
+}
+@keyframes livePuls {
+  0% { box-shadow: 0 0 0 0 hsl(var(--success) / 0.55); }
+  70% { box-shadow: 0 0 0 7px hsl(var(--success) / 0); }
+  100% { box-shadow: 0 0 0 0 hsl(var(--success) / 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .investmentrechner .live-berechnung > i { animation: none; box-shadow: 0 0 0 4px hsl(var(--success) / 0.15); }
+}
 .investmentrechner .view-toggle.hauptansichten {
   width: fit-content;
   max-width: 100%;
@@ -1160,14 +1186,14 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px 28px;
-  padding-top: 14px;
-  border-top: 1px solid var(--line);
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
 }
 .investmentrechner .result-optionen .deckblatt-wahl { margin-bottom: 0; flex: 1 1 360px; }
 /* Immer rechts, auch wenn die Deckblatt-Wahl ausgeblendet ist (Ausführlich, Vergleich). */
-.investmentrechner .sprache-wahl { display: grid; gap: 6px; justify-items: start; margin-left: auto; }
+.investmentrechner .sprache-wahl { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-left: auto; }
 .investmentrechner .sprache-wahl > span {
   display: inline-flex;
   align-items: center;

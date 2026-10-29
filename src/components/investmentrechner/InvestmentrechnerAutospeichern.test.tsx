@@ -65,13 +65,16 @@ describe("Kopfbereich", () => {
   it("trennt Kunde und Objekt, die Ansichten und die Sprache des PDF in eigene Ebenen", () => {
     const { container } = zeige();
     const kopf = container.querySelector(".result-header")!;
-    expect(kopf.querySelector(".result-kopf [data-testid='rechner-zuruecksetzen']")).not.toBeNull();
+    // Seit dem 29.10.2026 steht „Live-Berechnung“ im Kopf, „Zurücksetzen“ oben bei den Aktionen.
+    expect(kopf.querySelector(".result-kopf [data-testid='live-berechnung']")).not.toBeNull();
+    expect(kopf.querySelector("[data-testid='rechner-zuruecksetzen']")).toBeNull();
     // Seit dem 29.10.2026 nur noch Analyse und ausführliche Berechnung, ohne Deckblattwahl.
     expect(within(kopf.querySelector(".hauptansichten") as HTMLElement).getAllByRole("button").map((b) => b.textContent?.trim())).toEqual([
       "Analyse",
       "Ausführlich (PDF)",
     ]);
     const optionen = kopf.querySelector(".result-optionen") as HTMLElement;
+    expect(optionen.querySelector(".hauptansichten")).not.toBeNull();
     expect(within(optionen).queryByText("Deckblatt")).toBeNull();
     expect(within(optionen).getByText(/Sprache des PDF/)).toBeInTheDocument();
     expect(within(optionen).getByRole("radio", { name: "DE" })).toHaveAttribute("aria-checked", "true");

@@ -1518,10 +1518,6 @@ export function InvestmentrechnerInhalt({
   // als die Seite in der Seitenleiste.
   const aktionen = (
     <>
-      <span className="inline-flex items-center gap-2 mr-1.5 text-xs font-semibold tracking-wide text-muted-foreground">
-        <i className="h-[7px] w-[7px] rounded-full bg-success shadow-[0_0_0_4px_hsl(var(--success)/0.12)]" />
-        Live-Berechnung
-      </span>
       {/* Der Schalter „Bankgespräch & Bankunterlagen“ ist seit dem 29.10.2026 ausgeblendet, siehe `bankModus`. */}
       {bankModus && (
         <label className="rechner-modus" data-testid="schalter-bankgespraech">
@@ -1574,6 +1570,10 @@ export function InvestmentrechnerInhalt({
         Am Objekt haengt ein eigenes Expose, und zwei Papiere mit demselben
         Namen verwechselt man im Kundengespraech.
       */}
+      {/* „Zurücksetzen“ steht seit dem 29.10.2026 hier oben links neben dem Download (Christian). */}
+      <Button variant="outline" className="gap-2 rechner-zuruecksetzen" onClick={() => void zuruecksetzen()} data-testid="rechner-zuruecksetzen">
+        <RotateCcw size={15} /> Zurücksetzen
+      </Button>
       {/* Seit dem 29.10.2026 die ausführliche Berechnung, in der Sprache für Kunde und PDF. */}
       <Button variant="brand" className="gap-2" disabled={pdfEntsteht} onClick={() => void ausfuehrlichHerunterladen()}>
         <FileDown size={16} /> {pdfEntsteht ? "PDF wird erstellt …" : "Berechnung herunterladen"}
@@ -1766,9 +1766,10 @@ export function InvestmentrechnerInhalt({
                     <h2>{input.propertyTitle || "Neue Investmentkalkulation"}</h2>
                     <p>{input.address || "Adresse ergänzen"}</p>
                   </div>
-                  <Button variant="outline" size="sm" className="gap-2 rechner-zuruecksetzen" onClick={() => void zuruecksetzen()} data-testid="rechner-zuruecksetzen">
-                    <RotateCcw size={15} /> Zurücksetzen
-                  </Button>
+                  <span className="live-berechnung" data-testid="live-berechnung">
+                    <i aria-hidden="true" />
+                    Live-Berechnung
+                  </span>
                 </div>
                 {/*
                   Seit dem 29.10.2026 nur Analyse und ausführliche Berechnung
@@ -1776,6 +1777,8 @@ export function InvestmentrechnerInhalt({
                   „Vergleich“ sind entfernt; zwei Objekte vergleicht die
                   ausführliche Berechnung selbst.
                 */}
+                {/* Ansichten links, Sprache des PDF rechts in einer Zeile, darunter der Trennstrich (Christian, 29.10.2026). */}
+                <div className="result-optionen">
                 <div className="view-toggle hauptansichten" role="tablist" aria-label="Ansicht wählen">
                   <button className={ansicht === "analyse" ? "active" : ""} onClick={() => setAnsicht("analyse")}>
                     <Calculator size={16} /> Analyse
@@ -1784,7 +1787,6 @@ export function InvestmentrechnerInhalt({
                     <FileText size={16} /> Ausführlich (PDF)
                   </button>
                 </div>
-                <div className="result-optionen">
                   {/* Ohne Kunde eine sichtbare Wahl; mit Kunde gilt seine Sprache aus dem Profil. */}
                   {dokumentSprache === undefined && (
                     <div className="sprache-wahl" data-testid={kundeId ? "sprache-kunde" : "sprache-wahl"}>
