@@ -123,7 +123,7 @@ export function Feldetikett({ art = "manuell" }: { art?: Feldmarkierung }) {
 }
 
 /**
- * Kennzeichnung der Kalkulationsbasis (Christian, 29.10.2026): „Empfohlen“ an
+ * Kennzeichnung der Kalkulationsbasis (Christian, 29.10.2026): „Wichtig“ (hellorange) an
  * Feldern, ohne die die Rechnung nur ein Beispiel ist; es verschwindet, sobald
  * etwas eingetragen ist. „optional“ an Feldern, die frei bleiben dürfen, etwa
  * Garage oder Erhaltungsaufwand. Gesperrt wird nichts, jeder Bereich bleibt
@@ -135,7 +135,7 @@ export interface Feldbedarf {
 }
 
 export function Bedarf({ empfohlen, optional, leer }: Feldbedarf & { leer: boolean }) {
-  if (empfohlen && leer) return <span className="feld-empfohlen" title="Für eine belastbare Rechnung bitte ausfüllen">Empfohlen</span>;
+  if (empfohlen && leer) return <span className="feld-empfohlen" title="Für eine belastbare Rechnung bitte ausfüllen">Wichtig</span>;
   if (optional) return <span className="feld-optional" title="Darf frei bleiben">optional</span>;
   return null;
 }

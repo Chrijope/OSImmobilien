@@ -4855,7 +4855,7 @@
   white-space: normal;
 }
 
-/* Kalkulationsbasis (29.10.2026): „Empfohlen“ bis zum Ausfüllen, „optional“ für Felder, die frei bleiben dürfen. */
+/* Kalkulationsbasis (29.10.2026): „Wichtig“ bis zum Ausfüllen, „optional“ für Felder, die frei bleiben dürfen. */
 .investmentrechner .feld-empfohlen,
 .investmentrechner .feld-optional {
   display: inline-block;
@@ -4867,10 +4867,11 @@
   line-height: 1.5;
   vertical-align: middle;
 }
+/* „Wichtig“ in hellem Orange, damit es ins Auge fällt (Christian, 29.10.2026). */
 .investmentrechner .feld-empfohlen {
-  color: var(--gold-tief);
-  background: var(--gold-soft);
-  border: 1px solid var(--gold-linie);
+  color: var(--orange-beitrag);
+  background: color-mix(in srgb, var(--orange-beitrag) 13%, transparent);
+  border: 1px solid color-mix(in srgb, var(--orange-beitrag) 45%, transparent);
 }
 .investmentrechner .feld-optional {
   color: var(--muted);
