@@ -191,3 +191,12 @@ html.dark .kov .kov-karte { background:#fff; }
 .kov .kov-karte h2 { margin-top:2mm; letter-spacing:normal; }
 /* Tabellenregeln des Rechners (.investmentrechner table/th/td: kein Umbruch, fett, Großbuchstaben) gelten hier nicht. */
 .kov table td, .kov table th { color:inherit; font-weight:inherit; font-size:inherit; letter-spacing:normal; text-transform:none; white-space:normal; }
+
+/* Vergleich nebeneinander wie in der letzten Einhauser-Fassung (build.py, „Kundenwunsch“):
+   neutrale Vorsteuerzeile, kräftige Steuerersparnis, grüne Auszahlungszeile. Nur diese Tabelle. */
+.kov table.t.v tr.e1 td, .kov table.t.v tr.e1 td.c { background:#fff; color:#000; font-size:7.6pt; font-weight:300; padding:1.25mm 1.5mm 1.25mm 0; border-top:0; border-bottom:.2mm solid var(--line); border-radius:0; }
+.kov table.t.v tr.hi td { padding:2.4mm 2.5mm; font-weight:600; font-size:9pt; vertical-align:middle; }
+.kov table.t.v tr.hi td.c { font-size:13pt; font-weight:700; }
+.kov table.t.v tr.payout td { background:#DDF0E6; color:#12362A; font-weight:700; padding:2.2mm 2.5mm; border-top:.5mm solid #198A5F; border-bottom:.5mm solid #198A5F; }
+.kov table.t.v tr.payout td.c { font-size:12pt; font-weight:700; }
+.kov table.t.v1 td.c { width:40%; }

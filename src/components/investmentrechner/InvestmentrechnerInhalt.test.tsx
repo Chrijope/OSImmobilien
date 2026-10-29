@@ -102,10 +102,22 @@ describe("Berechnung herunterladen (28.09.2026)", () => {
     fireEvent.click(screen.getByRole("button", { name: "Berechnung herunterladen" }));
     await waitFor(() => expect(pdf.speichern).toHaveBeenCalledTimes(1));
     const abdruck = pdf.erzeugen.mock.calls[0][0];
-    // Eine Wohnung ohne Kundendaten: Deckblatt, Haus und Wohnung, Rechnung, Entwicklung, Sheet, Freibetrag, Steuer, Nachrang.
-    expect(abdruck.querySelectorAll(".expose-page")).toHaveLength(8);
+    // Eine Wohnung ohne Kundendaten: Deckblatt, Haus und Wohnung, Überblick, Rechnung, Entwicklung, Sheet, Freibetrag, Steuer, Nachrang.
+    expect(abdruck.querySelectorAll(".expose-page")).toHaveLength(9);
     expect(abdruck.querySelector(".kov-system-titel")?.textContent).toBe("Musterwohnanlage, WE 7");
     expect(abdruck.textContent).toContain("Weniger Eigenkapital einsetzen");
     expect(pdf.speichern.mock.calls[0][0]).toMatch(/^Investmentberechnung .*WE 7 \(\d{2}\.\d{2}\.\d{4}\)\.pdf$/);
+  });
+});
+
+describe("Weiter in der Kalkulationsbasis (29.10.2026)", () => {
+  it("führt unten von Bereich zu Bereich, im letzten steht er nicht", () => {
+    zeige(<InvestmentrechnerInhalt vorbelegung={vorbelegung} mitUeberschrift={false} />);
+    const titel = () => document.querySelector(".input-content .section-title h2")?.textContent;
+    expect(titel()).toBe("Kunde & Einkommen");
+    fireEvent.click(screen.getByTestId("bereich-weiter"));
+    expect(titel()).toBe("Objekt & Kaufpreis");
+    fireEvent.click(screen.getByRole("button", { name: "Bilder" }));
+    expect(screen.queryByTestId("bereich-weiter")).toBeNull();
   });
 });

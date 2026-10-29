@@ -3052,5 +3052,26 @@
     ],
     "soFindestDuEs": "Seitenleiste, Investmentkalkulation",
     "kritisch": false
+  },
+  {
+    "nr": 150,
+    "datum": "2026-10-29",
+    "art": "geaendert",
+    "titel": "Investmentkalkulation: Seite „Vergleich nebeneinander“, Weiter-Knopf und nur passende Felder",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner"
+    ],
+    "kurztext": "Die ausführliche Berechnung hat wieder die Übersichtstabelle mit Hausgeld, Kreditrate, Steuerersparnis und Auszahlung, bei einer Wohnung mit einer Spalte, im Vergleich mit A und B. Links führt „Weiter“ von Bereich zu Bereich.",
+    "wasHeisstDasFuerDich": [
+      "Nach „Haus und Wohnung“ folgt die Seite mit allen Zahlen nebeneinander; dieselbe Tabelle steht auch in der Analyse.",
+      "Mit einem zweiten Objekt zum Vergleich bekommt sie die Spalten A und B und die Stärken beider Wohnungen.",
+      "Unten in jedem Bereich der Kalkulationsbasis bringt dich „Weiter“ in den nächsten.",
+      "Möbel-Nutzungsdauer und die Felder zum Erhaltungsaufwand erscheinen nur, wenn in „Objekt & Kaufpreis“ ein Betrag dafür steht."
+    ],
+    "soFindestDuEs": "Seitenleiste, Investmentkalkulation",
+    "kritisch": false
   }
 ]

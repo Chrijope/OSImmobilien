@@ -30,7 +30,7 @@ import P39A_2 from "../../../../public/images/objektvergleich/p39a-2.png";
 import P39A_3 from "../../../../public/images/objektvergleich/p39a-3.png";
 import P39A_4 from "../../../../public/images/objektvergleich/p39a-4.png";
 const P39A = [P39A_1, P39A_2, P39A_3, P39A_4];
-/** Seitenzahl gesamt; je nach Zahl der Wohnungen und Kundendaten 8 bis 13. */
+/** Seitenzahl gesamt; je nach Zahl der Wohnungen und Kundendaten 9 bis 14. */
 const SeitenKontext = createContext(13);
 
 // ---------------------------------------------------------------------------
@@ -472,93 +472,130 @@ type Sieger = "A" | "B" | null;
 const sieger = (a: number, b: number, kleinerBesser: boolean): Sieger =>
   Math.abs(a - b) < 0.005 ? null : (kleinerBesser ? a < b : a > b) ? "A" : "B";
 
-function Vergleich({ k, B, nr }: { k: Kontext; B: EinheitErgebnis; nr: number }) {
-  const { v, A } = k;
+/**
+ * Die Tabelle „Vergleich nebeneinander“ wie in der letzten Einhauser-Fassung
+ * (build.py, 28.10.2026), seit dem 29.10.2026 auch mit nur einer Wohnung
+ * (eine Spalte). Steht auf der Seite und in der Analyse.
+ */
+function VergleichTabelle({ k }: { k: Kontext }) {
+  const { v, A, B, liste: L } = k;
   const { de, eur, tsd, pz, pzGanz, t } = k.f;
   const an = v.annahmen;
-  const am = A.monat, bm = B.monat, ah = A.hausgeld, bh = B.hausgeld;
-  const g = A.einheit.garagen;
-  const z = (lbl: ReactNode, va: ReactNode, vb: ReactNode, win: Sieger = null, cls = "", key?: string) => (
+  const z = (lbl: ReactNode, werte: (e: EinheitErgebnis) => ReactNode, win: Sieger = null, cls = "", key?: string) => (
     <tr className={cls} key={key ?? String(lbl)}>
-      <td>{lbl}</td><td className={`c${win === "A" ? " win" : ""}`}>{va}</td><td className={`c${win === "B" ? " win" : ""}`}>{vb}</td>
+      <td>{lbl}</td>
+      {L.map((e, i) => <td key={i} className={`c${B && win === (i ? "B" : "A") ? " win" : ""}`}>{werte(e)}</td>)}
     </tr>
   );
-  const kg = (e: EinheitErgebnis) => (e.einheit.garagen ? ` + ${garagenText(e, false, k.f)}` : "");
-  const mietLabel = k.haeuser && (A.einheit.mieteSubQm !== B.einheit.mieteSubQm || A.einheit.garageMiete1 !== B.einheit.garageMiete1)
+  const win = (a: number, b: number, kleinerBesser: boolean) => (B ? sieger(a, b, kleinerBesser) : null);
+  const bb = B ?? A;
+  const g = A.einheit.garagen;
+  const garageMiete = g ? (g > 1 ? ` + ${g} × ${eur(A.einheit.garageMiete1, 0)} ${t("Garage", "garage")}` : ` + ${t("Garage", "garage")} ${eur(A.einheit.garageMiete1, 0)}`) : "";
+  const mietLabel = B && (A.einheit.mieteSubQm !== B.einheit.mieteSubQm || A.einheit.garageMiete1 !== B.einheit.garageMiete1)
     ? t("Miete im Monat, 1. Jahr (gerechnet, inkl. Garage)", "Rent per month, year 1 (calculated, incl. garage)")
-    : t(`Miete im Monat, 1. Jahr (${de(A.einheit.mieteSubQm)} €/m²${g ? ` + ${g > 1 ? `${g} × ${eur(A.einheit.garageMiete1, 0)} Garage` : `Garage ${eur(A.einheit.garageMiete1, 0)}`}` : ""})`,
-      `Rent per month, year 1 (${de(A.einheit.mieteSubQm)} €/m²${g ? ` + ${g > 1 ? `${g} × ${eur(A.einheit.garageMiete1, 0)} garage` : `garage ${eur(A.einheit.garageMiete1, 0)}`}` : ""})`);
-  const afaPz = de(100 / A.einheit.afaJahre, 1);
-  const guenstiger = A.monat.nach >= B.monat.nach ? A : B;
+    : t(`Miete im Monat, 1. Jahr (${de(A.einheit.mieteSubQm)} €/m²${garageMiete})`, `Rent per month, year 1 (${de(A.einheit.mieteSubQm)} €/m²${garageMiete})`);
+  const lage = (e: EinheitErgebnis) => (k.haeuser ? [k.haus(e).strasse, e.einheit.lage].filter(Boolean).join(", ") : e.einheit.lage);
+  const auszahlungJahr = an.startJahr + 29;
+  return (
+    <table className={`t v${B ? "" : " v1"}`} style={{ marginTop: "3mm" }}>
+      <tbody>
+        <tr><th />{L.map((e, i) => <th key={i}>{B && <span className={`badge${i ? " b" : ""}`}>{i ? "B" : "A"}</span>} {k.haus(e).strasse}, {t("WE", "apt.")} {e.einheit.nr}</th>)}</tr>
+        {L.some((e) => lage(e)) && z(k.haeuser ? t("Haus und Lage", "Building and location") : t("Lage im Haus", "Position in the building"), lage)}
+        {z(t("Wohnung", "Apartment"), (e) => `${t(`${e.einheit.zimmer} Zimmer`, `${e.einheit.zimmer} rooms`)}, ${de(e.einheit.qm)} m²${e.einheit.garagen ? ` + ${garagenText(e, false, k.f)}` : ""}`, win(A.einheit.qm, bb.einheit.qm, false))}
+        {z(g > 1 ? t("Kaufpreis (weitere Garagen ohne Aufpreis)", "Purchase price (further garages at no surcharge)") : t("Kaufpreis", "Purchase price"), (e) => `${eur(e.kp, 0)}${e.einheit.garagen ? t(" inkl. Garage", " incl. garage") : ""}`)}
+        {z(t("Preis je m² Wohnung", "Price per m² apartment"), (e) => eur(e.qmPreis), win(A.qmPreis, bb.qmPreis, true))}
+        {z(t(`Kaufnebenkosten (aus Eigenkapital, ${pz(an.knk)})`, `Purchase costs (from equity, ${pz(an.knk)})`), (e) => eur(e.nk, 0), win(A.nk, bb.nk, true))}
+        {z(t("Kaltmiete heute (zahlt der Mieter)", "Net rent today (paid by the tenant)"), (e) => `${eur(e.einheit.mieteIst)} (${de(e.mieteIstQm)} €/m²)`)}
+        {z(mietLabel, (e) => eur(e.monat.einnahmen))}
+        {L.some((e) => e.luecke > 0) && z(t("davon Mietlücke, die der Bauträger zahlt", "of which rent gap paid by the developer"), (e) => `${eur(Math.max(0, e.luecke))} (${pz(Math.max(0, e.lueckeQuote))})`, win(A.lueckeQuote, bb.lueckeQuote, true), "sub")}
+        {z(t("Hausgeld umlagefähig (Plananteil Mieter)", "Service charge recoverable (tenant's share of the budget)"), (e) => eur(e.hausgeld.u), null, "sub")}
+        {z(t("Hausgeld nicht umlagefähig (Verwaltung u. a.)", "Service charge non-recoverable (management etc.)"), (e) => eur(e.hausgeld.n), null, "sub")}
+        {z(t(`= Hausgeld (${wpBeide(k)})`, `= Service charge (${wpBeide(k)})`), (e) => eur(e.hausgeld.summe))}
+        {z(t("Erhaltungsrücklage (separat)", "Maintenance reserve (separate)"), (e) => eur(e.hausgeld.r), null, "sub")}
+        {z(t("= Vorauszahlung gesamt an die Verwaltung", "= Total advance payment to the management"), (e) => eur(e.hausgeld.voraus))}
+        {z(t("Ihr Anteil: nicht umlagefähig + Rücklage", "Your share: non-recoverable + reserve"), (e) => eur(e.hausgeld.eigentuemer), win(A.hausgeld.eigentuemer, bb.hausgeld.eigentuemer, true))}
+        {z(t(`Kreditrate (Zins ${pzGanz(an.zins)} + Tilgung ${pzGanz(an.tilgung)})`, `Loan instalment (interest ${pzGanz(an.zins)} + repayment ${pzGanz(an.tilgung)})`), (e) => eur(e.monat.zins + e.monat.tilgung))}
+        {z(t("Abschreibung", "Depreciation") + (A.einheit.afaJahre < 50 ? t(" (mit Gutachten)", " (with expert report)") : ""), (e) => t(`${pz(1 / e.einheit.afaJahre)} p. a.: ${eur(e.jahr.afa, 0)}/J.`, `${pz(1 / e.einheit.afaJahre)} p.a.: ${eur(e.jahr.afa, 0)}/yr`))}
+        {z(t("Zuzahlung vor Steuer", "Top-up before tax"), (e) => eur(-e.monat.vor), null, "e1")}
+        {z(t(`Steuerersparnis (${pzGanz(an.steuer)} Grenzsteuersatz)`, `Tax saving (${pzGanz(an.steuer)} marginal tax rate)`), (e) => eur(e.monat.ersparnis), null, "hi")}
+        {z(<>{t("Zuzahlung nach Steuererstattung", "Top-up after tax refund")}<span style={{ display: "block", fontSize: "7.4pt", fontWeight: 300, color: "#B8C2BC", marginTop: ".4mm" }}>{t("Ihr Eigenanteil im Monat", "Your own contribution per month")}</span></>, (e) => eur(-e.monat.nach), null, "e3", "e3")}
+        {z(t("Tilgung im Monat (senkt Ihre Restschuld)", "Repayment per month (reduces your remaining debt)"), (e) => eur(e.monat.tilgung), win(A.monat.tilgung, bb.monat.tilgung, false))}
+        {z(t("Verkaufssumme nach 30 Jahren (einmalig)", "Sale price after 30 years (one-off)"), (e) => tsd(e.entw[30].wert), win(A.entw[30].wert, bb.entw[30].wert, false))}
+        {z(t("abzüglich Restschuld des Kredits", "less remaining loan debt"), (e) => `− ${tsd(e.entw[30].rest)}`, null, "sub")}
+        {z(<>{t(`Ihre Auszahlung im Jahr ${auszahlungJahr}`, `Your payout in ${auszahlungJahr}`)}<span className="kl">{t("nach 30 Jahren, einmalig nach Kreditablösung", "after 30 years, one-off after repaying the loan")}</span></>, (e) => tsd(e.entw[30].erloes), null, "payout", "payout")}
+      </tbody>
+    </table>
+  );
+}
+
+/** Der Satz unter der Tabelle: Kaufpreisaufteilung, Verkaufssumme, § 23, Dauer der Abschreibung. */
+function VergleichFussnote({ k }: { k: Kontext }) {
+  const { A, B, liste: L } = k;
+  const { eur, pzGanz, t } = k.f;
+  const an = k.v.annahmen;
+  const aufteilung = L.filter((e) => e.einheit.garagen).map((e) =>
+    t(`Kaufpreis Wohnung ${e.einheit.nr}: ${eur(e.einheit.kpWohnung, 0)} zuzüglich Garage ${eur(e.einheit.garageKp, 0)}, gesamt ${eur(e.kp, 0)}.`,
+      `Purchase price apartment ${e.einheit.nr}: ${eur(e.einheit.kpWohnung, 0)} plus garage ${eur(e.einheit.garageKp, 0)}, total ${eur(e.kp, 0)}.`)).join(" ");
+  const afaMin = Math.min(...L.map((e) => e.einheit.afaJahre));
+  const afaGleich = L.every((e) => e.einheit.afaJahre === A.einheit.afaJahre);
+  return (
+    <p className="small" style={{ marginTop: "1.5mm" }}>
+      {aufteilung && <b style={{ fontWeight: 500, color: "var(--navy)" }}>{aufteilung} </b>}
+      {A.einheit.garagen > 1 && t(`Weitere Garage ohne Aufpreis; Miete ${eur(A.einheit.garageMiete1, 0)} im 1. Jahr vom Bauträger getragen, danach Vermietung. `, `Further garage at no surcharge; rent of ${eur(A.einheit.garageMiete1, 0)} paid by the developer in year 1, then let. `)}
+      {t(`Verkaufssumme: angenommener Verkaufspreis bei ${pzGanz(an.wertPa)} Wertentwicklung im Jahr, vor Verkaufskosten. Nach mehr als zehn Jahren Haltedauer ist der Gewinn aus dem Verkauf einer privat vermieteten Wohnung nach § 23 EStG in der Regel steuerfrei (Hinweis, keine Steuerberatung).`,
+        `Sale price: assumed selling price at ${pzGanz(an.wertPa)} value growth a year, before selling costs. After a holding period of more than ten years, the gain from selling a privately let apartment is generally tax-free under section 23 of the German Income Tax Act (note, not tax advice).`)}
+      {afaMin >= 30
+        ? t(` Die Abschreibung läuft${B ? " bei beiden Wohnungen" : ""} ${afaGleich ? `${jahreAfa(k.f, A.einheit.afaJahre)} Jahre` : L.map((e) => jahreAfa(k.f, e.einheit.afaJahre)).join(" bzw. ") + " Jahre"}, also länger als die Betrachtung; ein früher Verkauf ist deshalb nicht nötig.`,
+          ` Depreciation runs for ${afaGleich ? `${jahreAfa(k.f, A.einheit.afaJahre)} years` : L.map((e) => jahreAfa(k.f, e.einheit.afaJahre)).join(" and ") + " years"}${B ? " for both apartments" : ""}, longer than the period considered; an early sale is therefore not necessary.`) : ""}
+    </p>
+  );
+}
+
+function Vergleich({ k, nr }: { k: Kontext; nr: number }) {
+  const { A, B } = k;
+  const { de, eur, tsd, t } = k.f;
+  const guenstiger = B && A.monat.nach < B.monat.nach ? B : A;
   const staerke = (e: EinheitErgebnis, o: EinheitErgebnis): [string, string] => {
     const teile: string[] = [];
     if (e.nk < o.nk) teile.push(t(`rund ${eur(o.nk - e.nk, 0)} weniger Nebenkosten`, `about ${eur(o.nk - e.nk, 0)} less in purchase costs`));
+    if (e.monat.zins + e.monat.tilgung < o.monat.zins + o.monat.tilgung) teile.push(t("kleinere Kreditrate", "smaller loan instalment"));
     if (e.monat.nach > o.monat.nach) teile.push(t(`rund ${eur(Math.abs(e.monat.nach - o.monat.nach), 0)} weniger Eigenanteil im Monat`, `about ${eur(Math.abs(e.monat.nach - o.monat.nach), 0)} less own contribution per month`));
-    if (e.einheit.zimmer > o.einheit.zimmer) teile.push(t(`${e.einheit.zimmer} Zimmer`, `${e.einheit.zimmer} rooms`));
+    if (e.einheit.zimmer > o.einheit.zimmer) teile.push(t(`${e.einheit.zimmer} Zimmer, ${de(e.einheit.qm)} m²`, `${e.einheit.zimmer} rooms, ${de(e.einheit.qm)} m²`));
     if (e.qmPreis < o.qmPreis) teile.push(t("günstiger je m²", "cheaper per m²"));
-    if (e.lueckeQuote < o.lueckeQuote) teile.push(e.luecke > 0 ? t(`eine Mietlücke von nur ${eur(e.luecke)}`, `a rent gap of only ${eur(e.luecke)}`) : t("keine Mietlücke", "no rent gap"));
+    if (e.lueckeQuote < o.lueckeQuote) teile.push(e.luecke > 0 ? t(`eine Mietlücke von ${eur(e.luecke)}`, `a rent gap of ${eur(e.luecke)}`) : t("keine Mietlücke", "no rent gap"));
     if (e.entw[30].erloes > o.entw[30].erloes) teile.push(t(`nach 30 Jahren rund ${tsd(e.entw[30].erloes - o.entw[30].erloes)} mehr Erlös nach Kreditablösung`, `about ${tsd(e.entw[30].erloes - o.entw[30].erloes)} more proceeds after repaying the loan after 30 years`));
-    const titel = e === guenstiger ? t("Der kleinere Einstieg", "The smaller entry") : t("Mehr Wohnung, mehr Vermögen", "More apartment, more wealth");
     if (k.haeuser && e.einheit.afaJahre < o.einheit.afaJahre) teile.push(t(`die schnellere Abschreibung (${jahreAfa(k.f, e.einheit.afaJahre)} statt ${jahreAfa(k.f, o.einheit.afaJahre)} Jahre)`, `faster depreciation (${jahreAfa(k.f, e.einheit.afaJahre)} instead of ${jahreAfa(k.f, o.einheit.afaJahre)} years)`));
+    const titel = e === guenstiger
+      ? t("Der kleinere Einstieg", "The smaller entry")
+      : e.einheit.zimmer > o.einheit.zimmer ? t(`Mehr Wohnfläche und ${e.einheit.zimmer} Zimmer`, `More living space and ${e.einheit.zimmer} rooms`) : t("Mehr Wohnung, mehr Vermögen", "More apartment, more wealth");
     const satz = teile.length ? `${teile.join(", ").replace(/^./, (c) => c.toUpperCase())}.` : t("Gleichwertig in den gerechneten Kriterien.", "Equal on the calculated criteria.");
     return [titel, satz];
   };
-  const afaZeile = (e: EinheitErgebnis) => t(`≈ ${afaPz} % über ${jahreAfa(k.f, e.einheit.afaJahre)} Jahre: ${eur(e.jahr.afa, 0)}/J.`, `≈ ${afaPz}% over ${jahreAfa(k.f, e.einheit.afaJahre)} years: ${eur(e.jahr.afa, 0)}/yr`);
+  const wp = wpBeide(k);
   return (
-    <Seite nr={nr} kick={t("Vergleich nebeneinander", "Side-by-side comparison")} fuss={k.fuss}>
-      <h2>{k.haeuser
-        ? t(<>Zwei Häuser im direkten Vergleich. <em>Der Unterschied liegt im Detail.</em></>, <>Two buildings compared directly. <em>The difference is in the detail.</em></>)
-        : t(<>Gleiches Haus, gleiche Lage. <em>Der Unterschied liegt im Detail.</em></>, <>Same building, same location. <em>The difference is in the detail.</em></>)}</h2>
-      <p className="lead" style={{ fontSize: "8pt" }}>{t(`Grün markiert, wo eine Wohnung vorne liegt. Alle Zahlen gelten für Sie persönlich im 1. Jahr, wenn nicht anders angegeben. Hausgeld laut ${wpBeide(k)}.`,
-        `Green marks where an apartment is ahead. All figures apply to you personally in year 1 unless stated otherwise. Service charge as per ${wpBeide(k)}.`)}</p>
-      <table className="t v" style={{ marginTop: "3mm" }}>
-        <tbody>
-          <tr><th /><th><span className="badge">A</span> {k.haus(A).strasse}, {t("WE", "Apt.")} {A.einheit.nr}</th><th><span className="badge b">B</span> {k.haus(B).strasse}, {t("WE", "Apt.")} {B.einheit.nr}</th></tr>
-          {z(k.haeuser ? t("Haus und Lage", "Building and location") : t("Lage im Haus", "Position in the building"), k.haeuser ? `${k.haus(A).strasse}, ${A.einheit.lage}` : A.einheit.lage, k.haeuser ? `${k.haus(B).strasse}, ${B.einheit.lage}` : B.einheit.lage)}
-          {z(t("Wohnung", "Apartment"), `${t(`${A.einheit.zimmer} Zimmer`, `${A.einheit.zimmer} rooms`)}, ${de(A.einheit.qm)} m²${kg(A)}`, `${t(`${B.einheit.zimmer} Zimmer`, `${B.einheit.zimmer} rooms`)}, ${de(B.einheit.qm)} m²${kg(B)}`, sieger(A.einheit.qm, B.einheit.qm, false))}
-          {z(g > 1 ? t("Kaufpreis (weitere Garagen ohne Aufpreis)", "Purchase price (further garages at no surcharge)") : t("Kaufpreis", "Purchase price"), `${eur(A.kp, 0)}${A.einheit.garagen ? t(" inkl. Garage", " incl. garage") : ""}`, `${eur(B.kp, 0)}${B.einheit.garagen ? t(" inkl. Garage", " incl. garage") : ""}`)}
-          {z(t("Preis je m² Wohnung", "Price per m² apartment"), eur(A.qmPreis), eur(B.qmPreis), sieger(A.qmPreis, B.qmPreis, true))}
-          {z(t(`Kaufnebenkosten (aus Eigenkapital, ${pz(an.knk)})`, `Purchase costs (from equity, ${pz(an.knk)})`), eur(A.nk, 0), eur(B.nk, 0), sieger(A.nk, B.nk, true))}
-          {z(t("Kaltmiete heute (zahlt der Mieter)", "Net rent today (paid by the tenant)"), `${eur(A.einheit.mieteIst)} (${de(A.mieteIstQm)} €/m²)`, `${eur(B.einheit.mieteIst)} (${de(B.mieteIstQm)} €/m²)`)}
-          {z(mietLabel, eur(am.einnahmen), eur(bm.einnahmen))}
-          {(A.luecke > 0 || B.luecke > 0) && z(t("davon Mietlücke, die der Bauträger zahlt", "of which rent gap paid by the developer"), `${eur(Math.max(0, A.luecke))} (${pz(Math.max(0, A.lueckeQuote))})`, `${eur(Math.max(0, B.luecke))} (${pz(Math.max(0, B.lueckeQuote))})`, sieger(A.lueckeQuote, B.lueckeQuote, true), "sub")}
-          {z(t("Hausgeld umlagefähig (zahlt der Mieter)", "Service charge recoverable (paid by the tenant)"), eur(ah.u), eur(bh.u), null, "sub")}
-          {z(t("Hausgeld nicht umlagefähig (Verwaltung u. a.)", "Service charge non-recoverable (management etc.)"), eur(ah.n), eur(bh.n), null, "sub")}
-          {z(t(`= Hausgeld (${wpBeide(k)})`, `= Service charge (${wpBeide(k)})`), eur(ah.summe), eur(bh.summe))}
-          {z(t("Erhaltungsrücklage (separat)", "Maintenance reserve (separate)"), eur(ah.r), eur(bh.r), null, "sub")}
-          {z(t("= Vorauszahlung gesamt an die Verwaltung", "= Total advance payment to the management"), eur(ah.voraus), eur(bh.voraus))}
-          {z(t("Ihr Anteil: nicht umlagefähig + Rücklage", "Your share: non-recoverable + reserve"), eur(ah.eigentuemer), eur(bh.eigentuemer), sieger(ah.eigentuemer, bh.eigentuemer, true))}
-          {z(t(`Kreditrate (Zins ${pz(an.zins)} + Tilgung ${pz(an.tilgung)})`, `Loan instalment (interest ${pz(an.zins)} + repayment ${pz(an.tilgung)})`), eur(am.zins + am.tilgung), eur(bm.zins + bm.tilgung))}
-          {z(t("Abschreibung", "Depreciation") + (A.einheit.afaJahre < 50 ? t(" (mit Gutachten)", " (with expert report)") : ""), afaZeile(A), afaZeile(B))}
-          {z(t("1 · Zuzahlung vor Steuer", "1 · Top-up before tax"), eur(-am.vor), eur(-bm.vor), null, "e1")}
-          {z(t(`2 · Das spart Ihnen das Finanzamt (${pzGanz(an.steuer)})`, `2 · Your tax saving (${pzGanz(an.steuer)})`), eur(am.ersparnis), eur(bm.ersparnis), null, "hi")}
-          {z(<>{t("3 · Zuzahlung nach Steuererstattung", "3 · Top-up after tax refund")}<span style={{ display: "block", fontSize: "7.4pt", fontWeight: 300, color: "#B8C2BC", marginTop: ".4mm" }}>{t("Ihr Eigenanteil im Monat", "Your own contribution per month")}</span></>, eur(-am.nach), eur(-bm.nach), null, "e3", "e3")}
-          {z(t("Tilgung im Monat (senkt Ihre Restschuld)", "Repayment per month (reduces your remaining debt)"), eur(am.tilgung), eur(bm.tilgung), sieger(am.tilgung, bm.tilgung, false))}
-          {z(t("Verkaufssumme nach 30 Jahren (einmalig)", "Sale price after 30 years (one-off)"), tsd(A.entw[30].wert), tsd(B.entw[30].wert), sieger(A.entw[30].wert, B.entw[30].wert, false))}
-          {z(t("abzüglich Restschuld des Kredits", "less remaining loan debt"), `− ${tsd(A.entw[30].rest)}`, `− ${tsd(B.entw[30].rest)}`, null, "sub")}
-          {z(t("= Ihr Erlös nach Kreditablösung", "= Your proceeds after repaying the loan"), tsd(A.entw[30].erloes), tsd(B.entw[30].erloes), sieger(A.entw[30].erloes, B.entw[30].erloes, false), "sum")}
-        </tbody>
-      </table>
-      <p className="small" style={{ marginTop: "1.5mm" }}>
-        {g > 1 && <b style={{ fontWeight: 500, color: "var(--navy)" }}>{t(`Weitere Garage ohne Aufpreis; Miete ${eur(A.einheit.garageMiete1, 0)} im 1. Jahr vom Bauträger getragen, danach Vermietung. `, `Further garage at no surcharge; rent of ${eur(A.einheit.garageMiete1, 0)} paid by the developer in year 1, then let. `)}</b>}
-        {t(`Verkaufssumme: angenommener Verkaufspreis bei ${pzGanz(an.wertPa)} Wertentwicklung im Jahr, vor Verkaufskosten. Nach mehr als zehn Jahren Haltedauer ist der Gewinn aus dem Verkauf einer privat vermieteten Wohnung nach § 23 EStG in der Regel steuerfrei (Hinweis, keine Steuerberatung).`,
-          `Sale price: assumed selling price at ${pzGanz(an.wertPa)} value growth a year, before selling costs. After a holding period of more than ten years, the gain from selling a privately let apartment is generally tax-free under section 23 of the German Income Tax Act (note, not tax advice).`)}
-        {Math.min(A.einheit.afaJahre, B.einheit.afaJahre) >= 30
-          ? t(` Die Abschreibung läuft bei beiden Wohnungen ${A.einheit.afaJahre === B.einheit.afaJahre ? `${jahreAfa(k.f, A.einheit.afaJahre)} Jahre` : `${jahreAfa(k.f, A.einheit.afaJahre)} bzw. ${jahreAfa(k.f, B.einheit.afaJahre)} Jahre`}, also länger als die Betrachtung; ein früher Verkauf ist deshalb nicht nötig.`,
-            ` Depreciation runs for ${A.einheit.afaJahre === B.einheit.afaJahre ? `${jahreAfa(k.f, A.einheit.afaJahre)} years` : `${jahreAfa(k.f, A.einheit.afaJahre)} and ${jahreAfa(k.f, B.einheit.afaJahre)} years`} for the two apartments, longer than the period considered; an early sale is therefore not necessary.`) : ""}
-      </p>
-      <div className="grid" style={{ gridTemplateColumns: "1fr 1fr", marginTop: "3.5mm" }}>
-        {[A, B].map((e, i) => {
-          const [titel, satz] = staerke(e, e === A ? B : A);
-          return (
-            <div className="tile" key={i}>
-              <div className="label" style={i ? { color: "var(--orange-d)" } : undefined}>{t(`Stärken von ${i ? "B" : "A"} · Wohnung ${e.einheit.nr}`, `Strengths of ${i ? "B" : "A"} · apartment ${e.einheit.nr}`)}</div>
-              <div style={{ fontFamily: "var(--serif)", fontSize: "11pt", marginTop: "1mm" }}>{titel}</div>
-              <div className="s">{satz}</div>
-            </div>
-          );
-        })}
-      </div>
+    <Seite nr={nr} kick={B ? t("Vergleich nebeneinander", "Side-by-side comparison") : t("Ihre Zahlen im Überblick", "Your figures at a glance")} fuss={k.fuss}>
+      <h2>{!B
+        ? t(<>Ihre Wohnung auf einen Blick. <em>Alle Zahlen im Detail.</em></>, <>Your apartment at a glance. <em>All figures in detail.</em></>)
+        : k.haeuser
+          ? t(<>Zwei Häuser im direkten Vergleich. <em>Der Unterschied liegt im Detail.</em></>, <>Two buildings compared directly. <em>The difference is in the detail.</em></>)
+          : t(<>Zwei Wohnungen in einer Anlage. <em>Der Unterschied liegt im Detail.</em></>, <>Two apartments in one complex. <em>The difference is in the detail.</em></>)}</h2>
+      <p className="lead" style={{ fontSize: "8pt" }}>{t(`Modellwerte für das 1. volle Jahr, wenn nicht anders angegeben. Hausgeld laut ${wp}.`, `Model values for the first full year unless stated otherwise. Service charge as per ${wp}.`)}</p>
+      <VergleichTabelle k={k} />
+      <VergleichFussnote k={k} />
+      {B && (
+        <div className="grid" style={{ gridTemplateColumns: "1fr 1fr", marginTop: "3.5mm" }}>
+          {[A, B].map((e, i) => {
+            const [titel, satz] = staerke(e, e === A ? B : A);
+            return (
+              <div className="tile" key={i}>
+                <div className="label" style={i ? { color: "var(--orange-d)" } : undefined}>{t(`Stärken von ${i ? "B" : "A"} · Wohnung ${e.einheit.nr}`, `Strengths of ${i ? "B" : "A"} · apartment ${e.einheit.nr}`)}</div>
+                <div style={{ fontFamily: "var(--serif)", fontSize: "11pt", marginTop: "1mm" }}>{titel}</div>
+                <div className="s">{satz}</div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </Seite>
   );
 }
@@ -1274,7 +1311,7 @@ function kontextFuer(v: KundenObjektvergleich, A: EinheitErgebnis, B: EinheitErg
   const mitKunde = v.kunde.netto > 0;
   // Reihenfolge wie in der Vorlage; bei einer Wohnung ohne Vergleich und Empfehlung, ohne Kundendaten ohne Ausgangslage.
   const seiten = [
-    "deckblatt", ...(mitKunde ? ["ausgangslage"] : []), "wohnungen", ...(B ? ["vergleich"] : []), "rechnungA", ...(B ? ["rechnungB"] : []),
+    "deckblatt", ...(mitKunde ? ["ausgangslage"] : []), "wohnungen", "vergleich", "rechnungA", ...(B ? ["rechnungB"] : []),
     "entwicklung", ...(B ? ["empfehlung"] : []), "sheetA", ...(B ? ["sheetB"] : []), "hinweis", "steuer", "nachrang",
   ];
   const nr = (s: string) => seiten.indexOf(s) + 1;
@@ -1298,7 +1335,7 @@ export function KundenObjektvergleichDokument({ v, A, B = null, sprache = "de" }
           {v.dokument || !B ? <DeckblattSystem k={k} /> : <Deckblatt k={k} B={B} />}
           {mitKunde && <Ausgangslage k={k} nr={nr("ausgangslage")} />}
           <Wohnungen k={k} nr={nr("wohnungen")} />
-          {B && <Vergleich k={k} B={B} nr={nr("vergleich")} />}
+          <Vergleich k={k} nr={nr("vergleich")} />
           <Rechnung k={k} e={A} nr={nr("rechnungA")} b={false} />
           {B && <Rechnung k={k} e={B} nr={nr("rechnungB")} b />}
           <Entwicklung k={k} nr={nr("entwicklung")} />
@@ -1342,6 +1379,11 @@ export function EinhauserAnalyse({ v, A, B = null }: { v: KundenObjektvergleich;
             </section>
           );
         })}
+        <section className="kov-karte">
+          <div className="kick">{B ? "Vergleich nebeneinander" : "Ihre Zahlen im Überblick"}</div>
+          <VergleichTabelle k={k} />
+          <VergleichFussnote k={k} />
+        </section>
         <section className="kov-karte">
           <div className="kick">Vermögensentwicklung</div>
           <div style={{ marginTop: "3mm" }}><ChartErloes A={A} B={B} /></div>

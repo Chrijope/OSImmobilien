@@ -16,6 +16,7 @@ import {
   CopyPlus,
   FileDown,
   FileSearch,
+  ArrowRight,
   FileText,
   Languages,
   ImagePlus,
@@ -1506,6 +1507,10 @@ export function InvestmentrechnerInhalt({
     }
   };
 
+  /** Reihenfolge der Bereiche wie in der Leiste; Bankunterlagen nur mit `bankModus`. */
+  const bereichsfolge: Eingabebereich[] = ["kunde", "objekt", "unterlagen", "finanzierung", "ertrag", "steuer", "ausfuehrlich", ...(bankModus ? ["bankunterlagen" as const] : []), "expose"];
+  const naechsterBereich = bereichsfolge[bereichsfolge.indexOf(bereich) + 1];
+
   // Dieselben Aktionen in beiden Fällen, damit der Reiter nichts anderes kann
   // als die Seite in der Seitenleiste.
   const aktionen = (
@@ -1754,6 +1759,17 @@ export function InvestmentrechnerInhalt({
                       rolleSeiteNachOben();
                     }}
                   />
+                )}
+                {/* Unten in jedem Bereich außer dem letzten: weiter zum nächsten (Christian, 29.10.2026). */}
+                {naechsterBereich && (
+                  <div className="flex justify-end pt-4">
+                    <Button variant="brand" className="gap-2" data-testid="bereich-weiter" onClick={() => {
+                      setBereich(naechsterBereich);
+                      maskeRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+                    }}>
+                      Weiter <ArrowRight size={16} />
+                    </Button>
+                  </div>
                 )}
               </div>
             </aside>

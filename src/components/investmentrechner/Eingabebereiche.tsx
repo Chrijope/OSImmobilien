@@ -1529,6 +1529,8 @@ export function EingabeSteuer({ input, result, setzeZahl, aendere, herkunft }: E
           tooltip="Abschreibungssatz für das Gebäude, üblich sind 2 Prozent ab Baujahr 1925, 2,5 Prozent davor und 3 Prozent bei Neubauten. Bei degressiver Methode gilt der Satz auf den Restbuchwert. Die Abschreibung mindert das steuerliche Ergebnis, kostet aber kein Geld und verändert den Cashflow vor Steuern nicht."
           hint={quelle("buildingDepreciationRate")} markierung={feldmarkierung(herkunft, "buildingDepreciationRate")}
         />
+        {/* Nur mit Möbelanteil in Bereich 02 (Christian, 29.10.2026). */}
+        {input.furniturePrice > 0 && (
         <Zahlenfeld
           label="Möbel-Nutzungsdauer"
           value={input.furnitureDepreciationYears}
@@ -1543,6 +1545,7 @@ export function EingabeSteuer({ input, result, setzeZahl, aendere, herkunft }: E
               : undefined
           }
         />
+        )}
         <Zahlenfeld
           label="Sonder-AfA § 7b p. a."
           value={input.specialDepreciationRate}
@@ -1588,6 +1591,12 @@ export function EingabeSteuer({ input, result, setzeZahl, aendere, herkunft }: E
           </div>
         </div>
       )}
+      {/*
+        Sanierungsfall, steuerliche Behandlung, Umsatzsteuer und Verteilung nur
+        mit einem Sanierungsanteil in Bereich 02 (Christian, 29.10.2026).
+      */}
+      {input.rehabExpense > 0 && (
+      <>
       {/* Der Betrag selbst steht seit dem 25.09.2026 unter dem Kaufpreis in Bereich 02. */}
       <div className="calculated-line">
         <span>Sanierungsanteil aus Bereich 02</span>
@@ -1603,7 +1612,7 @@ export function EingabeSteuer({ input, result, setzeZahl, aendere, herkunft }: E
         <option value="nachKauf">Sanierung nach dem Kauf (für den Käufer)</option>
         <option value="durchVerkaeufer">Sanierung durch den Verkäufer vor dem Verkauf</option>
       </Auswahlfeld>
-      {input.rehabScenario !== "durchVerkaeufer" && input.rehabExpense > 0 && (
+      {input.rehabScenario !== "durchVerkaeufer" && (
         <Zahlenfeld
           label="Umsatzsteuer im Sanierungsanteil"
           value={input.rehabVatRate}
@@ -1625,7 +1634,6 @@ export function EingabeSteuer({ input, result, setzeZahl, aendere, herkunft }: E
           <option value="capitalize">Aktivieren und über Gebäude-AfA abschreiben</option>
         </Auswahlfeld>
       )}
-      {input.rehabExpense > 0 && (
         <div className={result.anschaffungsnah ? "warning-card" : "info-card"} data-testid="sanierung-pruefung">
           {result.anschaffungsnah && <TriangleAlert size={19} />}
           <div>
@@ -1659,7 +1667,6 @@ export function EingabeSteuer({ input, result, setzeZahl, aendere, herkunft }: E
             <p>Die steuerliche Behandlung bitte mit der Steuerberatung abstimmen.</p>
           </div>
         </div>
-      )}
       {input.rehabScenario !== "durchVerkaeufer" && !result.sanierungAktiviert && (
         <Zahlenfeld
           label="Verteilung des Aufwands"
@@ -1670,6 +1677,8 @@ export function EingabeSteuer({ input, result, setzeZahl, aendere, herkunft }: E
           onChange={(wert) => setzeZahl("rehabDistributionYears", Math.max(1, wert))}
           tooltip="Über wie viele Jahre der Aufwand gleichmäßig abgezogen wird. Ein Jahr bedeutet vollen Abzug sofort. Eine Verteilung streckt die Steuerwirkung und ist sinnvoll, wenn der Abzug in einem Jahr das Einkommen unter den Bereich hoher Steuersätze drücken würde."
         />
+      )}
+      </>
       )}
       <div className="calculated-line">
         <span>AfA-Bemessungsgrundlage Gebäude</span>

@@ -104,3 +104,20 @@ describe("Anteil am Investment", () => {
     expect(feld.value).toBe("50");
   });
 });
+
+describe("Abhängige Felder in Bereich 06 (29.10.2026)", () => {
+  it("ohne Möbel und ohne Sanierungsanteil weder Nutzungsdauer noch Sanierungsfelder", () => {
+    steuer({ furniturePrice: 0, rehabExpense: 0 });
+    expect(screen.queryByText("Möbel-Nutzungsdauer")).toBeNull();
+    expect(screen.queryByText("Sanierungsfall")).toBeNull();
+    expect(screen.queryByText("Steuerliche Behandlung")).toBeNull();
+    expect(screen.queryByText("Verteilung des Aufwands")).toBeNull();
+  });
+
+  it("mit Möbeln und Sanierungsanteil erscheinen sie", () => {
+    steuer({ furniturePrice: 8000, rehabExpense: 20000 });
+    expect(screen.getByText("Möbel-Nutzungsdauer")).toBeInTheDocument();
+    expect(screen.getByText("Sanierungsfall")).toBeInTheDocument();
+    expect(screen.getByText("Steuerliche Behandlung")).toBeInTheDocument();
+  });
+});
