@@ -47,7 +47,7 @@ const LAUFZEIT_DATEIEN = [
 function seitenTitel(): Plugin {
   return {
     name: "artefakt-seitentitel",
-    transformIndexHtml: (html) => (NUR_SELBSTAUSKUNFT ? html.replace(/<title>[^<]*<\/title>/, "<title>Selbstauskunft</title>") : html),
+    transformIndexHtml: (html) => (NUR_SELBSTAUSKUNFT ? html.replace(/<title>[^<]*<\/title>/, "<title>OS - Selbstauskunft</title>") : html),
   };
 }
 
