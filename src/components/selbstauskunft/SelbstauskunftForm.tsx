@@ -997,6 +997,8 @@ function FeldInfo({ text }: { text: string }) {
           <button
             type="button"
             aria-label={t("Erklärung anzeigen")}
+            // Tab springt von Feld zu Feld, nicht auf das Info-Symbol (Christian, 29.10.2026).
+            tabIndex={-1}
             className="shrink-0 text-muted-foreground/60 hover:text-primary focus-visible:text-primary outline-none"
             onClick={() => setOffen(o => !o)}
           >
@@ -1475,7 +1477,13 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
   const [sending, setSending] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
   const [errors, setErrors] = useState<Set<string>>(new Set());
-  const [draftSaved, setDraftSaved] = useState<string | null>(() => getDraftSavedAt(kundeId));
+  const [draftSaved, setDraftSaved] = useState<string | null>(() => {
+    // Im Artefakt merkt sich der Browser den Zeitpunkt des letzten „Zwischenspeichern“.
+    if (ohneBackend) {
+      try { return localStorage.getItem(SA_DRAFT_KEY + kundeId); } catch { return null; }
+    }
+    return getDraftSavedAt(kundeId);
+  });
   const [sendeAnKunden, setSendeAnKunden] = useState(false);
   /*
    * Vorfahrt fuer den Kunden: Beim Oeffnen merken wir uns, wann er zuletzt
@@ -1876,6 +1884,9 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
     }
 
     const now = new Date().toISOString();
+    if (ohneBackend) {
+      try { localStorage.setItem(SA_DRAFT_KEY + kundeId, now); } catch { /* gesperrt */ }
+    }
     setDraftSaved(now);
     setUngespeichert(false);
     toast({
@@ -1913,10 +1924,17 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
     // Kundenmodus und Korrekturmodus haben ihre eigenen Wege.
     if (customerMode || korrekturMode) return;
     if (eingereicht.current) return;
-    // Ohne Backend (Artefakt) kein Autospeichern, nur „Zwischenspeichern“ (siehe `ohneBackend`); ungespeichert ist jede Eingabe des Nutzers.
+    /*
+     * Ohne Backend (Artefakt) sichert jede Eingabe still im Browser, damit ein
+     * Tab-Wechsel oder Schließen nichts verliert (Christian, 29.10.2026).
+     * Datum und Uhrzeit zeigt erst „Zwischenspeichern“; bis dahin gilt die
+     * Eingabe als nicht zwischengespeichert (Rückfrage beim Zurück-Pfeil).
+     */
     if (ohneBackend) {
-      if (nutzerHatGeaendert.current) setUngespeichert(true);
-      return;
+      if (!nutzerHatGeaendert.current) return;
+      setUngespeichert(true);
+      const timer = setTimeout(() => schreibeLokalenEntwurf(kundeId, data, undefined, false), 400);
+      return () => clearTimeout(timer);
     }
     // Der erste Durchlauf ist der geladene Stand, nicht eine Eingabe.
     if (ersterLauf.current) {
@@ -1954,14 +1972,15 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
    * Autospeichern. Danach ist alles sicher und der Browser fragt nicht.
    */
   useEffect(() => {
-    if (!ungespeichert) return;
+    // Im Artefakt ist jede Eingabe schon gesichert, siehe oben.
+    if (!ungespeichert || ohneBackend) return;
     const aufVerlassen = (e: BeforeUnloadEvent) => {
       e.preventDefault();
       e.returnValue = "";
     };
     window.addEventListener("beforeunload", aufVerlassen);
     return () => window.removeEventListener("beforeunload", aufVerlassen);
-  }, [ungespeichert]);
+  }, [ungespeichert, ohneBackend]);
 
   // Stabiler Ref auf handleSaveDraft, damit Parent (z.B. „Speichern & zurück"-Dialog)
   // den aktuellen Stand persistieren kann ohne stale closures.
@@ -4510,7 +4529,7 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
         </div>
         <div className="flex items-center gap-2">
           {draftSaved && (
-            <span className="text-bildunterschrift text-muted-foreground hidden sm:inline">
+            <span className="text-bildunterschrift text-muted-foreground" data-testid="sa-gespeichert-am">
               {t("Gespeichert: {datum}", {
                 datum: sprache === "en"
                   ? datumUhrzeitText(draftSaved, "en")

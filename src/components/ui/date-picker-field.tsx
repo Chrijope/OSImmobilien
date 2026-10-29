@@ -56,6 +56,8 @@ export function DatePickerField({
           <button
             type="button"
             aria-label="Kalender öffnen"
+            // Das Datum lässt sich tippen; Tab springt deshalb zum nächsten Feld statt auf das Symbol.
+            tabIndex={-1}
             className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-muted text-muted-foreground"
           >
             <CalendarIcon className="h-4 w-4" />

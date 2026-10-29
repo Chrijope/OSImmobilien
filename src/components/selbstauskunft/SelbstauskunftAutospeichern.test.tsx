@@ -102,10 +102,10 @@ describe("Selbstauskunft über den Link: automatisch gespeichert wird erst nach 
 
 /*
  * Artefakt (ohne Backend, 29.10.2026): Mehrere Partner nutzen dasselbe
- * Artefakt, eine Selbstauskunft beginnt leer. Gespeichert wird nur auf
- * „Zwischenspeichern“, nie automatisch.
+ * Artefakt. Seit dem 29.10.2026 sichert jede Eingabe still im Browser;
+ * Datum und Uhrzeit erscheinen erst nach „Zwischenspeichern“ und bleiben dann stehen.
  */
-describe("Selbstauskunft ohne Backend: nur „Zwischenspeichern“ speichert", () => {
+describe("Selbstauskunft ohne Backend: still sichern, Zeitpunkt nach „Zwischenspeichern“", () => {
   beforeEach(() => {
     Object.defineProperty(globalThis, "localStorage", { value: speicherErsatz(), configurable: true, writable: true });
     cleanup();
@@ -117,13 +117,22 @@ describe("Selbstauskunft ohne Backend: nur „Zwischenspeichern“ speichert", (
   };
   const entwurf = () => Array.from({ length: localStorage.length }, (_, i) => localStorage.key(i)).filter((k) => k && k.includes("artefakt") && localStorage.getItem(k)!.startsWith("{"));
 
-  it("eine Änderung schreibt nichts, „Zwischenspeichern“ schon", async () => {
+  it("eine Änderung sichert sofort, den Zeitpunkt zeigt erst „Zwischenspeichern“", async () => {
     zeige();
     fireEvent.click(screen.getByRole("button", { name: /Steuervorteile sichern/ }));
-    await new Promise((r) => setTimeout(r, 2000));
-    expect(entwurf()).toHaveLength(0);
-    fireEvent.click(screen.getByRole("button", { name: /Zwischenspeichern/ }));
     await waitFor(() => expect(entwurf().length).toBeGreaterThan(0));
+    expect(screen.queryByTestId("sa-gespeichert-am")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: /Zwischenspeichern/ }));
+    await waitFor(() => expect(screen.getByTestId("sa-gespeichert-am")).toBeInTheDocument());
+    // Nach dem Neuladen steht der Zeitpunkt weiter da.
+    cleanup();
+    zeige();
+    expect(screen.getByTestId("sa-gespeichert-am")).toBeInTheDocument();
+  });
+
+  it("das Info-Symbol liegt nicht in der Tab-Reihenfolge", () => {
+    zeige();
+    for (const b of screen.queryAllByRole("button", { name: "Erklärung anzeigen" })) expect(b).toHaveAttribute("tabindex", "-1");
   });
 
   it("zeigt „Daten zurücksetzen“ in der Knopfleiste", () => {
