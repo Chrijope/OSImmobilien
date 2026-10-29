@@ -1738,7 +1738,7 @@ export default function BeratungspraesentationHV({
                     data-no-shrink
                     data-testid="weiter-zur-selbstauskunft"
                     onClick={oeffneSelbstauskunft}
-                    className="btn-brand inline-flex items-center justify-center gap-2 rounded-full px-6 h-12 font-semibold"
+                    className="btn-brand selbstauskunft-puls inline-flex items-center justify-center gap-2 rounded-full px-6 h-12 font-semibold"
                   >
                     <ClipboardList className="h-5 w-5" />
                     Weiter zur Selbstauskunft

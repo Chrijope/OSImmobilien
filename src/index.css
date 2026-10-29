@@ -1052,6 +1052,16 @@
   }
   .beratung-puls { animation: beratungPuls 2.8s ease-out infinite; }
 
+  /* Knopf „Weiter zur Selbstauskunft“ (Artefakt): leicht pulsierend in Orange, Christian 29.10.2026. */
+  @keyframes selbstauskunftPuls {
+    0%, 100% { box-shadow: 0 0 0 0 hsl(var(--brand-orange, 24 90% 50%) / 0.45); transform: scale(1); }
+    50% { box-shadow: 0 0 0 10px hsl(var(--brand-orange, 24 90% 50%) / 0); transform: scale(1.03); }
+  }
+  .selbstauskunft-puls { animation: selbstauskunftPuls 2.4s ease-in-out infinite; }
+  @media (prefers-reduced-motion: reduce) {
+    .selbstauskunft-puls { animation: none; }
+  }
+
   /* Langsam wanderndes Licht über Statement-Flächen. */
   @keyframes beratungSchimmer {
     0% { background-position: -140% 0; }
