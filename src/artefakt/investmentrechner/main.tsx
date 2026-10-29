@@ -77,8 +77,9 @@ function App() {
   const [name, setName] = useState(() => namenLaden());
   /*
     Seit dem 29.10.2026 nur die Rechnung im Einhauser-Aufbau: Analyse und
-    ausführliche Berechnung (PDF). „Berechnung“, „Vergleich“ und der
-    persönliche Objektvergleich (Objektvergleich.tsx) sind ausgeblendet.
+    ausführliche Berechnung (PDF), wie im CRM. Der persönliche
+    Objektvergleich (Objektvergleich.tsx) ist ausgeblendet. Die Angaben zum
+    Kunden für „Ihre Ausgangslage“ stehen hier von Hand unter „Kunde & Einkommen“.
   */
   return (
     <div className="min-h-screen bg-background rechner-artefakt">
@@ -103,7 +104,7 @@ function App() {
         vorschau={{}}
         leerZuruecksetzen
         erstelltVon={name}
-        nurAusfuehrlich
+        kundeVonHand
       />
       <Toaster />
     </div>

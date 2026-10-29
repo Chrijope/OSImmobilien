@@ -62,21 +62,18 @@ describe("Autospeichern im Browser", () => {
 });
 
 describe("Kopfbereich", () => {
-  it("trennt Kunde und Objekt, die Ansichten und Deckblatt mit Sprache in eigene Ebenen", () => {
+  it("trennt Kunde und Objekt, die Ansichten und die Sprache des PDF in eigene Ebenen", () => {
     const { container } = zeige();
     const kopf = container.querySelector(".result-header")!;
     expect(kopf.querySelector(".result-kopf [data-testid='rechner-zuruecksetzen']")).not.toBeNull();
+    // Seit dem 29.10.2026 nur noch Analyse und ausführliche Berechnung, ohne Deckblattwahl.
     expect(within(kopf.querySelector(".hauptansichten") as HTMLElement).getAllByRole("button").map((b) => b.textContent?.trim())).toEqual([
       "Analyse",
-      "Berechnung",
       "Ausführlich (PDF)",
     ]);
     const optionen = kopf.querySelector(".result-optionen") as HTMLElement;
-    // Die Deckblattwahl gilt seit dem 29.10.2026 nur noch für „Berechnung“.
     expect(within(optionen).queryByText("Deckblatt")).toBeNull();
-    fireEvent.click(within(kopf.querySelector(".hauptansichten") as HTMLElement).getByRole("button", { name: /^Berechnung/ }));
-    expect(within(optionen).getByText("Deckblatt")).toBeInTheDocument();
-    expect(within(optionen).getByText(/Sprache für Kunde und PDF/)).toBeInTheDocument();
+    expect(within(optionen).getByText(/Sprache des PDF/)).toBeInTheDocument();
     expect(within(optionen).getByRole("radio", { name: "DE" })).toHaveAttribute("aria-checked", "true");
   });
 });

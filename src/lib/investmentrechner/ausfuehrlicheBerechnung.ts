@@ -95,7 +95,8 @@ export function wirksameAngaben(input: InvestmentEingabe, vorgaben: Partial<Ausf
     return x === "" || x === null ? undefined : (x as AusfuehrlichAngaben[K]);
   };
   const qm = positiv(input.area);
-  const mieteIstQm = qm ? runde2(positiv(input.monthlyColdRent) / qm) : 0;
+  // Ungerundet, damit ohne Subvention genau die heutige Miete gerechnet wird (nicht 1.149,88 statt 1.150 €).
+  const mieteIstQm = qm ? positiv(input.monthlyColdRent) / qm : 0;
   const mieteSubQm = positiv(w("mieteSubQm")) || mieteIstQm;
   const zielJahr = positiv(w("mieteZielJahr")) || (input.startYear || new Date().getFullYear()) + 34;
   const jahre = Math.max(1, zielJahr - (input.startYear || new Date().getFullYear()));
@@ -212,7 +213,15 @@ export function berechnungAusRechner(objekte: RechnerObjekt[], heute = new Date(
   const erstes = liste[0];
   const annahmen = annahmenAusRechner(erstes.input, erstes.result, erstes.a);
   const einheiten = liste.map((o) => einheitAusRechner(o.input, o.a));
-  const kunde: VergleichKunde = { ...LEERER_KUNDE, ...erstes.a.kunde };
+  // Was „Kunde & Einkommen“ und „Miete & Entwicklung“ schon kennen, gilt hier auch; Selbstauskunft und eigene Angaben gehen vor.
+  const ein = erstes.input;
+  const kunde: VergleichKunde = {
+    ...LEERER_KUNDE,
+    bruttoJahr: positiv(ein.annualGrossIncome),
+    steuerklasse: ein.annualGrossIncome > 0 || ein.taxableIncomeCustomer > 0 ? ein.taxClass : "",
+    jahreBisRente: ein.clientAge > 0 ? Math.max(0, ein.retirementAge - ein.clientAge) : 0,
+    ...erstes.a.kunde,
+  };
   if (!kunde.vorname && !kunde.nachname && erstes.input.clientName) {
     const teile = erstes.input.clientName.trim().split(/\s+/);
     kunde.nachname = teile.pop() ?? "";

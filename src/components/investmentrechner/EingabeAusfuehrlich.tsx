@@ -44,16 +44,6 @@ export function EingabeAusfuehrlich({ input, aendere, vorgaben, nummer }: Props)
     <Textfeld label={label} value={a[k]} placeholder={platzhalter} onChange={(w) => setze(k, w)} hint={hinweis(k)} />
   );
 
-  const kunde: VergleichKunde = { ...LEERER_KUNDE, ...a.kunde };
-  const setzeKunde = (teil: Partial<VergleichKunde>) => aendere({ ausfuehrlich: { ...eigen, kunde: { ...(eigen.kunde ?? {}), ...teil } } });
-  const ausSa = (k: keyof VergleichKunde) => (eigen.kunde?.[k] === undefined && vorgaben.kunde?.[k] !== undefined ? "Aus der Selbstauskunft" : undefined);
-  const kText = (k: "anrede" | "vorname" | "nachname" | "steuerklasse" | "familienstand" | "kinder" | "beschaeftigung" | "antrag" | "wohnsituation" | "kredite" | "saDatum", label: string, platzhalter?: string) => (
-    <Textfeld label={label} value={kunde[k]} placeholder={platzhalter} onChange={(w) => setzeKunde({ [k]: w })} hint={ausSa(k)} />
-  );
-  const kZahl = (k: "netto" | "bruttoJahr" | "mieteWarm" | "lebenshaltung" | "kreditRaten" | "kapital" | "jahreBisRente", label: string, suffix: string) => (
-    <Zahlenfeld label={label} value={kunde[k]} suffix={suffix} onChange={(w) => setzeKunde({ [k]: w })} hint={ausSa(k)} />
-  );
-
   return (
     <div className="input-section" data-testid="eingabe-ausfuehrlich">
       <div className="section-title">
@@ -118,27 +108,48 @@ export function EingabeAusfuehrlich({ input, aendere, vorgaben, nummer }: Props)
         {text("version", "Version auf dem Deckblatt", "1")}
       </div>
 
-      <div className="subheading">Kunde (Seite „Ihre Ausgangslage“)</div>
-      <p className="field-hint" style={{ marginBottom: 8 }}>Mit verbundenem Kunden aus der Selbstauskunft. Ohne Nettoeinkommen entfällt die Seite.</p>
+    </div>
+  );
+}
+
+/*
+ * Angaben zum Kunden für die Seite „Ihre Ausgangslage“, nur in der
+ * Artefaktfassung (29.10.2026): Dort gibt es keine Selbstauskunft. Im CRM
+ * kommen sie aus der Selbstauskunft des gewählten Investments. Name,
+ * Jahresbrutto und Steuerklasse stehen schon in „Kunde & Einkommen“, Alter
+ * und Rentenalter in „Miete & Entwicklung“; sie werden hier nicht noch
+ * einmal abgefragt.
+ */
+export function EingabeAusgangslage({ input, aendere, vorgaben }: Omit<Props, "nummer">) {
+  const eigen = input.ausfuehrlich ?? {};
+  const kunde: VergleichKunde = { ...LEERER_KUNDE, ...(vorgaben.kunde ?? {}), ...(eigen.kunde ?? {}) };
+  const setzeKunde = (teil: Partial<VergleichKunde>) => aendere({ ausfuehrlich: { ...eigen, kunde: { ...(eigen.kunde ?? {}), ...teil } } });
+  const kText = (k: "anrede" | "familienstand" | "kinder" | "beschaeftigung" | "antrag" | "wohnsituation" | "kredite" | "saDatum", label: string, platzhalter?: string) => (
+    <Textfeld label={label} value={kunde[k]} placeholder={platzhalter} onChange={(w) => setzeKunde({ [k]: w })} />
+  );
+  const kZahl = (k: "netto" | "mieteWarm" | "lebenshaltung" | "kreditRaten" | "kapital", label: string) => (
+    <Zahlenfeld label={label} value={kunde[k]} suffix="€" onChange={(w) => setzeKunde({ [k]: w })} />
+  );
+  return (
+    <div className="input-section" data-testid="eingabe-ausgangslage">
+      <div className="subheading">Weitere Angaben für die ausführliche Berechnung</div>
+      <p className="field-hint" style={{ marginBottom: 8 }}>
+        Für die Seite „Ihre Ausgangslage“. Ohne Nettoeinkommen entfällt sie. Name, Jahresbrutto und Steuerklasse stehen oben, Alter und Rentenalter unter „Miete &amp; Entwicklung“.
+      </p>
       <div className="field-grid">
         {kText("anrede", "Anrede", "Frau")}
-        {kText("vorname", "Vorname")}
-        {kText("nachname", "Nachname")}
-        {kZahl("netto", "Nettoeinkommen im Monat", "€")}
-        {kZahl("bruttoJahr", "Bruttoeinkommen im Jahr", "€")}
-        {kText("steuerklasse", "Steuerklasse", "I")}
+        {kZahl("netto", "Nettoeinkommen im Monat")}
         {kText("familienstand", "Familienstand", "ledig")}
         {kText("kinder", "Kinder", "keine")}
         {kText("beschaeftigung", "Beschäftigung", "Angestellt, unbefristet, seit 2015")}
         {kText("antrag", "Antrag", "allein, ohne Mitantragsteller")}
         {kText("wohnsituation", "Wohnsituation", "zur Miete, 950 € warm")}
-        {kZahl("mieteWarm", "Warmmiete heute", "€")}
-        {kZahl("lebenshaltung", "Lebenshaltung im Monat", "€")}
+        {kZahl("mieteWarm", "Warmmiete heute")}
+        {kZahl("lebenshaltung", "Lebenshaltung im Monat")}
         {kText("kredite", "Laufende Kredite", "keine")}
-        {kZahl("kreditRaten", "Kreditraten im Monat", "€")}
-        {kZahl("kapital", "Bank- und Sparguthaben", "€")}
-        {kZahl("jahreBisRente", "Jahre bis zur Rente", "Jahre")}
-        {kText("saDatum", "Selbstauskunft vom", "JJJJ-MM-TT")}
+        {kZahl("kreditRaten", "Kreditraten im Monat")}
+        {kZahl("kapital", "Bank- und Sparguthaben")}
+        {kText("saDatum", "Stand der Angaben", "JJJJ-MM-TT")}
       </div>
     </div>
   );

@@ -31,19 +31,22 @@ const eingabe: InvestmentEingabe = {
 };
 
 describe("Sprache der rechten Seite", () => {
-  it("ohne Kunde: sichtbare Wahl, Englisch übersetzt die Vorschau, die Eingabemaske bleibt Deutsch", () => {
+  it("ohne Kunde: sichtbare Wahl; Englisch übersetzt nur das PDF, Analyse und Eingabemaske bleiben Deutsch (29.10.2026)", () => {
     const { container } = zeige(<InvestmentrechnerInhalt vorbelegung={{ eingabe, knk: { weg: "bundesland", bundesland: "bayern" } }} />);
-    // Seit dem 23.10.2026 ein Umschalter DE/EN „Sprache für Kunde und PDF“.
     const wahl = within(screen.getByTestId("sprache-wahl")).getByRole("radio", { name: "EN" });
-    // Deutsch die Analyse im Einhauser-Aufbau; Englisch (noch) die bisherige, damit alles an den Kunden englisch bleibt.
-    expect(container.querySelector(".result-panel")?.textContent).toContain("Ihre persönliche Rechnung");
     fireEvent.click(wahl);
     const rechts = container.querySelector(".result-panel")!;
-    expect(rechts.getAttribute("lang")).toBe("en");
-    expect(rechts.textContent).toContain("Purchase price details");
-    expect(rechts.textContent).toContain("Gross rental yield");
-    expect(rechts.textContent).not.toContain("Kaufpreisdetails");
-    // Links bleibt alles Deutsch.
+    expect(rechts.getAttribute("lang")).toBe("de");
+    expect(rechts.textContent).toContain("Ihre persönliche Rechnung");
+    // Das PDF (Druck- und Downloadfassung) ist englisch.
+    const pdf = document.body.querySelector(".investmentrechner-print .kov")!;
+    expect(pdf.getAttribute("lang")).toBe("en");
+    expect(pdf.textContent).toContain("Your personal calculation");
+    expect(pdf.textContent).toContain("Using less equity");
+    expect(pdf.textContent).not.toContain("Ihre persönliche Rechnung");
+    // Die Vorschau „Ausführlich (PDF)“ ebenso.
+    fireEvent.click(screen.getByRole("button", { name: "Ausführlich (PDF)" }));
+    expect(screen.getByTestId("ausfuehrlich-einhauser").textContent).toContain("Detailed investment calculation");
     const links = container.querySelector(".input-panel") ?? container;
     expect(links.textContent).toContain("Kunde & Einkommen");
   });

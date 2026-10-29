@@ -41,7 +41,6 @@ const zeige = (v: Rechnervorbelegung = vor) =>
 
 const oeffneBilder = () => fireEvent.click(screen.getByRole("button", { name: "Bilder" }));
 const fotosImBereich = () => screen.queryAllByAltText(/^Objektfoto \d$/).map((bild) => bild.getAttribute("src"));
-const fotosInDerPdf = () => screen.queryAllByAltText(/^Objektansicht \d$/).map((bild) => bild.getAttribute("src"));
 
 // Mit Klammern: Gibt beforeEach eine Funktion zurück, ruft Vitest sie als Aufräumschritt auf.
 beforeEach(() => {
@@ -50,12 +49,12 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe("Fotos aus der Objektanlage im Bereich „Bilder“", () => {
-  it("stehen nach dem Öffnen im Bereich und in der Druckfassung, in der gelieferten Reihenfolge", async () => {
+  // Seit dem 29.10.2026 zeigt das PDF (ausführliche Berechnung) keine Fotos mehr, geprüft wird der Bereich.
+  it("stehen nach dem Öffnen im Bereich, in der gelieferten Reihenfolge", async () => {
     laden.mockResolvedValue([EINS, ZWEI]);
     zeige();
-    await waitFor(() => expect(fotosInDerPdf()).toEqual([EINS, ZWEI]));
     oeffneBilder();
-    expect(fotosImBereich()).toEqual([EINS, ZWEI]);
+    await waitFor(() => expect(fotosImBereich()).toEqual([EINS, ZWEI]));
     expect(screen.getByTestId("foto-vorbelegung")).toHaveTextContent("Vorbelegt mit den Fotos aus der Objektanlage");
     // Eine Anfrage, auch im StrictMode, mit den Adressen aus der Vorbelegung.
     expect(laden).toHaveBeenCalledTimes(1);
@@ -81,14 +80,18 @@ describe("Fotos aus der Objektanlage im Bereich „Bilder“", () => {
   it("holt entfernte Fotos nicht von selbst zurück, erst „Zurücksetzen“", async () => {
     laden.mockResolvedValue([EINS, ZWEI]);
     zeige();
-    await waitFor(() => expect(fotosInDerPdf()).toHaveLength(2));
     oeffneBilder();
+    await waitFor(() => expect(fotosImBereich()).toHaveLength(2));
     fireEvent.click(screen.getByRole("button", { name: "Objektfoto 1 entfernen" }));
     expect(fotosImBereich()).toEqual([ZWEI]);
 
     fireEvent.click(screen.getByTestId("rechner-zuruecksetzen"));
     fireEvent.click(within(await screen.findByRole("alertdialog")).getByRole("button", { name: "Zurücksetzen" }));
-    await waitFor(() => expect(fotosInDerPdf()).toEqual([EINS, ZWEI]));
+    // „Zurücksetzen“ springt in den Bereich „Kunde & Einkommen“; die Fotos stehen danach wieder unter „Bilder“.
+    await waitFor(() => {
+      oeffneBilder();
+      expect(fotosImBereich()).toEqual([EINS, ZWEI]);
+    });
     // Die Fotos kommen aus dem Zwischenspeicher, nicht aus einem zweiten Download.
     expect(laden).toHaveBeenCalledTimes(1);
   });

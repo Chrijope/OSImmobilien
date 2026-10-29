@@ -23,7 +23,6 @@ import {
   ReceiptText,
   RotateCcw,
   Save,
-  Scale,
   UserRound,
 } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
@@ -107,19 +106,10 @@ import {
   EingabeUnterlagen,
   UnterlagenUpload,
 } from "@/components/investmentrechner/Eingabebereiche";
-import { ExposeDokument, ExposeVergleichsdokument, type ExposeObjekt } from "@/components/investmentrechner/ExposeDokument";
 import { ExposeVorschau } from "@/components/investmentrechner/ExposeVorschau";
-import { DeckblattWahl } from "@/components/investmentrechner/Deckblatt";
-import {
-  gemerkteDeckblattVariante,
-  merkeDeckblattVariante,
-  type DeckblattVariante,
-} from "@/lib/investmentrechner/deckblattWerte";
 import { useKundenSprache } from "@/lib/kundenSprache";
-import { ObjektHinzufuegen, Objektleiste, Vergleichsansicht } from "@/components/investmentrechner/Objektvergleich";
-import { Analyse } from "@/components/investmentrechner/Analyse";
-import { AusfuehrlicheBerechnung } from "@/components/investmentrechner/AusfuehrlicheBerechnung";
-import { EingabeAusfuehrlich } from "@/components/investmentrechner/EingabeAusfuehrlich";
+import { ObjektHinzufuegen, Objektleiste } from "@/components/investmentrechner/Objektvergleich";
+import { EingabeAusfuehrlich, EingabeAusgangslage } from "@/components/investmentrechner/EingabeAusfuehrlich";
 // Fest eingebunden: In der Ein-Datei-Fassung (Artefakt) scheitert das Nachladen an `__VITE_PRELOAD__`.
 import { erzeugeBerechnungsansichtPdf } from "@/lib/investmentrechner/berechnungAnsichtPdf";
 import { EinhauserAnalyse, KundenObjektvergleichDokument } from "@/components/investmentrechner/kundenvergleich/KundenObjektvergleichDokument";
@@ -150,7 +140,11 @@ const BANKUNTERLAGEN_SICHTBAR = false;
 /** Der Hinweis, wenn etwas in der lokalen Vorschau ohne Datenbank nicht geht. */
 export const VORSCHAU_NICHT_VERFUEGBAR = "In der Vorschau nicht verfügbar";
 /** `ausfuehrlich`: die zwölfseitige Berechnung für den Kunden, seit dem 22.10.2026 auch im CRM. */
-type Ansicht = "analyse" | "vergleich" | "expose" | "ausfuehrlich";
+/*
+ * Seit dem 29.10.2026 nur noch Analyse und ausführliche Berechnung (Christian):
+ * „Berechnung“ mit ihren drei Deckblättern und „Vergleich“ sind entfernt.
+ */
+type Ansicht = "analyse" | "ausfuehrlich";
 
 /** Klasse am body, solange die Seite offen ist. Nur dann greifen die Druckregeln. */
 const DRUCK_KLASSE = "investmentrechner-druck";
@@ -407,10 +401,10 @@ export interface InvestmentrechnerInhaltProps {
    */
   leerZuruecksetzen?: boolean;
   /**
-   * Nur Analyse und ausführliche Berechnung (Einhauser-Aufbau), ohne
-   * „Berechnung“ und „Vergleich“; für die Artefaktfassung, seit dem 29.10.2026.
+   * Kundenangaben der Seite „Ihre Ausgangslage“ von Hand, im Bereich „Kunde &
+   * Einkommen“. Für die Artefaktfassung ohne Selbstauskunft, seit dem 29.10.2026.
    */
-  nurAusfuehrlich?: boolean;
+  kundeVonHand?: boolean;
 }
 
 /**
@@ -437,7 +431,7 @@ export function InvestmentrechnerInhalt({
   dokumentSprache,
   erstelltVon = "",
   leerZuruecksetzen = false,
-  nurAusfuehrlich = false,
+  kundeVonHand = false,
 }: InvestmentrechnerInhaltProps = {}) {
   // Die fixierte Eingabemaske reicht bis zum Fensterrand, siehe useMaskeBisUnten.
   const maskeRef = useRef<HTMLElement>(null);
@@ -843,7 +837,6 @@ export function InvestmentrechnerInhalt({
     setObjekte((bisher) => bisher.filter((_, i) => i !== index));
     // Nach dem Entfernen bleibt genau ein Objekt übrig, es wird das aktive.
     setAktivIndex(0);
-    setAnsicht((bisher) => (bisher === "vergleich" ? "analyse" : bisher));
   };
 
   /**
@@ -1452,14 +1445,6 @@ export function InvestmentrechnerInhalt({
   const [spracheOhneKunde, setSpracheOhneKunde] = useState<FormatSprache>("de");
   const kundenSprache: FormatSprache = dokumentSprache ?? (kundeId ? spracheDesKunden : spracheOhneKunde);
   const en = kundenSprache === "en";
-  const exposeObjekte: ExposeObjekt[] = objekte.map((objekt, index) => ({
-    // Ohne Bankseiten, solange Bankgespräch und Bankunterlagen ausgeblendet sind (siehe `bankModus`).
-    input: bankModus ? objekt.eingabe : { ...objekt.eingabe, bankgespraechAktiv: false },
-    result: ergebnisse[index],
-    photos: objekt.photos,
-    documents: objekt.documents,
-    documentData: objekt.documentData,
-  }));
   /*
    * Ausführliche Berechnung im Einhauser-Aufbau (29.10.2026): Vorgaben aus
    * Objekt und Wohnung der Einheit und aus der Selbstauskunft; was der
@@ -1494,45 +1479,9 @@ export function InvestmentrechnerInhalt({
   }, [objekte, ergebnisse, objektVorgabe, kundeVorgabe, eigenerIndex, erstelltVon]);
   const ausfuehrlichRef = useRef<HTMLDivElement>(null);
 
-  // Das Deckblatt wählt jeder Berater selbst, gemerkt in diesem Browser (07.10.2026).
-  const [deckblatt, setDeckblatt] = useState<DeckblattVariante>(gemerkteDeckblattVariante);
-  const waehleDeckblatt = (variante: DeckblattVariante) => {
-    setDeckblatt(variante);
-    merkeDeckblattVariante(variante);
-  };
-  const exposeInhalt = (printing: boolean) =>
-    vergleichAktiv ? (
-      <ExposeVergleichsdokument
-        a={exposeObjekte[0]}
-        b={exposeObjekte[1]}
-        printing={printing}
-        sprache={kundenSprache}
-        deckblatt={deckblatt}
-      />
-    ) : (
-      <ExposeDokument {...exposeObjekte[0]} printing={printing} sprache={kundenSprache} deckblatt={deckblatt} />
-    );
 
   const druckdokumentRef = useRef<HTMLDivElement>(null);
   const [pdfEntsteht, setPdfEntsteht] = useState(false);
-  const berechnungHerunterladen = async () => {
-    setPdfEntsteht(true);
-    try {
-      const druckdokument = druckdokumentRef.current;
-      if (!druckdokument) throw new Error("Die Berechnungsseiten sind nicht verfügbar");
-      const { ladeBerechnungsansichtHerunter } = await import("@/lib/investmentrechner/berechnungAnsichtPdf");
-      await ladeBerechnungsansichtHerunter(vergleichAktiv ? exposeObjekte.slice(0, 2) : [exposeObjekte[0]], kundenSprache, druckdokument);
-    } catch (fehler) {
-      console.error("[Investmentrechner] PDF fehlgeschlagen", fehler);
-      toast({
-        title: "PDF konnte nicht erstellt werden",
-        description: "Bitte versuch es noch einmal. Bleibt der Fehler, melde ihn bitte mit einem Screenshot.",
-        variant: "destructive",
-      });
-    } finally {
-      setPdfEntsteht(false);
-    }
-  };
 
   /** PDF der ausführlichen Berechnung, aus dem verborgenen Abdruck unten (wie beim Objektvergleich). */
   const ausfuehrlichHerunterladen = async () => {
@@ -1543,7 +1492,7 @@ export function InvestmentrechnerInhalt({
       abdruck.classList.add("kov-export");
       const doc = await erzeugeBerechnungsansichtPdf(abdruck);
       const v = ausfuehrlichDok.v;
-      doc.save(vergleichDateiname(v, v.stand.split("-").reverse().join(".")).replace(/^Objekt(rechnung|vergleich)/, "Investmentberechnung"));
+      doc.save(vergleichDateiname(v, v.stand.split("-").reverse().join(".")).replace(/^Objekt(rechnung|vergleich)/, en ? "Investment calculation" : "Investmentberechnung"));
     } catch (fehler) {
       console.error("[Investmentrechner] PDF der ausführlichen Berechnung fehlgeschlagen", fehler);
       toast({
@@ -1616,8 +1565,8 @@ export function InvestmentrechnerInhalt({
         Am Objekt haengt ein eigenes Expose, und zwei Papiere mit demselben
         Namen verwechselt man im Kundengespraech.
       */}
-      {/* Seit dem 29.10.2026 lädt der Knopf die ausführliche Berechnung, außer in der Ansicht „Berechnung“. */}
-      <Button variant="brand" className="gap-2" disabled={pdfEntsteht} onClick={() => void (ansicht === "expose" || en ? berechnungHerunterladen() : ausfuehrlichHerunterladen())}>
+      {/* Seit dem 29.10.2026 die ausführliche Berechnung, in der Sprache für Kunde und PDF. */}
+      <Button variant="brand" className="gap-2" disabled={pdfEntsteht} onClick={() => void ausfuehrlichHerunterladen()}>
         <FileDown size={16} /> {pdfEntsteht ? "PDF wird erstellt …" : "Berechnung herunterladen"}
       </Button>
     </>
@@ -1743,6 +1692,7 @@ export function InvestmentrechnerInhalt({
                   </p>
                 )}
                 {bereich === "kunde" && <EingabeKunde {...eingabeProps} kundenbereich={kundenbereich} />}
+                {bereich === "kunde" && kundeVonHand && <EingabeAusgangslage input={input} aendere={aendere} vorgaben={vorgabenFuer(sicherIndex)} />}
                 {bereich === "objekt" && (
                   <EingabeObjekt
                     {...eingabeProps}
@@ -1800,7 +1750,7 @@ export function InvestmentrechnerInhalt({
                     hinweis={fotoHinweis}
                     nummer={bankModus ? "09" : "08"}
                     onOpenPreview={() => {
-                      setAnsicht("expose");
+                      setAnsicht("ausfuehrlich");
                       rolleSeiteNachOben();
                     }}
                   />
@@ -1808,82 +1758,50 @@ export function InvestmentrechnerInhalt({
               </div>
             </aside>
 
-            <section className="result-panel" lang={kundenSprache}>
-            <RechnerSpracheContext.Provider value={kundenSprache}>
+            {/* Die rechte Seite bleibt Deutsch; die Sprachwahl gilt seit dem 29.10.2026 nur für das PDF. */}
+            <section className="result-panel" lang="de">
+            <RechnerSpracheContext.Provider value="de">
               {/*
                 Kopfbereich, seit dem 23.10.2026 in drei Ebenen (Christian):
                 oben Kunde und Objekt mit „Zurücksetzen“, darunter die
-                Hauptnavigation der Ansichten, darunter Deckblatt und Sprache.
+                Hauptnavigation der Ansichten, darunter die Sprache.
               */}
               <div className="result-header">
                 <div className="result-kopf">
-                {ansicht === "vergleich" ? (
-                  <div>
-                    <span className="eyebrow">{input.clientName || (en ? "Client calculation" : "Kundenberechnung")}</span>
-                    <h2>{en ? "Two properties compared" : "Zwei Objekte im Vergleich"}</h2>
-                    <p>
-                      {en
-                        ? `Same tax basis, same period of ${input.forecastYears} years`
-                        : `Gleiche Steuerbasis, gleiche Laufzeit von ${input.forecastYears} Jahren`}
-                    </p>
-                  </div>
-                ) : (
                   <div>
                     <span className="eyebrow">
-                      {input.clientName || (en ? "Client calculation" : "Kundenberechnung")}
+                      {input.clientName || "Kundenberechnung"}
                       {vergleichAktiv ? ` · ${objektMarke(sicherIndex)}` : ""}
                     </span>
-                    <h2>{input.propertyTitle || (en ? "New investment calculation" : "Neue Investmentkalkulation")}</h2>
-                    <p>{input.address || (en ? "Address missing" : "Adresse ergänzen")}</p>
+                    <h2>{input.propertyTitle || "Neue Investmentkalkulation"}</h2>
+                    <p>{input.address || "Adresse ergänzen"}</p>
                   </div>
-                )}
                   <Button variant="outline" size="sm" className="gap-2 rechner-zuruecksetzen" onClick={() => void zuruecksetzen()} data-testid="rechner-zuruecksetzen">
-                    <RotateCcw size={15} /> {en ? "Reset" : "Zurücksetzen"}
+                    <RotateCcw size={15} /> Zurücksetzen
                   </Button>
                 </div>
-                <div className="view-toggle hauptansichten" role="tablist" aria-label={en ? "Choose view" : "Ansicht wählen"}>
+                {/*
+                  Seit dem 29.10.2026 nur Analyse und ausführliche Berechnung
+                  (Christian). „Berechnung“ mit den drei Deckblättern und
+                  „Vergleich“ sind entfernt; zwei Objekte vergleicht die
+                  ausführliche Berechnung selbst.
+                */}
+                <div className="view-toggle hauptansichten" role="tablist" aria-label="Ansicht wählen">
                   <button className={ansicht === "analyse" ? "active" : ""} onClick={() => setAnsicht("analyse")}>
-                    <Calculator size={16} /> {en ? "Analysis" : "Analyse"}
+                    <Calculator size={16} /> Analyse
                   </button>
-                  {vergleichAktiv && !nurAusfuehrlich && (
-                    <button className={ansicht === "vergleich" ? "active" : ""} onClick={() => setAnsicht("vergleich")}>
-                      <Scale size={16} /> {en ? "Comparison" : "Vergleich"}
-                    </button>
-                  )}
-                  {/*
-                    Heisst seit dem 22.09.2026 "Berechnung", siehe der Knopf
-                    zum Herunterladen weiter oben. Der interne Name der Ansicht
-                    bleibt "expose", er steht nirgends auf dem Bildschirm.
-                  */}
-                  {!nurAusfuehrlich && (
-                    <button className={ansicht === "expose" ? "active" : ""} onClick={() => setAnsicht("expose")}>
-                      <ReceiptText size={16} /> {en ? "Calculation" : "Berechnung"}
-                    </button>
-                  )}
                   <button className={ansicht === "ausfuehrlich" ? "active" : ""} onClick={() => setAnsicht("ausfuehrlich")} id="ansicht-ausfuehrlich">
-                    <FileText size={16} /> {en ? "Detailed (PDF)" : "Ausführlich (PDF)"}
+                    <FileText size={16} /> Ausführlich (PDF)
                   </button>
                 </div>
                 <div className="result-optionen">
-                  {/* Seit dem 29.10.2026 nur noch für „Berechnung“ (und die englische Analyse); die Analyse folgt der ausführlichen Berechnung. */}
-                  {(ansicht === "expose" || (en && ansicht === "analyse")) && (
-                    <DeckblattWahl
-                      wert={deckblatt}
-                      onWahl={waehleDeckblatt}
-                      hinweis={
-                        en
-                          ? "First page of the calculation and its PDF. The pages after it are the same for all."
-                          : "Erste Seite der Berechnung und ihres PDFs. Die Seiten danach sind bei allen gleich."
-                      }
-                    />
-                  )}
                   {/* Ohne Kunde eine sichtbare Wahl; mit Kunde gilt seine Sprache aus dem Profil. */}
                   {dokumentSprache === undefined && (
                     <div className="sprache-wahl" data-testid={kundeId ? "sprache-kunde" : "sprache-wahl"}>
                       <span>
-                        <Languages size={14} /> {en ? "Language for client and PDF" : "Sprache für Kunde und PDF"}
+                        <Languages size={14} /> Sprache des PDF
                       </span>
-                      <div className="sprache-schalter" role="radiogroup" aria-label={en ? "Language for client and PDF" : "Sprache für Kunde und PDF"}>
+                      <div className="sprache-schalter" role="radiogroup" aria-label="Sprache des PDF">
                         {(["de", "en"] as const).map((sprache) => (
                           <button
                             key={sprache}
@@ -1898,7 +1816,7 @@ export function InvestmentrechnerInhalt({
                           </button>
                         ))}
                       </div>
-                      {kundeId && <small>{en ? "From the client profile" : "Aus dem Kundenprofil"}</small>}
+                      {kundeId && <small>Aus dem Kundenprofil</small>}
                     </div>
                   )}
                 </div>
@@ -1906,25 +1824,9 @@ export function InvestmentrechnerInhalt({
               {/*
                 Analyse und „Ausführlich“ zeigen seit dem 29.10.2026 die Rechnung im
                 Aufbau des Einhauser-Vergleichs (Christian): Karten bzw. A4-Seiten,
-                dieselben Zahlen. Die gibt es bisher nur auf Deutsch; für Kunden mit
-                Sprache Englisch bleiben die frühere Analyse und die zwölfseitige
-                Berechnung aus dem Rechenkern, damit alles an sie englisch bleibt.
+                dieselben Zahlen. Die Analyse ist immer Deutsch, das PDF folgt der Sprache.
               */}
-              {ansicht === "analyse" && en && (
-                <Analyse
-                  input={input}
-                  result={result}
-                  documents={documents}
-                  documentData={documentData}
-                  onOpenDocuments={() => setBereich("objekt")}
-                  deckblatt={deckblatt}
-                  mitBankgespraech={bankModus}
-                />
-              )}
-              {ansicht === "ausfuehrlich" && en && (
-                <AusfuehrlicheBerechnung input={input} result={result} photos={photos} erstelltVon={erstelltVon} />
-              )}
-              {ansicht === "analyse" && !en && (
+              {ansicht === "analyse" && (
                 <>
                   {/* Ohne Einkommen rechnet die ausführliche Berechnung wie das Exposé pauschal (steuerAus). */}
                   {input.taxCalculationMode === "tariff" && ausfuehrlichDok.v.annahmen.steuerArt === "pauschal" && (
@@ -1936,33 +1838,11 @@ export function InvestmentrechnerInhalt({
                   <EinhauserAnalyse {...ausfuehrlichDok} />
                 </>
               )}
-              {ansicht === "ausfuehrlich" && !en && (
+              {ansicht === "ausfuehrlich" && (
                 <div className="expose-preview-wrap" data-testid="ausfuehrlich-einhauser">
                   <ExposeVorschau>
-                    <div className="expose-document"><KundenObjektvergleichDokument {...ausfuehrlichDok} /></div>
+                    <div className="expose-document"><KundenObjektvergleichDokument {...ausfuehrlichDok} sprache={kundenSprache} /></div>
                   </ExposeVorschau>
-                </div>
-              )}
-              {ansicht === "vergleich" && vergleichAktiv && !nurAusfuehrlich && (
-                <Vergleichsansicht
-                  a={{ eingabe: objekte[0].eingabe, ergebnis: ergebnisse[0] }}
-                  b={{ eingabe: objekte[1].eingabe, ergebnis: ergebnisse[1] }}
-                />
-              )}
-              {ansicht === "expose" && !nurAusfuehrlich && (
-                <div className="expose-preview-wrap">
-                  {/*
-                    Hier stand eine Leiste "Druckfertige Vorschau" mit einem
-                    zweiten Knopf "Als PDF speichern". Christian hat sie am
-                    21.09.2026 entfernen lassen: Derselbe Befehl steht schon
-                    oben in der Kopfzeile, und zwei Knoepfe fuer dieselbe Sache
-                    auf einem Bildschirm lassen den Nutzer ueberlegen, ob sie
-                    wirklich dasselbe tun.
-
-                    Die Wahl des Deckblatts steht seit dem 23.10.2026 im
-                    Kopfbereich, für Analyse und Berechnung gemeinsam.
-                  */}
-                  <ExposeVorschau>{exposeInhalt(false)}</ExposeVorschau>
                 </div>
               )}
             </RechnerSpracheContext.Provider>
@@ -1972,23 +1852,20 @@ export function InvestmentrechnerInhalt({
       </div>
 
       {/*
-        Druckdokument: Das Original rendert ein verstecktes Exposé neben der
-        App und blendet beim Drucken die App aus. Im CRM liegt es per Portal
-        direkt im body, damit der Druck die Seitenleiste und den Rest der
-        Oberfläche nicht mitnimmt. Bei zwei Objekten druckt es dieselben
-        fünfzehn Seiten, die auch die Vorschau zeigt.
+        Druckdokument: Die App wird beim Drucken ausgeblendet, gedruckt wird
+        dieses Portal direkt im body. Seit dem 29.10.2026 die ausführliche Berechnung.
       */}
       {createPortal(
         <div ref={druckdokumentRef} className="investmentrechner investmentrechner-print print-only">
           <style>{"@page { size: A4 portrait; margin: 0; }"}</style>
-          {exposeInhalt(true)}
+          <div className="expose-document"><KundenObjektvergleichDokument {...ausfuehrlichDok} sprache={kundenSprache} /></div>
         </div>,
         document.body,
       )}
       {/* Abdruck der ausführlichen Berechnung für den Download, außerhalb des Bildschirms. */}
       {createPortal(
         <div ref={ausfuehrlichRef} aria-hidden style={{ position: "fixed", left: -20000, top: 0, width: "210mm" }}>
-          <KundenObjektvergleichDokument {...ausfuehrlichDok} />
+          <KundenObjektvergleichDokument {...ausfuehrlichDok} sprache={kundenSprache} />
         </div>,
         document.body,
       )}

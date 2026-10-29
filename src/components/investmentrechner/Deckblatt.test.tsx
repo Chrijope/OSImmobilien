@@ -266,7 +266,7 @@ describe("Wahl des Deckblatts im Rechner", () => {
     expect(gemerkteDeckblattVariante()).toBe("blick");
   });
 
-  it("die Analyse zeigt seit dem 29.10.2026 die ausführliche Berechnung, das Deckblatt gilt nur für „Berechnung“", () => {
+  it("seit dem 29.10.2026 ohne Deckblattwahl und ohne Ansicht „Berechnung“", () => {
     render(
       <TooltipProvider>
         <InvestmentrechnerInhalt />
@@ -274,23 +274,8 @@ describe("Wahl des Deckblatts im Rechner", () => {
     );
     expect(document.body.querySelector(".kov-analyse")).not.toBeNull();
     expect(screen.queryByRole("radio", { name: "Jahr für Jahr" })).toBeNull();
-    fireEvent.click(screen.getByRole("button", { name: "Berechnung" }));
-    fireEvent.click(screen.getByRole("radio", { name: "Jahr für Jahr" }));
-    expect(document.body.querySelector(".investmentrechner-print .expose-page")?.classList.contains("deckblatt-jahre")).toBe(true);
-  });
-
-  it("schaltet unter „Berechnung“ das Deckblatt im Druckstück um", () => {
-    render(
-      <TooltipProvider>
-        <InvestmentrechnerInhalt />
-      </TooltipProvider>,
-    );
-    const erste = () => document.body.querySelector(".investmentrechner-print .expose-page");
-    expect(erste()?.classList.contains("deckblatt-blick")).toBe(true);
-    fireEvent.click(screen.getByRole("button", { name: "Berechnung" }));
-    fireEvent.click(screen.getByRole("radio", { name: "Jahr für Jahr" }));
-    expect(erste()?.classList.contains("deckblatt-jahre")).toBe(true);
-    expect(screen.getByRole("radio", { name: "Jahr für Jahr" })).toHaveAttribute("aria-checked", "true");
-    expect(gemerkteDeckblattVariante()).toBe("jahre");
+    expect(screen.queryByRole("button", { name: "Berechnung" })).toBeNull();
+    // Gedruckt wird die ausführliche Berechnung.
+    expect(document.body.querySelector(".investmentrechner-print .kov-system")).not.toBeNull();
   });
 });

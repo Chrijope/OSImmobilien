@@ -3031,5 +3031,26 @@
     ],
     "soFindestDuEs": "Seitenleiste, Investmentkalkulation, Ansicht „Ausführlich (PDF)“",
     "kritisch": false
+  },
+  {
+    "nr": 149,
+    "datum": "2026-10-29",
+    "art": "geaendert",
+    "titel": "Investmentkalkulation: nur noch Analyse und ausführliche Berechnung, PDF auch auf Englisch",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner"
+    ],
+    "kurztext": "Die Ansicht „Berechnung“ mit ihren drei Deckblättern ist entfernt. Die ausführliche Berechnung gibt es jetzt auch auf Englisch, die Analyse bleibt Deutsch.",
+    "wasHeisstDasFuerDich": [
+      "Oben stehen nur noch „Analyse“ und „Ausführlich (PDF)“.",
+      "Mit Sprache Englisch (aus dem Kundenprofil oder ohne Kunde über DE/EN) kommt das PDF komplett auf Englisch.",
+      "Seite 2 des PDF beginnt ohne Hausfoto direkt mit der Wohnung und den Objektdaten.",
+      "Die Angaben für „Ihre Ausgangslage“ kommen im CRM aus der Selbstauskunft des gewählten Investments; der Bereich „Ausführliche Berechnung“ fragt sie nicht mehr ab."
+    ],
+    "soFindestDuEs": "Seitenleiste, Investmentkalkulation",
+    "kritisch": false
   }
 ]

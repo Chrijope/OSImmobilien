@@ -97,24 +97,6 @@ describe("Druck bei eingehängtem, verstecktem Rechner (LOTSE-R3-004)", () => {
 });
 
 describe("Berechnung herunterladen (28.09.2026)", () => {
-  it("speichert die Berechnung als PDF-Datei, ohne Druckdialog", async () => {
-    const drucken = vi.spyOn(window, "print").mockImplementation(() => {});
-    zeige(<InvestmentrechnerInhalt vorbelegung={vorbelegung} mitUeberschrift={false} />);
-    expect(screen.queryByRole("button", { name: /Drucken/ })).not.toBeInTheDocument();
-    // In der Ansicht „Berechnung“ deren PDF, sonst seit dem 29.10.2026 die ausführliche Berechnung (Test darunter).
-    fireEvent.click(screen.getByRole("button", { name: "Berechnung" }));
-    fireEvent.click(screen.getByRole("button", { name: "Berechnung herunterladen" }));
-    await waitFor(() => expect(pdf.herunterladen).toHaveBeenCalledTimes(1));
-    const [objekte, sprache, druckdokument] = pdf.herunterladen.mock.calls[0] as unknown as [{ input: { propertyTitle: string } }[], string, HTMLElement];
-    expect(objekte).toHaveLength(1);
-    expect(objekte[0].input.propertyTitle).toBe("Musterwohnanlage, WE 7");
-    expect(sprache).toBe("de");
-    expect(druckdokument.querySelectorAll(".expose-page")).toHaveLength(8);
-    expect(drucken).not.toHaveBeenCalled();
-    await waitFor(() => expect(screen.getByRole("button", { name: "Berechnung herunterladen" })).toBeEnabled());
-    drucken.mockRestore();
-  });
-
   it("lädt in Analyse und „Ausführlich“ die ausführliche Berechnung im Einhauser-Aufbau", async () => {
     zeige(<InvestmentrechnerInhalt vorbelegung={vorbelegung} mitUeberschrift={false} />);
     fireEvent.click(screen.getByRole("button", { name: "Berechnung herunterladen" }));
