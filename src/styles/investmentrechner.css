@@ -214,12 +214,9 @@
 .investmentrechner textarea {
   font: inherit;
 }
-.investmentrechner button {
+/* Ohne die orangen Hauptknöpfe: „Weiter“ in der Kalkulationsbasis behält die weiße Schrift von .btn-brand wie „Berechnung herunterladen“ (29.10.2026). */
+.investmentrechner button:where(:not(.btn-brand)) {
   color: inherit;
-}
-/* Orange Hauptknöpfe (etwa „Weiter“ in der Kalkulationsbasis) behalten ihre weiße Schrift wie „Berechnung herunterladen“. */
-.investmentrechner button.btn-brand {
-  color: hsl(var(--brand-orange-foreground));
 }
 /*
  * Tailwind setzt Überschriften auf font-weight: inherit, das Original verlässt
