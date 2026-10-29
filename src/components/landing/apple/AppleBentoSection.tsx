@@ -2,11 +2,18 @@ import Reveal from "@/components/landing/Reveal";
 import { useSeitenTexte } from "@/components/SeitenSprache";
 import { MIKROSEITE_TEXTE } from "@/components/landing/mikroseiteTexte";
 
-import bgObjekte from "@/assets/lp/mikroseite/leistung-objekte.webp";
 import bgSteuern from "@/assets/lp/mikroseite/leistung-steuern.webp";
 import bgFinanzierung from "@/assets/lp/mikroseite/leistung-finanzierung.webp";
 import bgStrategie from "@/assets/lp/mikroseite/leistung-strategie.webp";
 import bgBetreuung from "@/assets/lp/mikroseite/leistung-betreuung.webp";
+
+/*
+ * Seit 29.10.2026 zeigt die große Karte ein echtes Foto aus dem Bestand statt
+ * des KI-Neubaus, und jede Karte nennt den Bildausschnitt, der das Motiv
+ * trägt (Gesichter, Hände, Modelle). Die Bilder stehen im Seitenverhältnis
+ * statt in fester Höhe, sonst schneidet eine breite Karte die Köpfe ab.
+ */
+const BG_OBJEKTE = "/images/mikroseite/hauff-garten.jpg";
 
 /**
  * Apple-Style Bento-Grid für die Berater-Microseite.
@@ -56,7 +63,8 @@ const AppleBentoSection = () => {
               title={t.objekte.titel}
               body={t.objekte.text}
               large
-              bgImage={bgObjekte}
+              bgImage={BG_OBJEKTE}
+              bildPosition="50% 60%"
             />
           </Reveal>
 
@@ -67,6 +75,7 @@ const AppleBentoSection = () => {
               title={t.steuern.titel}
               body={t.steuern.text}
               bgImage={bgSteuern}
+              bildPosition="60% 55%"
             />
           </Reveal>
 
@@ -77,6 +86,7 @@ const AppleBentoSection = () => {
               title={t.finanzierung.titel}
               body={t.finanzierung.text}
               bgImage={bgFinanzierung}
+              bildPosition="50% 35%"
             />
           </Reveal>
 
@@ -87,6 +97,7 @@ const AppleBentoSection = () => {
               title={t.strategie.titel}
               body={t.strategie.text}
               bgImage={bgStrategie}
+              bildPosition="40% 62%"
             />
           </Reveal>
 
@@ -97,6 +108,7 @@ const AppleBentoSection = () => {
               title={t.betreuung.titel}
               body={t.betreuung.text}
               bgImage={bgBetreuung}
+              bildPosition="50% 32%"
             />
           </Reveal>
 
@@ -112,11 +124,13 @@ interface CardProps {
   body: string;
   large?: boolean;
   bgImage: string;
+  /** CSS object-position: welcher Teil des Bilds sichtbar bleibt. */
+  bildPosition?: string;
 }
 
-const BentoCard = ({ eyebrow, title, body, large, bgImage }: CardProps) => (
+const BentoCard = ({ eyebrow, title, body, large, bgImage, bildPosition = "50% 50%" }: CardProps) => (
   <article className={`leistung-card${large ? " leistung-card-large" : ""}`}>
-    <img src={bgImage} alt="" loading="lazy" width="1536" height="1024" />
+    <img src={bgImage} alt="" loading="lazy" width="1536" height="1024" style={{ objectPosition: bildPosition }} />
     <div className="leistung-copy">
       <div className="leistung-eyebrow">{eyebrow}</div>
       <h3>{title}</h3>

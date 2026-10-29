@@ -1,13 +1,14 @@
-import { useEffect, useState, type ReactNode } from "react";
-import { ArrowRight, CalendarDays, ChevronLeft, ChevronRight, Mail, Phone } from "lucide-react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { ArrowRight, Building2, CalendarDays, Check, ChevronDown, CircleDashed, KeyRound, Landmark, Mail, Minus, Phone, PiggyBank } from "lucide-react";
 import InvestorBenefitsSection from "@/components/landing/InvestorBenefitsSection";
 import AppleBentoSection from "@/components/landing/apple/AppleBentoSection";
+import ProzessGrafik, { PROZESS_MOTIVE } from "@/components/landing/ProzessGrafik";
 import logoHell from "@/assets/os-real-estate-logo-quer-dunkel.png";
 import { SeitenSprachUmschalter, useSeitenSprache, useSeitenTexte } from "@/components/SeitenSprache";
 import { CookieEinstellungenLink } from "@/components/cookie/CookieEinstellungenLink";
 import { PartnerPixelHinweis } from "@/components/cookie/PartnerPixelHinweis";
 import { mitSeitenSprache } from "@/lib/seitenSprache";
-import { MIKROSEITE_OS_TEXTE, type KonzeptOs } from "./mikroseiteOsTexte";
+import { MIKROSEITE_OS_TEXTE } from "./mikroseiteOsTexte";
 import { positionFuerAnzeige } from "./mikroseiteAbschlussTexte";
 import type { BeraterInfo } from "./FloatingBeraterBadge";
 // Schriften und Farbwerte der OS-CI (Waldgrün, Schwarz, Papier, Gold), dieselben wie die Beratungspräsentation.
@@ -15,12 +16,24 @@ import "@/styles/beratung-os.css";
 import "./mikroseiteOs.css";
 
 /*
- * Die persönliche Partner-Landingpage, umgebaut am 16.10.2026 auf
- * OS Real Estate. Aufbau wie die Handbuch-Seite, mit Wechsel zwischen dunklen
- * und hellen Abschnitten. Reihenfolge, die aufeinander aufbaut:
- * Hero, Ausgangslage, zwei Konzepte, drei Objekte, Musterrechnung,
- * Investorenprofile, Leistungen, Warum OS Real Estate, Referenzen, Prozess,
- * Kontakt. Der frühere Steuer- und Eignungscheck ist entfallen.
+ * Die persönliche Partner-Landingpage. Neu aufgebaut am 29.10.2026 als
+ * Spannungsbogen, der Laien abholt und Kenner nicht langweilt:
+ *
+ *  1. Hero: das Versprechen (Mieter und Steuer zahlen mit) und der Partner.
+ *  2. Ausgangslage: Rentenlücke, Steuerlast, Inflation, Preis des Abwartens.
+ *  3. Prinzip: Wer bezahlt die Wohnung? Mieter, Steuer, du.
+ *  4. Zwei Konzepte: Steueroptimierung und Altersvorsorge (Verkauf oder
+ *     Zusatzrente), je mit „Für Kenner“ zum Aufklappen. Danach Zwischenruf.
+ *  5. Für wen: die vier Investorenprofile.
+ *  6. Wer wir sind: Gruppe und Vorteile.
+ *  7. Leistungen: alles, was du für ein Investment brauchst.
+ *  8. Ehrliche Antworten auf die häufigsten Einwände.
+ *  9. Prozess in sieben bewegten Schritten.
+ * 10. Erstgespräch mit dem Partner.
+ *
+ * Allgemein gehalten, keine einzelnen OS-Objekte. Hauptaktion im
+ * Orange-Verlauf (`btn-brand`), alles andere in der OS-CI. Hell- und
+ * Dunkelmodus über mikroseiteOs.css.
  *
  * Die persönlichen Daten (Name, Foto, Telefon, E-Mail, Buchungslink) kommen
  * unverändert aus `BeraterMicroseite.tsx` (öffentlich über `get-vp-microsite`).
@@ -29,16 +42,6 @@ import "./mikroseiteOs.css";
 interface Props { berater: BeraterInfo | null; onOpenFunnel: () => void; }
 
 const BILD = "/images/mikroseite";
-
-/** Bilder je Objekt, in der Reihenfolge von `objekte.liste`. */
-const OBJEKTE: Array<{ konzept: KonzeptOs; bilder: string[] }> = [
-  { konzept: "steuer", bilder: ["barfuss-fassade", "barfuss-luftbild", "barfuss-altbau-innen", "barfuss-fassade-hell", "barfuss-innenhof", "barfuss-zimmer", "barfuss-wohnungstuer"] },
-  { konzept: "alter", bilder: ["hauff-fassade", "hauff-garten", "hauff-luftbild", "hauff-aufzug", "hauff-strassenseite", "hauff-wohnraum", "hauff-zimmer"] },
-  { konzept: "alter", bilder: ["zossen-haus-garten", "zossen-luisenstrasse", "zossen-strasse", "zossen-rasen", "zossen-treppe", "zossen-kueche", "zossen-zimmer"] },
-];
-
-/** Bilder der Referenzen, in der Reihenfolge von `referenzen.bilder`. */
-const REFERENZ_BILDER = ["barfuss-luftbild", "hauff-garten", "zossen-strasse", "barfuss-altbau-innen", "hauff-luftbild", "zossen-luisenstrasse"];
 
 /*
  * Das Original des Partnerfotos in passender Größe. Beim Hochladen entstehen
@@ -56,6 +59,34 @@ const scharfesPortraet = (url: string | null | undefined): string | null => {
   return original.replace("/object/public/", "/render/image/public/") + "?width=420&height=500&resize=cover&quality=80";
 };
 
+/**
+ * Startet die Bewegung eines Elements, sobald es ins Bild kommt.
+ *
+ * Ohne Skript, ohne IntersectionObserver oder mit „Bewegung reduzieren“ fehlt
+ * `data-anim`, und das CSS zeigt das fertige Bild. Erst wenn Bewegung sicher
+ * läuft, setzt der Hook „wartet“ (Startbild) und beim Hereinscrollen „an“.
+ */
+function useBewegung<T extends HTMLElement>() {
+  const ref = useRef<T>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    el.dataset.anim = "wartet";
+    const beobachter = new IntersectionObserver(
+      (eintraege) => {
+        if (!eintraege.some((e) => e.isIntersecting)) return;
+        el.dataset.anim = "an";
+        beobachter.disconnect();
+      },
+      { rootMargin: "0px 0px -12% 0px" },
+    );
+    beobachter.observe(el);
+    return () => beobachter.disconnect();
+  }, []);
+  return ref;
+}
+
 /** Gemeinsame Darstellung für öffentliche Microseite und persönliche Vorschau. */
 export default function BeraterMicrositeContent({ berater, onOpenFunnel }: Props) {
   const t = useSeitenTexte(MIKROSEITE_OS_TEXTE);
@@ -66,16 +97,20 @@ export default function BeraterMicrositeContent({ berater, onOpenFunnel }: Props
         {/* Ohne SeitenSpracheProvider zeigt der Umschalter nichts. */}
         <SeitenSprachUmschalter className="osm-sprache" />
       </header>
+      {/* Reihenfolge nach Christian (29.10.2026): erst das Problem, dann warum
+          Immobilie, dann wer wir sind, und erst danach Prinzip, Rechnung,
+          Leistungen und Konzepte. Die Töne wechseln hell und dunkel ab. */}
       <Hero berater={berater} onOpenFunnel={onOpenFunnel} />
-      <Problem />
-      <Konzepte />
-      <Objekte />
+      <Ausgangslage />
+      <Vergleich />
+      <WerWirSind />
+      <Prinzip />
       <Musterrechnung />
-      {/* Behalten aus der bisherigen Seite, nur Wording an OS angepasst. */}
-      <div className="osm-alt osm-hell"><InvestorBenefitsSection /></div>
+      {/* Behalten aus der bisherigen Seite, Wording an OS angepasst. */}
       <div className="osm-alt osm-dunkel"><AppleBentoSection /></div>
-      <Warum />
-      <Referenzen />
+      <Konzepte onOpenFunnel={onOpenFunnel} />
+      <div className="osm-alt osm-dunkel"><InvestorBenefitsSection /></div>
+      <Fragen />
       <Prozess />
       <Kontakt berater={berater} onOpenFunnel={onOpenFunnel} />
       <Fuss />
@@ -97,6 +132,24 @@ function Kopf({ kicker, titel, intro }: { kicker: string; titel: string; intro?:
       <p className="bos-kicker osm-kicker">{kicker}</p>
       <h2 className="bos-serif">{titel}</h2>
       {intro && <p className="osm-intro">{intro}</p>}
+    </div>
+  );
+}
+
+/** Ein waagerechter Balken, der beim Hereinscrollen auf seine Länge wächst. */
+function Balken({ label, wert, anteil, zusatz, ton = "normal", nr = 0 }: {
+  label: string; wert: string; anteil: number; zusatz?: string; ton?: "normal" | "warnung" | "gut"; nr?: number;
+}) {
+  return (
+    <div className={`osm-balken osm-balken-${ton}`} style={{ "--nr": nr } as CSSProperties}>
+      <div className="osm-balken-text">
+        <span>{label}</span>
+        <b>{wert}</b>
+      </div>
+      <div className="osm-balken-bahn">
+        <span className="osm-balken-fuellung" style={{ width: `${anteil}%` }} />
+      </div>
+      {zusatz && <small className="osm-balken-zusatz">{zusatz}</small>}
     </div>
   );
 }
@@ -143,15 +196,17 @@ function Hero({ berater, onOpenFunnel }: Props) {
           </h1>
           <p className="osm-hero-text">{t.text}</p>
           <div className="osm-knoepfe">
-            <button type="button" className="osm-knopf osm-gold" onClick={onOpenFunnel}>
+            <button type="button" className="osm-knopf btn-brand" onClick={onOpenFunnel}>
               {t.knopfTermin} <ArrowRight aria-hidden="true" />
             </button>
-            <a className="osm-knopf osm-rand" href="#objekte">{t.knopfObjekte}</a>
+            <a className="osm-knopf osm-rand" href="#prinzip">{t.knopfPrinzip}</a>
           </div>
+          <ul className="osm-hero-vorteile">
+            {t.vorteile.map((v) => <li key={v}><Check aria-hidden="true" /> {v}</li>)}
+          </ul>
         </div>
         {berater && <HeroAnsprechpartner berater={berater} onOpenFunnel={onOpenFunnel} />}
       </div>
-      <p className="osm-bildort">{t.bildOrt}</p>
     </section>
   );
 }
@@ -174,193 +229,313 @@ function HeroAnsprechpartner({ berater, onOpenFunnel }: { berater: BeraterInfo; 
         <span>{positionFuerAnzeige(berater.position, sprache)}</span>
       </div>
       {berater.buchungslink ? (
-        <a className="osm-knopf osm-gold osm-portraet-knopf" href={berater.buchungslink} target="_blank" rel="noopener noreferrer">{inhalt}</a>
+        <a className="osm-knopf btn-brand osm-portraet-knopf" href={berater.buchungslink} target="_blank" rel="noopener noreferrer">{inhalt}</a>
       ) : (
-        <button type="button" className="osm-knopf osm-gold osm-portraet-knopf" onClick={onOpenFunnel}>{inhalt}</button>
+        <button type="button" className="osm-knopf btn-brand osm-portraet-knopf" onClick={onOpenFunnel}>{inhalt}</button>
       )}
     </aside>
   );
 }
 
-function Problem() {
-  const t = useSeitenTexte(MIKROSEITE_OS_TEXTE).problem;
+function Ausgangslage() {
+  const t = useSeitenTexte(MIKROSEITE_OS_TEXTE).lage;
+  const druck = useBewegung<HTMLDivElement>();
+  const warten = useBewegung<HTMLDivElement>();
   return (
     <Abschnitt ton="hell">
       <Kopf kicker={t.kicker} titel={t.titel} />
-      <div className="osm-drei">
+      <div className="osm-drei osm-druck" ref={druck}>
         {t.punkte.map((p, i) => (
-          <div key={p.titel} className="osm-karte">
-            <span className="osm-nummer">0{i + 1}</span>
+          <div key={p.titel} className="osm-karte" style={{ "--nr": i } as CSSProperties}>
+            <b className="osm-grosszahl">{p.wert}</b>
             <h3>{p.titel}</h3>
             <p>{p.text}</p>
           </div>
         ))}
+      </div>
+      <div className="osm-karte osm-warten" ref={warten}>
+        <div>
+          <h3>{t.nichtstun.titel}</h3>
+          <p>{t.nichtstun.text}</p>
+        </div>
+        <div className="osm-balken-liste">
+          {t.nichtstun.balken.map((b, i) => (
+            <Balken key={b.label} label={b.label} wert={b.wert} anteil={b.anteil} ton={b.warnung ? "warnung" : "normal"} nr={i} />
+          ))}
+        </div>
+        <p className="osm-warten-satz">{t.nichtstun.satz}</p>
       </div>
       <p className="osm-schluss">{t.schluss}</p>
     </Abschnitt>
   );
 }
 
-function Konzepte() {
-  const t = useSeitenTexte(MIKROSEITE_OS_TEXTE).konzepte;
-  return (
-    <Abschnitt ton="gruen">
-      <Kopf kicker={t.kicker} titel={t.titel} intro={t.intro} />
-      <div className="osm-zwei">
-        {(["steuer", "alter"] as const).map((k, i) => {
-          const karte = t.karten[k];
-          return (
-            <div key={k} className="osm-karte osm-konzept">
-              <span className="osm-marke">{`${t.nummer(i + 1)} · ${karte.marke}`}</span>
-              <h3 className="bos-serif">{karte.titel}</h3>
-              <p>{karte.text}</p>
-              <p className="osm-konzept-objekte">{karte.objekte}</p>
-            </div>
-          );
-        })}
-      </div>
-    </Abschnitt>
-  );
-}
+const BEWERTUNG_SYMBOL = { ja: Check, teil: CircleDashed, nein: Minus } as const;
 
-/**
- * Bilder eines Objekts im Wechsel. Läuft von selbst weiter, hält beim
- * Überfahren und Fokussieren an und bei „Bewegung reduzieren“ gar nicht erst
- * los. Pfeile und Punkte gehen immer.
- */
-function Diashow({ bilder, label }: { bilder: Array<{ src: string; alt: string }>; label: string }) {
-  const t = useSeitenTexte(MIKROSEITE_OS_TEXTE).objekte;
-  const [aktuell, setAktuell] = useState(0);
-  const [pause, setPause] = useState(false);
-  const anzahl = bilder.length;
-  useEffect(() => {
-    const ruhig = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    if (pause || ruhig || anzahl < 2) return;
-    const takt = window.setInterval(() => setAktuell((x) => (x + 1) % anzahl), 5000);
-    return () => window.clearInterval(takt);
-  }, [pause, anzahl]);
-  const gehe = (schritt: number) => setAktuell((x) => (x + schritt + anzahl) % anzahl);
+/** Tagesgeld, Aktien, Gold und Immobilie im Vergleich; die Immobilie ist hervorgehoben. */
+function Vergleich() {
+  const t = useSeitenTexte(MIKROSEITE_OS_TEXTE).vergleich;
+  const tabelle = useBewegung<HTMLDivElement>();
+  const letzte = t.spalten.length - 1;
   return (
-    <div
-      className="osm-diashow"
-      role="group"
-      aria-roledescription="carousel"
-      aria-label={label}
-      onMouseEnter={() => setPause(true)}
-      onMouseLeave={() => setPause(false)}
-      onFocus={() => setPause(true)}
-      onBlur={() => setPause(false)}
-    >
-      {bilder.map((b, i) => (
-        <img key={b.src} src={b.src} alt={b.alt} aria-hidden={i !== aktuell} className={i === aktuell ? "an" : ""} loading="lazy" />
-      ))}
-      <button type="button" className="osm-pfeil links" aria-label={t.vorher} onClick={() => gehe(-1)}><ChevronLeft aria-hidden="true" /></button>
-      <button type="button" className="osm-pfeil rechts" aria-label={t.weiter} onClick={() => gehe(1)}><ChevronRight aria-hidden="true" /></button>
-      <div className="osm-punkte">
-        {bilder.map((b, i) => (
-          <button key={b.src} type="button" aria-label={t.bildNummer(i + 1, anzahl)} aria-current={i === aktuell} onClick={() => setAktuell(i)}>
-            <span aria-hidden="true" />
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function Objekte() {
-  const t = useSeitenTexte(MIKROSEITE_OS_TEXTE).objekte;
-  return (
-    <Abschnitt ton="hell" id="objekte">
+    <Abschnitt ton="dunkel" id="vergleich">
       <Kopf kicker={t.kicker} titel={t.titel} intro={t.intro} />
-      <div className="osm-objekte">
-        {t.liste.map((o, i) => {
-          const { konzept, bilder } = OBJEKTE[i];
-          return (
-            <article key={o.titel} className="osm-objekt">
-              <Diashow label={t.diashow(o.titel)} bilder={bilder.map((b, j) => ({ src: `${BILD}/${b}.jpg`, alt: o.bilder[j] }))} />
-              <div className="osm-objekt-text">
-                <span className={`osm-marke osm-marke-${konzept}`}>{t.marke[konzept]}</span>
-                <p className="osm-ort">{o.ort}</p>
-                <h3 className="bos-serif">{o.titel}</h3>
-                <ul>
-                  {o.daten.map((d) => <li key={d}>{d}</li>)}
-                </ul>
-                <p className="osm-preis">{o.preis}</p>
-              </div>
-            </article>
-          );
-        })}
-      </div>
-      <p className="osm-fussnote">{t.hinweis}</p>
-    </Abschnitt>
-  );
-}
-
-function Musterrechnung() {
-  const t = useSeitenTexte(MIKROSEITE_OS_TEXTE).muster;
-  return (
-    <Abschnitt ton="dunkel" id="musterrechnung">
-      <Kopf kicker={t.kicker} titel={t.titel} intro={t.intro} />
-      <div className="osm-rechnung-raster">
-        <table className="osm-rechnung">
-          <thead>
-            <tr><th scope="col" colSpan={2}>{t.spalte}</th></tr>
-          </thead>
-          <tbody>
-            {t.zeilen.map((z) => (
-              <tr key={z.text} className={z.ton}>
-                <td>{z.text}</td>
-                <td>{z.betrag}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <div className="osm-kennzahlen">
-          {t.karten.map((k) => (
-            <div key={k.wert} className="osm-kennzahl">
-              <b className="bos-serif">{k.wert}</b>
-              <span>{k.text}</span>
-            </div>
+      <div className="osm-vergleich" ref={tabelle} role="table" aria-label={t.titel}>
+        <div className="osm-vergleich-zeile osm-vergleich-kopf" role="row">
+          <span role="columnheader" />
+          {t.spalten.map((s, i) => (
+            <span key={s} role="columnheader" className={i === letzte ? "osm-vergleich-wir" : undefined}>{s}</span>
           ))}
         </div>
+        {t.zeilen.map((z, nr) => (
+          <div key={z.kriterium} className="osm-vergleich-zeile" role="row" style={{ "--nr": nr } as CSSProperties}>
+            <span role="rowheader">{z.kriterium}</span>
+            {z.werte.map((w, i) => {
+              const Symbol = BEWERTUNG_SYMBOL[w];
+              return (
+                <span key={t.spalten[i]} role="cell" className={`osm-wert osm-wert-${w}${i === letzte ? " osm-vergleich-wir" : ""}`}>
+                  <Symbol aria-hidden="true" />
+                  <span className="sr-only">{t.bewertung[w]}</span>
+                </span>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+      <ul className="osm-vergleich-legende" aria-hidden="true">
+        {(["ja", "teil", "nein"] as const).map((w) => {
+          const Symbol = BEWERTUNG_SYMBOL[w];
+          return <li key={w} className={`osm-wert-${w}`}><Symbol />{t.bewertung[w]}</li>;
+        })}
+      </ul>
+      <div className="osm-karte osm-hebel">
+        <h3>{t.fazitTitel}</h3>
+        <p>{t.fazitText}</p>
+        <p className="osm-hebel-ehrlich">{t.ehrlich}</p>
       </div>
       <p className="osm-fussnote">{t.fuss}</p>
     </Abschnitt>
   );
 }
 
-function Warum() {
-  const t = useSeitenTexte(MIKROSEITE_OS_TEXTE).warum;
+const BAUSTEIN_SYMBOLE = [KeyRound, PiggyBank, Landmark, Building2];
+
+function Prinzip() {
+  const t = useSeitenTexte(MIKROSEITE_OS_TEXTE).prinzip;
+  const leiste = useBewegung<HTMLDivElement>();
   return (
-    <Abschnitt ton="hell">
+    <Abschnitt ton="gruen" id="prinzip">
       <Kopf kicker={t.kicker} titel={t.titel} intro={t.intro} />
-      <div className="osm-drei osm-punkte-liste">
-        {t.punkte.map((p) => (
-          <div key={p.titel} className="osm-karte">
-            <h3>{p.titel}</h3>
-            <p>{p.text}</p>
+      <div className="osm-anteile" ref={leiste}>
+        <p className="osm-anteile-frage">{t.frage}</p>
+        <div className="osm-anteile-leiste" role="img" aria-label={t.anteile.map((a) => `${a.label} ${a.prozent} %`).join(", ")}>
+          {t.anteile.map((a, i) => (
+            <span key={a.teil} className={`osm-anteil osm-anteil-${a.teil}`} style={{ flexGrow: a.prozent, "--nr": i } as CSSProperties}>
+              <b>{a.prozent} %</b>
+            </span>
+          ))}
+        </div>
+        <ul className="osm-anteile-legende">
+          {t.anteile.map((a) => (
+            <li key={a.teil}>
+              <i className={`osm-anteil-${a.teil}`} aria-hidden="true" />
+              <span><strong>{a.label}</strong> {a.text}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="osm-vier">
+        {t.bausteine.map((b, i) => {
+          const Symbol = BAUSTEIN_SYMBOLE[i];
+          return (
+            <div key={b.titel} className="osm-karte osm-baustein">
+              <Symbol aria-hidden="true" />
+              <h3>{b.titel}</h3>
+              <p>{b.text}</p>
+            </div>
+          );
+        })}
+      </div>
+      <details className="osm-kenner">
+        <summary>{t.kennerTitel} <ChevronDown aria-hidden="true" /></summary>
+        <p>{t.kennerText}</p>
+      </details>
+      <p className="osm-fussnote">{t.fuss}</p>
+    </Abschnitt>
+  );
+}
+
+/** Eine echte Wohnung aus dem Angebot, Zeile für Zeile wie im Exposé. */
+function Musterrechnung() {
+  const t = useSeitenTexte(MIKROSEITE_OS_TEXTE).muster;
+  const rechnung = useBewegung<HTMLDivElement>();
+  return (
+    <Abschnitt ton="hell" id="musterrechnung">
+      <Kopf kicker={t.kicker} titel={t.titel} intro={t.intro} />
+      <div className="osm-muster">
+        <figure className="osm-karte osm-muster-objekt">
+          <img src={`${BILD}/barfuss-fassade.jpg`} alt={t.bildAlt} loading="lazy" />
+          <figcaption>
+            <b>{t.objekt}</b>
+            <span>{t.ort}</span>
+            <ul>{t.daten.map((d) => <li key={d}>{d}</li>)}</ul>
+          </figcaption>
+        </figure>
+        <div className="osm-karte osm-muster-rechnung" ref={rechnung}>
+          <h3>{t.rechnungTitel}</h3>
+          <dl>
+            {t.zeilen.map((z, nr) => (
+              <div key={z.label} className={`osm-muster-zeile osm-muster-${z.art}`} style={{ "--nr": nr } as CSSProperties}>
+                <dt>{z.label}</dt>
+                <dd>{z.wert}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </div>
+      <div className="osm-drei osm-muster-zahlen">
+        {t.kennzahlen.map((k) => (
+          <div key={k.text} className="osm-karte">
+            <b className="osm-grosszahl">{k.wert}</b>
+            <p>{k.text}</p>
           </div>
         ))}
-        <div className="osm-karte osm-gruppe">
-          <h3>{t.gruppeTitel}</h3>
-          <p>{t.gruppeText}</p>
+      </div>
+      <p className="osm-schluss">{t.satz}</p>
+      <p className="osm-muster-ehrlich">{t.ehrlich}</p>
+      <p className="osm-fussnote">{t.fuss}</p>
+    </Abschnitt>
+  );
+}
+
+function Kenner({ titel, punkte }: { titel: string; punkte: ReadonlyArray<string> }) {
+  return (
+    <details className="osm-kenner">
+      <summary>{titel} <ChevronDown aria-hidden="true" /></summary>
+      <ul>{punkte.map((p) => <li key={p}>{p}</li>)}</ul>
+    </details>
+  );
+}
+
+function Konzepte({ onOpenFunnel }: { onOpenFunnel: () => void }) {
+  const alles = useSeitenTexte(MIKROSEITE_OS_TEXTE);
+  const t = alles.konzepte;
+  const z = alles.zwischenruf;
+  const steuer = useBewegung<HTMLDivElement>();
+  const rente = useBewegung<HTMLDivElement>();
+  return (
+    <Abschnitt ton="hell" id="konzepte">
+      <Kopf kicker={t.kicker} titel={t.titel} intro={t.intro} />
+      <div className="osm-zwei osm-konzepte">
+        <article className="osm-karte osm-konzept" ref={steuer}>
+          <span className="osm-marke">{`${t.steuer.nummer} · ${t.steuer.marke}`}</span>
+          <h3 className="bos-serif">{t.steuer.titel}</h3>
+          <p>{t.steuer.text}</p>
+          <div className="osm-beispiel">
+            <p className="osm-beispiel-kopf">{t.steuer.beispielKopf}</p>
+            {t.steuer.beispiel.map((b, i) => (
+              <Balken key={b.text} label={b.text} wert={b.wert} anteil={b.anteil} zusatz={b.plus || undefined} ton={i === 0 ? "warnung" : "gut"} nr={i} />
+            ))}
+          </div>
+          <p className="osm-passt">{t.steuer.passt}</p>
+          <Kenner titel={t.kennerKnopf} punkte={t.steuer.kenner} />
+          <p className="osm-fussnote">{t.steuer.fuss}</p>
+        </article>
+        <article className="osm-karte osm-konzept" ref={rente}>
+          <span className="osm-marke">{`${t.alter.nummer} · ${t.alter.marke}`}</span>
+          <h3 className="bos-serif">{t.alter.titel}</h3>
+          <p>{t.alter.text}</p>
+          <ol className="osm-zeitachse">
+            {t.alter.zeitachse.map((s, i) => (
+              <li key={s.titel} style={{ "--nr": i } as CSSProperties}>
+                <b>{s.titel}</b>
+                <span>{s.text}</span>
+              </li>
+            ))}
+          </ol>
+          {/* Die Gabel: aus dem Ruhestand gehen zwei Wege ab. */}
+          <svg className="osm-gabel" viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+            <path className="zl" pathLength={1} vectorEffect="non-scaling-stroke" d="M100 0v12c0 8-50 6-50 16v12" />
+            <path className="zl" pathLength={1} vectorEffect="non-scaling-stroke" d="M100 0v12c0 8 50 6 50 16v12" />
+          </svg>
+          <div className="osm-wege">
+            {t.alter.wege.map((w) => (
+              <div key={w.marke} className="osm-weg">
+                <span>{w.marke}</span>
+                <b>{w.titel}</b>
+                <p>{w.text}</p>
+              </div>
+            ))}
+          </div>
+          <p className="osm-passt">{t.alter.passt}</p>
+          <Kenner titel={t.kennerKnopf} punkte={t.alter.kenner} />
+        </article>
+      </div>
+      <p className="osm-schluss">{t.beide}</p>
+      <div className="osm-zwischenruf">
+        <div>
+          <h3 className="bos-serif">{z.titel}</h3>
+          <p>{z.text}</p>
         </div>
+        <button type="button" className="osm-knopf btn-brand" onClick={onOpenFunnel}>
+          {z.knopf} <ArrowRight aria-hidden="true" />
+        </button>
       </div>
     </Abschnitt>
   );
 }
 
-function Referenzen() {
-  const t = useSeitenTexte(MIKROSEITE_OS_TEXTE).referenzen;
+function WerWirSind() {
+  const t = useSeitenTexte(MIKROSEITE_OS_TEXTE).werWir;
+  const gruppe = useBewegung<HTMLDivElement>();
   return (
-    <Abschnitt ton="dunkel">
+    <Abschnitt ton="hell" id="wer-wir-sind">
       <Kopf kicker={t.kicker} titel={t.titel} intro={t.intro} />
-      <div className="osm-galerie">
-        {t.bilder.map((b, i) => (
-          <figure key={REFERENZ_BILDER[i]}>
-            <img src={`${BILD}/${REFERENZ_BILDER[i]}.jpg`} alt={b.alt} loading="lazy" />
-            <figcaption>{b.ort}</figcaption>
-          </figure>
+      <div className="osm-gruppe" ref={gruppe}>
+        <div className="osm-dach">
+          <b>{t.dach}</b>
+          <span>{t.dachText}</span>
+        </div>
+        <svg className="osm-gruppe-linien" viewBox="0 0 300 40" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+          <path className="zl" pathLength={1} vectorEffect="non-scaling-stroke" d="M150 0v20M50 20h200M50 20v20M150 20v20M250 20v20" />
+        </svg>
+        <div className="osm-drei osm-marken">
+          {t.marken.map((m, i) => (
+            <div key={m.name} className="osm-karte osm-marke-karte" style={{ "--nr": i } as CSSProperties}>
+              <span className="osm-marke">{m.rolle}</span>
+              <h3>{m.name}</h3>
+              <p>{m.text}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="osm-vier osm-vorteile">
+        {t.vorteile.map((v) => (
+          <div key={v.titel} className="osm-vorteil">
+            <Check aria-hidden="true" />
+            <div>
+              <b>{v.titel}</b>
+              <p>{v.text}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <p className="osm-fussnote">{t.fuss}</p>
+    </Abschnitt>
+  );
+}
+
+function Fragen() {
+  const t = useSeitenTexte(MIKROSEITE_OS_TEXTE).faq;
+  return (
+    <Abschnitt ton="hell" id="fragen">
+      <Kopf kicker={t.kicker} titel={t.titel} intro={t.intro} />
+      <div className="osm-fragen">
+        {t.fragen.map((f) => (
+          <details key={f.frage} className="osm-frage">
+            <summary>{f.frage} <ChevronDown aria-hidden="true" /></summary>
+            <p>{f.antwort}</p>
+          </details>
         ))}
       </div>
     </Abschnitt>
@@ -370,21 +545,30 @@ function Referenzen() {
 function Prozess() {
   const t = useSeitenTexte(MIKROSEITE_OS_TEXTE).prozess;
   return (
-    <Abschnitt ton="hell" id="ablauf">
+    <Abschnitt ton="dunkel" id="ablauf">
       <Kopf kicker={t.kicker} titel={t.titel} intro={t.intro} />
-      {/* Die Linie zwischen den Kästchen zeichnet mikroseiteOs.css, als Schlange in zwei Reihen. */}
+      {/* Eine Linie in der Mitte (am Handy links), die sich Schritt für Schritt füllt. */}
       <ol className="osm-schritte">
-        {t.schritte.map((s, i) => (
-          <li key={s.titel}>
-            <span className="osm-schritt-nr">{i + 1}</span>
-            <div>
-              <b>{s.titel}</b>
-              <span>{s.text}</span>
-            </div>
-          </li>
-        ))}
+        {t.schritte.map((s, i) => <Schritt key={s.titel} nr={i} schritt={s} />)}
       </ol>
     </Abschnitt>
+  );
+}
+
+function Schritt({ nr, schritt }: { nr: number; schritt: { titel: string; text: string; ergebnis: string } }) {
+  const ref = useBewegung<HTMLLIElement>();
+  return (
+    <li ref={ref}>
+      <span className="osm-schritt-nr" aria-hidden="true">{nr + 1}</span>
+      <div className="osm-schritt-karte">
+        <ProzessGrafik motiv={PROZESS_MOTIVE[nr]} />
+        <div>
+          <b>{schritt.titel}</b>
+          <span>{schritt.text}</span>
+          <small><Check aria-hidden="true" /> {schritt.ergebnis}</small>
+        </div>
+      </div>
+    </li>
   );
 }
 
@@ -399,16 +583,20 @@ function Kontakt({ berater, onOpenFunnel }: Props) {
           <p className="bos-kicker osm-kicker">{t.kicker}</p>
           <h2 className="bos-serif">{t.titel}</h2>
           <p className="osm-intro">{t.text}</p>
+          <ul className="osm-haken-liste">
+            {t.punkte.map((p) => <li key={p}><Check aria-hidden="true" /> {p}</li>)}
+          </ul>
           <div className="osm-knoepfe">
             {berater?.buchungslink && (
-              <a className="osm-knopf osm-gold" href={berater.buchungslink} target="_blank" rel="noopener noreferrer">
+              <a className="osm-knopf btn-brand" href={berater.buchungslink} target="_blank" rel="noopener noreferrer">
                 <CalendarDays aria-hidden="true" /> {t.terminBuchen}
               </a>
             )}
-            <button type="button" className={`osm-knopf ${berater?.buchungslink ? "osm-rand" : "osm-gold"}`} onClick={onOpenFunnel}>
+            <button type="button" className={`osm-knopf ${berater?.buchungslink ? "osm-rand" : "btn-brand"}`} onClick={onOpenFunnel}>
               {t.anfrage} <ArrowRight aria-hidden="true" />
             </button>
           </div>
+          <p className="osm-zusage">{t.zusage}</p>
         </div>
         <div className="osm-partner">
           {berater && <Portraet berater={berater} className="osm-partner-bild" />}

@@ -1,14 +1,22 @@
 /*
- * Partner-Landingpage in der OS-CI (Umbau 16.10.2026): Waldgrün #1B2A22,
- * Schwarz #121512, Papier #F4F1EA, Gold #CCAC05 nur als Akzent. Farbwerte
- * kommen aus `styles/beratung-os.css` (Klasse `.bos`). Schrift, Glas und
- * Schatten seit 16.10.2026 wie im CRM: Systemschrift aus index.css und die
- * Glas-Tokens `--glass-*` (Schatten, Lichtkante, Weichzeichnung).
+ * Partner-Landingpage in der OS-CI: Waldgrün #1B2A22, Schwarz #121512,
+ * Papier #F4F1EA, Gold #CCAC05 als Akzent. Farbwerte aus
+ * `styles/beratung-os.css` (Klasse `.bos`), Schrift und Glas wie im CRM.
+ * Die Hauptaktion ist der Orange-Verlauf `btn-brand` aus index.css.
  *
- * Dunkle und helle Abschnitte wechseln sich ab. Alles hängt an `.osm`,
- * davor `.lp-theme`, damit die Regeln die allgemeinen Landingpage-Regeln
- * aus index.css überstimmen. Maße in px, weil das CRM die Wurzelschrift auf
- * 90 % setzt.
+ * Neu am 29.10.2026: Jeder Abschnittston (hell, dunkel, grün) setzt seine
+ * Farben als Variablen (`--osm-text`, `--osm-karte` …), die Bausteine lesen
+ * nur diese. So schaltet der Dunkelmodus allein die hellen Abschnitte um,
+ * über `.dark` am html (CRM) oder die Systemeinstellung (öffentliche Seite).
+ *
+ * Bewegung: Elemente mit `data-anim` (siehe useBewegung in
+ * BeraterMicrositeContent.tsx) stehen bei „wartet“ im Startbild und spielen
+ * bei „an“ ihre Animation. Ohne Attribut und bei „Bewegung reduzieren“ steht
+ * das fertige Bild da.
+ *
+ * Alles hängt an `.osm`, davor `.lp-theme`, damit die Regeln die allgemeinen
+ * Landingpage-Regeln aus index.css überstimmen. Maße in px, weil das CRM die
+ * Wurzelschrift auf 90 % setzt.
  */
 .lp-theme .osm {
   --osm-gold-hsl: 52 95% 41%;
@@ -17,14 +25,13 @@
   --background: 40 33% 94%;
   --foreground: 120 7% 11%;
   --muted-foreground: 90 3% 37%;
+  --osm-salbei: #6f9a7e;
+  --osm-champagner: #d8c7a0;
+  position: relative;
   background: var(--bos-papier);
   color: var(--bos-tinte);
   /* Dieselbe Schrift wie im CRM (index.css, tailwind.config.ts). */
   --osm-schrift: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
-  /* Glas auf hellem und dunklem Grund. Schatten und Lichtkante aus den CRM-Tokens. */
-  --osm-glas-hell: rgba(255, 255, 255, .66);
-  --osm-glas-dunkel: rgba(244, 241, 234, .07);
-  --osm-glas-kante-dunkel: rgba(244, 241, 234, .16);
   font-family: var(--osm-schrift);
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
@@ -37,7 +44,7 @@
   font-weight: 650;
 }
 .lp-theme .osm .bos-kicker { font-weight: 600; letter-spacing: .2em; }
-.lp-theme .osm :is(a, button, [tabindex="0"]):focus-visible {
+.lp-theme .osm :is(a, button, summary, [tabindex="0"]):focus-visible {
   outline: 3px solid var(--bos-gold);
   outline-offset: 3px;
 }
@@ -48,11 +55,109 @@
 }
 .lp-theme .osm .osm-kicker {
   font-size: 12px;
-  color: var(--bos-gold-dunkel);
+  color: var(--osm-kicker, var(--bos-gold-dunkel));
   margin: 0 0 14px;
 }
+/* Schwebender Ansprechpartner und Dialoge der Seite im Waldgrün statt im CRM-Grün. */
+.lp-theme:has(> .osm) { --primary: 146 22% 14%; --primary-foreground: 40 33% 94%; --ring: 146 22% 14%; }
 
-/* Kopf: Logo über dem dunklen Hero. */
+/* ── Abschnittstöne ─────────────────────────────────────────────── */
+.lp-theme .osm .osm-hell {
+  --osm-text: var(--bos-tinte);
+  --osm-text-leise: var(--bos-grau);
+  --osm-kicker: var(--bos-gold-dunkel);
+  --osm-akzent: var(--bos-gold-dunkel);
+  --osm-linie: var(--bos-linie);
+  --osm-bahn: rgba(27, 42, 34, .08);
+  --osm-karte: rgba(255, 255, 255, .66);
+  --osm-karte-rand: rgba(255, 255, 255, .8);
+  --osm-karte-schatten: var(--glass-shadow, 0 8px 32px 0 rgba(43, 43, 43, .08)), var(--glass-inner-highlight, inset 0 1px 0 0 rgba(255, 255, 255, .6));
+  --osm-warnung: var(--bos-rot);
+  --osm-gut: #2f6b48;
+  background:
+    radial-gradient(ellipse 60% 50% at 0% 0%, rgba(204, 172, 5, .08), transparent 70%),
+    radial-gradient(ellipse 50% 60% at 100% 100%, rgba(27, 42, 34, .07), transparent 70%),
+    var(--bos-papier);
+  color: var(--osm-text);
+}
+.lp-theme .osm :is(.osm-dunkel, .osm-gruen) {
+  --osm-text: var(--bos-papier);
+  --osm-text-leise: rgba(244, 241, 234, .78);
+  --osm-kicker: var(--bos-gold);
+  --osm-akzent: var(--bos-gold);
+  --osm-linie: rgba(244, 241, 234, .14);
+  --osm-bahn: rgba(244, 241, 234, .1);
+  --osm-karte: linear-gradient(160deg, rgba(244, 241, 234, .1), rgba(244, 241, 234, .05));
+  --osm-karte-rand: rgba(244, 241, 234, .16);
+  --osm-karte-schatten: 0 12px 40px -8px rgba(0, 0, 0, .45), inset 0 1px 0 0 rgba(255, 255, 255, .08);
+  --osm-warnung: #f2a08e;
+  --osm-gut: #a9dcb6;
+  color: var(--osm-text);
+}
+.lp-theme .osm .osm-dunkel {
+  background:
+    radial-gradient(ellipse 55% 45% at 100% 0%, rgba(204, 172, 5, .09), transparent 70%),
+    radial-gradient(ellipse 60% 60% at 0% 100%, rgba(111, 154, 126, .12), transparent 70%),
+    var(--bos-schwarz);
+}
+.lp-theme .osm .osm-gruen {
+  background:
+    radial-gradient(ellipse 55% 50% at 0% 0%, rgba(204, 172, 5, .1), transparent 70%),
+    radial-gradient(ellipse 50% 60% at 100% 100%, rgba(111, 154, 126, .18), transparent 70%),
+    var(--bos-gruen);
+}
+
+/* Dunkelmodus: nur die hellen Abschnitte werden dunkel, die anderen bleiben. */
+.dark .lp-theme .osm { background: #141915; }
+.dark .lp-theme .osm .osm-hell {
+  --osm-text: var(--bos-papier);
+  --osm-text-leise: rgba(244, 241, 234, .76);
+  --osm-kicker: var(--bos-gold);
+  --osm-akzent: var(--bos-gold);
+  --osm-linie: rgba(244, 241, 234, .13);
+  --osm-bahn: rgba(244, 241, 234, .1);
+  --osm-karte: linear-gradient(160deg, rgba(244, 241, 234, .08), rgba(244, 241, 234, .03));
+  --osm-karte-rand: rgba(244, 241, 234, .14);
+  --osm-karte-schatten: 0 12px 40px -8px rgba(0, 0, 0, .5), inset 0 1px 0 0 rgba(255, 255, 255, .06);
+  --osm-warnung: #f2a08e;
+  --osm-gut: #a9dcb6;
+  --background: 132 10% 9%;
+  --foreground: 40 33% 94%;
+  --muted-foreground: 40 12% 72%;
+  --card: 132 10% 12%;
+  --border: 132 8% 22%;
+  background:
+    radial-gradient(ellipse 60% 50% at 0% 0%, rgba(204, 172, 5, .07), transparent 70%),
+    radial-gradient(ellipse 50% 60% at 100% 100%, rgba(111, 154, 126, .1), transparent 70%),
+    #161b17;
+}
+@media (prefers-color-scheme: dark) {
+  .lp-theme .osm { background: #141915; }
+  .lp-theme .osm .osm-hell {
+    --osm-text: var(--bos-papier);
+    --osm-text-leise: rgba(244, 241, 234, .76);
+    --osm-kicker: var(--bos-gold);
+    --osm-akzent: var(--bos-gold);
+    --osm-linie: rgba(244, 241, 234, .13);
+    --osm-bahn: rgba(244, 241, 234, .1);
+    --osm-karte: linear-gradient(160deg, rgba(244, 241, 234, .08), rgba(244, 241, 234, .03));
+    --osm-karte-rand: rgba(244, 241, 234, .14);
+    --osm-karte-schatten: 0 12px 40px -8px rgba(0, 0, 0, .5), inset 0 1px 0 0 rgba(255, 255, 255, .06);
+    --osm-warnung: #f2a08e;
+    --osm-gut: #a9dcb6;
+    --background: 132 10% 9%;
+    --foreground: 40 33% 94%;
+    --muted-foreground: 40 12% 72%;
+    --card: 132 10% 12%;
+    --border: 132 8% 22%;
+    background:
+      radial-gradient(ellipse 60% 50% at 0% 0%, rgba(204, 172, 5, .07), transparent 70%),
+      radial-gradient(ellipse 50% 60% at 100% 100%, rgba(111, 154, 126, .1), transparent 70%),
+      #161b17;
+  }
+}
+
+/* ── Kopf und Hero ──────────────────────────────────────────────── */
 .lp-theme .osm .osm-kopf {
   position: absolute;
   z-index: 3;
@@ -74,19 +179,15 @@
   flex-shrink: 0;
 }
 .lp-theme .osm .osm-sprache { flex-shrink: 0; }
-.lp-theme .osm { position: relative; }
-/* Schwebender Ansprechpartner und Dialoge der Seite im Waldgrün statt im CRM-Grün. */
-.lp-theme:has(> .osm) { --primary: 146 22% 14%; --primary-foreground: 40 33% 94%; --ring: 146 22% 14%; }
-
-/* Hero */
 .lp-theme .osm .osm-hero {
   position: relative;
-  min-height: min(92vh, 860px);
+  min-height: min(94vh, 880px);
   display: flex;
   align-items: flex-end;
   color: var(--bos-papier);
   background: var(--bos-schwarz);
   isolation: isolate;
+  overflow: hidden;
 }
 .lp-theme .osm .osm-hero-bild {
   position: absolute;
@@ -102,13 +203,13 @@
   inset: 0;
   z-index: -1;
   background:
-    linear-gradient(180deg, rgba(18, 21, 18, .72) 0%, rgba(18, 21, 18, .2) 32%, rgba(18, 21, 18, .35) 55%, rgba(27, 42, 34, .94) 100%),
-    linear-gradient(90deg, rgba(18, 21, 18, .82) 0%, rgba(18, 21, 18, .45) 45%, rgba(18, 21, 18, 0) 75%);
+    linear-gradient(180deg, rgba(18, 21, 18, .72) 0%, rgba(18, 21, 18, .2) 32%, rgba(18, 21, 18, .4) 55%, rgba(27, 42, 34, .96) 100%),
+    linear-gradient(90deg, rgba(18, 21, 18, .86) 0%, rgba(18, 21, 18, .5) 45%, rgba(18, 21, 18, 0) 75%);
 }
 .lp-theme .osm .osm-hero-inhalt {
   width: 100%;
   padding-top: 150px;
-  padding-bottom: 88px;
+  padding-bottom: 80px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 320px;
   align-items: end;
@@ -117,32 +218,49 @@
 .lp-theme .osm .osm-hero .osm-kicker { color: var(--bos-gold); }
 .lp-theme .osm .osm-hero h1 {
   /* !important, weil index.css am Handy jede h1 ohne text-Klasse verkleinert. */
-  font-size: clamp(38px, 6vw, 76px) !important;
-  line-height: 1.05 !important;
-  max-width: 20ch;
+  font-size: clamp(38px, 5.8vw, 74px) !important;
+  line-height: 1.04 !important;
+  max-width: 19ch;
   margin: 0;
   color: var(--bos-papier);
 }
 .lp-theme .osm .osm-hero h1 em {
   font-style: normal;
   font-weight: 650;
-  color: var(--bos-gold);
+  background: linear-gradient(100deg, #e9d36a 0%, var(--bos-gold) 45%, var(--osm-champagner) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 .lp-theme .osm .osm-hero-text {
-  max-width: 54ch;
+  max-width: 56ch;
   font-size: 19px;
   line-height: 1.6;
   margin: 24px 0 0;
   color: rgba(244, 241, 234, .9);
 }
-.lp-theme .osm .osm-bildort {
-  position: absolute;
-  right: 32px;
-  bottom: 18px;
-  margin: 0;
-  font-size: 12px;
-  color: rgba(244, 241, 234, .6);
+.lp-theme .osm .osm-hero-vorteile {
+  list-style: none;
+  margin: 28px 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
+.lp-theme .osm .osm-hero-vorteile li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 14px;
+  background: rgba(244, 241, 234, .08);
+  border: 1px solid rgba(244, 241, 234, .18);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.lp-theme .osm .osm-hero-vorteile svg { width: 16px; height: 16px; color: var(--bos-gold); flex-shrink: 0; }
+
 /* Ansprechpartner im Hero als Glaskarte: Foto, Name, Position, Knopf. */
 .lp-theme .osm .osm-portraetkarte {
   display: grid;
@@ -152,7 +270,7 @@
   padding: 20px;
   border-radius: 22px;
   /* Dunkel getöntes Glas: Das Heldenbild ist dahinter teils hell (Hauswand). */
-  background: linear-gradient(150deg, rgba(27, 42, 34, .78), rgba(18, 21, 18, .72));
+  background: linear-gradient(150deg, rgba(27, 42, 34, .8), rgba(18, 21, 18, .74));
   border: 1px solid rgba(244, 241, 234, .22);
   box-shadow: 0 20px 50px -12px rgba(0, 0, 0, .55), inset 0 1px 0 0 rgba(255, 255, 255, .14);
   color: var(--bos-papier);
@@ -195,7 +313,7 @@
   letter-spacing: .02em;
 }
 
-/* Knöpfe */
+/* ── Knöpfe ─────────────────────────────────────────────────────── */
 .lp-theme .osm .osm-knoepfe {
   display: flex;
   flex-wrap: wrap;
@@ -216,329 +334,398 @@
   letter-spacing: -0.005em;
   text-decoration: none;
   cursor: pointer;
-  transition: background-color .2s, color .2s, border-color .2s;
+  transition: background-color .2s, color .2s, border-color .2s, filter .2s, box-shadow .2s, transform .1s;
 }
-.lp-theme .osm .osm-knopf svg { width: 18px; height: 18px; flex-shrink: 0; }
-.lp-theme .osm .osm-gold { background: var(--bos-gold); color: var(--bos-schwarz); border: 1px solid var(--bos-gold); }
-.lp-theme .osm .osm-gold:hover { background: #e0bf1a; }
-.lp-theme .osm .osm-rand { background: transparent; color: var(--bos-papier); border: 1px solid rgba(244, 241, 234, .45); }
+.lp-theme .osm .osm-knopf svg { width: 18px; height: 18px; flex-shrink: 0; transition: transform .2s; }
+.lp-theme .osm .osm-knopf.btn-brand { box-shadow: 0 10px 28px -10px hsl(var(--brand-orange) / .7), inset 0 1px 0 rgba(255, 255, 255, .2); }
+.lp-theme .osm .osm-knopf.btn-brand:hover svg:last-child { transform: translateX(3px); }
+.lp-theme .osm .osm-rand { background: transparent; color: var(--osm-text, var(--bos-papier)); border: 1px solid rgba(244, 241, 234, .45); }
+.lp-theme .osm .osm-hero .osm-rand { color: var(--bos-papier); }
 .lp-theme .osm .osm-rand:hover { border-color: var(--bos-gold); color: var(--bos-gold); }
 
-/* Abschnitte */
-.lp-theme .osm .osm-abschnitt { padding: 96px 0; scroll-margin-top: 20px; }
-/* Weiche Lichtflecken im Grund, damit die Glasflächen darüber Tiefe bekommen. */
-.lp-theme .osm .osm-hell {
-  background:
-    radial-gradient(ellipse 60% 50% at 0% 0%, rgba(204, 172, 5, .08), transparent 70%),
-    radial-gradient(ellipse 50% 60% at 100% 100%, rgba(27, 42, 34, .07), transparent 70%),
-    var(--bos-papier);
-  color: var(--bos-tinte);
-}
-.lp-theme .osm .osm-dunkel {
-  background:
-    radial-gradient(ellipse 55% 45% at 100% 0%, rgba(204, 172, 5, .09), transparent 70%),
-    radial-gradient(ellipse 60% 60% at 0% 100%, rgba(111, 154, 126, .12), transparent 70%),
-    var(--bos-schwarz);
-  color: var(--bos-papier);
-}
-.lp-theme .osm .osm-gruen {
-  background:
-    radial-gradient(ellipse 55% 50% at 0% 0%, rgba(204, 172, 5, .1), transparent 70%),
-    radial-gradient(ellipse 50% 60% at 100% 100%, rgba(111, 154, 126, .18), transparent 70%),
-    var(--bos-gruen);
-  color: var(--bos-papier);
-}
-.lp-theme .osm :is(.osm-dunkel, .osm-gruen) .osm-kicker { color: var(--bos-gold); }
-.lp-theme .osm .osm-titelblock { max-width: 760px; margin-bottom: 44px; }
+/* ── Abschnitte, Karten, Grundraster ───────────────────────────── */
+.lp-theme .osm .osm-abschnitt { padding: 104px 0; scroll-margin-top: 20px; }
+.lp-theme .osm .osm-titelblock { max-width: 760px; margin-bottom: 48px; }
 .lp-theme .osm .osm-abschnitt h2 {
-  font-size: clamp(30px, 4.2vw, 48px) !important;
-  line-height: 1.12 !important;
+  font-size: clamp(30px, 4.2vw, 50px) !important;
+  line-height: 1.1 !important;
   margin: 0;
+  color: var(--osm-text);
 }
 .lp-theme .osm .osm-intro {
   font-size: 18px;
   line-height: 1.65;
   margin: 18px 0 0;
-  opacity: .88;
+  color: var(--osm-text-leise);
 }
 /* Glaskarten wie im CRM (.glass-card): halbdurchsichtig, Lichtkante oben, weicher Schatten. */
-.lp-theme .osm :is(.osm-karte, .osm-objekt, .osm-schritte li) {
-  background: var(--osm-glas-hell);
-  border: 1px solid rgba(255, 255, 255, .8);
-  box-shadow: var(--glass-shadow, 0 8px 32px 0 rgba(43, 43, 43, .08)), var(--glass-inner-highlight, inset 0 1px 0 0 rgba(255, 255, 255, .6));
+.lp-theme .osm .osm-karte,
+.lp-theme .osm .osm-schritt-karte {
+  background: var(--osm-karte);
+  border: 1px solid var(--osm-karte-rand);
+  box-shadow: var(--osm-karte-schatten);
   backdrop-filter: blur(var(--glass-blur, 16px));
   -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
+  border-radius: 20px;
 }
-.lp-theme .osm .osm-karte { border-radius: 18px; padding: 28px; }
-.lp-theme .osm :is(.osm-dunkel, .osm-gruen) :is(.osm-karte, .osm-kennzahl) {
-  background: linear-gradient(160deg, rgba(244, 241, 234, .1), var(--osm-glas-dunkel));
-  border: 1px solid var(--osm-glas-kante-dunkel);
-  box-shadow: 0 12px 40px -8px rgba(0, 0, 0, .45), inset 0 1px 0 0 rgba(255, 255, 255, .08);
-  backdrop-filter: blur(var(--glass-blur, 16px));
-  -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
-}
-.lp-theme .osm .osm-karte h3 { font-size: 23px; line-height: 1.25; margin: 0 0 10px; }
-.lp-theme .osm .osm-karte p { margin: 0; line-height: 1.65; opacity: .88; }
+.lp-theme .osm .osm-karte { padding: 28px; }
+.lp-theme .osm .osm-karte h3 { font-size: 22px; line-height: 1.25; margin: 0 0 10px; color: var(--osm-text); }
+.lp-theme .osm .osm-karte p { margin: 0; line-height: 1.65; color: var(--osm-text-leise); }
 .lp-theme .osm .osm-drei { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
-.lp-theme .osm .osm-zwei { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
-.lp-theme .osm .osm-nummer {
-  display: block;
-  font-family: var(--osm-schrift);
-  font-size: 30px;
-  font-weight: 650;
-  color: var(--bos-gold-dunkel);
-  margin-bottom: 12px;
-}
+.lp-theme .osm .osm-zwei { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+.lp-theme .osm .osm-vier { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
 .lp-theme .osm .osm-schluss {
-  max-width: 760px;
-  margin: 40px 0 0;
-  font-size: 19px;
-  line-height: 1.6;
+  max-width: 780px;
+  margin: 44px 0 0;
+  font-size: 20px;
+  line-height: 1.55;
+  font-weight: 550;
   border-left: 3px solid var(--bos-gold);
   padding-left: 20px;
+  color: var(--osm-text);
 }
-.lp-theme .osm .osm-fussnote { margin: 28px 0 0; font-size: 14px; line-height: 1.65; opacity: .78; max-width: 900px; }
-
-/* Konzepte */
-.lp-theme .osm .osm-konzept { display: flex; flex-direction: column; gap: 6px; }
-.lp-theme .osm .osm-konzept h3 { font-size: 30px; }
+.lp-theme .osm .osm-fussnote { margin: 24px 0 0; font-size: 13px; line-height: 1.6; color: var(--osm-text-leise); opacity: .85; max-width: 900px; }
 .lp-theme .osm .osm-marke {
   align-self: flex-start;
-  font-family: var(--osm-schrift);
+  display: inline-block;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 650;
   letter-spacing: .16em;
   text-transform: uppercase;
-  color: var(--bos-gold);
+  color: var(--osm-akzent);
   margin-bottom: 10px;
 }
-.lp-theme .osm .osm-konzept-objekte {
-  margin-top: auto !important;
-  padding-top: 16px;
-  border-top: 1px solid rgba(244, 241, 234, .14);
-  font-size: 14px;
-  color: var(--bos-gold);
-  opacity: 1 !important;
-}
 
-/* Objekte mit Diashow */
-.lp-theme .osm .osm-objekte { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
-.lp-theme .osm .osm-objekt {
-  border-radius: 18px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+/* ── Ausgangslage ───────────────────────────────────────────────── */
+.lp-theme .osm .osm-grosszahl {
+  display: block;
+  font-size: clamp(44px, 5vw, 60px);
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  color: var(--osm-akzent);
+  margin-bottom: 18px;
+  font-variant-numeric: tabular-nums;
 }
-.lp-theme .osm .osm-objekt-text { padding: 22px 24px 26px; display: flex; flex-direction: column; flex: 1; }
-.lp-theme .osm .osm-objekt .osm-marke {
-  padding: 5px 10px;
-  border-radius: 999px;
-  background: var(--bos-gruen);
-  color: var(--bos-gold);
-  margin-bottom: 14px;
+.lp-theme .osm .osm-warten {
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: minmax(0, .8fr) minmax(0, 1.6fr);
+  gap: 18px 40px;
+  align-items: center;
 }
-.lp-theme .osm .osm-objekt .osm-marke-steuer { background: var(--bos-schwarz); }
-.lp-theme .osm .osm-ort { margin: 0; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--bos-grau); }
-.lp-theme .osm .osm-objekt h3 { font-size: 26px; margin: 4px 0 12px; }
-.lp-theme .osm .osm-objekt ul { margin: 0 0 16px; padding: 0; list-style: none; }
-.lp-theme .osm .osm-objekt li { padding: 6px 0; border-bottom: 1px solid var(--bos-linie); font-size: 15px; }
-.lp-theme .osm .osm-preis {
-  margin: auto 0 0;
-  font-family: var(--osm-schrift);
-  font-size: 22px;
-  font-weight: 600;
-  color: var(--bos-gruen);
-}
-.lp-theme .osm .osm-diashow { position: relative; aspect-ratio: 4 / 3; background: var(--bos-gruen); overflow: hidden; }
-.lp-theme .osm .osm-diashow img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
+.lp-theme .osm .osm-warten-satz { grid-column: 1 / -1; font-weight: 550; color: var(--osm-text) !important; }
+.lp-theme .osm .osm-balken-liste { display: flex; flex-direction: column; gap: 16px; }
+.lp-theme .osm .osm-balken-text { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; margin-bottom: 6px; color: var(--osm-text-leise); }
+.lp-theme .osm .osm-balken-text b { color: var(--osm-text); font-size: 16px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.lp-theme .osm .osm-balken-bahn { height: 12px; border-radius: 999px; background: var(--osm-bahn); overflow: hidden; }
+.lp-theme .osm .osm-balken-fuellung {
+  display: block;
   height: 100%;
-  object-fit: cover;
-  opacity: 0;
-  transition: opacity .8s ease;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--osm-salbei), #8db89a);
+  transform-origin: left center;
 }
-.lp-theme .osm .osm-diashow img.an { opacity: 1; }
-.lp-theme .osm .osm-pfeil {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
-  border-radius: 999px;
-  display: grid;
-  place-items: center;
-  background: rgba(18, 21, 18, .55);
-  color: var(--bos-papier);
-  border: 0;
-  cursor: pointer;
-}
-.lp-theme .osm .osm-pfeil svg { width: 20px; height: 20px; }
-.lp-theme .osm .osm-pfeil.links { left: 10px; }
-.lp-theme .osm .osm-pfeil.rechts { right: 10px; }
-.lp-theme .osm .osm-punkte { position: absolute; left: 0; right: 0; bottom: 6px; display: flex; justify-content: center; }
-.lp-theme .osm .osm-punkte button { width: 28px; height: 28px; display: grid; place-items: center; background: none; border: 0; cursor: pointer; }
-.lp-theme .osm .osm-punkte span { width: 8px; height: 8px; border-radius: 999px; background: rgba(244, 241, 234, .55); }
-.lp-theme .osm .osm-punkte button[aria-current="true"] span { background: var(--bos-gold); width: 20px; }
-@media (prefers-reduced-motion: reduce) {
-  .lp-theme .osm .osm-diashow img { transition: none; }
-}
+.lp-theme .osm .osm-balken-warnung .osm-balken-fuellung { background: linear-gradient(90deg, #c4614c, var(--osm-warnung)); }
+.lp-theme .osm .osm-balken-warnung .osm-balken-text b { color: var(--osm-warnung); }
+.lp-theme .osm .osm-balken-gut .osm-balken-fuellung { background: linear-gradient(90deg, var(--osm-salbei), var(--osm-champagner)); }
+.lp-theme .osm .osm-balken-zusatz { display: inline-block; margin-top: 6px; font-size: 13px; font-weight: 650; color: var(--osm-gut); }
 
-/* Musterrechnung */
-.lp-theme .osm .osm-rechnung-raster { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 28px; align-items: start; }
-/*
- * Tabelle auf dunklem Grund: volle Papierfarbe statt Deckkraft, 17 px,
- * großzügige Zeilen, Beträge in hellem Grün und Rot (beide über 9:1 auf
- * Schwarz). Die Spaltenüberschrift steht größer und als Satz.
- */
-.lp-theme .osm .osm-rechnung {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  background: linear-gradient(160deg, rgba(244, 241, 234, .1), rgba(244, 241, 234, .05));
-  border: 1px solid var(--osm-glas-kante-dunkel);
-  border-radius: 18px;
-  box-shadow: 0 12px 40px -8px rgba(0, 0, 0, .45), inset 0 1px 0 0 rgba(255, 255, 255, .08);
-  overflow: hidden;
-  font-size: 17px;
-  line-height: 1.45;
-  color: var(--bos-papier);
+/* ── Prinzip ────────────────────────────────────────────────────── */
+.lp-theme .osm .osm-anteile {
+  padding: 32px;
+  border-radius: 24px;
+  background: var(--osm-karte);
+  border: 1px solid var(--osm-karte-rand);
+  box-shadow: var(--osm-karte-schatten);
+  margin-bottom: 22px;
 }
-/* Die CRM-Tabellenregeln (design-neu, design-liquid) färben Kopfzeile und Hover hell. Hier nicht. */
-.lp-theme .osm .osm-rechnung tr,
-.lp-theme .osm .osm-rechnung tbody tr:hover { background-color: transparent; }
-.lp-theme .osm .osm-rechnung th {
-  text-align: left;
-  padding: 18px 24px;
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: .02em;
-  color: var(--bos-gold);
-  background: rgba(204, 172, 5, .08);
-  border-bottom: 1px solid rgba(244, 241, 234, .18);
+.lp-theme .osm .osm-anteile-frage { margin: 0 0 16px; font-size: 15px; font-weight: 600; letter-spacing: .02em; color: var(--bos-gold); }
+.lp-theme .osm .osm-anteile-leiste { display: flex; gap: 6px; height: 72px; }
+.lp-theme .osm .osm-anteil {
+  flex-basis: 0;
+  min-width: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+  color: var(--bos-schwarz);
+  transform-origin: left center;
 }
-.lp-theme .osm .osm-rechnung td { padding: 15px 24px; border-bottom: 1px solid rgba(244, 241, 234, .12); vertical-align: baseline; }
-.lp-theme .osm .osm-rechnung td:last-child { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; font-weight: 600; padding-left: 12px; }
-.lp-theme .osm .osm-rechnung .plus td:last-child { color: #a9dcb6; }
-.lp-theme .osm .osm-rechnung .minus td:last-child { color: #f2b3a5; }
-.lp-theme .osm .osm-rechnung .summe td { font-weight: 650; background: rgba(244, 241, 234, .06); border-top: 1px solid rgba(244, 241, 234, .3); }
-.lp-theme .osm .osm-rechnung .ergebnis td { font-weight: 700; font-size: 19px; padding-top: 18px; padding-bottom: 18px; background: rgba(204, 172, 5, .16); color: var(--bos-gold); }
-.lp-theme .osm .osm-rechnung .klein td { font-size: 15px; color: rgba(244, 241, 234, .8); border-bottom: 0; }
-.lp-theme .osm .osm-rechnung .klein td:last-child { font-weight: 500; }
-.lp-theme .osm .osm-kennzahlen { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-.lp-theme .osm .osm-kennzahl {
-  border-radius: 18px;
+.lp-theme .osm .osm-anteil b { font-size: clamp(18px, 2.4vw, 26px); font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.lp-theme .osm .osm-anteil-mieter { background: linear-gradient(135deg, #86b496, var(--osm-salbei)); }
+.lp-theme .osm .osm-anteil-steuer { background: linear-gradient(135deg, #ebdcb8, var(--osm-champagner)); }
+.lp-theme .osm .osm-anteil-du { background: linear-gradient(135deg, #e6c62a, var(--bos-gold)); }
+.lp-theme .osm .osm-anteile-legende { list-style: none; margin: 20px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px 28px; }
+.lp-theme .osm .osm-anteile-legende li { display: flex; align-items: center; gap: 10px; font-size: 15px; color: var(--osm-text-leise); }
+.lp-theme .osm .osm-anteile-legende strong { color: var(--osm-text); font-weight: 650; }
+.lp-theme .osm .osm-anteile-legende i { width: 14px; height: 14px; border-radius: 4px; flex-shrink: 0; }
+.lp-theme .osm .osm-baustein svg { width: 28px; height: 28px; color: var(--bos-gold); margin-bottom: 14px; }
+.lp-theme .osm .osm-baustein h3 { font-size: 19px; }
+.lp-theme .osm .osm-baustein p { font-size: 15px; }
+
+/* „Für Kenner“ und Fragen: aufklappbar, ohne Skript. */
+.lp-theme .osm .osm-kenner { margin-top: 18px; border-top: 1px solid var(--osm-linie); padding-top: 14px; }
+.lp-theme .osm .osm-kenner summary,
+.lp-theme .osm .osm-frage summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  font-weight: 650;
+  color: var(--osm-text);
+  min-height: 40px;
+}
+.lp-theme .osm .osm-kenner summary { font-size: 15px; color: var(--osm-akzent); justify-content: flex-start; }
+.lp-theme .osm :is(.osm-kenner, .osm-frage) summary::-webkit-details-marker { display: none; }
+.lp-theme .osm :is(.osm-kenner, .osm-frage) summary svg { width: 18px; height: 18px; flex-shrink: 0; transition: transform .25s; }
+.lp-theme .osm :is(.osm-kenner, .osm-frage)[open] summary svg { transform: rotate(180deg); }
+.lp-theme .osm .osm-kenner p,
+.lp-theme .osm .osm-kenner ul { margin: 8px 0 0; font-size: 15px; line-height: 1.65; color: var(--osm-text-leise); max-width: 820px; }
+.lp-theme .osm .osm-kenner ul { padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
+
+/* ── Konzepte ───────────────────────────────────────────────────── */
+.lp-theme .osm .osm-konzept { display: flex; flex-direction: column; gap: 8px; padding: 32px; }
+.lp-theme .osm .osm-konzept h3 { font-size: 30px; }
+.lp-theme .osm .osm-beispiel {
+  margin: 18px 0 4px;
   padding: 20px;
+  border-radius: 16px;
+  background: var(--osm-bahn);
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 14px;
 }
-.lp-theme .osm .osm-kennzahl:first-child { grid-column: 1 / -1; border-color: rgba(204, 172, 5, .5) !important; }
-.lp-theme .osm .osm-kennzahl b { font-size: 30px; font-weight: 650; letter-spacing: -0.02em; color: var(--bos-gold); }
-.lp-theme .osm .osm-kennzahl span { font-size: 15px; line-height: 1.55; color: rgba(244, 241, 234, .88); }
-
-/* Warum */
-.lp-theme .osm .osm-gruppe { background: var(--bos-gruen) !important; color: var(--bos-papier); border-color: var(--bos-gruen) !important; }
-.lp-theme .osm .osm-gruppe h3 { color: var(--bos-gold); }
-
-/* Referenzen */
-.lp-theme .osm .osm-galerie { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
-.lp-theme .osm .osm-galerie figure { position: relative; margin: 0; border-radius: 12px; overflow: hidden; aspect-ratio: 4 / 3; }
-.lp-theme .osm .osm-galerie img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.lp-theme .osm .osm-galerie figcaption {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 28px 16px 12px;
-  font-size: 14px;
-  font-weight: 500;
-  background: linear-gradient(180deg, rgba(18, 21, 18, 0), rgba(18, 21, 18, .8));
-}
-
-/*
- * Prozess als Schlange: Reihe 1 läuft von links nach rechts (1 bis 4),
- * biegt rechts in einem Bogen nach unten und läuft in Reihe 2 zurück
- * (5 bis 7). Die Reihenfolge im Quelltext bleibt 1 bis 7, nur das Raster
- * stellt Reihe 2 gespiegelt. Am Handy senkrecht mit Linie links.
- */
-.lp-theme .osm .osm-schritte {
-  --osm-spalt: 32px;
-  --osm-linie: 2px;
+.lp-theme .osm .osm-beispiel-kopf { font-size: 13px !important; font-weight: 650; letter-spacing: .04em; color: var(--osm-text) !important; }
+.lp-theme .osm .osm-passt { margin-top: 10px !important; font-size: 15px; font-weight: 550; color: var(--osm-text) !important; }
+.lp-theme .osm .osm-konzept .osm-fussnote { font-size: 12px; margin-top: 10px; }
+.lp-theme .osm .osm-zeitachse {
   list-style: none;
-  margin: 0;
-  padding: 0 34px 0 0;
+  margin: 20px 0 0;
+  padding: 0;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  grid-auto-rows: 1fr;
-  gap: 44px var(--osm-spalt);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  position: relative;
 }
-.lp-theme .osm .osm-schritte li {
+/* Die Linie durch die drei Punkte der Zeitachse. */
+.lp-theme .osm .osm-zeitachse::before {
+  content: "";
+  position: absolute;
+  left: 16.6%;
+  right: 16.6%;
+  top: 9px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--osm-salbei), var(--bos-gold));
+  transform-origin: left center;
+}
+.lp-theme .osm .osm-zeitachse li { position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; padding: 30px 6px 0; }
+.lp-theme .osm .osm-zeitachse li::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: var(--bos-gold);
+  box-shadow: 0 0 0 5px rgba(204, 172, 5, .2);
+}
+.lp-theme .osm .osm-zeitachse b { font-size: 15px; color: var(--osm-text); }
+.lp-theme .osm .osm-zeitachse span { font-size: 13px; line-height: 1.4; color: var(--osm-text-leise); }
+.lp-theme .osm .osm-gabel { display: block; width: 100%; height: 40px; margin-top: 10px; fill: none; stroke: var(--bos-gold); stroke-width: 2; }
+.lp-theme .osm .osm-wege { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.lp-theme .osm .osm-weg { padding: 18px; border-radius: 16px; background: var(--osm-bahn); border: 1px solid var(--osm-linie); }
+.lp-theme .osm .osm-weg span { display: block; font-size: 11px; font-weight: 650; letter-spacing: .14em; text-transform: uppercase; color: var(--osm-akzent); margin-bottom: 6px; }
+.lp-theme .osm .osm-weg b { display: block; font-size: 16px; line-height: 1.35; color: var(--osm-text); margin-bottom: 6px; }
+.lp-theme .osm .osm-weg p { font-size: 14px; line-height: 1.55; }
+.lp-theme .osm .osm-zwischenruf {
+  margin-top: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px 40px;
+  padding: 30px 34px;
+  border-radius: 24px;
+  color: var(--bos-papier);
+  background:
+    radial-gradient(ellipse 60% 120% at 100% 0%, rgba(204, 172, 5, .22), transparent 60%),
+    linear-gradient(135deg, var(--bos-gruen), #0f1a14);
+  box-shadow: 0 24px 60px -24px rgba(27, 42, 34, .7);
+}
+.lp-theme .osm .osm-zwischenruf h3 { font-size: 26px; margin: 0 0 6px; color: var(--bos-papier); }
+.lp-theme .osm .osm-zwischenruf p { margin: 0; color: rgba(244, 241, 234, .82); line-height: 1.55; }
+.lp-theme .osm .osm-zwischenruf .osm-knopf { flex-shrink: 0; }
+
+/* ── Wer wir sind ──────────────────────────────────────────────── */
+.lp-theme .osm .osm-gruppe { display: flex; flex-direction: column; align-items: stretch; }
+.lp-theme .osm .osm-dach {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+  padding: 18px 30px;
+  border-radius: 18px;
+  background: rgba(204, 172, 5, .12);
+  border: 1px solid rgba(204, 172, 5, .5);
+}
+.lp-theme .osm .osm-dach b { font-size: 19px; color: var(--osm-akzent); }
+.lp-theme .osm .osm-dach span { font-size: 14px; color: var(--osm-text-leise); }
+.lp-theme .osm .osm-gruppe-linien {
+  display: block;
+  width: calc(100% - 2 * 16.6% + 4px);
+  margin: 0 auto;
+  height: 44px;
+  fill: none;
+  stroke: var(--bos-gold);
+  stroke-width: 2;
+  opacity: .8;
+}
+.lp-theme .osm .osm-marke-karte h3 { font-size: 21px; }
+.lp-theme .osm .osm-vorteile { margin-top: 36px; }
+.lp-theme .osm .osm-vorteil { display: flex; gap: 12px; align-items: flex-start; }
+.lp-theme .osm .osm-vorteil > svg {
+  width: 30px;
+  height: 30px;
+  padding: 6px;
+  border-radius: 999px;
+  background: rgba(204, 172, 5, .16);
+  color: var(--bos-gold);
+  flex-shrink: 0;
+}
+.lp-theme .osm .osm-vorteil b { display: block; font-size: 17px; margin-bottom: 4px; color: var(--osm-text); }
+.lp-theme .osm .osm-vorteil p { margin: 0; font-size: 15px; line-height: 1.55; color: var(--osm-text-leise); }
+
+/* ── Ehrliche Antworten ─────────────────────────────────────────── */
+.lp-theme .osm .osm-fragen { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; align-items: start; }
+.lp-theme .osm .osm-frage {
+  padding: 18px 22px;
+  border-radius: 18px;
+  background: var(--osm-karte);
+  border: 1px solid var(--osm-karte-rand);
+  box-shadow: var(--osm-karte-schatten);
+}
+.lp-theme .osm .osm-frage summary { font-size: 17px; line-height: 1.4; }
+.lp-theme .osm .osm-frage summary svg { color: var(--osm-akzent); }
+.lp-theme .osm .osm-frage p { margin: 10px 0 4px; line-height: 1.65; color: var(--osm-text-leise); }
+
+/* ── Prozess: Linie in der Mitte, Kästchen im Wechsel links und rechts ── */
+.lp-theme .osm .osm-schritte {
+  --osm-mitte: 64px;
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+  max-width: 1000px;
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  border-radius: 18px;
-  padding: 20px;
+  gap: 26px;
 }
-.lp-theme .osm .osm-schritte li:nth-child(1) { grid-area: 1 / 1; }
-.lp-theme .osm .osm-schritte li:nth-child(2) { grid-area: 1 / 2; }
-.lp-theme .osm .osm-schritte li:nth-child(3) { grid-area: 1 / 3; }
-.lp-theme .osm .osm-schritte li:nth-child(4) { grid-area: 1 / 4; }
-.lp-theme .osm .osm-schritte li:nth-child(5) { grid-area: 2 / 4; }
-.lp-theme .osm .osm-schritte li:nth-child(6) { grid-area: 2 / 3; }
-.lp-theme .osm .osm-schritte li:nth-child(7) { grid-area: 2 / 2; }
-/* Verbindungen: waagerecht im Spalt, in Reihe 2 nach links. */
+.lp-theme .osm .osm-schritte::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 24px;
+  bottom: 24px;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--osm-linie);
+}
+.lp-theme .osm .osm-schritte li {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--osm-mitte) minmax(0, 1fr);
+  align-items: center;
+}
+/* Gefüllter Teil der Linie: vom Punkt dieses Schritts bis zum nächsten. */
 .lp-theme .osm .osm-schritte li::after {
   content: "";
   position: absolute;
+  left: 50%;
   top: 50%;
-  width: var(--osm-spalt);
-  height: var(--osm-linie);
-  margin-top: calc(var(--osm-linie) / -2);
-  background: var(--bos-gold);
+  width: 2px;
+  margin-left: -1px;
+  height: calc(100% + 26px);
+  background: linear-gradient(180deg, var(--bos-gold), var(--osm-salbei));
+  transform-origin: top center;
+  z-index: 0;
 }
-.lp-theme .osm .osm-schritte li:nth-child(-n + 3)::after { left: 100%; }
-.lp-theme .osm .osm-schritte li:nth-child(5)::after,
-.lp-theme .osm .osm-schritte li:nth-child(6)::after { right: 100%; }
-.lp-theme .osm .osm-schritte li:nth-child(7)::after { display: none; }
-/* Die Wendung: Bogen rechts von Schritt 4 hinunter zu Schritt 5. */
-.lp-theme .osm .osm-schritte li:nth-child(4)::after {
-  left: 100%;
-  width: 26px;
-  height: calc(100% + 44px);
-  margin-top: calc(var(--osm-linie) / -2);
-  background: none;
-  border: var(--osm-linie) solid var(--bos-gold);
-  border-left: 0;
-  border-radius: 0 28px 28px 0;
-}
+.lp-theme .osm .osm-schritte li:last-child::after { display: none; }
 .lp-theme .osm .osm-schritt-nr {
-  flex-shrink: 0;
-  width: 36px;
-  height: 36px;
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: center;
+  position: relative;
+  z-index: 1;
+  width: 44px;
+  height: 44px;
   border-radius: 999px;
   display: grid;
   place-items: center;
   background: var(--bos-gruen);
+  border: 2px solid var(--bos-gold);
   color: var(--bos-gold);
-  font-family: var(--osm-schrift);
-  font-size: 15px;
-  font-weight: 650;
-  box-shadow: 0 0 0 4px rgba(204, 172, 5, .18);
+  font-size: 17px;
+  font-weight: 700;
+  box-shadow: 0 0 0 6px rgba(204, 172, 5, .14);
 }
-.lp-theme .osm .osm-schritte b { display: block; font-size: 17px; font-weight: 650; letter-spacing: -0.01em; margin-bottom: 4px; }
-.lp-theme .osm .osm-schritte span:not(.osm-schritt-nr) { display: block; font-size: 15px; line-height: 1.45; color: var(--bos-grau); }
+.lp-theme .osm .osm-schritt-karte {
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 20px 22px;
+}
+.lp-theme .osm .osm-schritte li:nth-child(odd) .osm-schritt-karte { grid-column: 1; }
+.lp-theme .osm .osm-schritte li:nth-child(even) .osm-schritt-karte { grid-column: 3; }
+.lp-theme .osm .osm-schritt-karte b { display: block; font-size: 18px; font-weight: 650; letter-spacing: -0.01em; margin-bottom: 4px; color: var(--osm-text); }
+.lp-theme .osm .osm-schritt-karte > div > span { display: block; font-size: 15px; line-height: 1.45; color: var(--osm-text-leise); }
+.lp-theme .osm .osm-schritt-karte small { display: flex; gap: 6px; align-items: flex-start; margin-top: 8px; font-size: 13px; line-height: 1.4; color: var(--bos-gold); }
+.lp-theme .osm .osm-schritt-karte small svg { width: 14px; height: 14px; flex-shrink: 0; margin-top: 2px; }
 
-/* Kontakt */
+/* Die Bewegtgrafiken (ProzessGrafik.tsx). */
+.lp-theme .osm .osm-pg {
+  width: 76px;
+  height: 76px;
+  flex-shrink: 0;
+  padding: 6px;
+  border-radius: 18px;
+  background: rgba(204, 172, 5, .08);
+  fill: none;
+  stroke: rgba(244, 241, 234, .88);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  overflow: visible;
+}
+.lp-theme .osm .osm-pg .akzent { stroke: var(--bos-gold); }
+.lp-theme .osm .osm-pg :is(.punkt, .saeule, .fenster, .schatten) { stroke: none; }
+.lp-theme .osm .osm-pg .punkt { fill: var(--bos-gold); }
+.lp-theme .osm .osm-pg .saeule { fill: rgba(244, 241, 234, .28); }
+.lp-theme .osm .osm-pg .saeule.akzent-flaeche { fill: var(--bos-gold); }
+.lp-theme .osm .osm-pg .fenster { fill: var(--bos-gold); }
+.lp-theme .osm .osm-pg .schatten { fill: rgba(0, 0, 0, .4); }
+.lp-theme .osm .osm-pg .muenze { fill: var(--bos-schwarz); }
+.lp-theme .osm .osm-pg .nadel path { fill: var(--bos-gold); stroke: none; }
+.lp-theme .osm .osm-pg .nadel circle { fill: var(--bos-schwarz); stroke: none; }
+.lp-theme .osm .osm-pg .siegel circle { fill: var(--bos-gold); stroke: none; }
+.lp-theme .osm .osm-pg .siegel path { stroke: var(--bos-schwarz); stroke-width: 2.5; }
+.lp-theme .osm .osm-pg :is(.saeule, .muenze, .nadel, .schatten, .siegel, .fenster) { transform-box: fill-box; }
+
+/* ── Kontakt ────────────────────────────────────────────────────── */
 .lp-theme .osm .osm-kontakt { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 48px; align-items: center; }
+.lp-theme .osm .osm-haken-liste { list-style: none; margin: 22px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.lp-theme .osm .osm-haken-liste li { display: flex; gap: 10px; align-items: flex-start; font-size: 17px; line-height: 1.5; }
+.lp-theme .osm .osm-haken-liste svg { width: 20px; height: 20px; color: var(--bos-gold); flex-shrink: 0; margin-top: 3px; }
+.lp-theme .osm .osm-zusage { margin: 16px 0 0; font-size: 14px; color: var(--osm-text-leise); }
 .lp-theme .osm .osm-partner {
   display: flex;
   gap: 20px;
   align-items: center;
   padding: 22px;
-  border-radius: 16px;
+  border-radius: 20px;
   background: linear-gradient(150deg, rgba(244, 241, 234, .14), rgba(244, 241, 234, .05));
   border: 1px solid rgba(204, 172, 5, .35);
   box-shadow: 0 16px 44px -10px rgba(0, 0, 0, .45), inset 0 1px 0 0 rgba(255, 255, 255, .1);
@@ -563,7 +750,7 @@
 .lp-theme .osm .osm-partner-text a:hover { color: var(--bos-gold); }
 .lp-theme .osm .osm-partner-text svg { width: 16px; height: 16px; color: var(--bos-gold); flex-shrink: 0; }
 
-/* Fuß */
+/* ── Fuß ────────────────────────────────────────────────────────── */
 .lp-theme .osm .osm-fuss { background: var(--bos-schwarz); color: rgba(244, 241, 234, .75); padding: 56px 0 32px; font-size: 14px; }
 .lp-theme .osm .osm-fuss-oben { display: flex; justify-content: space-between; gap: 32px; flex-wrap: wrap; }
 .lp-theme .osm .osm-fuss-oben img { width: 168px; height: 35px; object-fit: contain; object-position: left; }
@@ -576,21 +763,47 @@
 .lp-theme .osm .osm-fuss-pixel { margin-top: 28px; max-width: 760px; }
 .lp-theme .osm .osm-fuss-rechte { margin: 28px 0 0; padding-top: 18px; border-top: 1px solid rgba(244, 241, 234, .1); font-size: 12px; }
 
-/* Die behaltenen Abschnitte (Investorenprofile, Leistungen) in der CI. */
-.lp-theme .osm .osm-alt section { padding-top: 96px !important; padding-bottom: 96px !important; }
+/* ── Behaltene Abschnitte: Investorenprofile und Leistungen ────── */
+.lp-theme .osm .osm-alt section { padding-top: 104px !important; padding-bottom: 104px !important; }
 .lp-theme .osm .osm-alt .w-8.h-1,
 .lp-theme .osm .osm-alt .w-4.h-1 { display: none; }
-.lp-theme .osm .osm-alt h2 { font-weight: 600 !important; letter-spacing: -0.01em !important; }
+.lp-theme .osm .osm-alt h2 { font-weight: 650 !important; letter-spacing: -0.02em !important; }
 .lp-theme .osm .osm-alt .lp-text-gradient {
   background: none !important;
-  color: var(--bos-gold-dunkel) !important;
-  -webkit-text-fill-color: var(--bos-gold-dunkel) !important;
+  color: var(--osm-akzent) !important;
+  -webkit-text-fill-color: var(--osm-akzent) !important;
 }
-.lp-theme .osm .osm-hell.osm-alt section { background: var(--bos-papier); }
-.lp-theme .osm .osm-alt .investor-profile-card { border-color: var(--bos-linie) !important; border-radius: 14px !important; display: flex; flex-direction: column; }
+.lp-theme .osm .osm-hell.osm-alt section { background: transparent; }
+.lp-theme .osm .osm-alt .investor-profile-card {
+  border-color: var(--osm-karte-rand) !important;
+  border-radius: 18px !important;
+  display: flex;
+  flex-direction: column;
+  background: var(--osm-karte) !important;
+  box-shadow: var(--osm-karte-schatten);
+  color: var(--osm-text);
+}
 .lp-theme .osm .osm-alt .investor-profile-card > img,
 .lp-theme .osm .osm-alt .investor-profile-card > .absolute { display: none; }
-.lp-theme .osm .osm-alt .investor-profile-card > p:last-child { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--bos-linie); font-style: normal; }
+.lp-theme .osm .osm-alt .investor-profile-card > p:last-child { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--osm-linie); font-style: normal; }
+/*
+ * Profilkarten lesbar in jedem Ton (29.10.2026): Die Karten bringen feste
+ * Tailwind-Farben für Weiß mit. Auf dunklem Grund stand dadurch dunkle Schrift
+ * auf dunkler Karte. Hier lesen Titel, Text und Symbole die Tonvariablen.
+ */
+.lp-theme .osm .osm-alt h2 { color: var(--osm-text) !important; }
+.lp-theme .osm .osm-alt .text-center > span,
+.lp-theme .osm .osm-alt .text-center > p { color: var(--osm-text-leise) !important; }
+.lp-theme .osm .osm-alt .text-center > p { font-size: 17px; line-height: 1.6; }
+.lp-theme .osm .osm-alt .investor-profile-card :is(h3, li) { color: var(--osm-text) !important; }
+.lp-theme .osm .osm-alt .investor-profile-card h3 { font-size: 21px; line-height: 1.3; }
+.lp-theme .osm .osm-alt .investor-profile-card p { color: var(--osm-text-leise) !important; font-size: 15px; line-height: 1.6; }
+.lp-theme .osm .osm-alt .investor-profile-card li { font-size: 15px; line-height: 1.5; }
+.lp-theme .osm .osm-alt .investor-profile-card .text-primary { color: var(--osm-akzent) !important; }
+.lp-theme .osm .osm-alt .investor-profile-card .bg-primary\/10 {
+  background: transparent !important;
+  border-color: var(--osm-linie) !important;
+}
 
 .lp-theme .osm .osm-dunkel.osm-alt {
   --background: 120 8% 8%;
@@ -600,78 +813,264 @@
 }
 .lp-theme .osm .leistung-card {
   height: 100%;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
-  border-radius: 18px;
-  background: linear-gradient(160deg, rgba(244, 241, 234, .1), var(--osm-glas-dunkel));
-  border: 1px solid var(--osm-glas-kante-dunkel);
+  border-radius: 20px;
+  background: linear-gradient(160deg, rgba(244, 241, 234, .1), rgba(244, 241, 234, .05));
+  border: 1px solid rgba(244, 241, 234, .16);
   box-shadow: 0 12px 40px -8px rgba(0, 0, 0, .45), inset 0 1px 0 0 rgba(255, 255, 255, .08);
   color: var(--bos-papier);
 }
-.lp-theme .osm .leistung-card > img { display: block; width: 100%; height: 150px; object-fit: cover; }
-.lp-theme .osm .leistung-card-large > img { height: 325px; }
-.lp-theme .osm .leistung-copy { padding: 24px 26px 26px; }
+/*
+ * Bilder im Seitenverhältnis statt in fester Höhe: Eine feste Höhe auf einer
+ * breiten Karte ergab ein schmales Band, in dem Köpfe abgeschnitten waren.
+ * Den Ausschnitt je Bild setzt AppleBentoSection (object-position).
+ */
+.lp-theme .osm .leistung-card > img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; transition: transform .8s cubic-bezier(.2, .8, .2, 1); }
+.lp-theme .osm .leistung-card-large > img { flex: 1 1 auto; min-height: 320px; height: 0; aspect-ratio: auto; }
+.lp-theme .osm .leistung-card:hover > img { transform: scale(1.035); }
+.lp-theme .osm .leistung-copy { padding: 22px 26px 26px; position: relative; background: inherit; }
 .lp-theme .osm .leistung-eyebrow { color: var(--bos-gold); font-size: 12px; text-transform: uppercase; letter-spacing: .14em; margin-bottom: 10px; }
-.lp-theme .osm .leistung-card h3 { font-size: 23px; line-height: 1.25; }
+.lp-theme .osm .leistung-card h3 { font-size: 22px; line-height: 1.25; }
 .lp-theme .osm .leistung-card-large h3 { font-size: 30px; }
 .lp-theme .osm .leistung-card p { font-size: 15px; line-height: 1.6; margin-top: 10px; color: rgba(244, 241, 234, .84); }
 
-/* Tablet */
-@media (max-width: 1023px) {
-  .lp-theme .osm .osm-objekte { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-  .lp-theme .osm .osm-hero-inhalt { grid-template-columns: minmax(0, 1fr); }
-  .lp-theme .osm .osm-portraetkarte { max-width: 440px; }
-  .lp-theme .osm .osm-schritte { --osm-spalt: 20px; }
-  .lp-theme .osm .osm-schritte li { padding: 16px; }
-  .lp-theme .osm .osm-rechnung-raster,
-  .lp-theme .osm .osm-kontakt { grid-template-columns: minmax(0, 1fr); }
-  .lp-theme .osm .osm-drei { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+/* ── Bewegung ───────────────────────────────────────────────────── */
+@keyframes osm-auftauchen { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+@keyframes osm-wachsen-x { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes osm-wachsen-y { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes osm-zeichnen { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes osm-einblenden { from { opacity: 0; } to { opacity: 1; } }
+@keyframes osm-tippen { 0%, 60%, 100% { transform: translateY(0); opacity: .5; } 30% { transform: translateY(-4px); opacity: 1; } }
+@keyframes osm-fallen { 0% { opacity: 0; transform: translateY(-34px); } 70% { opacity: 1; transform: translateY(2px); } 100% { opacity: 1; transform: none; } }
+@keyframes osm-landen { 0% { opacity: 0; transform: translateY(-40px); } 60% { opacity: 1; transform: translateY(3px); } 80% { transform: translateY(-4px); } 100% { opacity: 1; transform: none; } }
+@keyframes osm-stempel { 0% { opacity: 0; transform: scale(2); } 70% { opacity: 1; transform: scale(.92); } 100% { opacity: 1; transform: scale(1); } }
+@keyframes osm-zoom { from { transform: scale(1.12); } to { transform: scale(1); } }
+@keyframes osm-schimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Hero: Bild zieht langsam auf, Text kommt nacheinander. Läuft ohne Skript. */
+  .lp-theme .osm .osm-hero-bild { animation: osm-zoom 16s cubic-bezier(.2, .7, .2, 1) both; }
+  .lp-theme .osm .osm-hero-inhalt > div > * { animation: osm-auftauchen .9s cubic-bezier(.2, .8, .2, 1) both; }
+  .lp-theme .osm .osm-hero-inhalt > div > :nth-child(2) { animation-delay: .1s; }
+  .lp-theme .osm .osm-hero-inhalt > div > :nth-child(3) { animation-delay: .2s; }
+  .lp-theme .osm .osm-hero-inhalt > div > :nth-child(4) { animation-delay: .3s; }
+  .lp-theme .osm .osm-hero-inhalt > div > :nth-child(5) { animation-delay: .4s; }
+  .lp-theme .osm .osm-portraetkarte { animation: osm-auftauchen .9s .5s cubic-bezier(.2, .8, .2, 1) both; }
+  .lp-theme .osm .osm-hero h1 em { background-size: 200% 100%; animation: osm-schimmer 6s 1.2s ease-in-out infinite; }
+
+  /* Startbilder, solange das Element noch nicht im Bild war. */
+  .lp-theme .osm [data-anim="wartet"] :is(.osm-karte, .osm-dach, .osm-zeitachse li),
+  .lp-theme .osm [data-anim="wartet"].osm-karte,
+  .lp-theme .osm .osm-schritte li[data-anim="wartet"] .osm-schritt-karte { opacity: 0; }
+  .lp-theme .osm [data-anim="wartet"] :is(.osm-balken-fuellung, .osm-anteil),
+  .lp-theme .osm [data-anim="wartet"] .osm-zeitachse::before { transform: scaleX(0); }
+  .lp-theme .osm [data-anim="wartet"] .zl { stroke-dasharray: 1; stroke-dashoffset: 1; }
+  .lp-theme .osm li[data-anim="wartet"]::after,
+  .lp-theme .osm [data-anim="wartet"] .saeule { transform: scaleY(0); }
+  .lp-theme .osm [data-anim="wartet"] :is(.muenze, .nadel, .siegel, .fenster) { opacity: 0; }
+
+  /* Karten und Zahlen tauchen nacheinander auf (--nr setzt die Komponente). */
+  .lp-theme .osm [data-anim="an"] :is(.osm-karte, .osm-zeitachse li) {
+    animation: osm-auftauchen .8s calc(var(--nr, 0) * .14s) cubic-bezier(.2, .8, .2, 1) both;
+  }
+  .lp-theme .osm [data-anim="an"].osm-karte { animation: osm-auftauchen .8s cubic-bezier(.2, .8, .2, 1) both; }
+  .lp-theme .osm [data-anim="an"] .osm-dach { animation: osm-auftauchen .7s cubic-bezier(.2, .8, .2, 1) both; }
+  .lp-theme .osm [data-anim="an"] .osm-marke-karte { animation-delay: calc(.6s + var(--nr, 0) * .14s); }
+  .lp-theme .osm [data-anim="an"] .osm-balken-fuellung {
+    animation: osm-wachsen-x 1.1s calc(.25s + var(--nr, 0) * .2s) cubic-bezier(.2, .8, .2, 1) both;
+  }
+  .lp-theme .osm [data-anim="an"] .osm-anteil {
+    animation: osm-wachsen-x .9s calc(.15s + var(--nr, 0) * .35s) cubic-bezier(.2, .8, .2, 1) both;
+  }
+  .lp-theme .osm [data-anim="an"] .osm-zeitachse::before { animation: osm-wachsen-x 1.2s .3s cubic-bezier(.2, .8, .2, 1) both; }
+  .lp-theme .osm [data-anim="an"] .zl { stroke-dasharray: 1; animation: osm-zeichnen 1.1s .2s ease-out both; }
+  .lp-theme .osm [data-anim="an"] .osm-gabel .zl { animation-delay: 1.1s; }
+  .lp-theme .osm [data-anim="an"] .osm-gruppe-linien .zl { animation-delay: .4s; }
+
+  /* Prozess: Kästchen gleitet von der Seite herein, Linie füllt sich nach unten. */
+  .lp-theme .osm .osm-schritte li[data-anim="an"] .osm-schritt-karte { animation: osm-auftauchen .8s cubic-bezier(.2, .8, .2, 1) both; }
+  .lp-theme .osm .osm-schritte li[data-anim="an"]::after { animation: osm-wachsen-y 1.2s .5s ease-in-out both; }
+  .lp-theme .osm li[data-anim="an"] .zl-2 { animation-delay: .7s; }
+  .lp-theme .osm li[data-anim="an"] .zl-3 { animation-delay: 1s; }
+  .lp-theme .osm li[data-anim="an"] .punkt { animation: osm-tippen 1.3s 1.2s ease-in-out infinite; }
+  .lp-theme .osm li[data-anim="an"] .p2 { animation-delay: 1.4s; }
+  .lp-theme .osm li[data-anim="an"] .p3 { animation-delay: 1.6s; }
+  .lp-theme .osm li[data-anim="an"] .saeule { transform-origin: 50% 100%; animation: osm-wachsen-y .7s .3s cubic-bezier(.2, .8, .2, 1) both; }
+  .lp-theme .osm li[data-anim="an"] .s2 { animation-delay: .45s; }
+  .lp-theme .osm li[data-anim="an"] .s3 { animation-delay: .6s; }
+  .lp-theme .osm li[data-anim="an"] .fenster { animation: osm-einblenden .5s 1.1s both; }
+  .lp-theme .osm li[data-anim="an"] .f2 { animation-delay: 1.35s; }
+  .lp-theme .osm li[data-anim="an"] .muenze { animation: osm-fallen .6s .3s cubic-bezier(.3, .8, .3, 1) both; }
+  .lp-theme .osm li[data-anim="an"] .m2 { animation-delay: .6s; }
+  .lp-theme .osm li[data-anim="an"] .m3 { animation-delay: .9s; }
+  .lp-theme .osm li[data-anim="an"] .nadel { animation: osm-landen .9s .6s cubic-bezier(.3, .8, .3, 1) both; }
+  .lp-theme .osm li[data-anim="an"] .siegel { transform-origin: center; animation: osm-stempel .45s 1.9s cubic-bezier(.3, .8, .3, 1) both; }
 }
 
-/* Telefon */
+/* ── Tablet ─────────────────────────────────────────────────────── */
+@media (max-width: 1023px) {
+  .lp-theme .osm .osm-hero-inhalt { grid-template-columns: minmax(0, 1fr); }
+  .lp-theme .osm .osm-portraetkarte { max-width: 440px; }
+  .lp-theme .osm .osm-kontakt,
+  .lp-theme .osm .osm-zwei,
+  .lp-theme .osm .osm-warten { grid-template-columns: minmax(0, 1fr); }
+  .lp-theme .osm .osm-vier { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .lp-theme .osm .osm-fragen { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ── Telefon ────────────────────────────────────────────────────── */
 @media (max-width: 767px) {
   .lp-theme .osm .osm-wrap,
   .lp-theme .osm .osm-kopf { padding-left: 16px; padding-right: 16px; }
   .lp-theme .osm .osm-kopf { padding-top: 18px; }
   .lp-theme .osm .osm-kopf img { width: 150px; height: 32px; }
   .lp-theme .osm .osm-abschnitt,
-  .lp-theme .osm .osm-alt section { padding-top: 64px !important; padding-bottom: 64px !important; }
+  .lp-theme .osm .osm-alt section { padding-top: 68px !important; padding-bottom: 68px !important; }
+  .lp-theme .osm .osm-titelblock { margin-bottom: 32px; }
   .lp-theme .osm .osm-hero { min-height: 0; }
-  .lp-theme .osm .osm-hero-inhalt { grid-template-columns: minmax(0, 1fr); padding-top: 120px; padding-bottom: 64px; gap: 28px; }
+  .lp-theme .osm .osm-hero-inhalt { padding-top: 116px; padding-bottom: 56px; gap: 28px; }
   .lp-theme .osm .osm-hero h1 { overflow-wrap: break-word; }
   .lp-theme .osm .osm-hero-text { font-size: 17px; }
+  .lp-theme .osm .osm-hero-vorteile li { font-size: 13px; padding: 7px 12px; }
   .lp-theme .osm .osm-knoepfe { flex-direction: column; align-items: stretch; }
   .lp-theme .osm .osm-knopf { width: 100%; text-align: center; }
   .lp-theme .osm .osm-portraetkarte { max-width: none; grid-template-columns: 76px minmax(0, 1fr); padding: 16px; gap: 14px; }
   .lp-theme .osm .osm-portraet { width: 76px; height: 90px; }
   .lp-theme .osm .osm-portraetkarte strong { font-size: 18px; }
-  .lp-theme .osm .osm-bildort { right: 16px; bottom: 10px; font-size: 11px; }
   .lp-theme .osm .osm-drei,
-  .lp-theme .osm .osm-zwei,
-  .lp-theme .osm .osm-objekte,
-  .lp-theme .osm .osm-kennzahlen { grid-template-columns: minmax(0, 1fr); }
-  /* Prozess senkrecht: Nummern links auf einer durchgehenden Linie. */
-  .lp-theme .osm .osm-schritte { display: flex; flex-direction: column; gap: 12px; padding: 0; position: relative; }
-  .lp-theme .osm .osm-schritte::before {
-    content: "";
-    position: absolute;
-    left: 17px;
-    top: 24px;
-    bottom: 24px;
-    width: var(--osm-linie);
-    background: var(--bos-gold);
-  }
-  .lp-theme .osm .osm-schritte li { margin-left: 52px; padding: 14px 16px; gap: 0; }
-  .lp-theme .osm .osm-schritte li::after { display: none; }
-  .lp-theme .osm .osm-schritt-nr { position: absolute; left: -52px; top: 50%; margin-top: -18px; }
-  .lp-theme .osm .osm-galerie { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
-  .lp-theme .osm .osm-galerie figcaption { font-size: 12px; padding: 22px 10px 8px; }
-  .lp-theme .osm .osm-karte { padding: 22px; }
-  .lp-theme .osm .osm-rechnung { font-size: 16px; }
-  .lp-theme .osm .osm-rechnung td,
-  .lp-theme .osm .osm-rechnung th { padding: 13px 14px; }
-  .lp-theme .osm .osm-rechnung .ergebnis td { font-size: 17px; }
-  .lp-theme .osm .osm-rechnung .klein td { font-size: 14px; }
+  .lp-theme .osm .osm-vier,
+  .lp-theme .osm .osm-wege { grid-template-columns: minmax(0, 1fr); }
+  .lp-theme .osm .osm-karte,
+  .lp-theme .osm .osm-konzept,
+  .lp-theme .osm .osm-anteile { padding: 22px; }
+  .lp-theme .osm .osm-konzept h3 { font-size: 26px; }
+  .lp-theme .osm .osm-schluss { font-size: 18px; }
+  .lp-theme .osm .osm-anteile-leiste { height: 60px; gap: 4px; }
+  .lp-theme .osm .osm-anteil { padding: 0 10px; min-width: 48px; }
+  .lp-theme .osm .osm-anteile-legende { flex-direction: column; }
+  .lp-theme .osm .osm-zeitachse li { padding-top: 28px; }
+  .lp-theme .osm .osm-gabel { display: none; }
+  .lp-theme .osm .osm-wege { margin-top: 14px; }
+  .lp-theme .osm .osm-zwischenruf { flex-direction: column; align-items: stretch; padding: 24px; }
+  /* Gruppe untereinander, die Verzweigung entfällt. */
+  .lp-theme .osm .osm-gruppe-linien { display: none; }
+  .lp-theme .osm .osm-dach { align-self: stretch; margin-bottom: 14px; }
+  /* Prozess: Linie links, Kästchen rechts daneben. */
+  .lp-theme .osm .osm-schritte { --osm-mitte: 52px; gap: 16px; }
+  .lp-theme .osm .osm-schritte::before { left: 26px; }
+  .lp-theme .osm .osm-schritte li { grid-template-columns: var(--osm-mitte) minmax(0, 1fr); }
+  .lp-theme .osm .osm-schritte li::after { left: 26px; height: calc(100% + 16px); }
+  .lp-theme .osm .osm-schritt-nr { grid-column: 1; width: 38px; height: 38px; font-size: 15px; }
+  .lp-theme .osm .osm-schritte li:nth-child(n) .osm-schritt-karte { grid-column: 2; padding: 16px; gap: 14px; align-items: flex-start; }
+  .lp-theme .osm .osm-pg { width: 60px; height: 60px; padding: 4px; border-radius: 14px; }
   .lp-theme .osm .osm-partner { flex-direction: column; align-items: flex-start; }
-  .lp-theme .osm .leistung-card > img,
-  .lp-theme .osm .leistung-card-large > img { height: auto; aspect-ratio: 1.8; }
+  .lp-theme .osm .leistung-card-large > img { min-height: 0; height: auto; aspect-ratio: 16 / 10; }
+}
+
+/* ── Vergleich der Anlagen ─────────────────────────────────────── */
+.lp-theme .osm .osm-vergleich {
+  border-radius: 20px;
+  border: 1px solid var(--osm-karte-rand);
+  background: var(--osm-karte);
+  box-shadow: var(--osm-karte-schatten);
+  overflow: hidden;
+}
+.lp-theme .osm .osm-vergleich-zeile {
+  display: grid;
+  grid-template-columns: minmax(0, 2.2fr) repeat(4, minmax(0, 1fr));
+  align-items: center;
+  border-top: 1px solid var(--osm-linie);
+}
+.lp-theme .osm .osm-vergleich-zeile:first-child { border-top: 0; }
+.lp-theme .osm .osm-vergleich-zeile > span { padding: 16px 12px; font-size: 16px; line-height: 1.35; }
+.lp-theme .osm .osm-vergleich-zeile > span:first-child { padding-left: 24px; color: var(--osm-text); }
+.lp-theme .osm .osm-vergleich-kopf > span {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-align: center;
+  color: var(--osm-text-leise);
+}
+/* Die Spalte der Immobilie hebt sich als goldene Bahn ab. */
+.lp-theme .osm .osm-vergleich-wir { background: rgba(204, 172, 5, .1); }
+.lp-theme .osm .osm-vergleich-kopf .osm-vergleich-wir { color: var(--osm-akzent); }
+.lp-theme .osm .osm-wert { display: flex; justify-content: center; }
+.lp-theme .osm .osm-wert svg,
+.lp-theme .osm .osm-vergleich-legende svg { width: 22px; height: 22px; stroke-width: 2.4; }
+.lp-theme .osm .osm-wert-ja { color: var(--osm-gut); }
+.lp-theme .osm .osm-wert-teil { color: var(--osm-akzent); }
+.lp-theme .osm .osm-wert-nein { color: var(--osm-text-leise); opacity: .55; }
+.lp-theme .osm .osm-vergleich-legende {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  font-size: 14px;
+  color: var(--osm-text-leise);
+}
+.lp-theme .osm .osm-vergleich-legende li { display: inline-flex; align-items: center; gap: 6px; }
+.lp-theme .osm .osm-vergleich-legende svg { width: 18px; height: 18px; }
+.lp-theme .osm .osm-vergleich-legende .osm-wert-nein { opacity: 1; }
+.lp-theme .osm .osm-hebel { margin-top: 32px; border-left: 3px solid var(--osm-akzent); }
+.lp-theme .osm .osm-hebel h3 { font-size: 24px; margin: 0 0 10px; color: var(--osm-text); }
+.lp-theme .osm .osm-hebel p { margin: 0; font-size: 17px; line-height: 1.6; color: var(--osm-text-leise); max-width: 820px; }
+.lp-theme .osm .osm-hebel .osm-hebel-ehrlich { margin-top: 14px; font-size: 15px; }
+@media (max-width: 767px) {
+  .lp-theme .osm .osm-vergleich-zeile { grid-template-columns: minmax(0, 1.5fr) repeat(4, minmax(0, 1fr)); }
+  .lp-theme .osm .osm-vergleich-zeile > span { padding: 12px 4px; font-size: 14px; }
+  .lp-theme .osm .osm-vergleich-zeile > span:first-child { padding-left: 14px; }
+  .lp-theme .osm .osm-vergleich-kopf > span { font-size: 10.5px; letter-spacing: 0; hyphens: auto; overflow-wrap: anywhere; }
+  .lp-theme .osm .osm-wert svg { width: 19px; height: 19px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .lp-theme .osm [data-anim="wartet"] .osm-vergleich-zeile { opacity: 0; transform: translateY(10px); }
+  .lp-theme .osm [data-anim="an"] .osm-vergleich-zeile {
+    animation: osm-auftauchen .6s cubic-bezier(.2, .8, .2, 1) both;
+    animation-delay: calc(var(--nr, 0) * .08s + .1s);
+  }
+}
+
+/* ── Musterrechnung ────────────────────────────────────────────── */
+.lp-theme .osm .osm-muster { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 20px; align-items: stretch; }
+.lp-theme .osm .osm-muster-objekt { margin: 0; padding: 0; overflow: hidden; display: flex; flex-direction: column; }
+.lp-theme .osm .osm-muster-objekt img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; object-position: 50% 40%; display: block; flex: 1; min-height: 220px; }
+.lp-theme .osm .osm-muster-objekt figcaption { padding: 22px 24px 24px; }
+.lp-theme .osm .osm-muster-objekt b { display: block; font-size: 20px; color: var(--osm-text); }
+.lp-theme .osm .osm-muster-objekt span { display: block; margin-top: 4px; font-size: 14px; color: var(--osm-text-leise); }
+.lp-theme .osm .osm-muster-objekt ul { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.lp-theme .osm .osm-muster-objekt li { font-size: 13px; padding: 5px 11px; border-radius: 999px; border: 1px solid var(--osm-linie); color: var(--osm-text); }
+.lp-theme .osm .osm-muster-rechnung h3 { margin: 0 0 12px; font-size: 20px; color: var(--osm-text); }
+.lp-theme .osm .osm-muster-rechnung dl { margin: 0; }
+.lp-theme .osm .osm-muster-zeile { display: flex; justify-content: space-between; gap: 16px; align-items: baseline; padding: 13px 0; border-top: 1px solid var(--osm-linie); }
+.lp-theme .osm .osm-muster-zeile dt { font-size: 16px; color: var(--osm-text-leise); }
+.lp-theme .osm .osm-muster-zeile dd { margin: 0; font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--osm-text); }
+.lp-theme .osm .osm-muster-plus dd { color: var(--osm-gut); }
+.lp-theme .osm .osm-muster-summe { border-top: 2px solid var(--osm-text); }
+.lp-theme .osm .osm-muster-summe dt { color: var(--osm-text); font-weight: 600; }
+.lp-theme .osm .osm-muster-ergebnis {
+  margin-top: 10px;
+  padding: 16px 18px;
+  border: 0;
+  border-radius: 14px;
+  background: rgba(204, 172, 5, .14);
+}
+.lp-theme .osm .osm-muster-ergebnis dt { color: var(--osm-text); font-weight: 650; font-size: 17px; }
+.lp-theme .osm .osm-muster-ergebnis dd { font-size: 26px; color: var(--osm-akzent); }
+.lp-theme .osm .osm-muster-zahlen { margin-top: 20px; }
+.lp-theme .osm .osm-muster-zahlen p { margin: 6px 0 0; color: var(--osm-text-leise); font-size: 15px; }
+.lp-theme .osm .osm-muster-ehrlich { margin: 12px 0 0; font-size: 15px; line-height: 1.6; color: var(--osm-text-leise); max-width: 860px; }
+@media (max-width: 767px) {
+  .lp-theme .osm .osm-muster { grid-template-columns: 1fr; }
+  .lp-theme .osm .osm-muster-zeile dt { font-size: 15px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .lp-theme .osm [data-anim="wartet"] .osm-muster-zeile { opacity: 0; transform: translateY(10px); }
+  .lp-theme .osm [data-anim="an"] .osm-muster-zeile {
+    animation: osm-auftauchen .6s cubic-bezier(.2, .8, .2, 1) both;
+    animation-delay: calc(var(--nr, 0) * .18s + .15s);
+  }
 }

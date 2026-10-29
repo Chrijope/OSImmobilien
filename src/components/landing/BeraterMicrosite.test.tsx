@@ -98,24 +98,35 @@ describe("Microseite, Überschriften und Investorenprofile", () => {
 });
 
 /**
- * Umbau auf OS Real Estate (16.10.2026): Aufbau, Partnerdaten und Diashow der
- * neuen Seite. Der Steuer- und Eignungscheck ist entfallen.
+ * Umbau auf OS Real Estate (16.10.2026), neu aufgebaut am 29.10.2026 als
+ * Spannungsbogen in Christians Reihenfolge: Ausgangslage, Vergleich, Wer wir
+ * sind, Prinzip, Musterrechnung, Leistungen, Konzepte, Profile, Fragen,
+ * Prozess, Erstgespräch.
  */
 describe("Microseite OS Real Estate", () => {
-  it("zeigt die Abschnitte in der neuen Reihenfolge und keinen Steuer-Check mehr", () => {
+  it("zeigt die Abschnitte in der Reihenfolge des Spannungsbogens", () => {
     const { container } = render(<BeraterMicrositeContent berater={berater} onOpenFunnel={() => {}} />);
     const ueberschriften = [...container.querySelectorAll("h2")].map((h) => h.textContent ?? "");
     const reihenfolge = [
-      /Rente allein/, /Steuern senken oder/, /Drei Standorte/, /So rechnet sich/, /Investoren-Profile/,
-      /Alles, was du/, /Regional verwurzelt/, /Standorte im Bild/, /Sieben Schritte/, /kennen/,
+      /unter Druck/, /Warum gerade eine Immobilie/, /bauen, vermitteln/, /Wer bezahlt/, /echte Wohnung/,
+      /Alles, was du/, /Mehr Netto heute/, /Investoren-Profile/, /Fragen, die sich jeder/, /Sieben Schritte/, /kennen/,
     ].map((muster) => ueberschriften.findIndex((t) => muster.test(t)));
     expect(reihenfolge.every((stelle) => stelle >= 0)).toBe(true);
     expect([...reihenfolge].sort((a, b) => a - b)).toEqual(reihenfolge);
     expect(container.querySelector("#steuer-check")).toBeNull();
     expect(screen.getAllByRole("img", { name: "OS Real Estate GmbH" }).length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Altersvorsorgeobjekt")).toHaveLength(2);
-    expect(screen.getByText("Steuersparobjekt")).toBeInTheDocument();
-    expect(screen.getByText("− 151 €")).toBeInTheDocument();
+    // Keine Objektliste und keine Diashow; die eine Wohnung steht nur in der Musterrechnung.
+    expect(container.querySelector("#objekte")).toBeNull();
+    expect(screen.queryByRole("group", { name: /Bilder/ })).toBeNull();
+  });
+
+  it("stellt beide Konzepte vor, Altersvorsorge mit Verkauf oder Zusatzrente", () => {
+    render(<BeraterMicrositeContent berater={berater} onOpenFunnel={() => {}} />);
+    expect(screen.getByText("Konzept 1 · Steueroptimierung")).toBeInTheDocument();
+    expect(screen.getByText("Konzept 2 · Altersvorsorge")).toBeInTheDocument();
+    expect(screen.getByText(/Verkaufen: ein Betrag/)).toBeInTheDocument();
+    expect(screen.getByText(/Behalten: Miete als Zusatzrente/)).toBeInTheDocument();
+    expect(screen.getAllByText("Für Kenner: die Details")).toHaveLength(2);
   });
 
   it("behält Name, Foto, Telefon, E-Mail und Buchungslink des Partners", () => {
@@ -127,7 +138,14 @@ describe("Microseite OS Real Estate", () => {
     expect(screen.getByRole("link", { name: berater.email })).toHaveAttribute("href", `mailto:${berater.email}`);
     fireEvent.click(screen.getByRole("button", { name: /Anfrage senden/ }));
     fireEvent.click(screen.getByRole("button", { name: /Kostenloses Erstgespräch/ }));
-    expect(onOpenFunnel).toHaveBeenCalledTimes(2);
+    fireEvent.click(screen.getByRole("button", { name: /^Erstgespräch vereinbaren/ }));
+    expect(onOpenFunnel).toHaveBeenCalledTimes(3);
+  });
+
+  it("führt die Hauptaktion im Orange-Verlauf", () => {
+    render(<BeraterMicrositeContent berater={berater} onOpenFunnel={() => {}} />);
+    expect(screen.getByRole("button", { name: /Kostenloses Erstgespräch/ })).toHaveClass("btn-brand");
+    expect(screen.getByRole("link", { name: /Termin direkt buchen/ })).toHaveClass("btn-brand");
   });
 
   it("zeigt den Ansprechpartner im Hero als Karte mit Position und direktem Terminknopf", () => {
@@ -145,22 +163,17 @@ describe("Microseite OS Real Estate", () => {
     expect(onOpenFunnel).toHaveBeenCalledOnce();
   });
 
-  it("zeigt den Prozess in sieben Schritten, Reservierung kostenfrei", () => {
+  it("zeigt den Prozess in sieben Schritten mit je einer Grafik, Reservierung kostenfrei", () => {
     const { container } = render(<BeraterMicrositeContent berater={berater} onOpenFunnel={() => {}} />);
     const schritte = [...container.querySelectorAll(".osm-schritte li b")].map((b) => b.textContent);
     expect(schritte).toEqual(["Qualifizierungsgespräch", "Beratungspräsentation", "Objektpräsentation", "Reservierung", "Finanzierung", "Besichtigung", "Notar"]);
+    expect(container.querySelectorAll(".osm-schritte li .osm-pg")).toHaveLength(7);
     expect(screen.getByText("Kostenfrei.")).toBeInTheDocument();
   });
 
-  it("blättert die Bilder eines Objekts mit Pfeil und Punkt", () => {
-    render(<BeraterMicrositeContent berater={berater} onOpenFunnel={() => {}} />);
-    const diashow = screen.getByRole("group", { name: "Bilder Barfusstraße 9" });
-    const punkte = within(diashow).getAllByRole("button", { name: /Bild \d von 7/ });
-    expect(punkte[0]).toHaveAttribute("aria-current", "true");
-    fireEvent.click(within(diashow).getByRole("button", { name: "Nächstes Bild" }));
-    expect(punkte[1]).toHaveAttribute("aria-current", "true");
-    fireEvent.click(within(diashow).getByRole("button", { name: "Vorheriges Bild" }));
-    fireEvent.click(within(diashow).getByRole("button", { name: "Vorheriges Bild" }));
-    expect(punkte[6]).toHaveAttribute("aria-current", "true");
+  it("versteckt ohne Bewegung nichts: ohne IntersectionObserver bleibt alles im fertigen Bild", () => {
+    // jsdom kennt keinen IntersectionObserver, wie ein Browser ohne Skriptunterstützung dafür.
+    const { container } = render(<BeraterMicrositeContent berater={berater} onOpenFunnel={() => {}} />);
+    expect(container.querySelector("[data-anim]")).toBeNull();
   });
 });

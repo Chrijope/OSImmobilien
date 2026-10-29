@@ -23,7 +23,7 @@ const de = {
   bento: {
     kicker: "Was du bekommst",
     titelZeile1: "Alles, was du für ein",
-    titelZeile2: "erstes Investment brauchen.",
+    titelZeile2: "erstes Investment brauchst.",
     text: "Geprüfte Objekte, zwei klare Konzepte und ein Ansprechpartner, der dich über Jahre begleitet. Aus einer Unternehmensgruppe.",
     objekte: {
       eyebrow: "Objekte",
