@@ -1508,7 +1508,7 @@ export function InvestmentrechnerInhalt({
   };
 
   /** Reihenfolge der Bereiche wie in der Leiste; Bankunterlagen nur mit `bankModus`. */
-  const bereichsfolge: Eingabebereich[] = ["kunde", "objekt", "unterlagen", "finanzierung", "ertrag", "steuer", "ausfuehrlich", ...(bankModus ? ["bankunterlagen" as const] : []), "expose"];
+  const bereichsfolge: Eingabebereich[] = ["kunde", "objekt", "unterlagen", "finanzierung", "ertrag", "steuer", "ausfuehrlich", ...(bankModus ? ["bankunterlagen" as const] : [])];
   const naechsterBereich = bereichsfolge[bereichsfolge.indexOf(bereich) + 1];
 
   // Dieselben Aktionen in beiden Fällen, damit der Reiter nichts anderes kann
@@ -1678,14 +1678,6 @@ export function InvestmentrechnerInhalt({
                     onClick={() => setBereich("bankunterlagen")}
                   />
                 )}
-                {/* Die Bilder stehen seit dem 11.10.2026 immer zuletzt, in Plus nach den Bankunterlagen. */}
-                <Bereichsknopf
-                  active={bereich === "expose"}
-                  icon={<ImagePlus size={17} />}
-                  label="Bilder"
-                  vermerk={objektVermerk}
-                  onClick={() => setBereich("expose")}
-                />
                 {!vergleichAktiv && <ObjektHinzufuegen onClick={objektHinzufuegen} />}
               </nav>
               <div className="input-content">
@@ -1739,27 +1731,10 @@ export function InvestmentrechnerInhalt({
                     saStatus={{ verbunden: !!saQuelle, neuerStand: saNeuerStand, vorschau: !!vorschau }}
                   />
                 )}
-                {bereich === "expose" && (
-                  <EingabeExpose
-                    photos={photos}
-                    onPhotoUpload={fotosHochladen}
-                    onPhotoDateien={fotosAufnehmen}
-                    onSortPhotos={fotosUmsortieren}
-                    onRemovePhoto={(index) => {
-                      fotosAngefasst.current = true;
-                      setzeAktivesObjekt((objekt) => ({
-                        ...objekt,
-                        photos: objekt.photos.filter((_, i) => i !== index),
-                      }));
-                    }}
-                    hinweis={fotoHinweis}
-                    nummer={bankModus ? "09" : "08"}
-                    onOpenPreview={() => {
-                      setAnsicht("ausfuehrlich");
-                      rolleSeiteNachOben();
-                    }}
-                  />
-                )}
+                {/*
+                  Den Bereich „Bilder“ gibt es seit dem 29.10.2026 nicht mehr (Christian):
+                  Die ausführliche Berechnung zeigt keine Fotos, Bilder stehen im Exposé.
+                */}
                 {/* Unten in jedem Bereich außer dem letzten: weiter zum nächsten (Christian, 29.10.2026). */}
                 {naechsterBereich && (
                   <div className="flex justify-end pt-4">

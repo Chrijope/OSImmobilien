@@ -62,6 +62,8 @@ export default defineConfig({
   envPrefix: "ARTEFAKT_NIE_",
   define: {
     __VERSIONSNOTIZ_NR__: "0",
+    // Das Artefakt zeigt kein OS-Logo, auch nicht im PDF (Christian, 29.10.2026).
+    __OHNE_LOGO__: "true",
   },
   plugins: [react(), ohneProjektKennung(), einzelneDatei()],
   resolve: {

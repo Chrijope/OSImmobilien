@@ -5,6 +5,8 @@ import { datumText, type FormatSprache } from "./sprachFormat";
 const LOGO_URL = "/images/os-real-estate-logo-quer.png";
 /** Das Logo in der Fassung für dunklen Grund (Deckblatt), Zusatz GMBH hell. */
 const ICON_URL = "/images/os-real-estate-logo-quer-dunkel.png";
+/** In den Artefakten (Build mit `__OHNE_LOGO__`) ohne OS-Logo und ohne Schriftzug als Ersatz (Christian, 29.10.2026). Im CRM nie. */
+const OHNE_LOGO = typeof __OHNE_LOGO__ !== "undefined" && __OHNE_LOGO__;
 
 // Active PDF font family. Defaults to built-in Helvetica (no Unicode support).
 // Call ensureUnicodeFont(doc) to switch to embedded Noto Sans (full Unicode incl. Umlaute).
@@ -367,7 +369,9 @@ export function addCoverPage(
   // die dunkle Fassung (Zusatz GMBH hell statt grau). Der gesetzte Schriftzug
   // ist nur die Rueckfallebene, falls die Bilddatei nicht geladen werden kann.
   let y = 38;
-  if (icon) {
+  if (OHNE_LOGO) {
+    // kein Logo
+  } else if (icon) {
     try {
       // "FAST" packt die Bilddaten (Flate). Ohne Angabe legt jsPDF ein PNG
       // unkomprimiert ab, allein die Wortmarke wog so über drei Megabyte.
@@ -496,7 +500,9 @@ export function addBrandedHeader(
   // verzerrt wird.
   const LOGO_H = 5;
   let markeBreite = 0;
-  if (logo) {
+  if (OHNE_LOGO) {
+    // kein Logo
+  } else if (logo) {
     try {
       const bild = doc.getImageProperties(logo);
       const LOGO_B = (LOGO_H * bild.width) / bild.height;

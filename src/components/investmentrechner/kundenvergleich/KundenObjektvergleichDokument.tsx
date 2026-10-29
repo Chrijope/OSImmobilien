@@ -30,6 +30,8 @@ import P39A_2 from "../../../../public/images/objektvergleich/p39a-2.png";
 import P39A_3 from "../../../../public/images/objektvergleich/p39a-3.png";
 import P39A_4 from "../../../../public/images/objektvergleich/p39a-4.png";
 const P39A = [P39A_1, P39A_2, P39A_3, P39A_4];
+/** Artefakt „OS Immobilien Investment Rechner“ ohne OS-Logo (Christian, 29.10.2026; vite.investmentrechner.config.ts). */
+const OHNE_LOGO = typeof __OHNE_LOGO__ !== "undefined" && __OHNE_LOGO__;
 /** Seitenzahl gesamt; je nach Zahl der Wohnungen und Kundendaten 9 bis 14. */
 const SeitenKontext = createContext(13);
 
@@ -1037,7 +1039,7 @@ function Sheet({ k, e, nr }: { k: Kontext; e: EinheitErgebnis; nr: number }) {
   return (
     <section className="expose-page p ks">
       <div className="in">
-        <LogoBox breite={17} lage={{ right: 0, top: "-8mm" }} />
+        {!OHNE_LOGO && <LogoBox breite={17} lage={{ right: 0, top: "-8mm" }} />}
         <div className="kick"><b>{String(nr).padStart(2, "0")}</b>{t(`Investmentsheet · Wohnung ${x.nr}`, `Investment sheet · apartment ${x.nr}`)}</div>
         <h2 style={{ fontSize: "22pt" }}>{t(<>Wohnung {x.nr}: <em>Ihre Zahlen im Monat.</em></>, <>Apartment {x.nr}: <em>your figures per month.</em></>)}</h2>
         <div style={{ fontSize: "9pt", color: "var(--muted)", marginTop: "1.5mm" }}>{t("Für", "For")} {t([v.kunde.anrede, v.kunde.vorname, v.kunde.nachname].filter(Boolean).join(" ") || "Sie", [v.kunde.vorname, v.kunde.nachname].filter(Boolean).join(" ") || "you")} · {k.haus(e).strasse}{k.haus(e).ortZeile ? `, ${k.haus(e).ortZeile}` : ""}</div>
@@ -1287,7 +1289,7 @@ function DeckblattSystem({ k }: { k: Kontext }) {
     <section className="expose-page p kov-system">
       <div className="kov-system-schein" />
       <div className="kov-system-karo" />
-      <img src={LOGO_DUNKEL} alt="OS Real Estate" className="kov-system-logo" />
+      {!OHNE_LOGO && <img src={LOGO_DUNKEL} alt="OS Real Estate" className="kov-system-logo" />}
       <div className="kov-system-text">
         <div className="kov-system-kennung">{t("Ausführliche Investmentberechnung", "Detailed investment calculation")}{d.typ ? ` · ${d.typ}` : ""}</div>
         <div className="kov-system-titel">{d.titel || k.haus(k.A).strasse}</div>

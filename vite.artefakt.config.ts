@@ -98,6 +98,8 @@ export default defineConfig({
   define: {
     __VERSIONSNOTIZ_NR__: "0",
     __NUR_SELBSTAUSKUNFT__: JSON.stringify(NUR_SELBSTAUSKUNFT),
+    // PDFs der Artefakte (Selbstauskunft, Zusammenfassung) ohne OS-Logo (Christian, 29.10.2026).
+    __OHNE_LOGO__: "true",
   },
   plugins: [react(), laufzeitDateien(), relativeBildpfade(), ohneProjektKennung(), seitenTitel()],
   resolve: {

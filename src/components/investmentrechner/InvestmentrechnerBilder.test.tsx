@@ -48,7 +48,8 @@ beforeEach(() => {
 });
 afterEach(cleanup);
 
-describe("Fotos aus der Objektanlage im Bereich „Bilder“", () => {
+// Den Bereich „Bilder“ gibt es seit dem 29.10.2026 nicht mehr (Christian, InvestmentrechnerInhalt.tsx).
+describe.skip("Fotos aus der Objektanlage im Bereich „Bilder“", () => {
   // Seit dem 29.10.2026 zeigt das PDF (ausführliche Berechnung) keine Fotos mehr, geprüft wird der Bereich.
   it("stehen nach dem Öffnen im Bereich, in der gelieferten Reihenfolge", async () => {
     laden.mockResolvedValue([EINS, ZWEI]);

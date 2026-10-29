@@ -117,7 +117,9 @@ describe("Weiter in der Kalkulationsbasis (29.10.2026)", () => {
     expect(titel()).toBe("Kunde & Einkommen");
     fireEvent.click(screen.getByTestId("bereich-weiter"));
     expect(titel()).toBe("Objekt & Kaufpreis");
-    fireEvent.click(screen.getByRole("button", { name: "Bilder" }));
+    // Letzter Bereich ist seit dem 29.10.2026 „Ausführliche Berechnung“, „Bilder“ gibt es nicht mehr.
+    expect(screen.queryByRole("button", { name: /^Bilder/ })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: /Ausführliche Berechnung/ }));
     expect(screen.queryByTestId("bereich-weiter")).toBeNull();
   });
 });
