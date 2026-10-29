@@ -13,3 +13,20 @@ body { background: hsl(var(--background)); color: hsl(var(--foreground)); }
 .artefakt-knoepfe input { border: 1px solid hsl(var(--border)); background: hsl(var(--card)); color: hsl(var(--foreground)); border-radius: 10px; padding: 6px 10px; font: inherit; min-width: 0; width: 15rem; max-width: 100%; }
 .artefakt-leiste button.aktiv { background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); border-color: hsl(var(--primary)); }
 .artefakt-leiste button:disabled { opacity: .5; cursor: default; }
+
+/*
+ * Feste Kopfzeilen, ab 881 Bildpunkten (Christian, 29.10.2026): Titel,
+ * Live-Berechnung und „Berechnung herunterladen“ sowie rechts der Kopf bis zur
+ * Sprachwahl stehen fest. Links scrollt nur die Kalkulationsbasis, rechts nur
+ * Analyse bzw. ausführliche Berechnung darunter. Die Seite selbst scrollt nicht.
+ */
+@media screen and (min-width: 881px) {
+  .rechner-artefakt { height: 100dvh; display: flex; flex-direction: column; overflow: hidden; padding-bottom: 16px; }
+  .rechner-artefakt > .artefakt-leiste { flex: none; }
+  .rechner-artefakt > .space-y-6 { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  .rechner-artefakt > .space-y-6 > .investmentrechner { flex: 1; min-height: 0; }
+  .rechner-artefakt .investmentrechner .workspace { height: 100%; min-height: 0; align-items: stretch; }
+  .rechner-artefakt .investmentrechner .input-panel { position: static; height: 100%; max-height: none !important; overflow-y: auto; }
+  .rechner-artefakt .investmentrechner .result-panel { height: 100%; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding-top: 0; }
+  .rechner-artefakt .investmentrechner .result-header { position: sticky; top: 0; z-index: 20; padding-top: 30px; padding-bottom: 12px; margin-bottom: 12px; background: var(--paper); }
+}

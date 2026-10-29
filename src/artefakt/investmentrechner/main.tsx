@@ -105,6 +105,7 @@ function App() {
         leerZuruecksetzen
         erstelltVon={name}
         kundeVonHand
+        ohneSpeichern
       />
       <Toaster />
     </div>

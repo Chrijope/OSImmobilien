@@ -406,6 +406,8 @@ export interface InvestmentrechnerInhaltProps {
    * Einkommen“. Für die Artefaktfassung ohne Selbstauskunft, seit dem 29.10.2026.
    */
   kundeVonHand?: boolean;
+  /** Ohne „Am Investment speichern“, für die Artefaktfassung (29.10.2026). */
+  ohneSpeichern?: boolean;
 }
 
 /**
@@ -433,6 +435,7 @@ export function InvestmentrechnerInhalt({
   erstelltVon = "",
   leerZuruecksetzen = false,
   kundeVonHand = false,
+  ohneSpeichern = false,
 }: InvestmentrechnerInhaltProps = {}) {
   // Die fixierte Eingabemaske reicht bis zum Fensterrand, siehe useMaskeBisUnten.
   const maskeRef = useRef<HTMLElement>(null);
@@ -1541,26 +1544,27 @@ export function InvestmentrechnerInhalt({
         Datenbank: Wer den Kunden nicht bearbeiten darf, kommt an der RLS nicht
         vorbei, auch nicht mit einem sichtbaren Knopf.
       */}
-      {berechnungId ? (
-        <>
-          <Button variant="outline" className="gap-2" disabled={speichertGerade} onClick={() => void speichere(false)}>
-            <Save size={16} /> Änderungen speichern
+      {/* Im Artefakt gibt es kein Investment, also kein Speichern (Christian, 29.10.2026). */}
+      {!ohneSpeichern && (berechnungId ? (
+          <>
+            <Button variant="outline" className="gap-2" disabled={speichertGerade} onClick={() => void speichere(false)}>
+              <Save size={16} /> Änderungen speichern
+            </Button>
+            <Button variant="outline" className="gap-2" disabled={speichertGerade} onClick={() => void speichere(true)}>
+              <CopyPlus size={16} /> Als neue Berechnung speichern
+            </Button>
+          </>
+        ) : (
+          <Button
+            variant="outline"
+            className="btn-brand-umriss gap-2"
+            disabled={(!investmentId && !vorschau) || speichertGerade}
+            title={investmentId || vorschau ? undefined : "Erst Kunde und Investment im Bereich „Kunde & Einkommen“ wählen"}
+            onClick={() => void speichere(false)}
+          >
+            <Save size={16} /> Am Investment speichern
           </Button>
-          <Button variant="outline" className="gap-2" disabled={speichertGerade} onClick={() => void speichere(true)}>
-            <CopyPlus size={16} /> Als neue Berechnung speichern
-          </Button>
-        </>
-      ) : (
-        <Button
-          variant="outline"
-          className="btn-brand-umriss gap-2"
-          disabled={(!investmentId && !vorschau) || speichertGerade}
-          title={investmentId || vorschau ? undefined : "Erst Kunde und Investment im Bereich „Kunde & Einkommen“ wählen"}
-          onClick={() => void speichere(false)}
-        >
-          <Save size={16} /> Am Investment speichern
-        </Button>
-      )}
+        ))}
       {/*
         Der Abschluss der Seite: gefuellt orange, daneben das Speichern nur
          umrandet. Die Berechnungsseiten werden direkt aus der gleichen Ansicht
@@ -1735,7 +1739,7 @@ export function InvestmentrechnerInhalt({
                   <div className="flex justify-end pt-4">
                     <Button variant="brand" className="gap-2" data-testid="bereich-weiter" onClick={() => {
                       setBereich(naechsterBereich);
-                      maskeRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+                      maskeRef.current?.scrollTo?.({ top: 0, behavior: "smooth" });
                     }}>
                       Weiter <ArrowRight size={16} />
                     </Button>
