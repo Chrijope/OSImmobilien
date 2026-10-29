@@ -33,6 +33,10 @@ export const BEISPIEL_EINGABE: InvestmentEingabe = {
   // Die Golden-Werte rechnen mit 3,57 % Makler. Das Feld ist im Rechner nicht mehr bedienbar
   // (Eingabebereiche.tsx), stand aber unsichtbar in den Kaufnebenkosten (Gegencheck Einhauser, 29.10.2026).
   brokerRate: 0,
+  // Standards seit dem 29.10.2026 (Christian): 5 % Zins, 1 % Tilgung, 2 % Wertsteigerung, auch in den Beispielzahlen.
+  seniorInterestRate: 5,
+  seniorRepaymentRate: 1,
+  annualValueGrowth: 2,
   garagePrice: 15000,
   monthlyGarageRent: 60,
 };

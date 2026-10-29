@@ -51,6 +51,9 @@ describe("Erlös bei Verkauf und Zehnjahresfrist", () => {
   const beispiel: InvestmentEingabe = mitEigenkapital(
     {
       ...standardEingabe,
+      // Bis 29.10.2026 der Standard; die Zahlen dieses Tests hängen daran.
+      seniorInterestRate: 4,
+      seniorRepaymentRate: 1.5,
       purchasePrice: 300000,
       transferTaxRate: 0,
       notaryRate: 0,

@@ -614,8 +614,9 @@ export const standardEingabe: InvestmentEingabe = {
   seniorLoanValue: 100,
   juniorLoanMode: "euro",
   juniorLoanValue: 0,
-  seniorInterestRate: 4,
-  seniorRepaymentRate: 1.5,
+  // Standard seit dem 29.10.2026 (Christian): 5 % Zins, 1 % Tilgung, wie in der Einhauser-Rechnung.
+  seniorInterestRate: 5,
+  seniorRepaymentRate: 1,
   juniorInterestRate: 6,
   juniorRepaymentRate: 1,
   juniorFixedRateYears: 10,
@@ -652,7 +653,8 @@ export const standardEingabe: InvestmentEingabe = {
   vacancyRate: 0,
   annualRentGrowth: 2,
   annualCostGrowth: 2,
-  annualValueGrowth: 1.5,
+  // Standard seit dem 29.10.2026 (Christian): 2 % Wertsteigerung.
+  annualValueGrowth: 2,
   buildingShare: 80,
   depreciationMethod: "linear",
   buildingDepreciationRate: 2,

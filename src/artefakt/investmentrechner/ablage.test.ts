@@ -44,4 +44,7 @@ describe("Beispielzahlen beim ersten Öffnen", () => {
   it("ohne Maklercourtage: das Feld ist im Rechner nicht bedienbar (Gegencheck Einhauser, 29.10.2026)", () => {
     expect(BEISPIEL_EINGABE.brokerRate).toBe(0);
   });
+  it("mit den Standards 5 % Zins, 1 % Tilgung und 2 % Wertsteigerung (29.10.2026)", () => {
+    expect(BEISPIEL_EINGABE).toMatchObject({ seniorInterestRate: 5, seniorRepaymentRate: 1, annualValueGrowth: 2 });
+  });
 });

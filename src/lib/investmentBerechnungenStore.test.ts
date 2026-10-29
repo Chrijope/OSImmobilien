@@ -336,7 +336,7 @@ describe("alte Speicherstände: neue Finanzierung seit Version 5 (23.10.2026)", 
     }
     const r = berechneInvestment(eingabe);
     // Zins und Rate bleiben nach der Zinsbindung, das Einkommen ist konstant.
-    expect(r.years[5].darlehen.bank.zinssatz).toBeCloseTo(0.04, 9);
+    expect(r.years[5].darlehen.bank.zinssatz).toBeCloseTo(eingabe.seniorInterestRate / 100, 9);
     expect(r.years[5].darlehen.bank.payment).toBeCloseTo(r.years[1].darlehen.bank.payment, 6);
     expect(r.years[9].taxableIncomeBefore).toBe(r.years[0].taxableIncomeBefore);
     expect(r.totalInvestment).toBeCloseTo(325_500, 6);

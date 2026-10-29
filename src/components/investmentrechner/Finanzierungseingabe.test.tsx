@@ -13,6 +13,9 @@ import { EingabeFinanzierung, EingabeKunde, EingabeErtrag } from "./Eingabeberei
 
 const EINGABE: InvestmentEingabe = {
   ...standardEingabe,
+  // Bis 29.10.2026 der Standard; die Zahlen dieses Tests hängen daran.
+  seniorInterestRate: 4,
+  seniorRepaymentRate: 1.5,
   purchasePrice: 250000,
   transferTaxRate: 3.5,
   notaryRate: 1,

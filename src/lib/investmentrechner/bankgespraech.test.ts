@@ -12,6 +12,9 @@ import {
 // Christians Standardbeispiel aus eigenkapitalrendite.test.ts.
 const BEISPIEL: InvestmentEingabe = mitEigenkapital({
   ...standardEingabe,
+  // Bis 29.10.2026 der Standard; die Zahlen dieses Tests hängen daran.
+  seniorInterestRate: 4,
+  seniorRepaymentRate: 1.5,
   purchasePrice: 300_000,
   rehabExpense: 20_000,
   furniturePrice: 15_000,
