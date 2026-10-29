@@ -36,8 +36,7 @@ describe("Automatische Übernahme im geöffneten Rechner", () => {
     fireEvent.change(screen.getByRole("spinbutton", { name: /Wohnfläche/ }), { target: { value: "72" } });
     await act(async () => resolve({ documents: [], antwort }));
     expect(screen.getByRole("spinbutton", { name: /Wohnfläche/ })).toHaveValue(72);
-    // Seit dem 28.09.2026 mit beiden Werten: hinterlegt und laut Unterlage.
-    expect(screen.getByText(/Hinterlegt 72 m², laut Beleg\.pdf, Seite 2 68 m²\. Die hinterlegte Angabe bleibt/)).toBeInTheDocument();
+    // Den Hinweiskasten mit beiden Werten (hinterlegt und laut Unterlage) gibt es seit dem 29.10.2026 nicht mehr; der Wert bleibt.
   });
   it("überträgt verspätete Antworten nicht auf eine andere Einheit", async () => {
     let resolve!: (v: { documents: []; antwort: KiAntwort }) => void;
@@ -61,7 +60,8 @@ describe("Automatische Übernahme im geöffneten Rechner", () => {
     fireEvent.click(screen.getByRole("button", { name: /Objekt & Kaufpreis/ }));
     expect(screen.getByRole("spinbutton", { name: /Wohnfläche/ })).not.toHaveValue(68);
   });
-  it("eine neue Auslesung mit anderem Wert lässt Zurücknehmen stehen und zeigt die Abweichung dazu (R7-004)", async () => {
+  // Der Knopf „Unterlagen erneut prüfen“ stand im Hinweiskasten, der seit dem 29.10.2026 ausgeblendet ist (Christian).
+  it.skip("eine neue Auslesung mit anderem Wert lässt Zurücknehmen stehen und zeigt die Abweichung dazu (R7-004)", async () => {
     laden.mockResolvedValueOnce({ documents: [], antwort })
       .mockResolvedValue({ documents: [], antwort: { felder: { area: { wert: 70, quelle: "Beleg.pdf, Seite 3", sicherheit: "hoch" } }, hinweise: [] } });
     render(renderRechner());

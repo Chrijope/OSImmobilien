@@ -1588,17 +1588,7 @@ export function InvestmentrechnerInhalt({
           <div className="flex flex-wrap items-center justify-end gap-2">{aktionen}</div>
         )}
 
-        {quellen && (
-          <Alert>
-            <AlertTitle>{quellenStatus.laedt ? "Objektunterlagen werden automatisch ausgelesen …" : "Angaben aus Objekt und Unterlagen"}</AlertTitle>
-            <AlertDescription>
-              <p>{quellen.dokumente.length} hinterlegte Dateien. Gepflegte Angaben haben Vorrang. Eindeutige Dokumentwerte ergänzen fehlende Objektfelder; weitere Angaben bitte manuell oder aus der Selbstauskunft ergänzen.</p>
-              {start?.berechnung && <p>Gespeicherte Berechnung: Die gespeicherten Werte bleiben erhalten. Dokumente stehen zur Prüfung bereit.</p>}
-              {autoHinweise.length > 0 && <ul className="mt-2 list-disc pl-5">{[...new Set(autoHinweise)].map((h, i) => <li key={i}>{h}</li>)}</ul>}
-              <Button variant="link" disabled={quellenStatus.laedt} onClick={() => setQuellenVersuch(v => v + 1)}>Unterlagen erneut prüfen</Button>
-            </AlertDescription>
-          </Alert>
-        )}
+        {/* „Angaben aus Objekt und Unterlagen“ seit dem 29.10.2026 ausgeblendet (Christian); die Herkunft steht weiter unter den Feldern. */}
         <div className="investmentrechner">
           <div className="workspace">
             <aside className="input-panel" ref={maskeRef}>

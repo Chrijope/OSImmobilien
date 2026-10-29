@@ -25,8 +25,8 @@ describe("Finanzierungsobjektpaket", () => {
   });
 
   it("zeigt den Hinweis nur Admin, Inhaber, Objektpartner und Backoffice", () => {
-    for (const r of ["admin", "inhaber", "objektpartner", "backoffice"]) expect(darfObjektpaketHinweisSehen(r)).toBe(true);
-    for (const r of ["vertriebspartner", "finanzierungspartner", "vertriebsleiter", "individuell", undefined]) expect(darfObjektpaketHinweisSehen(r)).toBe(false);
+    for (const r of ["admin", "inhaber", "objektpartner", "vertriebspartner"]) expect(darfObjektpaketHinweisSehen(r)).toBe(true);
+    for (const r of ["backoffice", "finanzierungspartner", "vertriebsleiter", "individuell", undefined]) expect(darfObjektpaketHinweisSehen(r)).toBe(false);
   });
 
   it("findet Objekt- und Wohnungsunterlagen zusammen und meldet die vermietete Einheit vollständig", () => {

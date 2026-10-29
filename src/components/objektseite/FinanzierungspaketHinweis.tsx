@@ -9,8 +9,8 @@ import { darfObjektpaketHinweisSehen, fehlendeFinanzierungsunterlagen } from "@/
  * Der Kasten oben auf Objekt- und Einheitsseite, wenn Unterlagen für die
  * Finanzierung fehlen (Christian, 27.10.2026). Bewusst kein Pflichtfeld beim
  * Anlegen, sondern ein deutlicher Hinweis. Nur für Admin, Inhaber,
- * Objektpartner und Backoffice; alle anderen und ein vollständiges Paket
- * sehen nichts.
+ * Objektpartner und Vertriebspartner (seit 29.10.2026); alle anderen und ein
+ * vollständiges Paket sehen nichts.
  */
 export function FinanzierungspaketHinweis({ objekt, wohnung, onZuDenDokumenten, hochladenZiel }: {
   objekt: Pick<ObjektData, "dokumente" | "meta" | "wohnungen">;

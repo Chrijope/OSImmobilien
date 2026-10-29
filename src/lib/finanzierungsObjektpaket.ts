@@ -1,7 +1,6 @@
 import type { ObjektData, ObjektWohnung } from "@/lib/objekteStore";
 import { normalisiereTitel } from "@/lib/dokumentGruppen";
 import { einheitUnterlagenGruppen, objektUnterlagenEintraege, type EinheitUnterlage } from "@/lib/objektUnterlagenRegeln";
-import { OBJEKTDATEN_ROLLEN } from "@/lib/objektdatenZugang";
 
 /**
  * Das Objektpaket für die Finanzierung: Liegen die Unterlagen vor, die ein
@@ -97,9 +96,14 @@ export interface ObjektpaketErgebnis {
   vollstaendig: boolean;
 }
 
-/** Wer den Hinweis sieht: dieselben vier Rollen wie die Gruppe „Objektdaten" (Christian, 27.10.2026). */
+/**
+ * Wer den Hinweis sieht: Admin, Inhaber, Objektpartner und Vertriebspartner
+ * (Christian, 29.10.2026). Bis dahin die vier Rollen der Gruppe „Objektdaten“
+ * mit Backoffice statt Vertriebspartner.
+ */
+const OBJEKTPAKET_HINWEIS_ROLLEN = ["admin", "inhaber", "objektpartner", "vertriebspartner"];
 export function darfObjektpaketHinweisSehen(rolle: string | null | undefined): boolean {
-  return !!rolle && OBJEKTDATEN_ROLLEN.includes(rolle);
+  return !!rolle && OBJEKTPAKET_HINWEIS_ROLLEN.includes(rolle);
 }
 
 /** Vermietet oder gekündigt: Es gibt einen Mieter, also auch einen Mietvertrag. */
