@@ -66,7 +66,7 @@ function Abschluss({ data, onNeu }: { data: SelbstauskunftData; onNeu: () => voi
           <div className="min-w-0">
             <h3 className="font-bold text-lg">Selbstauskunft vollständig ausgefüllt</h3>
             <p className="text-sm text-muted-foreground mt-1">
-              Speichere das PDF und schicke es dem Kunden zur Unterschrift. Er schickt es unterschrieben zurück.
+              Speichere das PDF und schicke es dem Kunden per E-Mail oder WhatsApp zur Unterschrift. Er schickt es unterschrieben zurück.
             </p>
             <div className="mt-4 flex flex-col sm:flex-row flex-wrap gap-2">
               <Button variant="brand" onClick={alsPdf} disabled={laeuft} data-testid="als-pdf-speichern">
@@ -102,7 +102,8 @@ function useBreit(): boolean {
   return !!breit;
 }
 
-export default function SelbstauskunftArtefakt() {
+/** `ohneZurueck`: eigenes Artefakt nur mit Selbstauskunft, es gibt keine Präsentation, zu der der Pfeil führen könnte. */
+export default function SelbstauskunftArtefakt({ ohneZurueck = false }: { ohneZurueck?: boolean } = {}) {
   const [suche] = useSearchParams();
   const ziel = suche.get("ziel") || "";
   // Neuer Schlüssel = neues Formular, nach „Neue Selbstauskunft beginnen“.
@@ -157,9 +158,11 @@ export default function SelbstauskunftArtefakt() {
       <div className="flex min-h-0 flex-1 flex-col gap-4 px-4 pt-4 sm:px-6 sm:pt-6 xl:flex-row xl:gap-6">
         <main className="flex min-h-0 w-full flex-1 flex-col gap-4 xl:min-w-0">
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" aria-label="Zurück zur Beratungspräsentation" onClick={() => void zurueck()}>
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
+            {!ohneZurueck && (
+              <Button variant="ghost" size="icon" aria-label="Zurück zur Beratungspräsentation" onClick={() => void zurueck()}>
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+            )}
             <div className="min-w-0">
               <h1 className="text-xl font-bold">Online-Selbstauskunft</h1>
               <p className="text-sm text-muted-foreground">Gemeinsam im Gespräch ausfüllen, am Ende als PDF speichern</p>

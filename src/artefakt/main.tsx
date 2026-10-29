@@ -7,7 +7,12 @@
  *   #/selbstauskunft    Formular, am Ende „Als PDF speichern“
  *
  * Nur Fassung B (Entscheidung Christian, 20.10.2026): A entfällt.
+ *
+ * Mit `__NUR_SELBSTAUSKUNFT__` (Build mit NUR_SELBSTAUSKUNFT=1, eigenes
+ * Artefakt „Selbstauskunft“, 29.10.2026) nur die Selbstauskunft: keine
+ * Präsentation, kein Pfeil zurück, jede Adresse führt zum Formular.
  */
+const NUR_SELBSTAUSKUNFT = typeof __NUR_SELBSTAUSKUNFT__ !== "undefined" && __NUR_SELBSTAUSKUNFT__;
 
 import "./netzwerk";
 import { useEffect, useState } from "react";
@@ -103,6 +108,12 @@ function App() {
         <Toaster />
         <Sonner />
         <HashRouter>
+          {NUR_SELBSTAUSKUNFT ? (
+          <Routes>
+            <Route path="/selbstauskunft" element={<SelbstauskunftArtefakt ohneZurueck />} />
+            <Route path="*" element={<Navigate to="/selbstauskunft" replace />} />
+          </Routes>
+          ) : (
           <Routes>
             <Route path="/praesentation" element={<Praesentation />} />
             {/* Das Logo der Präsentation verlinkt auf die CRM-Adresse. */}
@@ -110,6 +121,7 @@ function App() {
             <Route path="/selbstauskunft" element={<SelbstauskunftArtefakt />} />
             <Route path="*" element={<Navigate to="/praesentation" replace />} />
           </Routes>
+          )}
           <DunkelNurAufPraesentation dunkel={dunkel} />
         </HashRouter>
       </TooltipProvider>

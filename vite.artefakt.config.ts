@@ -9,6 +9,10 @@ import fs from "fs";
  *
  *   npx vite build --config vite.artefakt.config.ts   → dist-artefakt/
  *
+ * Mit NUR_SELBSTAUSKUNFT=1 (npm run build:artefakt-selbstauskunft) nur die
+ * Selbstauskunft, ohne Präsentation, für das Artefakt „Selbstauskunft“
+ * (Christian, 29.10.2026)   → dist-artefakt-selbstauskunft/
+ *
  * Kein Backend und keine Zugangsdaten:
  * - `@/integrations/supabase/client` wird durch eine Attrappe ersetzt.
  * - `envDir` zeigt auf einen Ordner ohne .env, `envPrefix` passt auf keine
@@ -18,6 +22,7 @@ import fs from "fs";
  *   Laufzeit holt, werden mitgegeben (`laufzeitDateien`).
  */
 const wurzel = __dirname;
+const NUR_SELBSTAUSKUNFT = process.env.NUR_SELBSTAUSKUNFT === "1";
 
 /*
  * Dateien aus public/, die zur Laufzeit über feste Pfade geholt werden:
@@ -30,10 +35,21 @@ const LAUFZEIT_DATEIEN = [
   "fonts/PlusJakartaSans-Bold.ttf",
   "images/os-real-estate-logo-quer.png",
   "images/os-real-estate-logo-quer-dunkel.png",
+  // Objektfotos und Vertriebsdokumente braucht nur die Präsentation.
+  ...(NUR_SELBSTAUSKUNFT ? [] : [
   ...fs.readdirSync(path.join(wurzel, "public/images/mikroseite")).map((d) => `images/mikroseite/${d}`),
   // Fassung B verlinkt am Ende der Konzeptfolien das Vertriebsdokument (DOKUMENTE_B).
   ...fs.readdirSync(path.join(wurzel, "public/vertriebsunterlagen")).map((d) => `vertriebsunterlagen/${d}`),
+  ]),
 ];
+
+/** Titel der Seite (und damit des Artefakts) für die Fassung nur mit Selbstauskunft. */
+function seitenTitel(): Plugin {
+  return {
+    name: "artefakt-seitentitel",
+    transformIndexHtml: (html) => (NUR_SELBSTAUSKUNFT ? html.replace(/<title>[^<]*<\/title>/, "<title>Selbstauskunft</title>") : html),
+  };
+}
 
 function laufzeitDateien(): Plugin {
   return {
@@ -81,8 +97,9 @@ export default defineConfig({
   envPrefix: "ARTEFAKT_NIE_",
   define: {
     __VERSIONSNOTIZ_NR__: "0",
+    __NUR_SELBSTAUSKUNFT__: JSON.stringify(NUR_SELBSTAUSKUNFT),
   },
-  plugins: [react(), laufzeitDateien(), relativeBildpfade(), ohneProjektKennung()],
+  plugins: [react(), laufzeitDateien(), relativeBildpfade(), ohneProjektKennung(), seitenTitel()],
   resolve: {
     alias: [
       { find: "@/integrations/supabase/client", replacement: path.join(wurzel, "src/artefakt/supabaseAttrappe.ts") },
@@ -97,7 +114,7 @@ export default defineConfig({
     postcss: path.join(wurzel, "postcss.config.js"),
   },
   build: {
-    outDir: path.join(wurzel, "dist-artefakt"),
+    outDir: path.join(wurzel, NUR_SELBSTAUSKUNFT ? "dist-artefakt-selbstauskunft" : "dist-artefakt"),
     emptyOutDir: true,
     target: "es2020",
     sourcemap: false,

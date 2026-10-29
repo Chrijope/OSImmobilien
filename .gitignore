@@ -57,6 +57,7 @@ dist-artefakt
 
 # Eigenständige Fassung des Investmentrechners (vite.investmentrechner.config.ts), wird gebaut, nicht eingecheckt.
 dist-artefakt-investmentrechner
+dist-artefakt-selbstauskunft
 
 # Folien-PDF der Beratungspräsentation (scripts/beratung-pdf), wird erzeugt, nicht eingecheckt.
 dist-pdf
