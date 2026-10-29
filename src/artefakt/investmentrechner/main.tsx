@@ -30,7 +30,6 @@ import { berechneInvestment } from "@/lib/investmentrechner/rechenkern";
 import { standardKaufnebenkostenauswahl } from "@/lib/investmentrechner/kaufnebenkostenAuswahl";
 import { speichereDatei } from "../speichern";
 import { eingabeLaden, eingabeLoeschen, BEISPIEL_EINGABE, namenLaden, namenSpeichern } from "./ablage";
-import { ArtefaktObjektvergleich } from "./Objektvergleich";
 import "./laufzeitDateien";
 
 document.documentElement.lang = "de";
@@ -76,17 +75,13 @@ function App() {
     return frueher ?? BEISPIEL_EINGABE;
   });
   const [name, setName] = useState(() => namenLaden());
-  // Seit 28.10.2026: daneben der persönliche Objektvergleich wie im CRM.
-  const [ansicht, setAnsicht] = useState<"rechner" | "vergleich">("rechner");
+  /*
+    Seit dem 29.10.2026 nur die Rechnung im Einhauser-Aufbau: Analyse und
+    ausführliche Berechnung (PDF). „Berechnung“, „Vergleich“ und der
+    persönliche Objektvergleich (Objektvergleich.tsx) sind ausgeblendet.
+  */
   return (
     <div className="min-h-screen bg-background rechner-artefakt">
-      <div className="artefakt-leiste" role="tablist" aria-label="Ansicht">
-        <div className="artefakt-knoepfe">
-          <button type="button" role="tab" aria-selected={ansicht === "rechner"} className={ansicht === "rechner" ? "aktiv" : ""} onClick={() => setAnsicht("rechner")}>Investmentrechner</button>
-          <button type="button" role="tab" aria-selected={ansicht === "vergleich"} className={ansicht === "vergleich" ? "aktiv" : ""} onClick={() => setAnsicht("vergleich")}>Persönlicher Objektvergleich</button>
-        </div>
-      </div>
-      {ansicht === "vergleich" ? <ArtefaktObjektvergleich /> : <>
       <div className="artefakt-leiste">
         <p>Beim ersten Öffnen sind Beispielzahlen vorbelegt. Deine Eingaben und Bilder bleiben in diesem Browser gespeichert.</p>
         <div className="artefakt-knoepfe">
@@ -108,8 +103,8 @@ function App() {
         vorschau={{}}
         leerZuruecksetzen
         erstelltVon={name}
+        nurAusfuehrlich
       />
-      </>}
       <Toaster />
     </div>
   );

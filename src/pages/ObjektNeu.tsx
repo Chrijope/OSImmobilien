@@ -2447,7 +2447,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
     try {
       if (objektdatenForm) {
         const metaAlt = (getObjektById(objektId)?.meta || {}) as Record<string, any>;
-        await objektMetaErgaenzen(objektId, objektFormInMeta(objektdatenForm, metaAlt.aufteilung));
+        await objektMetaErgaenzen(objektId, objektFormInMeta(objektdatenForm, metaAlt.aufteilung, metaAlt.objektvergleich));
       }
       for (const [i, quelle] of effectiveEinzelWohnungen.entries()) {
         const f = (quelle as { objektdaten?: EinheitFormDaten }).objektdaten;

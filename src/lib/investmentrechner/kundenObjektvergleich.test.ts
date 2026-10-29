@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  STANDARD_ANNAHMEN, empfohlen, kriterien, r2, rechneEinheit, vergleichDateiname,
+  STANDARD_ANNAHMEN, empfohlen, kriterien, nachrangFall, r2, rechneEinheit, vergleichDateiname,
   type KundenObjektvergleich, type VergleichEinheit,
 } from "./kundenObjektvergleich";
 import basis from "./__fixtures__/objektvergleich-basis.json";
@@ -114,5 +114,15 @@ describe("häuserübergreifend", () => {
     const ohne = rechneEinheit(we12(220000), STANDARD_ANNAHMEN);
     expect(mitZiel.monat).toEqual(ohne.monat);
     expect(mitZiel.miete30).toBeGreaterThan(ohne.miete30);
+  });
+});
+
+describe("Kaufnebenkosten über Nachrang", () => {
+  // Einhauser-Fassung vom 28.10.2026 mit Nachrangseite: 5 % Zins, 1 % Tilgung, 3,2 % AfA (31,25 Jahre).
+  const an = { ...STANDARD_ANNAHMEN, zins: 0.05, tilgung: 0.01 };
+  it("trifft die Zuzahlung nach Steuer der Vorlage", () => {
+    const x = rechneEinheit({ ...we12(209000), afaJahre: 31.25 }, an);
+    expect([0, 0.5, 1].map((a) => r2(-nachrangFall(x, a, an).nach))).toEqual([137.71, 186.24, 234.78]);
+    expect(nachrangFall(x, 1, an).jahre).toBe(23);
   });
 });

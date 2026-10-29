@@ -8,22 +8,24 @@
  * damit der vorhandene Bild-PDF-Export (`erzeugeBerechnungsansichtPdf`) sie
  * fotografieren kann. Zahlen aus `kundenObjektvergleich.ts`.
  */
-import type { ReactNode } from "react";
+import { createContext, useContext, type ReactNode } from "react";
 import "./kundenObjektvergleich.css";
 import {
-  STANDARD_SCHRITTE, empfohlen, haeuseruebergreifend, kriterien, objektVon, rundeHalbAuf,
-  type EinheitErgebnis, type KundenObjektvergleich, type VergleichObjekt,
+  STANDARD_SCHRITTE, empfohlen, haeuseruebergreifend, kriterien, nachrangFall, objektVon, rundeHalbAuf,
+  type EinheitErgebnis, type KundenObjektvergleich, type VergleichAnnahmen, type VergleichObjekt,
 } from "@/lib/investmentrechner/kundenObjektvergleich";
 
 // Importiert statt als Adresse, damit die Bilder auch im Artefakt (eine HTML-Datei) mitkommen.
 import LOGO from "../../../../public/images/objektvergleich/logo-hell.png";
+// Dunkle Fassung auf dunklem Grund, wie auf dem Deckblatt der System-PDFs (pdfBranding, ICON_URL).
+import LOGO_DUNKEL from "../../../../public/images/os-real-estate-logo-quer-dunkel.png";
 import P39A_1 from "../../../../public/images/objektvergleich/p39a-1.png";
 import P39A_2 from "../../../../public/images/objektvergleich/p39a-2.png";
 import P39A_3 from "../../../../public/images/objektvergleich/p39a-3.png";
 import P39A_4 from "../../../../public/images/objektvergleich/p39a-4.png";
 const P39A = [P39A_1, P39A_2, P39A_3, P39A_4];
-const SEITEN = 12;
-const SEITE_FREIBETRAG = 11;
+/** Seitenzahl gesamt; je nach Zahl der Wohnungen und Kundendaten 8 bis 13. */
+const SeitenKontext = createContext(13);
 
 // ---------------------------------------------------------------------------
 // Formate wie in der Vorlage: kaufmännisch gerundet, Minus als „−“, „ €“ geschützt
@@ -43,7 +45,12 @@ const tagDe = (iso: string) => (/^\d{4}-\d{2}-\d{2}/.test(iso) ? iso.slice(0, 10
 interface Kontext {
   v: KundenObjektvergleich;
   A: EinheitErgebnis;
-  B: EinheitErgebnis;
+  /** Fehlt bei einer einzelnen Wohnung (ausführliche Berechnung des Investmentrechners). */
+  B: EinheitErgebnis | null;
+  /** A, oder A und B. */
+  liste: EinheitErgebnis[];
+  seiteFreibetrag: number;
+  seiteSteuer: number;
   stand: string;
   anrede: string;
   fuss: string;
@@ -57,9 +64,13 @@ interface Kontext {
 const wpGenitiv = (wp: string) => (/^Wirtschaftsplan \d{4}$/.test(wp) ? `des Wirtschaftsplans ${wp.slice(-4)}` : `laut ${wp}`);
 /** Wirtschaftsplan beider Häuser, gleich oder verschieden. */
 const wpBeide = (k: Kontext) => {
-  const a = k.haus(k.A).wirtschaftsplan, b = k.haus(k.B).wirtschaftsplan;
+  const a = k.haus(k.A).wirtschaftsplan, b = k.B ? k.haus(k.B).wirtschaftsplan : a;
   return a === b ? a : `${a} bzw. ${b}`;
 };
+
+/** „pauschal 42 % wie im Exposé“ oder, aus dem Einkommen gerechnet, „von 38,2 % aus Ihrem Einkommen“. */
+const steuerWie = (an: VergleichAnnahmen) =>
+  an.steuerArt === "einkommen" ? `${pzGanz(an.steuer)}, gerechnet aus Ihrem Einkommen` : `pauschal ${pzGanz(an.steuer)} wie im Exposé`;
 
 /** „Frau Muster“, ohne Anrede „Anna Muster“. */
 function anredeName(v: KundenObjektvergleich): string {
@@ -78,7 +89,7 @@ function Fuss({ text, nr, hell }: { text: string; nr: number; hell?: boolean }) 
   return (
     <div className="foot" style={hell ? { borderTopColor: "rgba(167,215,197,.25)", color: "#8FA39A" } : undefined}>
       <span>{text}</span>
-      <span><b style={hell ? { color: "var(--champ)" } : undefined}>Vertraulich · {nr} / {SEITEN}</b></span>
+      <span><b style={hell ? { color: "var(--champ)" } : undefined}>Vertraulich · {nr} / {useContext(SeitenKontext)}</b></span>
     </div>
   );
 }
@@ -113,8 +124,8 @@ const Zeilen = ({ rows }: { rows: Array<[ReactNode, ReactNode]> }) => (
 // 1 Deckblatt
 // ---------------------------------------------------------------------------
 
-function Deckblatt({ k }: { k: Kontext }) {
-  const { v, A, B } = k;
+function Deckblatt({ k, B }: { k: Kontext; B: EinheitErgebnis }) {
+  const { v, A } = k;
   const o = v.objekt;
   return (
     <section className="expose-page p" style={{ background: "var(--navy)", color: "#E4ECE7" }}>
@@ -148,7 +159,7 @@ function Deckblatt({ k }: { k: Kontext }) {
             <div style={{ fontFamily: "var(--serif)", fontSize: "15pt", color: "#fff", marginTop: "1.5mm" }}>
               {eur(-A.monat.nach)} <span style={{ fontSize: "10pt", color: "#B8C2BC" }}>oder</span> {eur(-B.monat.nach)}
             </div>
-            <div style={{ fontSize: "7.2pt", color: "#B8C2BC", marginTop: "1mm" }}>je Monat im 1. Jahr, Steuersatz pauschal {pzGanz(v.annahmen.steuer)} wie im Exposé</div>
+            <div style={{ fontSize: "7.2pt", color: "#B8C2BC", marginTop: "1mm" }}>je Monat im 1. Jahr, Steuersatz {steuerWie(v.annahmen)}</div>
           </div>
         </div>
         <div style={{ fontSize: "7pt", color: "#B8C2BC", marginTop: "12mm" }}>
@@ -165,14 +176,15 @@ function Deckblatt({ k }: { k: Kontext }) {
 // 2 Ausgangslage
 // ---------------------------------------------------------------------------
 
-function Ausgangslage({ k }: { k: Kontext }) {
-  const { v, A, B } = k;
+function Ausgangslage({ k, nr }: { k: Kontext; nr: number }) {
+  const { v, A, B, liste: L } = k;
   const ku = v.kunde;
   const steuer = pzGanz(v.annahmen.steuer);
   const frei = ku.netto - ku.mieteWarm - ku.lebenshaltung - ku.kreditRaten;
-  const ueber = [A, B].map((e) => frei + e.monat.nach);
-  const monate = [A, B].map((e, i) => (ueber[i] > 0 ? Math.ceil(e.nk / ueber[i]) : 0));
-  const nkMax = Math.max(A.nk, B.nk);
+  const ueber = L.map((e) => frei + e.monat.nach);
+  const monate = L.map((e, i) => (ueber[i] > 0 ? Math.ceil(e.nk / ueber[i]) : 0));
+  const nkMax = Math.max(...L.map((e) => e.nk));
+  const nachW = L.map((e) => e.monat.nach);
   const unbefristet = /unbefristet/i.test(ku.beschaeftigung);
   const traegt = ku.kapital >= nkMax;
   const eck: Array<[ReactNode, ReactNode]> = [
@@ -187,15 +199,17 @@ function Ausgangslage({ k }: { k: Kontext }) {
   const hundert = (x: number) => de(Math.round(x / 100) * 100, 0);
   const leit: Array<[string, string]> = [
     ["Nebenkosten aus Ihrem Ersparten.",
-      `Beim Kauf zahlen Sie einmalig rund ${hundert(A.nk)}\u00a0€ (Wohnung ${A.einheit.nr}) bzw. ${hundert(B.nk)}\u00a0€ (Wohnung ${B.einheit.nr}) für Grunderwerbsteuer, Notar und Grundbuch. `
+      (B ? `Beim Kauf zahlen Sie einmalig rund ${hundert(A.nk)}\u00a0€ (Wohnung ${A.einheit.nr}) bzw. ${hundert(B.nk)}\u00a0€ (Wohnung ${B.einheit.nr}) für Grunderwerbsteuer, Notar und Grundbuch. `
+        : `Beim Kauf zahlen Sie einmalig rund ${hundert(A.nk)}\u00a0€ für Grunderwerbsteuer, Notar und Grundbuch. `)
       + (ku.kapital ? `Das bezahlen Sie aus Ihren ${eur(ku.kapital, 0)} Erspartem. ` : "")
       + (Math.min(...ueber) > 0
-        ? `Danach legen Sie jeden Monat wieder etwas zurück: Von Ihrem Gehalt bleiben nach Miete, Lebenshaltung und Wohnung rund ${hundert(Math.min(...ueber))}\u00a0€ übrig. So ist Ihr Erspartes nach etwa ${Math.min(...monate)} bis ${Math.max(...monate)} Monaten wieder aufgefüllt.`
+        ? `Danach legen Sie jeden Monat wieder etwas zurück: Von Ihrem Gehalt bleiben nach Miete, Lebenshaltung und Wohnung rund ${hundert(Math.min(...ueber))}\u00a0€ übrig. So ist Ihr Erspartes nach etwa ${Math.min(...monate) === Math.max(...monate) ? Math.min(...monate) : `${Math.min(...monate)} bis ${Math.max(...monate)}`} Monaten wieder aufgefüllt.`
         : "")],
     ["Monatlich spürbar, nicht belastend.",
-      `Ihr Eigenanteil nach Steuer liegt je nach Wohnung bei rund ${de(-Math.max(A.monat.nach, B.monat.nach), 0)}\u00a0€ bis ${de(-Math.min(A.monat.nach, B.monat.nach), 0)}\u00a0€ im Monat.`
+      (B ? `Ihr Eigenanteil nach Steuer liegt je nach Wohnung bei rund ${de(-Math.max(...nachW), 0)}\u00a0€ bis ${de(-Math.min(...nachW), 0)}\u00a0€ im Monat.`
+        : `Ihr Eigenanteil nach Steuer liegt bei rund ${de(-A.monat.nach, 0)}\u00a0€ im Monat.`)
       + (frei > 0 ? " Das ist ein kleiner Teil dessen, was Ihnen heute frei bleibt." : "")],
-    ["Der Steuerhebel.", `Jeder Euro Verlust aus der Vermietung senkt die Steuer in dieser Rechnung um ${de(v.annahmen.steuer * 100, 0)} Cent. Mit einem Freibetrag beim Finanzamt kommt das jeden Monat mit dem Gehalt (wann genau: Seite ${SEITE_FREIBETRAG}).`],
+    ["Der Steuerhebel.", `Jeder Euro Verlust aus der Vermietung senkt die Steuer in dieser Rechnung um ${de(v.annahmen.steuer * 100, 0)} Cent. Mit einem Freibetrag beim Finanzamt kommt das jeden Monat mit dem Gehalt (wann genau: Seite ${k.seiteFreibetrag}).`],
     ...(ku.jahreBisRente ? [["Ihr langer Horizont.", `Bei rund ${ku.jahreBisRente} Jahren bis zur Rente zählt nicht nur der günstigste Start, sondern eine Belastung, die über die nächsten 30 Jahre gut passt.`] as [string, string]] : []),
   ];
   // „Sie sind unbefristet angestellt, haben keine Kredite und ein Guthaben, das die Kaufnebenkosten trägt.“
@@ -205,7 +219,7 @@ function Ausgangslage({ k }: { k: Kontext }) {
   ].filter(Boolean);
   const lead = `Sie ${teile.join(", ")}${traegt ? `${ku.kreditRaten ? " und haben" : " und"} ein Guthaben, das die Kaufnebenkosten trägt` : ""}`;
   return (
-    <Seite nr={2} kick="Ihre Ausgangslage" fuss={k.fuss}>
+    <Seite nr={nr} kick="Ihre Ausgangslage" fuss={k.fuss}>
       <h2>{unbefristet && !ku.kreditRaten && traegt ? <>Sicheres Einkommen, viel Zeit: <em>der ideale Startpunkt.</em></> : <>Ihre Zahlen: <em>die Grundlage dieser Rechnung.</em></>}</h2>
       <p className="lead">
         {lead ? `${lead}. ` : ""}Gerechnet wird mit einem Grenzsteuersatz von {steuer}.
@@ -240,12 +254,12 @@ function Ausgangslage({ k }: { k: Kontext }) {
 // 3 Die beiden Wohnungen
 // ---------------------------------------------------------------------------
 
-function Wohnungen({ k }: { k: Kontext }) {
+function Wohnungen({ k, nr }: { k: Kontext; nr: number }) {
   const { A, B } = k;
   const karte = (e: EinheitErgebnis, b: boolean) => {
     const x = e.einheit;
     const rows: Array<[ReactNode, ReactNode]> = [
-      ["Wohnung", `${x.zimmer} Zimmer · ${de(x.qm)} m² · ${x.lage}`],
+      ["Wohnung", [`${x.zimmer} Zimmer`, `${de(x.qm)} m²`, x.lage].filter(Boolean).join(" · ")],
       ["Kaufpreis Wohnung", eur(x.kpWohnung, 0) + (x.kpListe > x.kpWohnung ? ` statt ${eur(x.kpListe, 0)}` : "")],
       ...(x.garagen ? [[x.garagen > 1 ? "Garage 1 (im Kaufpreis)" : "Garage (im Kaufpreis)", eur(x.garageKp, 0)] as [string, string]] : []),
       ...(x.garagen > 1 ? [[`Garage 2${x.garagen > 2 ? ` bis ${x.garagen}` : ""} (ohne Aufpreis)`, "0\u00a0€"] as [string, string]] : []),
@@ -256,9 +270,9 @@ function Wohnungen({ k }: { k: Kontext }) {
     ];
     return (
       <div>
-        <span className={`badge${b ? " b" : ""}`}>Objekt {b ? "B" : "A"}</span>
+        {k.B && <span className={`badge${b ? " b" : ""}`}>Objekt {b ? "B" : "A"}</span>}
         <div style={{ fontFamily: "var(--serif)", fontSize: "14pt", color: "var(--navy)", marginTop: "2mm" }}>Wohnung {x.nr}</div>
-        <div className="small" style={{ marginBottom: "2mm" }}>{k.haus(e).strasse}, {x.lage}</div>
+        <div className="small" style={{ marginBottom: "2mm" }}>{[k.haus(e).strasse, x.lage].filter(Boolean).join(", ")}</div>
         <Zeilen rows={rows} />
       </div>
     );
@@ -278,7 +292,29 @@ function Wohnungen({ k }: { k: Kontext }) {
       o.verwaltung && !o.hausPunkte.some((p) => p.includes(o.verwaltung)) ? `Verwaltung ${o.verwaltung}` : "",
     ].filter(Boolean);
   };
-  const luecke = A.luecke > 0 || B.luecke > 0 ? " und damit die Lücke, die der Bauträger ausgleicht" : "";
+  const luecke = k.liste.some((e) => e.luecke > 0) ? " und damit die Lücke, die der Bauträger ausgleicht" : "";
+
+  if (!B) {
+    const o = k.haus(A);
+    return (
+      <Seite nr={nr} kick="Haus und Wohnung" fuss={k.fuss}>
+        <h2>{o.strasse}, Wohnung {A.einheit.nr}: <em>Lage, Haus und Wohnung.</em></h2>
+        <p className="lead">
+          Wohnung {A.einheit.nr} liegt in {o.strasse}{o.ortZeile ? `, ${o.ortZeile}` : ""}: {A.einheit.zimmer} Zimmer, {de(A.einheit.qm)} m²{A.einheit.lage ? `, ${A.einheit.lage}` : ""}.
+          {A.luecke > 0 ? " Gerechnet ist mit der subventionierten Miete; die Lücke zur heutigen Miete gleicht der Bauträger aus." : ""}
+        </p>
+        <div className="grid" style={{ gridTemplateColumns: "1.05fr 1fr", gap: "6mm", marginTop: "5mm" }}>
+          <div style={{ height: "78mm", borderRadius: "2.5mm", background: o.fotoHaus ? `url("${o.fotoHaus}") center/cover` : "var(--paper)" }} />
+          <div>
+            <div className="label" style={{ marginBottom: "2mm" }}>Das Haus</div>
+            <div style={{ fontFamily: "var(--serif)", fontSize: "12pt", color: "var(--navy)", marginBottom: "2.5mm" }}>{o.strasse}{o.ortZeile ? `, ${o.ortZeile}` : ""}</div>
+            <ul className="li">{hausListe(A, false).map((x) => <li key={x}>{x}</li>)}</ul>
+          </div>
+        </div>
+        <div style={{ marginTop: "7mm" }}>{karte(A, false)}</div>
+      </Seite>
+    );
+  }
 
   if (k.haeuser) {
     const spalte = (e: EinheitErgebnis, b: boolean) => {
@@ -294,7 +330,7 @@ function Wohnungen({ k }: { k: Kontext }) {
       );
     };
     return (
-      <Seite nr={3} kick="Die beiden Wohnungen" fuss={k.fuss}>
+      <Seite nr={nr} kick="Die beiden Wohnungen" fuss={k.fuss}>
         <h2>Zwei Häuser, zwei Wohnungen: <em>Lage, Haus und Wohnung im Vergleich.</em></h2>
         <p className="lead">
           Wohnung {A.einheit.nr} liegt in {k.haus(A).strasse}, Wohnung {B.einheit.nr} in {k.haus(B).strasse}. Unterschiedlich sind Haus und Lage,
@@ -307,7 +343,7 @@ function Wohnungen({ k }: { k: Kontext }) {
 
   const o = k.haus(A);
   return (
-    <Seite nr={3} kick="Die beiden Wohnungen" fuss={k.fuss}>
+    <Seite nr={nr} kick="Die beiden Wohnungen" fuss={k.fuss}>
       <h2>Ein Haus, zwei Wohnungen: <em>gleiche Lage, verschiedene Größe.</em></h2>
       <p className="lead">
         Beide Wohnungen liegen in {o.strasse}. Lage, Haus und Hausverwaltung sind gleich. Unterschiedlich sind Größe, Preis, die heutige Miete{luecke}.
@@ -333,8 +369,8 @@ type Sieger = "A" | "B" | null;
 const sieger = (a: number, b: number, kleinerBesser: boolean): Sieger =>
   Math.abs(a - b) < 0.005 ? null : (kleinerBesser ? a < b : a > b) ? "A" : "B";
 
-function Vergleich({ k }: { k: Kontext }) {
-  const { v, A, B } = k;
+function Vergleich({ k, B, nr }: { k: Kontext; B: EinheitErgebnis; nr: number }) {
+  const { v, A } = k;
   const an = v.annahmen;
   const am = A.monat, bm = B.monat, ah = A.hausgeld, bh = B.hausgeld;
   const g = A.einheit.garagen;
@@ -363,7 +399,7 @@ function Vergleich({ k }: { k: Kontext }) {
     return [titel, satz];
   };
   return (
-    <Seite nr={4} kick="Vergleich nebeneinander" fuss={k.fuss}>
+    <Seite nr={nr} kick="Vergleich nebeneinander" fuss={k.fuss}>
       <h2>{k.haeuser ? <>Zwei Häuser im direkten Vergleich. <em>Der Unterschied liegt im Detail.</em></> : <>Gleiches Haus, gleiche Lage. <em>Der Unterschied liegt im Detail.</em></>}</h2>
       <p className="lead" style={{ fontSize: "8pt" }}>Grün markiert, wo eine Wohnung vorne liegt. Alle Zahlen gelten für Sie persönlich im 1. Jahr, wenn nicht anders angegeben. Hausgeld laut {wpBeide(k)}.</p>
       <table className="t v" style={{ marginTop: "3mm" }}>
@@ -430,7 +466,7 @@ function freibetragText(k: Kontext): ReactNode {
       später gestellt verteilt das Finanzamt ihn auf die restlichen Monate. Die Steuerersparnis kommt dann mit dem Gehalt. Verluste aus einer neu
       gekauften Wohnung berücksichtigt es dafür ab dem 1. Januar nach dem Übergang von Nutzen und Lasten (Lastenwechsel, § 37 Abs. 3 Satz 8 EStG);
       der Lastenwechsel liegt in der Regel rund {n} Monate nach dem Kauf. Bis dahin zahlen Sie den Betrag aus Schritt 1; die Differenz erhalten
-      Sie über die Steuererklärung zurück (Höhe nach den tatsächlichen Werten des Kaufjahres). Mehr auf Seite {SEITE_FREIBETRAG}.
+      Sie über die Steuererklärung zurück (Höhe nach den tatsächlichen Werten des Kaufjahres). Mehr auf Seite {k.seiteFreibetrag}.
     </>
   );
 }
@@ -545,7 +581,7 @@ function Rechnung({ k, e, nr, b }: { k: Kontext; e: EinheitErgebnis; nr: number;
   const e30 = e.entw[30];
   const h = e.hausgeld;
   return (
-    <Seite nr={nr} kick={`Ihre persönliche Rechnung · Objekt ${b ? "B" : "A"}`} fuss={k.fuss} klasse="sh">
+    <Seite nr={nr} kick={k.B ? `Ihre persönliche Rechnung · Objekt ${b ? "B" : "A"}` : "Ihre persönliche Rechnung"} fuss={k.fuss} klasse="sh">
       <h2>{k.haus(e).strasse}, Wohnung {x.nr}: <em>{eur(-m.nach)} im Monat für Ihre Kapitalanlage.</em></h2>
       <div className="grid" style={{ gridTemplateColumns: "1fr 1fr 1fr", gap: "4mm", marginTop: "4mm" }}>
         <div className="tile or"><div className="label">Ihre Steuerersparnis im 1. Jahr</div><div className="n">{eur(j.ersparnis, 0)}</div><div className="s">{eur(m.ersparnis)} im Monat; in 30 Jahren zusammen rund {tsd(e.steuer30)}</div></div>
@@ -587,9 +623,9 @@ function Rechnung({ k, e, nr, b }: { k: Kontext; e: EinheitErgebnis; nr: number;
 
 const FARBE_A = "#198A5F", FARBE_B = "#D9731A";
 
-function ChartErloes({ A, B }: { A: EinheitErgebnis; B: EinheitErgebnis }) {
+function ChartErloes({ A, B }: { A: EinheitErgebnis; B: EinheitErgebnis | null }) {
   const W = 600, H = 200, l = 40, r = 10, t = 10, b = 22;
-  const hoechst = Math.max(...[A, B].flatMap((e) => e.reihe.flatMap((p) => [p.wert - p.rest, p.zuz])));
+  const hoechst = Math.max(...[A, B].filter((e): e is EinheitErgebnis => !!e).flatMap((e) => e.reihe.flatMap((p) => [p.wert - p.rest, p.zuz])));
   const ymax = Math.max(150000, Math.ceil(hoechst / 150000) * 150000);
   const X = (j: number) => l + ((W - l - r) * j) / 35;
   const Y = (v: number) => t + (H - t - b) * (1 - v / ymax);
@@ -607,15 +643,15 @@ function ChartErloes({ A, B }: { A: EinheitErgebnis; B: EinheitErgebnis }) {
         </g>
       ))}
       {[0, 5, 10, 15, 20, 25, 30, 35].map((j) => <text key={j} x={X(j)} y={H - 8} textAnchor="middle" fontSize={7} fill="#56635D">{j === 0 ? "heute" : j}</text>)}
-      {linie(A, "erl", FARBE_A)}{linie(B, "erl", FARBE_B)}
-      {linie(A, "zuz", "#12362A", "4 3")}{linie(B, "zuz", FARBE_B, "1.5 2.5")}
+      {linie(A, "erl", FARBE_A)}{B && linie(B, "erl", FARBE_B)}
+      {linie(A, "zuz", "#12362A", "4 3")}{B && linie(B, "zuz", FARBE_B, "1.5 2.5")}
     </svg>
   );
 }
 
-function ChartNach({ A, B }: { A: EinheitErgebnis; B: EinheitErgebnis }) {
+function ChartNach({ A, B }: { A: EinheitErgebnis; B: EinheitErgebnis | null }) {
   const W = 600, H = 140, l = 40, r = 10, t = 8, b = 20;
-  const werte = [A, B].flatMap((e) => e.reihe.slice(0, 30).map((p) => p.nach));
+  const werte = [A, B].filter((e): e is EinheitErgebnis => !!e).flatMap((e) => e.reihe.slice(0, 30).map((p) => p.nach));
   const lo = Math.min(-100, Math.floor(Math.min(...werte) / 100) * 100);
   const hi = Math.max(0, Math.ceil(Math.max(...werte) / 100) * 100);
   const X = (j: number) => l + ((W - l - r) * (j - 1)) / 29;
@@ -631,7 +667,7 @@ function ChartNach({ A, B }: { A: EinheitErgebnis; B: EinheitErgebnis }) {
         </g>
       ))}
       {[1, 5, 10, 15, 20, 25, 30].map((j) => <text key={j} x={X(j)} y={H - 6} textAnchor="middle" fontSize={7} fill="#56635D">{j === 1 ? "Jahr 1" : j}</text>)}
-      {([[A, FARBE_A, undefined], [B, FARBE_B, "4 3"]] as const).map(([e, f, d], i) => (
+      {([[A, FARBE_A, undefined], ...(B ? [[B, FARBE_B, "4 3"]] : [])] as Array<[EinheitErgebnis, string, string | undefined]>).map(([e, f, d], i) => (
         <polyline key={i} points={e.reihe.slice(0, 30).map((p) => `${X(p.jahr).toFixed(1)},${Y(p.nach).toFixed(1)}`).join(" ")} fill="none" stroke={f} strokeWidth={1.8} strokeDasharray={d} />
       ))}
     </svg>
@@ -648,20 +684,23 @@ function Legende({ items }: { items: Array<[string, string, string?]> }) {
   );
 }
 
-function Entwicklung({ k }: { k: Kontext }) {
+function Entwicklung({ k, nr }: { k: Kontext; nr: number }) {
   const { v, A, B } = k;
   const an = v.annahmen;
   const afa = A.einheit.afaJahre;
+  const afaEnde = Math.ceil(afa);
   return (
-    <Seite nr={7} kick="Vermögensentwicklung im Vergleich" fuss={k.fuss}>
+    <Seite nr={nr} kick={B ? "Vermögensentwicklung im Vergleich" : "Vermögensentwicklung"} fuss={k.fuss}>
       <h2>Aus kleinen Monatsbeträgen <em>wird echtes Vermögen.</em></h2>
       <p className="lead" style={{ fontSize: "8pt" }}>Verkaufssumme ist der angenommene Verkaufspreis bei {pzGanz(an.wertPa)} Wertentwicklung im Jahr. Davon wird die Restschuld abgelöst; was übrig bleibt, ist Ihr Erlös (durchgezogene Linien). Gestrichelt und gepunktet: was Sie selbst insgesamt zugezahlt haben, inklusive Kaufnebenkosten. Erlös minus Zuzahlung ist Ihr Plus.</p>
       <div style={{ marginTop: "3mm" }}><ChartErloes A={A} B={B} /></div>
-      <Legende items={[["A Erlös nach Kreditablösung", FARBE_A], ["B Erlös nach Kreditablösung", FARBE_B], ["A Ihre Zuzahlung gesamt", "#12362A", "4 3"], ["B Ihre Zuzahlung gesamt", FARBE_B, "1.5 2.5"]]} />
+      <Legende items={B
+        ? [["A Erlös nach Kreditablösung", FARBE_A], ["B Erlös nach Kreditablösung", FARBE_B], ["A Ihre Zuzahlung gesamt", "#12362A", "4 3"], ["B Ihre Zuzahlung gesamt", FARBE_B, "1.5 2.5"]]
+        : [["Erlös nach Kreditablösung", FARBE_A], ["Ihre Zuzahlung gesamt", "#12362A", "4 3"]]} />
       <table className="t" style={{ marginTop: "3mm" }}><tbody>
         <tr><th /><th className="r">Verkaufssumme</th><th className="r">Restschuld</th><th className="r">Ihr Erlös</th><th className="r">Ihre Zuzahlung</th><th className="r">Ihr Plus</th></tr>
-        {[A, B].map((e, i) => [
-          <tr key={`k${i}`}><td colSpan={6} style={{ fontWeight: 500, paddingTop: "2mm" }}><span className={`badge${i ? " b" : ""}`}>{i ? "B" : "A"}</span> {k.haus(e).strasse}, WE {e.einheit.nr}</td></tr>,
+        {k.liste.map((e, i) => [
+          <tr key={`k${i}`}><td colSpan={6} style={{ fontWeight: 500, paddingTop: "2mm" }}>{B && <span className={`badge${i ? " b" : ""}`}>{i ? "B" : "A"}</span>} {k.haus(e).strasse}, WE {e.einheit.nr}</td></tr>,
           ...([25, 30, 35] as const).map((y) => {
             const x = e.entw[y];
             return (
@@ -672,16 +711,16 @@ function Entwicklung({ k }: { k: Kontext }) {
         ])}
       </tbody></table>
       <p className="small" style={{ marginTop: "1.5mm" }}>
-        Jahr 1 = {an.startJahr}.{A.entw[35].rest < 1 && B.entw[35].rest < 1 ? " Nach 35 Jahren ist der Kredit in beiden Fällen getilgt." : ""}
-        {afa < 35 ? ` Die Abschreibung endet nach Jahr ${afa}; ab Jahr ${afa + 1} entfällt ihre Steuerersparnis, das ist in den Werten berücksichtigt.` : ""}
+        Jahr 1 = {an.startJahr}.{k.liste.every((e) => e.entw[35].rest < 1) ? ` Nach 35 Jahren ist der Kredit${B ? " in beiden Fällen" : ""} getilgt.` : ""}
+        {afa < 35 ? ` Die Abschreibung endet nach Jahr ${afaEnde}; ab Jahr ${afaEnde + 1} entfällt ihre Steuerersparnis, das ist in den Werten berücksichtigt.` : ""}
         {" "}Alle Werte ungerundet gerechnet und auf 1.000 € gerundet, Rundungsdifferenzen möglich. Die Zuzahlungen gelten nur, wenn die angesetzten Mieten tatsächlich erzielt werden{A.einheit.garagen ? " (auch die Garage nach Ende der Aufstockung)" : ""}. Werte vor Verkaufskosten; Restschuld vereinfacht mit jährlicher Verrechnung (bei monatlicher Zahlung etwas niedriger).
       </p>
       <div className="label" style={{ marginTop: "4mm" }}>Ihr Eigenanteil nach Steuer je Monat, Jahr 1 bis 30</div>
       <div style={{ marginTop: "1.5mm" }}><ChartNach A={A} B={B} /></div>
-      <Legende items={[[`A Wohnung ${A.einheit.nr}`, FARBE_A], [`B Wohnung ${B.einheit.nr}`, FARBE_B, "4 3"]]} />
+      <Legende items={B ? [[`A Wohnung ${A.einheit.nr}`, FARBE_A], [`B Wohnung ${B.einheit.nr}`, FARBE_B, "4 3"]] : [[`Wohnung ${A.einheit.nr}`, FARBE_A]]} />
       <p className="small" style={{ marginTop: "1.5mm" }}>
-        Wohnung {A.einheit.nr} liegt zwischen rund {de(-A.nachMax, 0)}&nbsp;€ und {de(-A.nachMin, 0)}&nbsp;€, Wohnung {B.einheit.nr} zwischen rund {de(-B.nachMax, 0)}&nbsp;€ und {de(-B.nachMin, 0)}&nbsp;€ im Monat.
-        Szenario mit Mietsteigerung laut Exposé, Kosten +{pzGanz(an.kostenPa)} im Jahr, Steuersatz pauschal {pzGanz(an.steuer)}; im Ruhestand ist der Steuersatz meist niedriger.
+        Wohnung {A.einheit.nr} liegt zwischen rund {de(-A.nachMax, 0)}&nbsp;€ und {de(-A.nachMin, 0)}&nbsp;€{B ? <>, Wohnung {B.einheit.nr} zwischen rund {de(-B.nachMax, 0)}&nbsp;€ und {de(-B.nachMin, 0)}&nbsp;€</> : ""} im Monat.
+        Szenario mit Mietsteigerung laut Exposé, Kosten +{pzGanz(an.kostenPa)} im Jahr, Steuersatz {steuerWie(an)}; im Ruhestand ist der Steuersatz meist niedriger.
       </p>
     </Seite>
   );
@@ -691,8 +730,8 @@ function Entwicklung({ k }: { k: Kontext }) {
 // 8 Empfehlung
 // ---------------------------------------------------------------------------
 
-function Empfehlung({ k }: { k: Kontext }) {
-  const { v, A, B } = k;
+function Empfehlung({ k, B, nr }: { k: Kontext; B: EinheitErgebnis; nr: number }) {
+  const { v, A } = k;
   const krit = kriterien(A, B, !k.haeuser);
   const wahl = empfohlen(A, B, !k.haeuser);
   const E = wahl === "A" ? A : B, O = wahl === "A" ? B : A;
@@ -723,7 +762,7 @@ function Empfehlung({ k }: { k: Kontext }) {
   const autoAndere = `Wenn Sie ${O.nk < E.nk ? `Ihr Guthaben stärker schonen wollen (rund ${eur(E.nk - O.nk, 0)} weniger Nebenkosten)` : "andere Schwerpunkte setzen"}${O.monat.nach > E.monat.nach ? " und im Monat weniger zuzahlen möchten" : ""}.`;
   const schritte = t.naechsteSchritte.length ? t.naechsteSchritte : STANDARD_SCHRITTE;
   return (
-    <Seite nr={8} kick="Welche Wohnung passt zu Ihnen?" fuss={k.fuss}>
+    <Seite nr={nr} kick="Welche Wohnung passt zu Ihnen?" fuss={k.fuss}>
       <h2>{t.empfehlungTitel ? t.empfehlungTitel : <>Unsere ehrliche Einschätzung: <em>Wohnung {E.einheit.nr}, für Ihren langen Weg.</em></>}</h2>
       <div className="grid" style={{ gridTemplateColumns: "1fr 1fr", gap: "8mm", marginTop: "6mm" }}>
         <div><table className="t"><tbody>
@@ -761,14 +800,14 @@ function Sheet({ k, e, nr }: { k: Kontext; e: EinheitErgebnis; nr: number }) {
   const m = e.monat, x = e.einheit;
   const kpi: Array<[string, string, string]> = [
     ["Kaufpreis", eur(e.kp), x.garagen ? `inkl. Garage ${eur(x.garageKp, 0)}${x.garagen > 1 ? ", weitere gratis" : ""}` : "Wohnung"],
-    ["Wohnfläche", `${de(x.qm)} m²`, `${x.zimmer} Zimmer · ${x.lage}`],
+    ["Wohnfläche", `${de(x.qm)} m²`, [`${x.zimmer} Zimmer`, x.lage].filter(Boolean).join(" · ")],
     ["Darlehen", eur(e.darlehen), "100 % des Kaufpreises"],
     ["Ihr Eigenkapital", eur(e.nk), `Kaufnebenkosten ${pz(an.knk)}`],
   ];
   const zl = (a: string, i: string, w: number) => <div className="zl" key={a}><span>{a}<i>{i}</i></span><span>{eur(w)}</span></div>;
   const kurz = [
     `Kaufpreis voll finanziert: ${pz(an.zins)} Zins, ${pz(an.tilgung)} Tilgung. Nebenkosten ${eur(e.nk, 0)} aus Eigenkapital.`,
-    `Steuer pauschal ${pzGanz(an.steuer)} wie im Exposé. Herleitung und Annahmen: Seite 12.`,
+    `Steuer ${steuerWie(an)}. Herleitung und Annahmen: Seite ${k.seiteSteuer}.`,
     e.luecke > 0
       ? `Miete subventioniert auf ${de(x.mieteSubQm)} €/m² bis zur nächsten Mieterhöhung, längstens ${an.subventionMonate} Monate (Mieter zahlt heute ${eur(x.mieteIst)}).`
       : `Gerechnet mit der heutigen Miete von ${eur(x.mieteIst)}.`,
@@ -797,9 +836,9 @@ function Sheet({ k, e, nr }: { k: Kontext; e: EinheitErgebnis; nr: number }) {
         </div>
         <div className="label" style={{ marginTop: "5.5mm" }}>Was Sie im Monat zahlen</div>
         <div className="st"><div className="nr">1</div><div><b>Das zahlen Sie im Monat, bevor das Finanzamt etwas erstattet</b><i>Ausgaben minus Einnahmen</i></div><div className="be">{eur(-m.vor)}</div></div>
-        <div className="st s2"><div className="nr">2</div><div><b>Das erstattet Ihnen das Finanzamt im Monat</b><i>Steuerersparnis, pauschal {pzGanz(an.steuer)}</i></div><div className="be">{"−"} {eur(m.ersparnis)}</div></div>
+        <div className="st s2"><div className="nr">2</div><div><b>Das erstattet Ihnen das Finanzamt im Monat</b><i>Steuerersparnis, {an.steuerArt === "einkommen" ? "" : "pauschal "}{pzGanz(an.steuer)}</i></div><div className="be">{"−"} {eur(m.ersparnis)}</div></div>
         <div className="st s3"><div className="nr">3</div><div><b>Das zahlen Sie tatsächlich im Monat</b><i>mit Steuervorteil, inklusive Tilgung</i></div><div className="be">{eur(-m.nach)}</div></div>
-        <div style={{ fontSize: "8.6pt", color: "var(--muted)", marginTop: "2.5mm" }}>Gilt, sobald Ihr Freibetrag wirkt (ab 1. Januar nach dem Lastenwechsel), Details Seite {SEITE_FREIBETRAG}.</div>
+        <div style={{ fontSize: "8.6pt", color: "var(--muted)", marginTop: "2.5mm" }}>Gilt, sobald Ihr Freibetrag wirkt (ab 1. Januar nach dem Lastenwechsel), Details Seite {k.seiteFreibetrag}.</div>
         <div className="note" style={{ marginTop: "4.5mm", fontSize: "8.6pt", padding: "3mm 4.5mm" }}><div className="label" style={{ marginBottom: "1.5mm" }}>Das Wichtigste in Kürze</div>
           <ul className="li">{kurz.map((s) => <li key={s} style={{ fontSize: "8.6pt", marginBottom: "1mm" }}>{s}</li>)}</ul></div>
       </div>
@@ -812,8 +851,8 @@ function Sheet({ k, e, nr }: { k: Kontext; e: EinheitErgebnis; nr: number }) {
 // 11 Hinweisseite § 39a
 // ---------------------------------------------------------------------------
 
-function Hinweis({ k }: { k: Kontext }) {
-  const { A, B, stand } = k;
+function Hinweis({ k, nr }: { k: Kontext; nr: number }) {
+  const { stand } = k;
   const n = k.v.annahmen.lastenwechselMonate;
   const schritte: Array<[string, string]> = [
     ["Kauf und Lastenwechsel", `Mit dem Übergang von Nutzen und Lasten gehört die Wohnung wirtschaftlich Ihnen; ab dann zählen Miete und Kosten für Sie. In der Regel ist das rund ${n} Monate nach dem Kauf.`],
@@ -824,7 +863,7 @@ function Hinweis({ k }: { k: Kontext }) {
   ];
   const bild = (i: number) => <img src={P39A[i - 1]} alt={`Auszug § 39a EStG, Teil ${i}`} style={{ width: "100%", display: "block", borderRadius: "1mm" }} />;
   return (
-    <Seite nr={11} kick="Wann die Steuerersparnis bei Ihnen ankommt" fuss={k.fuss}>
+    <Seite nr={nr} kick="Wann die Steuerersparnis bei Ihnen ankommt" fuss={k.fuss}>
       <h2>Monatlich mit dem Gehalt: <em>so wirkt der Freibetrag.</em></h2>
       <p className="lead" style={{ fontSize: "8pt" }}>Ohne Freibetrag erhalten Sie die Steuerersparnis einmal im Jahr mit dem Steuerbescheid. Mit einem Freibetrag auf der Lohnsteuerkarte (elektronische Lohnsteuerabzugsmerkmale) kommt sie jeden Monat mit dem Gehalt. Allgemeine Information, keine Steuerberatung.</p>
       <div className="label" style={{ margin: "4mm 0 1.5mm" }}>Auszug aus dem Gesetz: § 39a EStG</div>
@@ -847,7 +886,7 @@ function Hinweis({ k }: { k: Kontext }) {
         </div>
         <div>
           <div className="note"><b>Wichtig für das erste Jahr:</b> Nr. 5 verweist auf § 37 Absatz 3 EStG. Dort heißt es in Satz 8: „Negative Einkünfte aus der Vermietung oder Verpachtung eines Gebäudes im Sinne des § 21 Absatz 1 Satz 1 Nummer 1 werden bei der Festsetzung der Vorauszahlungen nur für Kalenderjahre berücksichtigt, die nach der Anschaffung oder Fertigstellung dieses Gebäudes beginnen.“ (Quelle: gesetze-im-internet.de, § 37 EStG). Deshalb wirkt der Freibetrag ab dem 1. Januar nach dem Lastenwechsel.</div>
-          <div className="note or" style={{ marginTop: "3mm" }}><b>Was das für Sie heißt:</b> Wohnung {A.einheit.nr}: bis der Freibetrag wirkt {eur(-A.monat.vor)} im Monat, danach {eur(-A.monat.nach)}. Wohnung {B.einheit.nr}: bis dahin {eur(-B.monat.vor)}, danach {eur(-B.monat.nach)}. Die Differenz (im Modell {eur(A.monat.ersparnis)} bzw. {eur(B.monat.ersparnis)} je Monat) erhalten Sie für die Monate davor mit der Steuererklärung zurück. Das ist ein Modellwert: Im Kaufjahr zählen die tatsächlichen Einnahmen und Kosten, die zeitanteilige AfA und Ihr persönlicher Steuersatz. Stand {stand}.</div>
+          <div className="note or" style={{ marginTop: "3mm" }}><b>Was das für Sie heißt:</b> {k.liste.map((e, i) => `Wohnung ${e.einheit.nr}: bis ${i ? "dahin" : "der Freibetrag wirkt"} ${eur(-e.monat.vor)}${i ? "" : " im Monat"}, danach ${eur(-e.monat.nach)}. `).join("")}Die Differenz (im Modell {k.liste.map((e) => eur(e.monat.ersparnis)).join(" bzw. ")} je Monat) erhalten Sie für die Monate davor mit der Steuererklärung zurück. Das ist ein Modellwert: Im Kaufjahr zählen die tatsächlichen Einnahmen und Kosten, die zeitanteilige AfA und Ihr persönlicher Steuersatz. Stand {stand}.</div>
         </div>
       </div>
     </Seite>
@@ -858,8 +897,8 @@ function Hinweis({ k }: { k: Kontext }) {
 // 12 Steuerersparnis im Detail und Annahmen
 // ---------------------------------------------------------------------------
 
-function SteuerDetail({ k }: { k: Kontext }) {
-  const { v, A, B } = k;
+function SteuerDetail({ k, nr }: { k: Kontext; nr: number }) {
+  const { v, A, B, liste: L } = k;
   const an = v.annahmen;
   const steuer = pzGanz(an.steuer);
   const afaJ = A.einheit.afaJahre;
@@ -867,7 +906,7 @@ function SteuerDetail({ k }: { k: Kontext }) {
     const j = e.jahr;
     return (
       <div>
-        <span className={`badge${b ? " b" : ""}`}>{b ? "B" : "A"}</span> <b style={{ fontWeight: 500 }}>Wohnung {e.einheit.nr}</b>
+        {B && <span className={`badge${b ? " b" : ""}`}>{b ? "B" : "A"}</span>} <b style={{ fontWeight: 500 }}>Wohnung {e.einheit.nr}</b>
         <table className="t" style={{ marginTop: "2mm", fontSize: "8.6pt" }}><tbody>
           <tr><td>{e.einheit.garagen ? `Kaltmiete und ${garagenText(e, false)} im Jahr` : "Kaltmiete im Jahr"}</td><td className="r">+ {eur(j.miete)}</td></tr>
           <tr><td>Schuldzinsen Bankdarlehen</td><td className="r">{"−"} {eur(j.zins)}</td></tr>
@@ -884,18 +923,18 @@ function SteuerDetail({ k }: { k: Kontext }) {
     <><b>Nicht absetzbar:</b> Tilgung (sie baut Ihr Vermögen auf) und Erhaltungsrücklage (erst, wenn das Geld für Reparaturen verwendet wird).</>,
     <><b>Abschreibung:</b> ≈ {de(100 / afaJ, 1)} % (1/{afaJ}) auf {pzGanz(an.gebaeudeanteil)} von Kaufpreis und Nebenkosten{afaJ < 50 ? "; setzt ein anerkanntes Gutachten zur Restnutzungsdauer voraus, gesetzlich wären es 2 %" : ""}.</>,
     <><b>Finanzierung:</b> Bankdarlehen über den Kaufpreis, Zins {pz(an.zins)}, Tilgung {pz(an.tilgung)}. Kaufnebenkosten ({pz(an.knk)}: Grunderwerbsteuer, Notar und Grundbuch) aus Eigenkapital.</>,
-    <><b>Miete:</b> gerechnet mit {A.einheit.mieteSubQm === B.einheit.mieteSubQm ? de(A.einheit.mieteSubQm) : `${de(A.einheit.mieteSubQm)} bzw. ${de(B.einheit.mieteSubQm)}`} €/m²; der Mieter zahlt heute {eur(A.einheit.mieteIst)} (Wohnung {A.einheit.nr}) bzw. {eur(B.einheit.mieteIst)} (Wohnung {B.einheit.nr}).
-      {A.luecke > 0 || B.luecke > 0 ? ` Die Lücke trägt der Bauträger bis zur nächsten Mieterhöhung, längstens ${an.subventionMonate} Monate.` : ""}
+    <><b>Miete:</b> gerechnet mit {!B || A.einheit.mieteSubQm === B.einheit.mieteSubQm ? de(A.einheit.mieteSubQm) : `${de(A.einheit.mieteSubQm)} bzw. ${de(B.einheit.mieteSubQm)}`} €/m²; der Mieter zahlt heute {B ? <>{eur(A.einheit.mieteIst)} (Wohnung {A.einheit.nr}) bzw. {eur(B.einheit.mieteIst)} (Wohnung {B.einheit.nr})</> : eur(A.einheit.mieteIst)}.
+      {L.some((e) => e.luecke > 0) ? ` Die Lücke trägt der Bauträger bis zur nächsten Mieterhöhung, längstens ${an.subventionMonate} Monate.` : ""}
       {A.einheit.garagen ? ` Garage${A.einheit.garagen > 1 ? " 1" : ""} im 1. Jahr ${eur(A.einheit.garageMiete1, 0)}.` : ""}
       {A.einheit.garagen > 1 ? ` Weitere Garage ohne Aufpreis; Miete ${eur(A.einheit.garageMiete1, 0)} im 1. Jahr vom Bauträger getragen, danach Vermietung.` : ""}</>,
     <><b>Steuersatz:</b> Steuerersparnis gerechnet mit einem Grenzsteuersatz von {steuer}; die tatsächliche Ersparnis hängt vom persönlichen Steuersatz ab.</>,
     <>Vereinfachte Rechnung für das 1. volle Jahr; Rundungsdifferenzen möglich.</>,
   ];
   return (
-    <Seite nr={12} kick="Steuerersparnis im Detail und Annahmen" fuss={k.fuss}>
+    <Seite nr={nr} kick="Steuerersparnis im Detail und Annahmen" fuss={k.fuss}>
       <h2>So entsteht die Steuerersparnis <em>im 1. Jahr.</em></h2>
-      <p className="lead" style={{ fontSize: "9pt" }}>Zinsen, Abschreibung und nicht umlagefähiges Hausgeld sind zusammen höher als die Miete. Dieses Minus senkt Ihr zu versteuerndes Einkommen; mit pauschal {steuer} gerechnet ergibt sich die Erstattung aus Schritt 2 der Investmentsheets.</p>
-      <div className="grid" style={{ gridTemplateColumns: "1fr 1fr", gap: "8mm", marginTop: "6mm" }}>{tab(A, false)}{tab(B, true)}</div>
+      <p className="lead" style={{ fontSize: "9pt" }}>Zinsen, Abschreibung und nicht umlagefähiges Hausgeld sind zusammen höher als die Miete. Dieses Minus senkt Ihr zu versteuerndes Einkommen; mit {v.annahmen.steuerArt === "einkommen" ? "" : "pauschal "}{steuer} gerechnet ergibt sich die Erstattung aus Schritt 2 {B ? "der Investmentsheets" : "des Investmentsheets"}.</p>
+      <div className="grid" style={{ gridTemplateColumns: "1fr 1fr", gap: "8mm", marginTop: "6mm" }}>{tab(A, false)}{B && tab(B, true)}</div>
       <div className="label" style={{ marginTop: "7mm", marginBottom: "2mm" }}>Annahmen und Hinweise</div>
       <ul className="li">{hinw.map((h, i) => <li key={i} style={{ fontSize: "8.4pt", marginBottom: "1.6mm" }}>{h}</li>)}</ul>
       <p className="small" style={{ marginTop: "5mm", fontSize: "7pt" }}>
@@ -907,38 +946,188 @@ function SteuerDetail({ k }: { k: Kontext }) {
         zehn Jahren (§ 23 EStG) als allgemeiner Hinweis. Steuerersparnis gerechnet mit einem Grenzsteuersatz von {steuer} auf das Ergebnis aus Vermietung, wie in der
         Musterrechnung der Exposés; die tatsächliche Ersparnis hängt vom persönlichen Steuersatz ab. Ohne Kirchensteuer und ohne Solidaritätszuschlag, Einkommen über die Laufzeit gleich.
         {afaJ < 50 ? " Die AfA wegen kürzerer tatsächlicher Nutzungsdauer setzt ein Gutachten voraus; ob und in welcher Höhe sie anerkannt wird, entscheidet das Finanzamt." : ""}
-        {A.luecke > 0 || B.luecke > 0 || A.einheit.garagen ? " Mietsubvention und Garagenmiete laut Vereinbarungen des Bauträgers; maßgeblich sind die Verträge." : ""}
+        {L.some((e) => e.luecke > 0) || A.einheit.garagen ? " Mietsubvention und Garagenmiete laut Vereinbarungen des Bauträgers; maßgeblich sind die Verträge." : ""}
         {" "}Hausgeld laut {k.haeuser
-          ? [A, B].map((e) => `${k.haus(e).wirtschaftsplan}${k.haus(e).verwaltung ? ` (${k.haus(e).strasse}, Verwaltung ${k.haus(e).verwaltung})` : ` (${k.haus(e).strasse})`}`).join(" und ")
-          : `${v.objekt.wirtschaftsplan}${v.objekt.verwaltung ? ` (Verwaltung ${v.objekt.verwaltung})` : ""}`}. Heutige Mieten laut Exposés (Stand {k.stand}). Verfügbarkeit der Wohnungen vorbehalten.
+          ? L.map((e) => `${k.haus(e).wirtschaftsplan}${k.haus(e).verwaltung ? ` (${k.haus(e).strasse}, Verwaltung ${k.haus(e).verwaltung})` : ` (${k.haus(e).strasse})`}`).join(" und ")
+          : `${v.objekt.wirtschaftsplan}${v.objekt.verwaltung ? ` (Verwaltung ${v.objekt.verwaltung})` : ""}`}. Heutige Mieten laut {B ? "Exposés" : "Exposé"} (Stand {k.stand}). Verfügbarkeit der Wohnungen vorbehalten.
       </p>
     </Seite>
   );
 }
 
 // ---------------------------------------------------------------------------
+// Kaufnebenkosten: Erspartes oder Nachrangdarlehen (Christian, 28.10.2026)
+// ---------------------------------------------------------------------------
 
-export function KundenObjektvergleichDokument({ v, A, B }: { v: KundenObjektvergleich; A: EinheitErgebnis; B: EinheitErgebnis }) {
+function NachrangTabelle({ k, e, b }: { k: Kontext; e: EinheitErgebnis; b: boolean }) {
+    const an = k.v.annahmen;
+    const nz = pz(an.nachrangZins), nt = pz(an.nachrangTilgung);
+    const f = [0, 0.5, 1].map((a) => nachrangFall(e, a, an));
+    const z = (lbl: ReactNode, werte: ReactNode[], cls = "") => (
+      <tr className={cls}><td>{lbl}</td>{werte.map((w, i) => <td className="r" key={i}>{w}</td>)}</tr>
+    );
+    return (
+      <div style={{ marginTop: "4mm" }}>
+        {k.B && <span className={`badge${b ? " b" : ""}`}>{b ? "B" : "A"}</span>} <b style={{ fontWeight: 500 }}>Wohnung {e.einheit.nr}</b>{" "}
+        <span className="small">Kaufpreis {eur(e.kp, 0)}{e.einheit.garagen ? " inkl. Garage" : ""}, Bankdarlehen {eur(e.darlehen, 0)}</span>
+        <table className="t nrt" style={{ marginTop: "1.5mm" }}><tbody>
+          <tr><th /><th className="r">Aus Erspartem<br />(wie bisher)</th><th className="r">50 % über<br />Nachrang</th><th className="r">100 % über<br />Nachrang</th></tr>
+          {z(`Kaufnebenkosten gesamt (${pz(an.knk)})`, f.map(() => eur(e.nk, 0)))}
+          {z("davon über Nachrangdarlehen", f.map((x, i) => (i ? eur(x.nr, 0) : "0\u00a0€")), "sub")}
+          {z("Ihr Eigenkapital aus Erspartem", f.map((x) => eur(x.ek, 0)))}
+          {z(`Rate Bankdarlehen (Zins ${pz(an.zins)} + Tilgung ${pz(an.tilgung)})`, f.map((x) => eur(x.bank)))}
+          {z(`Rate Nachrangdarlehen (Zins ${nz} + Tilgung ${nt})`, f.map((x, i) => (i ? eur(x.rate) : eur(0))))}
+          {z("1 · Zuzahlung vor Steuer", f.map((x) => eur(-x.vor)), "sum")}
+          {z(`2 · Das spart Ihnen das Finanzamt (${pzGanz(an.steuer)})`, f.map((x) => eur(x.ersparnis)))}
+          {z("3 · Zuzahlung nach Steuer: Ihr Eigenanteil im Monat", f.map((x) => eur(-x.nach)), "dk")}
+          {z("Nachrangdarlehen getilgt nach", f.map((x, i) => (i ? `rund ${x.jahre} Jahren` : "entfällt")), "sub")}
+          {z("Zinsen Nachrang über die Laufzeit, nach Steuer", f.map((x, i) => (i ? `rund ${tsd(x.zinsenNetto)}` : "0\u00a0€")), "sub")}
+        </tbody></table>
+      </div>
+    );
+}
+
+function Nachrang({ k, nr }: { k: Kontext; nr: number }) {
+  const an = k.v.annahmen;
+  const nz = pz(an.nachrangZins), nt = pz(an.nachrangTilgung);
+  return (
+    <Seite nr={nr} kick="Kaufnebenkosten: Erspartes oder Nachrangdarlehen" fuss={k.fuss}>
+      <h2>Weniger Eigenkapital einsetzen: <em>was das im Monat bedeutet.</em></h2>
+      <p className="lead" style={{ fontSize: "8pt" }}>
+        Bisher sind die Kaufnebenkosten aus Ihrem Ersparten gerechnet. Alternativ lassen sie sich zur Hälfte oder ganz über ein Nachrangdarlehen finanzieren,
+        gerechnet mit {nz} Zins und {nt} Tilgung. Ihr Erspartes bleibt dann als Reserve, dafür steigt die Monatsbelastung. Die Zinsen des
+        Nachrangdarlehens sind als Werbungskosten angesetzt.
+      </p>
+      {k.liste.map((e, i) => <NachrangTabelle key={i} k={k} e={e} b={i > 0} />)}
+      <p className="small" style={{ marginTop: "3mm" }}>
+        Zahlen für den Monat im 1. Jahr, Steuersatz {steuerWie(an)} wie in der übrigen Rechnung. Nachrangdarlehen als Annuität mit {nz} Zins
+        und {nt} anfänglicher Tilgung, jährlich verrechnet; danach entfällt die Rate. Die Zinsen über die Laufzeit sind nach Steuer angegeben
+        (Zinsen × {de((1 - an.steuer) * 100, 0)} %). Konditionen beispielhaft, das Angebot des Darlehensgebers steht aus. Keine Steuer- oder Finanzierungsberatung.
+      </p>
+    </Seite>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Deckblatt im Stil der System-PDFs (pdfBranding.addCoverPage), ohne Foto
+// ---------------------------------------------------------------------------
+
+function DeckblattSystem({ k }: { k: Kontext }) {
+  const d = k.v.dokument!;
+  const spalten: Array<[string, string]> = [
+    ["Erstellt für", [k.v.kunde.vorname, k.v.kunde.nachname].filter(Boolean).join(" ") || "Kundin oder Kunde"],
+    ["Datum", k.stand],
+    ["Version", d.version || "1"],
+    ...(d.erstelltVon ? [["Erstellt von", d.erstelltVon] as [string, string]] : []),
+  ];
+  return (
+    <section className="expose-page p kov-system">
+      <div className="kov-system-schein" />
+      <div className="kov-system-karo" />
+      <img src={LOGO_DUNKEL} alt="OS Real Estate" className="kov-system-logo" />
+      <div className="kov-system-text">
+        <div className="kov-system-kennung">Ausführliche Investmentberechnung{d.typ ? ` · ${d.typ}` : ""}</div>
+        <div className="kov-system-titel">{d.titel || k.haus(k.A).strasse}</div>
+        <div className="kov-system-linie" />
+        <div className="kov-system-unter">{d.adresse}</div>
+        {d.typ && <div className="kov-system-unter">{d.typ}</div>}
+      </div>
+      <div className="kov-system-fuss">
+        {spalten.map(([a, b]) => <div key={a}><span>{a}</span><b>{b}</b></div>)}
+      </div>
+      <div className="kov-system-hinweis">Beispielrechnung, keine Zusage. Keine Steuer- oder Rechtsberatung.</div>
+    </section>
+  );
+}
+
+// ---------------------------------------------------------------------------
+
+function kontextFuer(v: KundenObjektvergleich, A: EinheitErgebnis, B: EinheitErgebnis | null) {
   const stand = tagDe(v.stand);
   const anrede = anredeName(v) || "Sie";
+  const mitKunde = v.kunde.netto > 0;
+  // Reihenfolge wie in der Vorlage; bei einer Wohnung ohne Vergleich und Empfehlung, ohne Kundendaten ohne Ausgangslage.
+  const seiten = [
+    "deckblatt", ...(mitKunde ? ["ausgangslage"] : []), "wohnungen", ...(B ? ["vergleich"] : []), "rechnungA", ...(B ? ["rechnungB"] : []),
+    "entwicklung", ...(B ? ["empfehlung"] : []), "sheetA", ...(B ? ["sheetB"] : []), "hinweis", "steuer", "nachrang",
+  ];
+  const nr = (s: string) => seiten.indexOf(s) + 1;
   const k: Kontext = {
-    v, A, B, stand, anrede, fuss: `Persönlicher Objektvergleich für ${anrede} · Stand ${stand}`,
-    haeuser: haeuseruebergreifend(v), haus: (e) => objektVon(v, e === B ? 1 : 0),
+    v, A, B, liste: B ? [A, B] : [A], seiteFreibetrag: nr("hinweis"), seiteSteuer: nr("steuer"), stand, anrede,
+    fuss: v.dokument ? `Ausführliche Investmentberechnung für ${anrede} · Stand ${stand}` : `Persönlicher Objektvergleich für ${anrede} · Stand ${stand}`,
+    haeuser: !!B && haeuseruebergreifend(v), haus: (e) => objektVon(v, e === B ? 1 : 0),
   };
+  return { k, seiten, nr, mitKunde };
+}
+
+export function KundenObjektvergleichDokument({ v, A, B = null }: { v: KundenObjektvergleich; A: EinheitErgebnis; B?: EinheitErgebnis | null }) {
+  const { k, seiten, nr, mitKunde } = kontextFuer(v, A, B);
   return (
-    <div className="kov">
-      <Deckblatt k={k} />
-      <Ausgangslage k={k} />
-      <Wohnungen k={k} />
-      <Vergleich k={k} />
-      <Rechnung k={k} e={A} nr={5} b={false} />
-      <Rechnung k={k} e={B} nr={6} b />
-      <Entwicklung k={k} />
-      <Empfehlung k={k} />
-      <Sheet k={k} e={A} nr={9} />
-      <Sheet k={k} e={B} nr={10} />
-      <Hinweis k={k} />
-      <SteuerDetail k={k} />
-    </div>
+    <SeitenKontext.Provider value={seiten.length}>
+      <div className="kov">
+        {v.dokument || !B ? <DeckblattSystem k={k} /> : <Deckblatt k={k} B={B} />}
+        {mitKunde && <Ausgangslage k={k} nr={nr("ausgangslage")} />}
+        <Wohnungen k={k} nr={nr("wohnungen")} />
+        {B && <Vergleich k={k} B={B} nr={nr("vergleich")} />}
+        <Rechnung k={k} e={A} nr={nr("rechnungA")} b={false} />
+        {B && <Rechnung k={k} e={B} nr={nr("rechnungB")} b />}
+        <Entwicklung k={k} nr={nr("entwicklung")} />
+        {B && <Empfehlung k={k} B={B} nr={nr("empfehlung")} />}
+        <Sheet k={k} e={A} nr={nr("sheetA")} />
+        {B && <Sheet k={k} e={B} nr={nr("sheetB")} />}
+        <Hinweis k={k} nr={nr("hinweis")} />
+        <SteuerDetail k={k} nr={nr("steuer")} />
+        <Nachrang k={k} nr={nr("nachrang")} />
+      </div>
+    </SeitenKontext.Provider>
+  );
+}
+
+/**
+ * Analyse-Ansicht des Investmentrechners (29.10.2026): dieselben Bausteine
+ * und Zahlen wie die ausführliche Berechnung, als Karten statt A4-Seiten.
+ */
+export function EinhauserAnalyse({ v, A, B = null }: { v: KundenObjektvergleich; A: EinheitErgebnis; B?: EinheitErgebnis | null }) {
+  const { k } = kontextFuer(v, A, B);
+  const an = v.annahmen;
+  return (
+    <SeitenKontext.Provider value={0}>
+      <div className="kov kov-analyse">
+        {k.liste.map((e, i) => {
+          const m = e.monat;
+          return (
+            <section className="kov-karte" key={i}>
+              <div className="kick">{B ? <b>{i ? "B" : "A"}</b> : null}Ihre persönliche Rechnung · {k.haus(e).strasse}, Wohnung {e.einheit.nr}</div>
+              <h2><em>{eur(-m.nach)} im Monat</em> nach Steuer, inklusive Tilgung.</h2>
+              <div className="grid" style={{ gridTemplateColumns: "repeat(3,1fr)", marginTop: "4mm" }}>
+                <div className="tile or"><div className="label">Steuerersparnis im 1. Jahr</div><div className="n">{eur(e.jahr.ersparnis, 0)}</div><div className="s">{eur(m.ersparnis)} im Monat, Steuersatz {steuerWie(an)}</div></div>
+                <div className="tile"><div className="label">Tilgung im Monat</div><div className="n">{eur(m.tilgung)}</div><div className="s">Darlehen {eur(e.darlehen, 0)}, Zins {pz(an.zins)}, Tilgung {pz(an.tilgung)}</div></div>
+                <div className="tile dk"><div className="label">Eigenanteil nach Steuer</div><div className="n">{eur(-m.nach)}</div><div className="s">Vor Steuer {eur(-m.vor)}. Kaufnebenkosten {eur(e.nk, 0)} aus Eigenkapital.</div></div>
+              </div>
+              <div className="grid" style={{ gridTemplateColumns: "1fr 1fr", gap: "5mm", marginTop: "4mm" }}><Einnahmen k={k} e={e} /><Ausgaben k={k} e={e} /></div>
+              <Treppe k={k} e={e} />
+            </section>
+          );
+        })}
+        <section className="kov-karte">
+          <div className="kick">Vermögensentwicklung</div>
+          <div style={{ marginTop: "3mm" }}><ChartErloes A={A} B={B} /></div>
+          <table className="t" style={{ marginTop: "3mm" }}><tbody>
+            <tr><th /><th className="r">Verkaufssumme</th><th className="r">Restschuld</th><th className="r">Ihr Erlös</th><th className="r">Ihre Zuzahlung</th><th className="r">Ihr Plus</th></tr>
+            {k.liste.map((e, i) => ([25, 30, 35] as const).map((y) => {
+              const x = e.entw[y];
+              return (
+                <tr key={`${i}-${y}`}><td>{B ? `${i ? "B" : "A"} · ` : ""}nach {y} Jahren</td><td className="r">{tsd(x.wert)}</td><td className="r">{Math.round(x.rest) ? `− ${tsd(x.rest)}` : "0\u00a0€"}</td>
+                  <td className="r">{tsd(x.erloes)}</td><td className="r">{tsd(x.zuzahlung)}</td><td className="r" style={{ fontWeight: 500 }}>{tsd(x.plus)}</td></tr>
+              );
+            }))}
+          </tbody></table>
+        </section>
+        <section className="kov-karte">
+          <div className="kick">Kaufnebenkosten: Erspartes oder Nachrangdarlehen</div>
+          {k.liste.map((e, i) => <NachrangTabelle key={i} k={k} e={e} b={i > 0} />)}
+        </section>
+      </div>
+    </SeitenKontext.Provider>
   );
 }

@@ -9,7 +9,11 @@
  *   - je Einheit `wohnungen.meta.listendaten.werte` und `wohnungen.meta.garage`,
  *     dazu der Mieter in der Tabelle `mieter`;
  *   - je Objekt `objekte.meta.mietgarantie`, `.mieterhoehung` und
- *     `.aufteilung.reservierungTage`.
+ *     `.aufteilung.reservierungTage`;
+ *   - seit dem 29.10.2026 die Mietentwicklung für die ausführliche Berechnung
+ *     (Zielmiete, Zieljahr, Garagenmiete im Zieljahr, Quelle der
+ *     Vergleichsmiete) in `objekte.meta.objektvergleich`, dieselben Vorgaben,
+ *     die der persönliche Objektvergleich am Objekt speichert.
  */
 import { excelDatumIso } from "./excelLesen";
 import type { EinheitGarage, GaragenArt, GaragenStatus, ObjektMietgarantie, SubventionsArt } from "./mietgarantie";
@@ -25,6 +29,7 @@ export interface ObjektFormDaten {
   zielQm: string; steigerungProzent: string; einmalBetrag: string; garageAnrechnung: string;
   laufzeitMonate: string; garagenSubventionMonate: string;
   vergleichsmieteQm: string; kappungsgrenzeProzent: string; reservierungTage: string;
+  vergleichsmieteQuelle: string; mieteZielQm: string; mieteZielJahr: string; garageMieteZiel: string;
 }
 
 export const LEERE_EINHEIT: EinheitFormDaten = {
@@ -83,7 +88,11 @@ export function einheitFormInDaten(f: EinheitFormDaten, alteWerte: Werte | undef
 }
 
 export function objektFormAus(meta: unknown, mietgarantie: ObjektMietgarantie | null): ObjektFormDaten {
-  const m = (meta ?? {}) as { mieterhoehung?: { kappungsgrenze?: unknown; vergleichsmieteQm?: unknown }; aufteilung?: { reservierungTage?: unknown } };
+  const m = (meta ?? {}) as {
+    mieterhoehung?: { kappungsgrenze?: unknown; vergleichsmieteQm?: unknown }; aufteilung?: { reservierungTage?: unknown };
+    objektvergleich?: { vergleichsmieteQuelle?: unknown; mieteZielQm?: unknown; mieteZielJahr?: unknown; garageMieteZiel?: unknown };
+  };
+  const ov = m.objektvergleich ?? {};
   const k = Number(m.mieterhoehung?.kappungsgrenze);
   return {
     subventionArt: mietgarantie?.art ?? "",
@@ -96,6 +105,10 @@ export function objektFormAus(meta: unknown, mietgarantie: ObjektMietgarantie | 
     vergleichsmieteQm: text(m.mieterhoehung?.vergleichsmieteQm ?? ""),
     kappungsgrenzeProzent: Number.isFinite(k) && k > 0 ? text(Math.round(k * 10000) / 100) : "",
     reservierungTage: text(m.aufteilung?.reservierungTage ?? ""),
+    vergleichsmieteQuelle: typeof ov.vergleichsmieteQuelle === "string" ? ov.vergleichsmieteQuelle : "",
+    mieteZielQm: text(ov.mieteZielQm ?? ""),
+    mieteZielJahr: text(ov.mieteZielJahr ?? ""),
+    garageMieteZiel: text(ov.garageMieteZiel ?? ""),
   };
 }
 
@@ -104,7 +117,11 @@ export function objektFormAus(meta: unknown, mietgarantie: ObjektMietgarantie | 
  * „keine“). Die Kappungsgrenze kommt als Prozent und wird als Anteil
  * gespeichert, höchstens 20 % wie im Gesetz.
  */
-export function objektFormInMeta(f: ObjektFormDaten, aufteilungAlt: Record<string, unknown> | undefined) {
+export function objektFormInMeta(
+  f: ObjektFormDaten,
+  aufteilungAlt: Record<string, unknown> | undefined,
+  objektvergleichAlt?: Record<string, unknown>,
+) {
   const mietgarantie = f.subventionArt ? {
     art: f.subventionArt,
     zielQm: zahlAus(f.zielQm) ?? 0,
@@ -123,5 +140,15 @@ export function objektFormInMeta(f: ObjektFormDaten, aufteilungAlt: Record<strin
   const tage = zahlAus(f.reservierungTage);
   const aufteilung = { ...(aufteilungAlt ?? {}) };
   if (tage && tage > 0) aufteilung.reservierungTage = Math.round(tage); else delete aufteilung.reservierungTage;
-  return { mietgarantie, mieterhoehung, aufteilung };
+  // Die übrigen Vorgaben des Objektvergleichs (Hauspunkte, Garagen-Ist-Miete …) bleiben stehen.
+  const objektvergleich: Record<string, unknown> = { ...(objektvergleichAlt ?? {}) };
+  const setze = (key: string, wert: number | string | null) => {
+    if (wert === null || wert === "" || wert === 0) delete objektvergleich[key]; else objektvergleich[key] = wert;
+  };
+  setze("vergleichsmieteQuelle", f.vergleichsmieteQuelle.trim());
+  setze("mieteZielQm", zahlAus(f.mieteZielQm));
+  const jahr = zahlAus(f.mieteZielJahr);
+  setze("mieteZielJahr", jahr && jahr > 2000 ? Math.round(jahr) : null);
+  setze("garageMieteZiel", zahlAus(f.garageMieteZiel));
+  return { mietgarantie, mieterhoehung, aufteilung, objektvergleich };
 }

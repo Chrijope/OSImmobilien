@@ -30,11 +30,15 @@ describe("Objektdaten im Formular Objekt anlegen", () => {
     const meta = objektFormInMeta({
       subventionArt: "ziel", zielQm: "13,50", steigerungProzent: "", einmalBetrag: "", garageAnrechnung: "100",
       laufzeitMonate: "", garagenSubventionMonate: "", vergleichsmieteQm: "9,8", kappungsgrenzeProzent: "15", reservierungTage: "14",
-    }, { meilensteine: { abnahme: "2026-06-30" } });
+      vergleichsmieteQuelle: "Mietspiegel 2026", mieteZielQm: "20", mieteZielJahr: "2060", garageMieteZiel: "",
+    }, { meilensteine: { abnahme: "2026-06-30" } }, { hausPunkte: ["Baujahr 1994"], garageMieteZiel: 150 });
     expect(meta.mietgarantie).toEqual({ art: "ziel", zielQm: 13.5, steigerung: 0, einmalBetrag: 0, garageAnrechnung: 100, laufzeitMonate: 36, garagenSubventionMonate: 12 });
     expect(meta.mieterhoehung).toEqual({ kappungsgrenze: 0.15, vergleichsmieteQm: 9.8 });
     expect(meta.aufteilung).toEqual({ meilensteine: { abnahme: "2026-06-30" }, reservierungTage: 14 });
-    const zurueck = objektFormAus({ mieterhoehung: meta.mieterhoehung, aufteilung: meta.aufteilung }, meta.mietgarantie);
+    // Mietentwicklung in die Vorgaben des Objektvergleichs; Hauspunkte bleiben, ein geleertes Feld fällt weg.
+    expect(meta.objektvergleich).toEqual({ hausPunkte: ["Baujahr 1994"], vergleichsmieteQuelle: "Mietspiegel 2026", mieteZielQm: 20, mieteZielJahr: 2060 });
+    const zurueck = objektFormAus({ mieterhoehung: meta.mieterhoehung, aufteilung: meta.aufteilung, objektvergleich: meta.objektvergleich }, meta.mietgarantie);
+    expect(zurueck).toMatchObject({ mieteZielQm: "20", mieteZielJahr: "2060", vergleichsmieteQuelle: "Mietspiegel 2026" });
     expect(zurueck).toMatchObject({ subventionArt: "ziel", zielQm: "13,5", kappungsgrenzeProzent: "15", vergleichsmieteQm: "9,8", reservierungTage: "14", laufzeitMonate: "36" });
     expect(objektFormInMeta({ ...zurueck, subventionArt: "", kappungsgrenzeProzent: "25", reservierungTage: "" }, meta.aufteilung).mietgarantie).toBeNull();
   });

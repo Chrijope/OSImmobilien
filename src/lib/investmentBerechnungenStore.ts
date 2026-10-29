@@ -156,6 +156,10 @@ export function eingabeAusJson(roh: unknown): InvestmentEingabe {
       || (typeof vorlage === "string" && typeof wert === "string");
     if (passt) (ergebnis as unknown as Record<string, unknown>)[schluessel] = wert;
   }
+  // Angaben der ausführlichen Berechnung (29.10.2026): ein Objekt, unverändert übernommen.
+  if (daten.ausfuehrlich && typeof daten.ausfuehrlich === "object" && !Array.isArray(daten.ausfuehrlich)) {
+    ergebnis.ausfuehrlich = daten.ausfuehrlich as InvestmentEingabe["ausfuehrlich"];
+  }
   // Auswahlfelder nur mit bekannten Werten, sonst der Standard.
   const tilgungsarten = ["annuitaet", "volltilgung", "endfaellig"];
   if (!tilgungsarten.includes(ergebnis.seniorRepaymentType)) ergebnis.seniorRepaymentType = standardEingabe.seniorRepaymentType;

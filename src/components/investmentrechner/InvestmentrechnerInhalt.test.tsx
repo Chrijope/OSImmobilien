@@ -5,8 +5,12 @@ import { berechneInvestment, standardEingabe } from "@/lib/investmentrechner/rec
 import { standardKaufnebenkostenauswahl } from "@/lib/investmentrechner/kaufnebenkostenAuswahl";
 import { eigeneBerechnung, InvestmentrechnerInhalt, startZustand } from "./InvestmentrechnerInhalt";
 
-const pdf = vi.hoisted(() => ({ herunterladen: vi.fn(async () => "Berechnung_Musterwohnanlage_WE-7_2026-09-28.pdf") }));
-vi.mock("@/lib/investmentrechner/berechnungAnsichtPdf", () => ({ ladeBerechnungsansichtHerunter: pdf.herunterladen }));
+const pdf = vi.hoisted(() => ({
+  herunterladen: vi.fn(async () => "Berechnung_Musterwohnanlage_WE-7_2026-09-28.pdf"),
+  speichern: vi.fn(),
+  erzeugen: vi.fn(async (_seiten: HTMLElement) => ({ save: pdf.speichern })),
+}));
+vi.mock("@/lib/investmentrechner/berechnungAnsichtPdf", () => ({ ladeBerechnungsansichtHerunter: pdf.herunterladen, erzeugeBerechnungsansichtPdf: pdf.erzeugen }));
 
 /**
  * Der Rechner wird an zwei Stellen benutzt: als Seite in der Seitenleiste und
@@ -97,6 +101,8 @@ describe("Berechnung herunterladen (28.09.2026)", () => {
     const drucken = vi.spyOn(window, "print").mockImplementation(() => {});
     zeige(<InvestmentrechnerInhalt vorbelegung={vorbelegung} mitUeberschrift={false} />);
     expect(screen.queryByRole("button", { name: /Drucken/ })).not.toBeInTheDocument();
+    // In der Ansicht „Berechnung“ deren PDF, sonst seit dem 29.10.2026 die ausführliche Berechnung (Test darunter).
+    fireEvent.click(screen.getByRole("button", { name: "Berechnung" }));
     fireEvent.click(screen.getByRole("button", { name: "Berechnung herunterladen" }));
     await waitFor(() => expect(pdf.herunterladen).toHaveBeenCalledTimes(1));
     const [objekte, sprache, druckdokument] = pdf.herunterladen.mock.calls[0] as unknown as [{ input: { propertyTitle: string } }[], string, HTMLElement];
@@ -107,5 +113,17 @@ describe("Berechnung herunterladen (28.09.2026)", () => {
     expect(drucken).not.toHaveBeenCalled();
     await waitFor(() => expect(screen.getByRole("button", { name: "Berechnung herunterladen" })).toBeEnabled());
     drucken.mockRestore();
+  });
+
+  it("lädt in Analyse und „Ausführlich“ die ausführliche Berechnung im Einhauser-Aufbau", async () => {
+    zeige(<InvestmentrechnerInhalt vorbelegung={vorbelegung} mitUeberschrift={false} />);
+    fireEvent.click(screen.getByRole("button", { name: "Berechnung herunterladen" }));
+    await waitFor(() => expect(pdf.speichern).toHaveBeenCalledTimes(1));
+    const abdruck = pdf.erzeugen.mock.calls[0][0];
+    // Eine Wohnung ohne Kundendaten: Deckblatt, Haus und Wohnung, Rechnung, Entwicklung, Sheet, Freibetrag, Steuer, Nachrang.
+    expect(abdruck.querySelectorAll(".expose-page")).toHaveLength(8);
+    expect(abdruck.querySelector(".kov-system-titel")?.textContent).toBe("Musterwohnanlage, WE 7");
+    expect(abdruck.textContent).toContain("Weniger Eigenkapital einsetzen");
+    expect(pdf.speichern.mock.calls[0][0]).toMatch(/^Investmentberechnung .*WE 7 \(\d{2}\.\d{2}\.\d{4}\)\.pdf$/);
   });
 });

@@ -35,11 +35,17 @@ export interface VergleichAnnahmen {
   subventionMonate: number;
   /** Monate vom Kauf bis der Freibetrag wirkt (Lastenwechsel bis 1. Januar). */
   lastenwechselMonate: number;
+  /** Nachrangdarlehen für die Kaufnebenkosten (Seite „Erspartes oder Nachrang“), wie im Investmentsheet Knoch. */
+  nachrangZins: number;
+  nachrangTilgung: number;
+  /** Woher der Steuersatz kommt: pauschal wie im Exposé oder aus dem Einkommen des Kunden. */
+  steuerArt?: "pauschal" | "einkommen";
 }
 
 export const STANDARD_ANNAHMEN: VergleichAnnahmen = {
   steuer: 0.42, zins: 0.048, tilgung: 0.012, knk: 0.085, gebaeudeanteil: 0.8, wertPa: 0.02, kostenPa: 0.02,
   startJahr: 2026, mieteZielQm: 20, mieteZielJahr: 2060, kappung: 0.2, subventionMonate: 36, lastenwechselMonate: 5,
+  nachrangZins: 0.071, nachrangTilgung: 0.02,
 };
 
 export interface VergleichEinheit {
@@ -156,8 +162,8 @@ export function rechneEinheit(e: VergleichEinheit, a: VergleichAnnahmen): Einhei
     const zins = rest * a.zins;
     const tilgung = Math.min(annuitaet - zins, rest);
     rest -= tilgung;
-    // AfA endet nach der Restnutzungsdauer.
-    const afa = j <= e.afaJahre ? afaJahr : 0;
+    // AfA endet nach der Restnutzungsdauer, bei 31,25 Jahren (3,2 %) mit einem Viertel im 32. Jahr.
+    const afa = afaJahr * Math.min(1, Math.max(0, e.afaJahre - (j - 1)));
     const steuereffekt = (zins + afa + kosten - miete) * a.steuer;
     const cfVor = miete - (zins + tilgung) - kosten - ruecklage;
     J.push({ jahr: j, miete, zins, tilgung, rest, steuereffekt, cfVor, cfNach: cfVor + steuereffekt });
@@ -201,6 +207,40 @@ export function rechneEinheit(e: VergleichEinheit, a: VergleichAnnahmen): Einhei
     nachMin: Math.min(...dreissig.map((x) => x.cfNach)) / 12,
     nachMax: Math.max(...dreissig.map((x) => x.cfNach)) / 12,
   };
+}
+
+// ---------------------------------------------------------------------------
+// Kaufnebenkosten über ein Nachrangdarlehen (Christian, 28.10.2026, wie Knoch)
+// ---------------------------------------------------------------------------
+
+export interface NachrangFall {
+  nr: number;
+  ek: number;
+  bank: number;
+  rate: number;
+  vor: number;
+  ersparnis: number;
+  nach: number;
+  jahre: number;
+  zinsenNetto: number;
+}
+
+/** Monat 1, wenn `anteil` der Kaufnebenkosten über ein Nachrangdarlehen läuft; dessen Zinsen sind absetzbar. */
+export function nachrangFall(e: EinheitErgebnis, anteil: number, a: VergleichAnnahmen): NachrangFall {
+  const nr = Math.round(e.nk * anteil);
+  const nz = (nr * a.nachrangZins) / 12, nt = (nr * a.nachrangTilgung) / 12;
+  const ergebnis = e.jahr.ergebnis - r2(nr * a.nachrangZins);
+  const ersparnis = (-ergebnis * a.steuer) / 12;
+  const vor = e.monat.vor - nz - nt;
+  // Laufzeit und Zinsen, jährlich verrechnet wie der Bankkredit.
+  let rest = nr, jahre = 0, zinsen = 0;
+  while (rest > 0.005 && jahre < 60) {
+    const z = rest * a.nachrangZins;
+    zinsen += z;
+    rest -= Math.min(nr * (a.nachrangZins + a.nachrangTilgung) - z, rest);
+    jahre++;
+  }
+  return { nr, ek: e.nk - nr, bank: e.monat.zins + e.monat.tilgung, rate: nz + nt, vor, ersparnis, nach: vor + ersparnis, jahre, zinsenNetto: zinsen * (1 - a.steuer) };
 }
 
 // ---------------------------------------------------------------------------
@@ -308,6 +348,11 @@ export interface KundenObjektvergleich {
   einheiten: VergleichEinheit[];
   /** Leer = automatisch aus den Kriterien. */
   texte: VergleichTexte;
+  /**
+   * Nur die ausführliche Berechnung des Investmentrechners (29.10.2026): Angaben
+   * für das Deckblatt im Stil der System-PDFs statt des Fotodeckblatts.
+   */
+  dokument?: { titel: string; adresse: string; typ: string; version: string; erstelltVon?: string };
 }
 
 export const LEERE_TEXTE: VergleichTexte = { empfehlungTitel: "", empfehlung: "", wannAndere: "", naechsteSchritte: [] };

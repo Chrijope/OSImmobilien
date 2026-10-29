@@ -266,32 +266,17 @@ describe("Wahl des Deckblatts im Rechner", () => {
     expect(gemerkteDeckblattVariante()).toBe("blick");
   });
 
-  it("zeigt oben in der Analyse den Ergebnisteil der gewählten Variante, die Leiste ist weg", () => {
+  it("die Analyse zeigt seit dem 29.10.2026 die ausführliche Berechnung, das Deckblatt gilt nur für „Berechnung“", () => {
     render(
       <TooltipProvider>
         <InvestmentrechnerInhalt />
       </TooltipProvider>,
     );
-    const analyse = () => document.body.querySelector(".analysis-content")!;
-    expect(analyse().querySelector(".cashflow-band")).toBeNull();
-    expect(analyse().querySelector(".analyse-deckblatt-blick .db-kernsatz")).not.toBeNull();
-    expect(analyse().querySelectorAll(".analyse-deckblatt .db-kacheln > div")).toHaveLength(3);
-    expect(analyse().querySelector(".analyse-deckblatt .db-zeile-leise")?.textContent).toContain("Cashflow vor Steuer");
-    // Der Schalter in der Analyse wechselt die Variante dort und im Druckstück.
+    expect(document.body.querySelector(".kov-analyse")).not.toBeNull();
+    expect(screen.queryByRole("radio", { name: "Jahr für Jahr" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Berechnung" }));
     fireEvent.click(screen.getByRole("radio", { name: "Jahr für Jahr" }));
-    expect(analyse().querySelector(".analyse-deckblatt-jahre .db-tabelle")).not.toBeNull();
-    expect(analyse().querySelector(".analyse-deckblatt-jahre .db-diagramm")).not.toBeNull();
     expect(document.body.querySelector(".investmentrechner-print .expose-page")?.classList.contains("deckblatt-jahre")).toBe(true);
-    // Unter „Berechnung“ steht dieselbe Wahl.
-    fireEvent.click(screen.getByRole("button", { name: /Berechnung$/ }));
-    expect(screen.getByRole("radio", { name: "Jahr für Jahr" })).toHaveAttribute("aria-checked", "true");
-    fireEvent.click(screen.getByRole("radio", { name: "Ergebnis auf einen Blick" }));
-    fireEvent.click(screen.getByRole("button", { name: /Analyse$/ }));
-    expect(screen.getByRole("radio", { name: "Ergebnis auf einen Blick" })).toHaveAttribute("aria-checked", "true");
-    expect(analyse().querySelector(".analyse-deckblatt-blick")).not.toBeNull();
-    // Darunter bleibt alles wie bisher.
-    expect(analyse().textContent).toContain("Kaufpreisdetails");
-    expect(analyse().textContent).toContain("Einkommens- und Steuerprofil");
   });
 
   it("schaltet unter „Berechnung“ das Deckblatt im Druckstück um", () => {
@@ -302,7 +287,7 @@ describe("Wahl des Deckblatts im Rechner", () => {
     );
     const erste = () => document.body.querySelector(".investmentrechner-print .expose-page");
     expect(erste()?.classList.contains("deckblatt-blick")).toBe(true);
-    fireEvent.click(screen.getByRole("button", { name: /Berechnung$/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Berechnung" }));
     fireEvent.click(screen.getByRole("radio", { name: "Jahr für Jahr" }));
     expect(erste()?.classList.contains("deckblatt-jahre")).toBe(true);
     expect(screen.getByRole("radio", { name: "Jahr für Jahr" })).toHaveAttribute("aria-checked", "true");

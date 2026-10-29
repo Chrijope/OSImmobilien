@@ -69,9 +69,12 @@ describe("Kopfbereich", () => {
     expect(within(kopf.querySelector(".hauptansichten") as HTMLElement).getAllByRole("button").map((b) => b.textContent?.trim())).toEqual([
       "Analyse",
       "Berechnung",
-      "Ausführlich",
+      "Ausführlich (PDF)",
     ]);
     const optionen = kopf.querySelector(".result-optionen") as HTMLElement;
+    // Die Deckblattwahl gilt seit dem 29.10.2026 nur noch für „Berechnung“.
+    expect(within(optionen).queryByText("Deckblatt")).toBeNull();
+    fireEvent.click(within(kopf.querySelector(".hauptansichten") as HTMLElement).getByRole("button", { name: /^Berechnung/ }));
     expect(within(optionen).getByText("Deckblatt")).toBeInTheDocument();
     expect(within(optionen).getByText(/Sprache für Kunde und PDF/)).toBeInTheDocument();
     expect(within(optionen).getByRole("radio", { name: "DE" })).toHaveAttribute("aria-checked", "true");

@@ -73,7 +73,9 @@ describe("Reiter Investmentrechner", () => {
     expect(eingabe.buildingDepreciationRate).toBe(2.5);
     // Kein Einkommen vorbelegt: Cashflow vor und nach Steuer gleich, mit Hinweis.
     expect(ergebnis.years[0].cashflowAfterTax).toBeCloseTo(ergebnis.years[0].cashflowBeforeTax, 6);
+    // Die Analyse (seit 29.10.2026 im Einhauser-Aufbau) rechnet dann pauschal wie das Exposé und sagt es.
     expect(screen.getAllByTestId("hinweis-ohne-steuerwirkung")[0]).toHaveTextContent("Bitte das zu versteuernde Einkommen");
+    expect(screen.getAllByTestId("hinweis-ohne-steuerwirkung")[0]).toHaveTextContent("pauschal mit 42 %");
   });
 
   it("klappt die Angaben aus der Objektanlage zu, Überschrift, Pfeil und Zähler bleiben sichtbar", () => {

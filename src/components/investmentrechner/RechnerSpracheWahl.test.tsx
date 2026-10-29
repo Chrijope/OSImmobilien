@@ -35,7 +35,8 @@ describe("Sprache der rechten Seite", () => {
     const { container } = zeige(<InvestmentrechnerInhalt vorbelegung={{ eingabe, knk: { weg: "bundesland", bundesland: "bayern" } }} />);
     // Seit dem 23.10.2026 ein Umschalter DE/EN „Sprache für Kunde und PDF“.
     const wahl = within(screen.getByTestId("sprache-wahl")).getByRole("radio", { name: "EN" });
-    expect(container.querySelector(".result-panel")?.textContent).toContain("Kaufpreisdetails");
+    // Deutsch die Analyse im Einhauser-Aufbau; Englisch (noch) die bisherige, damit alles an den Kunden englisch bleibt.
+    expect(container.querySelector(".result-panel")?.textContent).toContain("Ihre persönliche Rechnung");
     fireEvent.click(wahl);
     const rechts = container.querySelector(".result-panel")!;
     expect(rechts.getAttribute("lang")).toBe("en");

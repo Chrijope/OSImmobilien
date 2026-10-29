@@ -270,6 +270,11 @@ export interface InvestmentEingabe {
    * `eingabeAusJson` in investmentBerechnungenStore.ts.
    */
   eingabeVersion: number;
+  /**
+   * Angaben nur für die ausführliche Berechnung im Einhauser-Aufbau (seit dem
+   * 29.10.2026), siehe ausfuehrlicheBerechnung.ts. Der Rechenkern liest sie nicht.
+   */
+  ausfuehrlich?: Partial<import("./ausfuehrlicheBerechnung").AusfuehrlichAngaben>;
 }
 
 /** Eine Zeile der Haushaltsrechnung oder Vermögensaufstellung. */

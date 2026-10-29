@@ -149,3 +149,45 @@
   .kov-vorschau { padding: 0 !important; background: #fff !important; }
   .kov-vorschau > button { display: none; }
 }
+
+/* Nachrang-Seite (wie build.py, Seite 13) */
+.kov table.nrt td:first-child { width:46%; }
+.kov table.nrt td.r, .kov table.nrt th.r { width:18%; }
+.kov table.nrt tr.dk td { font-size:8.6pt; padding:2mm 1.5mm; }
+.kov table.nrt tr.dk td:first-child { border-radius:2mm 0 0 2mm; padding-left:2.5mm; }
+.kov table.nrt tr.dk td:last-child { border-radius:0 2mm 2mm 0; padding-right:2.5mm; }
+
+/* Deckblatt der ausführlichen Berechnung: wie pdfBranding.addCoverPage, dunkler Grund mit auslaufendem Karo, ohne Foto */
+.kov section.kov-system { background:#0F1621; color:#fff; }
+.kov .kov-system-schein { position:absolute; inset:0;
+  background:radial-gradient(ellipse 100mm 62mm at 50% -6mm, rgba(24,127,88,.5), rgba(24,127,88,0) 100%),
+             radial-gradient(ellipse 80mm 64mm at 222mm 305mm, rgba(48,225,158,.14), rgba(48,225,158,0) 100%); }
+.kov .kov-system-karo { position:absolute; inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.10) .2mm, transparent .2mm), linear-gradient(90deg, rgba(255,255,255,.10) .2mm, transparent .2mm);
+  background-size:16mm 16mm; background-position:-.1mm -.1mm;
+  -webkit-mask-image:radial-gradient(ellipse 139mm 143mm at 42% 50%, #000 0%, rgba(0,0,0,.35) 45%, transparent 100%);
+  mask-image:radial-gradient(ellipse 139mm 143mm at 42% 50%, #000 0%, rgba(0,0,0,.35) 45%, transparent 100%); }
+.kov .kov-system-logo { position:absolute; left:20mm; top:27mm; height:13mm; }
+.kov .kov-system-text { position:absolute; left:20mm; right:38mm; top:126mm; }
+.kov .kov-system-kennung { font-size:8pt; font-weight:600; letter-spacing:.2em; text-transform:uppercase; color:#30E19E; }
+.kov .kov-system-titel { font-weight:600; font-size:28pt; line-height:1.15; margin-top:7mm; color:#fff; }
+.kov .kov-system-linie { width:26mm; height:1.2mm; background:#30E19E; margin:6mm 0 8mm; }
+.kov .kov-system-unter { font-size:11pt; color:#D4DCE8; line-height:1.5; }
+.kov .kov-system-fuss { position:absolute; left:20mm; right:20mm; bottom:46mm; border-top:.3mm solid #3C485A; padding-top:9mm; display:grid; grid-auto-flow:column; grid-auto-columns:1fr; }
+.kov .kov-system-fuss span { display:block; font-size:7pt; letter-spacing:.1em; text-transform:uppercase; color:#7A8594; }
+.kov .kov-system-fuss b { display:block; font-weight:600; font-size:9.5pt; color:#fff; margin-top:2mm; }
+.kov .kov-system-hinweis { position:absolute; left:20mm; right:20mm; bottom:20mm; font-size:6.5pt; color:#7A8594; }
+
+/* Analyse-Ansicht des Investmentrechners: Bausteine der Seiten als Karten */
+.kov.kov-analyse { display:grid; gap:16px; font-size:9.5pt; }
+.kov .kov-karte { background:#fff; border:1px solid var(--line); border-radius:14px; padding:18px 20px; }
+.kov .kov-karte h2 { font-size:17pt; }
+html.dark .kov .kov-karte { background:#fff; }
+
+/* Im Investmentrechner liegen die Seiten unter .investmentrechner, dessen
+   Regeln für .expose-page (Innenabstand, Überschriften) hier nicht gelten. */
+.kov section.p.expose-page { padding:0; min-height:0; }
+.kov section.p h2 { margin-top:3mm; letter-spacing:normal; }
+.kov .kov-karte h2 { margin-top:2mm; letter-spacing:normal; }
+/* Tabellenregeln des Rechners (.investmentrechner table/th/td: kein Umbruch, fett, Großbuchstaben) gelten hier nicht. */
+.kov table td, .kov table th { color:inherit; font-weight:inherit; font-size:inherit; letter-spacing:normal; text-transform:none; white-space:normal; }

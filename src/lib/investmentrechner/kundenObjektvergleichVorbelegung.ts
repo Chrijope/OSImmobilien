@@ -9,6 +9,7 @@
 import type { ObjektData, ObjektWohnung } from "@/lib/objekteStore";
 import { objektseiteFelder } from "@/lib/objektseiteDaten";
 import { num } from "@/lib/kundenkontextHelper";
+import { garageFuerEinheit, mietgarantieAusMeta } from "@/lib/mietgarantie";
 import { vorbelegungAusEinheit } from "./objektVorbelegung";
 import {
   LEERE_TEXTE, STANDARD_ANNAHMEN, objektVon,
@@ -42,12 +43,23 @@ export function einheitAus(objekt: ObjektData, wohnung: ObjektWohnung, vorgaben:
   const e = vorbelegungAusEinheit(objekt, wohnung, heute).eingabe;
   const qm = positiv(e.area) || positiv(wohnung.groesse);
   const mieteIst = positiv(e.monthlyColdRent);
-  // Subventionierte Miete: Vorgabe am Objekt, sonst Mietgarantie der Einheit, sonst heutige Miete.
+  /*
+   * Subventionierte Miete: Vorgabe am Objekt, sonst die Mietsubvention aus
+   * „Objekt anlegen“ (Zielmiete je m² oder Steigerung, seit 29.10.2026
+   * gelesen), sonst Mietgarantie der Einheit, sonst heutige Miete.
+   */
+  const mg = mietgarantieAusMeta(objekt.meta);
   const mieteSubQm = positiv(vorgaben.mieteSubQm)
+    || (mg?.art === "ziel" ? positiv(mg.zielQm) : 0)
+    || (mg?.art === "steigerung" && qm ? runde2((mieteIst * (1 + positiv(mg.steigerung))) / qm) : 0)
     || (qm ? runde2(positiv(wohnung.mietgarantieKalt) / qm) : 0)
     || (qm ? runde2(mieteIst / qm) : 0);
   const garageKp = positiv(e.garagePrice);
-  const garageMiete1 = positiv(vorgaben.garageMiete1) || positiv(e.monthlyGarageRent);
+  const garageIst = positiv(e.monthlyGarageRent);
+  // Gerechnete Garagenmiete: Vorgabe, sonst der Betrag, mit dem die Subvention die Garage anrechnet.
+  const garageMiete1 = positiv(vorgaben.garageMiete1) || (garageKp || garageIst ? positiv(mg?.garageAnrechnung) : 0) || garageIst;
+  let garageAmObjekt = 0;
+  try { garageAmObjekt = positiv(garageFuerEinheit(wohnung.id)?.istMiete); } catch { /* Zwischenspeicher noch leer */ }
   const afa = objekt.afaDaten;
   const afaJahre = positiv(afa?.restnutzungsdauer) || Math.round(100 / (positiv(e.buildingDepreciationRate) || 2));
   return {
@@ -62,7 +74,7 @@ export function einheitAus(objekt: ObjektData, wohnung: ObjektWohnung, vorgaben:
     garageKp,
     garageMiete1,
     garageMieteZiel: positiv(vorgaben.garageMieteZiel) || garageMiete1,
-    garageIstVon: positiv(vorgaben.garageIstVon),
+    garageIstVon: positiv(vorgaben.garageIstVon) || garageAmObjekt || (garageIst && garageIst !== garageMiete1 ? garageIst : 0),
     garageIstBis: positiv(vorgaben.garageIstBis),
     mieteIst,
     mieteSubQm,
@@ -95,7 +107,7 @@ export function objektAus(objekt: ObjektData, vorgaben: ObjektvergleichVorgaben)
     fotoHaus: bilder.find((u) => u !== titelbild) || titelbild,
     hausPunkte: punkte,
     verwaltung,
-    vergleichsmieteQm: positiv(vorgaben.vergleichsmieteQm),
+    vergleichsmieteQm: positiv(vorgaben.vergleichsmieteQm) || positiv((objekt.meta as Record<string, any> | undefined)?.mieterhoehung?.vergleichsmieteQm), // eslint-disable-line @typescript-eslint/no-explicit-any
     vergleichsmieteQuelle: vorgaben.vergleichsmieteQuelle || "",
     wirtschaftsplan: wpJahr ? `Wirtschaftsplan ${wpJahr}` : "Wirtschaftsplan",
   };
@@ -156,13 +168,25 @@ export function kundeAus(
   };
 }
 
-export function annahmenAus(vorgaben: ObjektvergleichVorgaben, heute = new Date()): VergleichAnnahmen {
+/** Laufzeit der Subvention und Kappungsgrenze, wie sie „Objekt anlegen“ abfragt. */
+export function objektAnnahmen(objekt: Pick<ObjektData, "meta">, wohnung?: Pick<ObjektWohnung, "mietgarantieMonate">) {
+  const mg = mietgarantieAusMeta(objekt.meta);
+  const kappung = Number((objekt.meta as Record<string, any> | undefined)?.mieterhoehung?.kappungsgrenze); // eslint-disable-line @typescript-eslint/no-explicit-any
+  return {
+    subventionMonate: positiv(wohnung?.mietgarantieMonate) || (mg && mg.art !== "einmal" ? positiv(mg.laufzeitMonate) : 0),
+    kappung: kappung > 0 && kappung <= 0.2 ? kappung : 0,
+  };
+}
+
+export function annahmenAus(vorgaben: ObjektvergleichVorgaben, heute = new Date(), objekt?: ObjektData, wohnung?: ObjektWohnung): VergleichAnnahmen {
+  const ausObjekt = objekt ? objektAnnahmen(objekt, wohnung) : { subventionMonate: 0, kappung: 0 };
   return {
     ...STANDARD_ANNAHMEN,
     startJahr: heute.getFullYear(),
     mieteZielQm: positiv(vorgaben.mieteZielQm) || STANDARD_ANNAHMEN.mieteZielQm,
     mieteZielJahr: positiv(vorgaben.mieteZielJahr) || STANDARD_ANNAHMEN.mieteZielJahr,
-    subventionMonate: positiv(vorgaben.subventionMonate) || STANDARD_ANNAHMEN.subventionMonate,
+    subventionMonate: positiv(vorgaben.subventionMonate) || ausObjekt.subventionMonate || STANDARD_ANNAHMEN.subventionMonate,
+    kappung: ausObjekt.kappung || STANDARD_ANNAHMEN.kappung,
   };
 }
 
@@ -190,7 +214,7 @@ export function neuerVergleich(p: {
     kunde: p.kunde,
     objekt: objektAus(erstes, vorgaben),
     objekt2: zweites && zweites.id !== erstes.id ? objektAus(zweites, vorgabenAus(zweites)) : null,
-    annahmen: annahmenAus(vorgaben, heute),
+    annahmen: annahmenAus(vorgaben, heute, erstes, p.wohnungen[0].wohnung),
     einheiten: p.wohnungen.map(({ objekt, wohnung }) => einheitAus(objekt, wohnung, vorgabenAus(objekt), heute)),
     texte: { ...LEERE_TEXTE },
   };

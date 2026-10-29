@@ -25,7 +25,21 @@ const sa = (netto: string, kredit = true) => ({
 const nettoFeld = () => screen.getByLabelText("Nettoeinkommen Person 1, Euro je Monat") as HTMLInputElement;
 const oeffneBankunterlagen = () => fireEvent.click(screen.getByRole("button", { name: /Bankunterlagen/ }));
 
-describe("Schalter „Bankgespräch & Bankunterlagen“", () => {
+/*
+ * Seit dem 29.10.2026 sind Schalter, Bereich und Karte ausgeblendet
+ * (BANKUNTERLAGEN_SICHTBAR in InvestmentrechnerInhalt.tsx). Die Tests darunter
+ * bleiben für den Fall, dass sie zurückkommen, und laufen dann wieder mit.
+ */
+describe("Bankgespräch und Bankunterlagen ausgeblendet (29.10.2026)", () => {
+  it("kein Schalter, kein Bereich, keine Karte, auch mit gespeichertem Schalter an", () => {
+    zeige(<InvestmentrechnerInhalt vorbelegung={{ eingabe: { ...eingabe, bankgespraechAktiv: true }, knk }} bankgespraechStart />);
+    expect(screen.queryByTestId("schalter-bankgespraech")).toBeNull();
+    expect(screen.queryByRole("button", { name: /Bankunterlagen/ })).toBeNull();
+    expect(screen.queryByTestId("karte-bankgespraech")).toBeNull();
+  });
+});
+
+describe.skip("Schalter „Bankgespräch & Bankunterlagen“", () => {
   it("aus: kein Bereich Bankunterlagen, keine Karte Bankgespräch; an: beides", () => {
     zeige(<InvestmentrechnerInhalt vorbelegung={{ eingabe, knk }} />);
     expect(screen.queryByRole("button", { name: /Bankunterlagen/ })).toBeNull();
@@ -41,7 +55,7 @@ describe("Schalter „Bankgespräch & Bankunterlagen“", () => {
   });
 });
 
-describe("Bankunterlagen aus der Selbstauskunft", () => {
+describe.skip("Bankunterlagen aus der Selbstauskunft", () => {
   const start = { eingabe: { ...eingabe, bankgespraechAktiv: true }, knk };
 
   it("ohne verbundenen Kunden bleiben die Felder frei", () => {

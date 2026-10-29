@@ -106,7 +106,16 @@ export function ObjektObjektdatenFelder({ wert, onChange }: { wert: ObjektFormDa
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           <Feld label="Ortsübliche Vergleichsmiete (€/m²)" typ="zahl" wert={wert.vergleichsmieteQm} onChange={(v) => setze({ vergleichsmieteQm: v })} hinweis="Mietspiegel; Obergrenze jeder Erhöhung" />
           <Feld label="Kappungsgrenze (%)" typ="zahl" wert={wert.kappungsgrenzeProzent} onChange={(v) => setze({ kappungsgrenzeProzent: v })} hinweis="Leer: 20 %, Berlin 15 %" />
+          <Feld label="Quelle der Vergleichsmiete" wert={wert.vergleichsmieteQuelle} onChange={(v) => setze({ vergleichsmieteQuelle: v })} platzhalter="Mietspiegel 2026" />
           <Feld label="Reservierung gilt (Tage)" typ="zahl" wert={wert.reservierungTage} onChange={(v) => setze({ reservierungTage: v })} hinweis="Leer: keine Ablauffrist" />
+        </div>
+      </div>
+      <div>
+        <p className="mb-2 text-[11px] font-semibold text-muted-foreground">Mietentwicklung für die ausführliche Investmentberechnung</p>
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          <Feld label="Zielmiete langfristig (€/m²)" typ="zahl" wert={wert.mieteZielQm} onChange={(v) => setze({ mieteZielQm: v })} platzhalter="20" hinweis="Die Miete steigt linear bis dahin" />
+          <Feld label="Zielmiete erreicht im Jahr" typ="zahl" wert={wert.mieteZielJahr} onChange={(v) => setze({ mieteZielJahr: v })} platzhalter="2060" />
+          <Feld label="Garagenmiete im Zieljahr (€)" typ="zahl" wert={wert.garageMieteZiel} onChange={(v) => setze({ garageMieteZiel: v })} platzhalter="150" />
         </div>
       </div>
       <p className="text-[11px] text-muted-foreground">Kalkulation (Ankauf, Kosten, Provision), Meilensteine der Aufteilung und Wirtschaftsplan pflegst du nach dem Speichern in Objektdaten, Einheitenliste.</p>

@@ -3009,5 +3009,27 @@
     ],
     "soFindestDuEs": "Investmentkalkulation, oben rechts „Persönlicher Objektvergleich“",
     "kritisch": false
+  },
+  {
+    "nr": 148,
+    "datum": "2026-10-29",
+    "art": "geaendert",
+    "titel": "Investmentkalkulation: ausführliche Berechnung im Aufbau des Objektvergleichs",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner"
+    ],
+    "kurztext": "Analyse und ausführliche Berechnung rechnen jetzt wie der persönliche Objektvergleich, mit neuem Deckblatt und einer Seite zu Kaufnebenkosten über ein Nachrangdarlehen. Bankgespräch und Bankunterlagen sind ausgeblendet.",
+    "wasHeisstDasFuerDich": [
+      "Unter „Ausführlich (PDF)“ siehst du die Berechnung als PDF-Vorschau; „Berechnung herunterladen“ speichert sie.",
+      "Die letzte Seite zeigt, was sich im Monat ändert, wenn die Kaufnebenkosten zur Hälfte oder ganz über ein Nachrangdarlehen laufen.",
+      "Im neuen Bereich „Ausführliche Berechnung“ links stehen die zusätzlichen Angaben wie Mietsubvention, Zielmiete und Garage. Objekt und Selbstauskunft füllen sie vor, du kannst jeden Wert ändern.",
+      "Beim Objekt anlegen kannst du jetzt Zielmiete, Zieljahr, Garagenmiete im Zieljahr und die Quelle der Vergleichsmiete eintragen.",
+      "Für Kunden mit Sprache Englisch bleibt vorerst die bisherige englische Analyse und Berechnung."
+    ],
+    "soFindestDuEs": "Seitenleiste, Investmentkalkulation, Ansicht „Ausführlich (PDF)“",
+    "kritisch": false
   }
 ]
