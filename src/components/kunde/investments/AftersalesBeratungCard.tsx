@@ -152,7 +152,7 @@ export function AftersalesBeratungCard({
             </div>
           )}
           <p className="text-bildunterschrift text-muted-foreground">
-            Wird automatisch im Kundenordner unter „Beratungsdokument" abgelegt und für den Kunden im Kundenportal sichtbar gemacht.
+            Das unterzeichnete PDF liegt hier unter After Sales.
           </p>
         </div>
       )}

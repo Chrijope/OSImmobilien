@@ -2135,7 +2135,7 @@ export function BonitaetsSection({ inv, invMeta, kontakt, kontaktMeta, onRefresh
                   .select("person_type, name, signature_data, signed_at, status, created_at")
                   .eq("kontakt_id", kontakt!.id)
                   .eq("investment_id", inv.id)
-                  .not("person_type", "like", "rv_%")
+                  .in("person_type", ["person1", "person2", "partner"])
                   .order("created_at", { ascending: false });
                 const latest = new Map<string, any>();
                 for (const r of (sigRows || [])) {

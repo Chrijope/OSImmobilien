@@ -18,12 +18,13 @@ import { datumUhrzeitText } from "./sprachFormat";
 /** Die Fassung der englischen Einwilligungstexte dieser Seite. */
 export const EINWILLIGUNG_FASSUNG_EN = "2026-09-25-en";
 
-export type SignaturDokument = "reservierung" | "selbstauskunft" | "aftersales";
+export type SignaturDokument = "reservierung" | "selbstauskunft" | "aftersales" | "mietzuzahlung";
 
 const DOKUMENT: Record<SignaturDokument, Record<Sprache, string>> = {
   reservierung: { de: "Reservierungsvereinbarung", en: "reservation agreement" },
   selbstauskunft: { de: "Selbstauskunft", en: "self-disclosure (Selbstauskunft)" },
   aftersales: { de: "Beratungs- und Qualitätsprotokoll", en: "consultation and quality record" },
+  mietzuzahlung: { de: "Vereinbarung über eine Mietzuzahlung", en: "rent subsidy agreement" },
 };
 
 /** Der Dokumentname im Satz. */
@@ -52,6 +53,9 @@ export function einwilligungText(dok: SignaturDokument, sprache: Sprache, bestae
     if (dok === "reservierung") {
       return `I confirm that the information I have provided in the reservation agreement is correct and complete. ${bestaetigung} I agree that my signature is captured electronically, stored and used to document the reservation. I am aware that this electronic signature constitutes a simple electronic signature within the meaning of the eIDAS Regulation.`;
     }
+    if (dok === "mietzuzahlung") {
+      return "I confirm that I have read the agreement on a rent subsidy (Mietzuzahlung) in full and agree to it. I agree that my signature is captured electronically, stored and used to document the agreement. I am aware that this electronic signature constitutes a simple electronic signature within the meaning of the eIDAS Regulation.";
+    }
     if (dok === "aftersales") {
       return "I confirm that I have read the consultation and quality record in full and that it reflects the consultation. I agree that my signature is captured electronically, stored and used to document the advice. I am aware that this electronic signature constitutes a simple electronic signature within the meaning of the eIDAS Regulation.";
     }
@@ -59,6 +63,9 @@ export function einwilligungText(dok: SignaturDokument, sprache: Sprache, bestae
   }
   if (dok === "reservierung") {
     return `Ich bestätige die Richtigkeit und Vollständigkeit meiner Angaben in der Reservierungsvereinbarung. ${bestaetigung} Ich bin damit einverstanden, dass meine Unterschrift elektronisch erfasst, gespeichert und zur Dokumentation der Reservierung verwendet wird. Mir ist bewusst, dass diese elektronische Unterschrift eine einfache elektronische Signatur (EES) gemäß eIDAS-Verordnung darstellt.`;
+  }
+  if (dok === "mietzuzahlung") {
+    return "Ich bestätige, dass ich die Vereinbarung über eine Mietzuzahlung vollständig gelesen habe und ihr zustimme. Ich bin damit einverstanden, dass meine Unterschrift elektronisch erfasst, gespeichert und zur Dokumentation der Vereinbarung verwendet wird. Mir ist bewusst, dass diese elektronische Unterschrift eine einfache elektronische Signatur (EES) gemäß eIDAS-Verordnung darstellt.";
   }
   if (dok === "aftersales") {
     return "Ich bestätige, dass ich das Beratungs- und Qualitätsprotokoll vollständig gelesen habe und es den Verlauf der Beratung wiedergibt. Ich bin damit einverstanden, dass meine Unterschrift elektronisch erfasst, gespeichert und zur Dokumentation der Beratung verwendet wird. Mir ist bewusst, dass diese elektronische Unterschrift eine einfache elektronische Signatur (EES) gemäß eIDAS-Verordnung darstellt.";
@@ -220,6 +227,7 @@ const DE: SignaturSeitenTexte = {
   bereitsTitel: "Bereits unterschrieben",
   bereitsText: (dok) => dok === "reservierung"
     ? "Diese Reservierungsvereinbarung wurde bereits von Ihnen unterschrieben. Sie können dieses Fenster schließen."
+    : dok === "mietzuzahlung" ? "Diese Vereinbarung über eine Mietzuzahlung wurde bereits von Ihnen unterschrieben. Sie können dieses Fenster schließen."
     : "Diese Selbstauskunft wurde bereits von Ihnen unterschrieben. Sie können dieses Fenster schließen.",
   herunterladen: (titel) => `${titel} als PDF herunterladen`,
   audit: "Audit-Protokoll:",
@@ -235,11 +243,14 @@ const DE: SignaturSeitenTexte = {
   schliessen: "Sie können dieses Fenster jetzt schließen.",
   vorschauTitel: (dok) => dok === "reservierung"
     ? "Ihre Reservierungsvereinbarung zur Kontrolle"
-    : dok === "aftersales" ? "Ihr Beratungs- und Qualitätsprotokoll" : "Ihre Selbstauskunft zur Kontrolle",
+    : dok === "aftersales" ? "Ihr Beratungs- und Qualitätsprotokoll"
+    : dok === "mietzuzahlung" ? "Ihre Vereinbarung über eine Mietzuzahlung" : "Ihre Selbstauskunft zur Kontrolle",
   vorschauHinweis: (dok) => dok === "aftersales"
     ? "Ihr Vertriebspartner hat das Protokoll bereits unterzeichnet. Bitte lesen Sie es vollständig und unterschreiben Sie unten."
+    : dok === "mietzuzahlung"
+    ? "Die OS Mietpool Verwaltung hat die Vereinbarung bereits unterzeichnet. Bitte lesen Sie sie vollständig und unterschreiben Sie unten."
     : "Bitte überprüfen Sie Ihre Angaben sorgfältig, bevor Sie unten unterschreiben.",
-  vorschauTitelIframe: (dok) => dok === "reservierung" ? "Reservierungsvereinbarung Vorschau" : "Selbstauskunft Vorschau",
+  vorschauTitelIframe: (dok) => dok === "reservierung" ? "Reservierungsvereinbarung Vorschau" : dok === "mietzuzahlung" ? "Mietzuzahlung Vorschau" : "Selbstauskunft Vorschau",
   vorschauNichtUnterstuetzt: "PDF-Vorschau wird auf Ihrem Gerät nicht unterstützt.",
   pdfHerunterladenAnsehen: "PDF herunterladen & ansehen",
   pdfNeuerTab: "PDF in neuem Tab öffnen",
@@ -262,7 +273,8 @@ const DE: SignaturSeitenTexte = {
   saBearbeiten: "Selbstauskunft bearbeiten",
   unterschreibenTitel: (dok) => dok === "reservierung"
     ? "Reservierungsvereinbarung unterschreiben"
-    : dok === "aftersales" ? "Beratungs- und Qualitätsprotokoll unterschreiben" : "Selbstauskunft unterschreiben",
+    : dok === "aftersales" ? "Beratungs- und Qualitätsprotokoll unterschreiben"
+    : dok === "mietzuzahlung" ? "Vereinbarung über eine Mietzuzahlung unterschreiben" : "Selbstauskunft unterschreiben",
   rolleKaeufer: "Käufer",
   rolleKunde: "Kunde",
   rollePerson: (nr) => `Person ${nr}`,
@@ -311,6 +323,7 @@ const EN: SignaturSeitenTexte = {
   bereitsText: (dok) => dok === "reservierung"
     ? "You have already signed this reservation agreement. You may close this window."
     : dok === "aftersales" ? "You have already signed this consultation and quality record. You may close this window."
+    : dok === "mietzuzahlung" ? "You have already signed this rent subsidy agreement. You may close this window."
     : "You have already signed this self-disclosure. You may close this window.",
   herunterladen: (titel) => `Download ${titel} as PDF`,
   audit: "Audit record:",
@@ -326,13 +339,16 @@ const EN: SignaturSeitenTexte = {
   schliessen: "You may now close this window.",
   vorschauTitel: (dok) => dok === "reservierung"
     ? "Your reservation agreement for review"
-    : dok === "aftersales" ? "Your consultation and quality record" : "Your self-disclosure for review",
+    : dok === "aftersales" ? "Your consultation and quality record"
+    : dok === "mietzuzahlung" ? "Your rent subsidy agreement" : "Your self-disclosure for review",
   vorschauHinweis: (dok) => dok === "aftersales"
     ? "Your sales partner has already signed the record. Please read it in full and sign below."
+    : dok === "mietzuzahlung"
+    ? "OS Mietpool Verwaltung has already signed the agreement. Please read it in full and sign below. It is written in German."
     : dok === "reservierung"
     ? "Please read the agreement carefully before you sign below. It is written in German and English; the German version prevails."
     : "Please check your details carefully before you sign below.",
-  vorschauTitelIframe: (dok) => dok === "reservierung" ? "Reservation agreement preview" : "Self-disclosure preview",
+  vorschauTitelIframe: (dok) => dok === "reservierung" ? "Reservation agreement preview" : dok === "mietzuzahlung" ? "Rent subsidy agreement preview" : "Self-disclosure preview",
   vorschauNichtUnterstuetzt: "Your device does not support the PDF preview.",
   pdfHerunterladenAnsehen: "Download and view PDF",
   pdfNeuerTab: "Open PDF in a new tab",
@@ -355,7 +371,8 @@ const EN: SignaturSeitenTexte = {
   saBearbeiten: "Edit self-disclosure",
   unterschreibenTitel: (dok) => dok === "reservierung"
     ? "Sign the reservation agreement"
-    : dok === "aftersales" ? "Sign the consultation and quality record" : "Sign the self-disclosure",
+    : dok === "aftersales" ? "Sign the consultation and quality record"
+    : dok === "mietzuzahlung" ? "Sign the rent subsidy agreement" : "Sign the self-disclosure",
   rolleKaeufer: "Buyer",
   rolleKunde: "Customer",
   rollePerson: (nr) => `Person ${nr}`,

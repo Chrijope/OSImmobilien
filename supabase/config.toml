@@ -108,6 +108,10 @@ verify_jwt = false
 [functions.finalize-aftersales-beratung]
 verify_jwt = false
 
+# Vereinbarung über eine Mietzuzahlung (30.10.2026): Ablage nach der Kundenunterschrift, Zugang über den Token.
+[functions.finalize-mietzuzahlung]
+verify_jwt = false
+
 [functions.auth-email-hook]
 verify_jwt = false
 
@@ -506,6 +510,9 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.send-reservation-signature]
+verify_jwt = true
+
+[functions.send-mietzuzahlung-signatur]
 verify_jwt = true
 
 [functions.send-review-result]

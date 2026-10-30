@@ -1532,7 +1532,7 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
         .from("signature_requests")
         .delete()
         .eq("kontakt_id", kundeId)
-        .not("person_type", "like", "rv_%");
+        .in("person_type", ["person1", "person2", "partner"]);
       if (invId) delQ = delQ.eq("investment_id", invId);
       // Bleiben Restzeilen stehen, blockieren sie spaeter den Abschluss der
       // Selbstauskunft. Deshalb wird hier abgebrochen statt weiterzumachen.

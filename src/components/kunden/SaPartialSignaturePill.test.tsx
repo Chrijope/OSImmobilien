@@ -35,7 +35,7 @@ const functionAufrufe: any[] = [];
 /** Kette, die jede Abfrage-Methode überlebt und am Ende die Zeilen liefert. */
 function kette(ergebnis: any) {
   const o: any = {};
-  for (const m of ["select", "eq", "neq", "not", "order", "limit", "is"]) o[m] = () => o;
+  for (const m of ["select", "eq", "neq", "not", "in", "order", "limit", "is"]) o[m] = () => o;
   o.maybeSingle = async () => ergebnis;
   o.then = (aufloesen: any, ablehnen: any) => Promise.resolve(ergebnis).then(aufloesen, ablehnen);
   return o;

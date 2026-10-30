@@ -78,7 +78,7 @@ export function SaPartialSignaturePill({ kontaktId, investmentId, fallbackSaData
       .select("id, person_type, name, email, status, signed_at, created_at, expires_at, sa_data")
       .eq("kontakt_id", kontaktId)
       .eq("investment_id", investmentId)
-      .not("person_type", "like", "rv_%")
+      .in("person_type", ["person1", "person2", "partner"])
       // Anfragen einer abgelösten Fassung sind weder offen noch unterschrieben.
       .neq("status", "ueberholt")
       .order("created_at", { ascending: false });

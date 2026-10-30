@@ -59,12 +59,16 @@ export default function SignaturSeite() {
   const isVertragKurz = signatureType === "vertrag_kurz";
   const isAftersalesKunde = signatureType === "aftersales_kunde";
   const isAftersalesVp = signatureType === "aftersales_vp";
+  // Vereinbarung über eine Mietzuzahlung (30.10.2026): nur der Kunde unterschreibt, Vertragspartner 2 ist fest unterzeichnet.
+  const isMietzuzahlung = signatureType === "mietzuzahlung_kunde";
   // Nur die Selbstauskunft ist vor der Unterschrift durch den Kunden korrigierbar.
-  const istSaKorrigierbar = !isReservierung && !isVertrag && !isVertragKurz && !isAftersalesKunde && !isAftersalesVp && !isMobileMode;
+  const istSaKorrigierbar = !isReservierung && !isVertrag && !isVertragKurz && !isAftersalesKunde && !isAftersalesVp && !isMietzuzahlung && !isMobileMode;
   const docLabel = isReservierung
     ? "Reservierungsvereinbarung"
     : isAftersalesKunde || isAftersalesVp
     ? "Beratungsdokument"
+    : isMietzuzahlung
+    ? "Mietzuzahlung"
     : isVertrag || isVertragKurz
     ? "Vertrag"
     : "Selbstauskunft";
@@ -127,7 +131,7 @@ export default function SignaturSeite() {
   // Das Beratungsprotokoll duzt auf Deutsch (17.10.2026), die übrigen Dokumente siezen.
   const t: SignaturSeitenTexte = isAftersalesKunde && sprache === "de" ? SIGNATUR_SEITE_TEXTE_DU : SIGNATUR_SEITE_TEXTE[sprache];
   const englisch = sprache === "en";
-  const dok: SignaturDokument = isReservierung ? "reservierung" : isAftersalesKunde ? "aftersales" : "selbstauskunft";
+  const dok: SignaturDokument = isReservierung ? "reservierung" : isAftersalesKunde ? "aftersales" : isMietzuzahlung ? "mietzuzahlung" : "selbstauskunft";
   const anzeigeTitel = istKundenseite ? dokumentTitel(dok, sprache) : docLabel;
   // Die englische Fassung der Wahl zum Beginn, mit denselben Nummern wie die deutsche.
   const rvAufbauEn = isReservierung && englisch ? vertragsAufbau(rvOptionen, "en") : null;
@@ -341,6 +345,9 @@ export default function SignaturSeite() {
           );
         } else if (isAftersalesKunde) {
           doc = await aftersalesPdf(saData);
+        } else if (isMietzuzahlung) {
+          const { erzeugeMietzuzahlungPdf } = await import("@/lib/mietzuzahlungPdf");
+          doc = await erzeugeMietzuzahlungPdf(saData.mietzuzahlung);
         } else {
           const { generateSelbstauskunftPDF } = await import("@/lib/selbstauskunftPdf");
           doc = await generateSelbstauskunftPDF(
@@ -368,7 +375,7 @@ export default function SignaturSeite() {
         return null;
       });
     };
-  }, [request, isReservierung, isVertrag, isVertragKurz, isAftersalesKunde, isAftersalesVp, widerrufWahl, sprache]);
+  }, [request, isReservierung, isVertrag, isVertragKurz, isAftersalesKunde, isAftersalesVp, isMietzuzahlung, widerrufWahl, sprache]);
 
   // Canvas drawing
   const getPos = useCallback((e: React.MouseEvent | React.TouchEvent) => {
@@ -460,7 +467,7 @@ export default function SignaturSeite() {
           en: vertragsAufbau(rvOpt, "en").widerrufWahlen[wahlIndex]?.satz || widerrufWahl,
         }
         : undefined,
-      ort: isReservierung ? ort : "",
+      ort: isReservierung || isMietzuzahlung ? ort : "",
       fassung: isReservierung
         ? fassungsVermerk(request.sa_data)
         : englisch ? `Erklärungen ${SA_RECHTSTEXT_FASSUNG_EN}` : undefined,
@@ -509,7 +516,7 @@ export default function SignaturSeite() {
      * zur Ablage nachgereicht wird. Wie bei der Reservierung.
      */
     let protokollAbschluss: { unterschriften: Array<{ name?: string; signature?: string; signedAt?: string; person?: string }>; vp?: { name?: string; signature?: string; signedAt?: string } } | null = null;
-    try {
+    if (!isMietzuzahlung) try {
       const fnName = isReservierung
         ? "finalize-reservierung"
         : isAftersalesKunde
@@ -638,6 +645,23 @@ export default function SignaturSeite() {
           } catch (err) {
             console.error("Beratungsprotokoll konnte nicht abgelegt werden:", err);
           }
+        }
+      } else if (isMietzuzahlung) {
+        // Das PDF mit der Unterschrift des Kunden entsteht hier und wird zur Ablage nachgereicht (finalize-mietzuzahlung).
+        const { erzeugeMietzuzahlungPdf } = await import("@/lib/mietzuzahlungPdf");
+        doc = await erzeugeMietzuzahlungPdf(saData.mietzuzahlung, {
+          signatureData,
+          ort: ort.trim() || undefined,
+          datum: new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Berlin" }),
+        });
+        try {
+          const pdfBase64 = doc.output("datauristring").split(",")[1] || "";
+          if (pdfBase64) {
+            const { error: ablageFehler } = await supabase.functions.invoke("finalize-mietzuzahlung", { body: { token, pdfBase64 } });
+            if (ablageFehler) console.error("Mietzuzahlung konnte nicht abgelegt werden:", ablageFehler);
+          }
+        } catch (err) {
+          console.error("Mietzuzahlung konnte nicht abgelegt werden:", err);
         }
       } else if (!isVertrag && !isVertragKurz && !isAftersalesVp) {
         const { generateSelbstauskunftPDF } = await import("@/lib/selbstauskunftPdf");
@@ -826,6 +850,8 @@ export default function SignaturSeite() {
                     ? "Beratungs- und Qualitätsprotokoll"
                     : isAftersalesVp
                     ? "Beratungs- und Qualitätsprotokoll (VP)"
+                    : isMietzuzahlung
+                    ? "Vereinbarung über eine Mietzuzahlung"
                     : "Selbstauskunft"
                 }
               />
@@ -1004,7 +1030,7 @@ export default function SignaturSeite() {
                 <p className="text-sm text-muted-foreground mt-1">
                   {isReservierung
                     ? <>{t.rolleKaeufer}: <strong>{request.name}</strong></>
-                    : isAftersalesKunde
+                    : isAftersalesKunde || isMietzuzahlung
                     ? <>{t.rolleKunde}: <strong>{request.name}</strong></>
                     : <>{t.rollePerson(request.person_type === "person1" ? 1 : 2)}: <strong>{request.name}</strong></>}
                 </p>
@@ -1141,8 +1167,8 @@ export default function SignaturSeite() {
                 </div>
               )}
 
-              {/* Ort der Unterschrift, freiwillig, nur bei der Reservierung. */}
-              {isReservierung && (
+              {/* Ort der Unterschrift, freiwillig, bei Reservierung und Mietzuzahlung. */}
+              {(isReservierung || isMietzuzahlung) && (
                 <div>
                   <label htmlFor="unterschrift-ort" className="text-sm font-medium block mb-1">
                     {t.ort} <span className="text-xs font-normal text-muted-foreground">{t.freiwillig}</span>

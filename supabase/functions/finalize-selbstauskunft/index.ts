@@ -12,7 +12,7 @@ import {
   saPdfPfad,
   saVollstaendigUnterschrieben,
 } from "../_shared/selbstauskunft-pdf-ablage.ts";
-import { saErwartetePersonen, saUnterschriftenStand } from "../_shared/selbstauskunft-geltende-unterschrift.ts";
+import { SA_PERSON_TYPEN, saErwartetePersonen, saUnterschriftenStand } from "../_shared/selbstauskunft-geltende-unterschrift.ts";
 import { saDatenSicht, saLinkFrischAbgeschlossen, saUnterschriftenSicht } from "../_shared/sa-fester-link.ts";
 
 const corsHeaders = {
@@ -341,7 +341,7 @@ Deno.serve(async (req) => {
           .from("signature_requests")
           .select("person_type, status, created_at, signed_at, meta")
           .eq("kontakt_id", kontaktId)
-          .not("person_type", "like", "rv_%");
+          .in("person_type", [...SA_PERSON_TYPEN]);
         if (investmentId) fassungsAnfragen = fassungsAnfragen.eq("investment_id", investmentId);
         const { data: anfragenZurPdf } = await fassungsAnfragen;
         if (saUnterschriftenStand(anfragenZurPdf ?? []).fassung !== fillFassung) {
@@ -394,12 +394,12 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify(koerper), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     };
 
-    // Get SA signature requests only (exclude rv_ prefixed)
+    // Nur die Anfragen der Selbstauskunft, nicht Reservierung, After Sales oder Mietzuzahlung
     let query = supabase
       .from("signature_requests")
       .select("*")
       .eq("kontakt_id", kontaktId)
-      .not("person_type", "like", "rv_%");
+      .in("person_type", [...SA_PERSON_TYPEN]);
 
     if (investmentId) {
       query = query.eq("investment_id", investmentId);

@@ -1250,7 +1250,7 @@ export function getSaDataZurVorbelegung(
   return { data: quelle.saData, ausInvestment: quelle.nummer };
 }
 
-export const KUNDENORDNER_DEFAULT_KATEGORIEN = ["Reservierungsvertrag", "IBAN Immobilienkonto", "Kaufvertragsentwurf", "Grundschuld", "Kaufvertrag", "Kaufpreisfälligkeit", "GBA Erwerbvormerkung", "Darlehensvertrag", "Kaufnebenkosten", "Beratungsdokument"] as const;
+export const KUNDENORDNER_DEFAULT_KATEGORIEN = ["Reservierungsvertrag", "IBAN Immobilienkonto", "Kaufvertragsentwurf", "Grundschuld", "Kaufvertrag", "Kaufpreisfälligkeit", "GBA Erwerbvormerkung", "Darlehensvertrag", "Kaufnebenkosten", "Beratungsdokument", "Mietzuzahlung"] as const;
 export const KUNDENORDNER_KATEGORIEN = KUNDENORDNER_DEFAULT_KATEGORIEN;
 export type KundenordnerKategorie = string;
 export interface KundenordnerDokument { id: string; investmentId: string; kategorie: KundenordnerKategorie; filename: string; uploadedBy: string; uploadedAt: string; linkedPdf?: string; fileUrl?: string; freigegeben?: boolean; /** Zeitpunkt der Freigabe an den Kunden, seit 27.10.2026. */ freigegebenAm?: string; }

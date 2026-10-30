@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, Download, RotateCcw } from "lucide-react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { ArrowLeft, Download, RotateCcw, Send } from "lucide-react";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import { LivePdfVorschau } from "@/components/pdf/LivePdfVorschau";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -9,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { DateInput } from "@/components/ui/date-input";
 import { useCacheReady } from "@/hooks/useCacheReady";
 import { getAbwicklungDaten } from "@/lib/abwicklungStore";
-import { getInvestmentById, getInvestmentMetaField, setInvestmentMetaFields } from "@/lib/investmentsStore";
+import { getInvestmentById, getInvestmentMetaField, investmentGespeichert, setInvestmentMetaFields } from "@/lib/investmentsStore";
 import { getKontaktById } from "@/lib/kundenStore";
 import { listendatenFuerEinheit } from "@/lib/listendaten";
 import { garageFuerEinheit } from "@/lib/mietgarantie";
@@ -83,6 +85,27 @@ function MietzuzahlungInhalt({ kontaktId, investmentId }: { kontaktId: string; i
     doc.save(`Mietzuzahlung ${daten.kaeuferName || "Kunde"}${daten.weNr ? ` WE ${daten.weNr}` : ""}.pdf`);
   };
 
+  // Wie die Reservierung: Der Server nimmt den gespeicherten Entwurf, legt den Link an und schickt die Mail.
+  const navigate = useNavigate();
+  const [sendet, setSendet] = useState(false);
+  const zurUnterschrift = async () => {
+    setSendet(true);
+    try {
+      setInvestmentMetaFields(investmentId, { [ENTWURF_SCHLUESSEL]: daten });
+      await investmentGespeichert(investmentId);
+      const { data, error } = await supabase.functions.invoke("send-mietzuzahlung-signatur", { body: { investmentId } });
+      if (error || !data?.ok) {
+        const grund = data?.error || data?.grund || (await (error as { context?: Response })?.context?.json?.().catch(() => null))?.error;
+        toast.error(grund || "Versand fehlgeschlagen.");
+        return;
+      }
+      toast.success(`Zur Unterschrift an ${data.email} gesendet`);
+      navigate(`/kunden/${kontaktId}?tab=investments&investment=${investmentId}#aftersales`);
+    } finally {
+      setSendet(false);
+    }
+  };
+
   if (!inv) return <div className="p-6 text-sm text-muted-foreground">Investment nicht gefunden.</div>;
 
   /** Feld mit Markierung, wenn der Wert noch dem System entspricht. */
@@ -117,7 +140,10 @@ function MietzuzahlungInhalt({ kontaktId, investmentId }: { kontaktId: string; i
           <Button variant="outline" size="sm" onClick={() => setDaten({ ...ausSystem, bank: daten.bank, iban: daten.iban, ort2: daten.ort2, datum2: daten.datum2 })} title="Alle Werte erneut aus dem System übernehmen; Bank, IBAN, Ort und Datum bleiben">
             <RotateCcw className="h-4 w-4 mr-1" /> Aus dem System neu laden
           </Button>
-          <Button size="sm" onClick={() => void herunterladen()}><Download className="h-4 w-4 mr-1" /> PDF herunterladen</Button>
+          <Button size="sm" variant="outline" onClick={() => void herunterladen()}><Download className="h-4 w-4 mr-1" /> PDF herunterladen</Button>
+          <Button size="sm" variant="brand" disabled={sendet} onClick={() => void zurUnterschrift()} data-testid="mietzuzahlung-senden">
+            <Send className="h-4 w-4 mr-1" /> {sendet ? "Sendet …" : "Zur Unterschrift an Kunden senden"}
+          </Button>
         </div>
       </div>
 

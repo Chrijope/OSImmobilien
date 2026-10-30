@@ -101,6 +101,7 @@ import { template as paketUebersicht } from './paket-uebersicht.tsx'
 import { template as steuerAuswertung } from './steuer-auswertung.tsx'
 import { template as musterVertrag } from './muster-vertrag.tsx'
 import { template as aftersalesBeratungSignatur } from './aftersales-beratung-signatur.tsx'
+import { template as mietzuzahlungSignatur } from './mietzuzahlung-signatur.tsx'
 import { template as vpBewertungEinladung } from './vp-bewertung-einladung.tsx'
 import { template as googleBewertungEinladung } from './google-bewertung-einladung.tsx'
 import { template as googleBewertungErinnerung1 } from './google-bewertung-erinnerung-1.tsx'
@@ -267,6 +268,7 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'muster-vertrag': musterVertrag,
   'tippgeber-pitch-toolkit': tippgeberPitchToolkit,
   'aftersales-beratung-signatur': aftersalesBeratungSignatur,
+  'mietzuzahlung-signatur': mietzuzahlungSignatur,
   'vp-bewertung-einladung': vpBewertungEinladung,
   'google-bewertung-einladung': googleBewertungEinladung,
   'google-bewertung-erinnerung-1': googleBewertungErinnerung1,
