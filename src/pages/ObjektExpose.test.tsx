@@ -219,8 +219,9 @@ beforeEach(() => {
 });
 
 describe("Exposé-Seite", () => {
-  it("leitet einen Vertriebspartner wie die Einheiten-Seite auf die Verwaltungsansicht", () => {
-    rolle.wert = "vertriebspartner";
+  // Seit dem 30.10.2026 kommt der Vertriebspartner mit Objektbereich herein, der Objektpartner nicht.
+  it("leitet einen Objektpartner wie die Einheiten-Seite auf die Verwaltungsansicht", () => {
+    rolle.wert = "objektpartner";
     renderMit("/objekte/o1/einheiten/w7/expose");
     expect(screen.getByText("Verwaltungsansicht")).toBeInTheDocument();
     expect(screen.queryByTestId("abschnitt-start")).not.toBeInTheDocument();
@@ -522,8 +523,8 @@ describe("Exposé-Seite seit dem 23.09.2026", () => {
     await screen.findByTestId("abschnitt-kontakt");
   });
 
-  it("leitet einen Vertriebspartner auch vom Objekt-Exposé auf die Verwaltungsansicht", () => {
-    rolle.wert = "vertriebspartner";
+  it("leitet einen Objektpartner auch vom Objekt-Exposé auf die Verwaltungsansicht", () => {
+    rolle.wert = "objektpartner";
     renderMit("/objekte/k-global/expose");
     expect(screen.getByText("Verwaltungsansicht Objekt")).toBeInTheDocument();
   });

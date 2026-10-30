@@ -84,9 +84,13 @@ describe("Zugang zur Objektseite", () => {
     expect(screen.getByText("Verwaltungsansicht")).toBeInTheDocument();
   });
 
-  it("leitet den Vertriebspartner auch mit `mitVertriebsleitung` weiter", () => {
+  // Seit dem 30.10.2026: Wer „Objekte" in der Seitenleiste sieht, sieht auch Objekt- und Einheitenseite.
+  it("lässt den Vertriebspartner mit `mitVertriebsleitung` herein, ohne nur auf die Admin-Seiten", () => {
     rolle.wert = "vertriebspartner";
-    renderMit("/objekte/o1", true);
+    const { unmount } = renderMit("/objekte/o1", true);
+    expect(screen.getByText("Objektseite sichtbar")).toBeInTheDocument();
+    unmount();
+    renderMit("/objekte/o1");
     expect(screen.getByText("Verwaltungsansicht")).toBeInTheDocument();
   });
 
@@ -100,28 +104,10 @@ describe("Zugang zur Objektseite", () => {
     const zweiter = renderMit("/objekte/o1");
     expect(screen.getByText("Verwaltungsansicht")).toBeInTheDocument();
     zweiter.unmount();
-    // Andere Kennung: wie jeder Vertriebspartner.
-    rolle.userId = "u-anders";
-    renderMit("/objekte/o1", true);
-    expect(screen.getByText("Verwaltungsansicht")).toBeInTheDocument();
     rolle.userId = null;
   });
 
-  /*
-   * Exposé und Kundenansicht öffnen in einem neuen Tab, dort ist app_config
-   * anfangs noch nicht geladen. Dann warten statt wegleiten.
-   */
-  it("wartet beim Vertriebspartner auf app_config, statt ihn wegzuleiten", () => {
-    rolle.wert = "vertriebspartner";
-    // Solange app_config fehlt, ist offen, ob das Konto freigeschaltet ist.
-    rolle.userId = "u-anders";
-    rolle.configGeladen = false;
-    renderMit("/objekte/o1", true);
-    expect(screen.getByText("Lädt")).toBeInTheDocument();
-    expect(screen.queryByText("Verwaltungsansicht")).not.toBeInTheDocument();
-    rolle.configGeladen = true;
-    rolle.userId = null;
-  });
+
 
   it("erkennt Aufrufe mit Kundenkontext, die die Verwaltungsansicht wollen", () => {
     expect(willVerwaltungsansicht("?kundeId=k1&kundeName=Meier")).toBe(true);

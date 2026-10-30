@@ -74,10 +74,12 @@ describe("Dashboard-Kennzahlen und Aktionen", () => {
     mount(); fireEvent.click(screen.getByRole("button", { name: label }));
     expect(screen.getByTestId("location")).toHaveTextContent(route);
   });
-  it("zeigt Vertriebspartnern genau Kontakt anlegen und Vertriebsakademie", () => {
-    const { container } = render(<MemoryRouter><QuickActions /></MemoryRouter>);
-    expect(within(container).getAllByRole("button").map((button) => button.textContent)).toEqual(["Kontakt anlegen", "Vertriebsakademie"]);
+  it("zeigt Vertriebspartnern Kontakt anlegen, Alle Kontakte und Vertriebsakademie in dieser Reihenfolge", () => {
+    const { container } = render(<MemoryRouter><QuickActions /><Location /></MemoryRouter>);
+    expect(within(container).getAllByRole("button").map((button) => button.textContent)).toEqual(["Kontakt anlegen", "Alle Kontakte", "Vertriebsakademie"]);
     expect(screen.queryByText("Bestandskunden")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Alle Kontakte" }));
+    expect(screen.getByTestId("location")).toHaveTextContent("/alle-kontakte");
   });
   it.each(["inhaber", "admin", "vertriebsleiter"])("behält bei %s die Führungszugriffe mit Alle Kontakte", (role) => {
     state.role = role;

@@ -7,7 +7,9 @@ const leadershipRoles = ["inhaber", "admin", "vertriebsleiter"];
 
 const actions = [
   { title: "Kontakt anlegen", icon: ClipboardList, url: "/kontakte?highlight=anlegen", roles: partnerRoles, farbe: "bg-blue-100 text-blue-700 dark:bg-blue-400/15 dark:text-blue-300" },
-  { title: "Alle Kontakte", icon: Contact, url: "/alle-kontakte", roles: leadershipRoles, farbe: "bg-emerald-100 text-emerald-700 dark:bg-emerald-400/15 dark:text-emerald-300" },
+  // Seit 30.10.2026 auch für Vertriebspartner (Christian). Die Liste zeigt ihnen
+  // nur, was sie sehen dürfen (AlleKontakte.tsx und RLS), daher keine Rechteänderung.
+  { title: "Alle Kontakte", icon: Contact, url: "/alle-kontakte", roles: partnerRoles, farbe: "bg-emerald-100 text-emerald-700 dark:bg-emerald-400/15 dark:text-emerald-300" },
   { title: "Teampartner anlegen", icon: Users, url: "/teampartner?highlight=anlegen", roles: leadershipRoles, farbe: "bg-violet-100 text-violet-700 dark:bg-violet-400/15 dark:text-violet-300" },
   { title: "Vertriebsakademie", icon: GraduationCap, url: "/vertriebsakademie", roles: partnerRoles, farbe: "bg-orange-100 text-orange-700 dark:bg-orange-400/15 dark:text-orange-300" },
 ];

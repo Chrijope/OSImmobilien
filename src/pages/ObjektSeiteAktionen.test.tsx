@@ -258,11 +258,13 @@ describe("Bearbeiten-Stifte nur für Admin und Inhaber", () => {
   }
 
   for (const rolle of ["objektpartner", "vertriebspartner"]) {
-    it(`schickt ${rolle} auf die Verwaltungsansicht, ohne Stift`, () => {
+    // Der Vertrieb sieht seit dem 30.10.2026 die Objektseite, der Objektpartner kommt weiter in die Verwaltung.
+    it(`zeigt ${rolle} ${rolle === "vertriebspartner" ? "die Objektseite" : "die Verwaltungsansicht"}, ohne Stift`, () => {
       zustand.rolle = rolle;
       zustand.objekte = { eigen: objekt("eigen", {}) };
       zeigeObjekt("eigen");
-      expect(screen.getByText("Verwaltungsansicht")).toBeInTheDocument();
+      if (rolle === "objektpartner") expect(screen.getByText("Verwaltungsansicht")).toBeInTheDocument();
+      else expect(screen.queryByText("Verwaltungsansicht")).not.toBeInTheDocument();
       expect(screen.queryByRole("button", { name: STIFT_DETAILS })).not.toBeInTheDocument();
       expect(screen.queryByRole("button", { name: STIFT_TEXTE })).not.toBeInTheDocument();
     });

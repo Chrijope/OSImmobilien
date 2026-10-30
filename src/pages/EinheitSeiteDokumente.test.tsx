@@ -232,7 +232,17 @@ describe("Reiter Dokumente der Einheitenseite", () => {
     await vorschauGeladen();
   });
 
-  it.each(["vertriebspartner", "objektpartner", "kunde", "tippgeber"])(
+  // Seit dem 30.10.2026 sieht der Vertrieb die Seite, aber keine interne Unterlage.
+  it("zeigt dem Vertriebspartner die Dokumente ohne interne Unterlage", () => {
+    zustand.rolle = "vertriebspartner";
+    zustand.objekte = { o2: objekt("o2", [we("w1"), we("w2")], hausUnterlagen) };
+    renderMit("/objekte/o2/einheiten/w1");
+    oeffneDokumente();
+    expect(screen.queryByText("Kalkulation Einkauf")).not.toBeInTheDocument();
+    expect(screen.getAllByText("Exposé").length).toBeGreaterThan(0);
+  });
+
+  it.each(["objektpartner", "kunde", "tippgeber"])(
     "laesst die Rolle %s gar nicht erst auf die Seite, genau wie bei der Objektseite, und zeigt ihr kein internes Dokument",
     (rolle) => {
       zustand.rolle = rolle;

@@ -121,6 +121,9 @@ function tabelleVon(d: EinheitUnterlage, bereichSchluessel: string): DokumentTab
   return d.tabelle ?? (bereichSchluessel === "wohnung" ? "wohnungs_dokumente" : "objekt_dokumente");
 }
 
+/** Wer als „Intern“ markierte Unterlagen nicht sieht: der Vertrieb (30.10.2026). Alle anderen wie bisher. */
+const INTERN_VERBORGEN: readonly string[] = ["vertriebspartner", "setterin", "tippgeber"];
+
 /** Im Kundenmodus: Darf der Eintrag gezeigt werden? Beide Angaben müssen es erlauben. */
 function kundeDarf(d: EinheitUnterlage): boolean {
   return d.kundeSieht === true && darfZumKunden(freigabeVonEintrag(d));
@@ -181,7 +184,9 @@ export function DokumenteAnsicht({ bereiche: roheBereiche, nebeneinanderAb = "lg
     return {
       ...b,
       rotHinweis: false,
-      eintraege: b.eintraege.map((e) => {
+      // Interne Unterlagen (etwa die Einkaufskalkulation) nicht für den Vertrieb.
+      // Seit dem 30.10.2026 sieht der Vertrieb Objekt- und Einheitenseite.
+      eintraege: b.eintraege.filter((e) => e.art !== "Intern" || !INTERN_VERBORGEN.includes(String(nutzer?.user?.role ?? ""))).map((e) => {
         const neu = entscheidungen[`${tabelleVon(e, b.schluessel)}:${e.id}`];
         if (!neu) return e;
         const mit = { ...e, ...neu };

@@ -164,8 +164,8 @@ describe("Objektseite, passende Kunden", () => {
     expect(screen.getByTestId("hinweis-kundenansicht")).toBeInTheDocument();
   });
 
-  // Der Vertriebspartner landet in der Verwaltungsansicht, dort steht sein Chip (`ObjektDetail`).
-  it.each(["finanzierungspartner", "buchhaltung", "objektpartner", "vertriebspartner"])("%s sieht sie auf der Objektseite nicht", (rolle) => {
+  // Der Vertriebspartner sieht seit dem 30.10.2026 die Objektseite, mit seinen eigenen Kunden (`siehtPassendeKunden`).
+  it.each(["finanzierungspartner", "buchhaltung", "objektpartner"])("%s sieht sie auf der Objektseite nicht", (rolle) => {
     daten.rolle = rolle;
     zeige();
     expect(screen.queryByTestId("passende-kunden-zaehler")).not.toBeInTheDocument();

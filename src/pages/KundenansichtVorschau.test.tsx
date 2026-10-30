@@ -153,8 +153,9 @@ describe("Als Kunde ansehen", () => {
     expect(zustand.aufrufe).toHaveLength(1);
   });
 
-  it("schickt einen nicht freigeschalteten Vertriebspartner in die Verwaltungsansicht, ohne zu laden", async () => {
-    zustand.rolle = "vertriebspartner";
+  // Der Vertriebspartner mit Objektbereich kommt seit dem 30.10.2026 herein; gesperrt bleibt etwa der Objektpartner.
+  it("schickt eine Rolle ohne Objekt- und Einheitenseite in die Verwaltungsansicht, ohne zu laden", async () => {
+    zustand.rolle = "objektpartner";
     zeige("/objekte/o1/einheiten/w7/kundenansicht");
     expect(await screen.findByText("Verwaltungsansicht")).toBeInTheDocument();
     expect(zustand.aufrufe).toHaveLength(0);

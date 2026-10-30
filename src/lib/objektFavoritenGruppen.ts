@@ -14,6 +14,7 @@
 import type { BelegungsEinheit } from "@/lib/einheitBelegung";
 import { uebersichtsBelegung, type HausBelegung } from "@/lib/objektBelegung";
 import { neueZuerst } from "@/lib/objekteNeu";
+import { istVorankuendigung } from "@/lib/objektVorankuendigung";
 
 export interface ObjektGruppe<T> {
   /**
@@ -46,6 +47,8 @@ export interface GruppierbaresObjekt {
   /** Beim Globalobjekt zählt die Belegung des ganzen Hauses mit, siehe `uebersichtsBelegung`. */
   globalObjekt?: boolean;
   belegung?: HausBelegung;
+  /** Für die Vorankündigung (`meta.vorankuendigung`, 30.10.2026). */
+  meta?: Record<string, unknown> | null;
 }
 
 /**
@@ -111,10 +114,13 @@ export function objektGruppen<T extends GruppierbaresObjekt>(
   neuSeit?: (objekt: T) => number | null,
 ): ObjektGruppe<T>[] {
   const favoriten: T[] = [];
+  const vorankuendigung: T[] = [];
   let portfolio: T[] = [];
   const nichtVerfuegbar: T[] = [];
   for (const objekt of objekte) {
-    if (istFavorit(objekt.id)) favoriten.push(objekt);
+    // Vorankündigungen eigener Block, vor dem Stern: Sie sind noch nicht im Vertrieb (30.10.2026).
+    if (istVorankuendigung(objekt)) vorankuendigung.push(objekt);
+    else if (istFavorit(objekt.id)) favoriten.push(objekt);
     else if (istVerfuegbar(objekt)) portfolio.push(objekt);
     else nichtVerfuegbar.push(objekt);
   }
@@ -122,13 +128,16 @@ export function objektGruppen<T extends GruppierbaresObjekt>(
 
   // Nichts abzutrennen, weder oben noch unten. Dann bleibt es bei der einen
   // Liste, so wie die Seite sie vorher schon gezeigt hat.
-  if (favoriten.length === 0 && nichtVerfuegbar.length === 0) {
+  if (favoriten.length === 0 && vorankuendigung.length === 0 && nichtVerfuegbar.length === 0) {
     return [{ titel: null, objekte: portfolio }];
   }
 
   const gruppen: ObjektGruppe<T>[] = [];
   if (favoriten.length > 0) {
     gruppen.push({ titel: "Favoriten", objekte: favoriten });
+  }
+  if (vorankuendigung.length > 0) {
+    gruppen.push({ titel: "Vorankündigung", unterzeile: "kommt bald in den Vertrieb, Einheiten noch nicht buchbar", objekte: vorankuendigung });
   }
   if (portfolio.length > 0) {
     gruppen.push({ titel: "Gesamtportfolio", objekte: portfolio });

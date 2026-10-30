@@ -6,6 +6,7 @@ import { isTableLoaded } from "@/lib/dataCache";
 import { LoadingFallback } from "@/components/LoadingFallback";
 import { objekteTestFreigabe, siehtAdminOnlyNavigation, siehtObjektUndEinheitenseite } from "@/lib/sidebarPermissions";
 import { useObjektAdresseGesperrt } from "@/hooks/useObjektAdresseGesperrt";
+import { siehtObjekteMenue } from "@/lib/sidebarNavigation";
 
 /**
  * Zugang zur Objektseite und zur Einheiten-Seite.
@@ -43,8 +44,16 @@ export function ObjektseiteZugang({ verwaltungPfad, mitVertriebsleitung = false,
   // Exposé und Kundenansicht liegen außerhalb der AppShell, deshalb hier
   // dieselbe Sperre für ausgeblendete und fremde Exklusivobjekte.
   const objektZu = useObjektAdresseGesperrt(location.pathname);
+  /*
+   * Seit dem 30.10.2026 auch der Vertriebspartner, sobald er den Eintrag
+   * „Objekte" in der Seitenleiste sieht (Christian: „muss doch dann auch für
+   * den Vertrieb einsehbar sein"). Vorher leitete die Seite ihn auf die
+   * Verwaltungsansicht, die ihm gesperrt ist, und er landete im Dashboard.
+   */
+  const vertriebMitObjekten = user.role === "vertriebspartner"
+    && siehtObjekteMenue({ rolle: user.role, identitaet: { email: authUser?.email, userId: authUser?.id } });
   const darf = mitVertriebsleitung
-    ? siehtObjektUndEinheitenseite(user.role) || objekteTestFreigabe(user.role, authUser?.id)
+    ? siehtObjektUndEinheitenseite(user.role) || objekteTestFreigabe(user.role, authUser?.id) || vertriebMitObjekten
     : siehtAdminOnlyNavigation(user.role);
   if (!darf && mitVertriebsleitung && user.role === "vertriebspartner" && authUser?.id && !isTableLoaded("app_config")) {
     return <LoadingFallback />;

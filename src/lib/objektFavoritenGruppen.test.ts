@@ -232,3 +232,14 @@ describe("Neue Objekte stehen im Gesamtportfolio vorn", () => {
     expect(ids(gruppen[0])).toEqual(["a", "b"]);
   });
 });
+
+describe("Vorankündigung als eigener Block (30.10.2026)", () => {
+  it("steht nach den Favoriten und vor dem Gesamtportfolio, auch wenn sie Favorit ist", () => {
+    const frei = { id: "f", sichtbar: true, wohnungen: [] };
+    const voran = { id: "v", sichtbar: true, wohnungen: [], meta: { vorankuendigung: true } };
+    const fav = { id: "s", sichtbar: true, wohnungen: [] };
+    const gruppen = objektGruppen([frei, voran, fav], (id) => id === "s" || id === "v");
+    expect(gruppen.map((g) => g.titel)).toEqual(["Favoriten", "Vorankündigung", "Gesamtportfolio"]);
+    expect(gruppen[1].objekte.map((o) => o.id)).toEqual(["v"]);
+  });
+});

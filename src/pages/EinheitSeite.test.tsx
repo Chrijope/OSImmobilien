@@ -192,13 +192,22 @@ describe("Bearbeiten-Stifte auf der Einheitsseite eines Einzelobjekts", () => {
     expect(screen.queryByText(/über „Objektangaben pflegen/)).not.toBeInTheDocument();
   });
 
+  it("schickt objektpartner auf die Verwaltungsansicht", () => {
+    objekte.rolle = "objektpartner";
+    objekte.liste = { o1: objekt("o1", [we("w1")]) };
+    renderMit("/objekte/o1/einheiten/w1");
+    expect(screen.getByText("Verwaltungsansicht")).toBeInTheDocument();
+  });
+
+  // Seit dem 30.10.2026 sieht der Vertrieb die Einheitenseite (Christian).
+  it("zeigt vertriebspartner die Einheitenseite statt der Verwaltungsansicht", () => {
+    objekte.rolle = "vertriebspartner";
+    objekte.liste = { o1: objekt("o1", [we("w1")]) };
+    renderMit("/objekte/o1/einheiten/w1");
+    expect(screen.queryByText("Verwaltungsansicht")).not.toBeInTheDocument();
+  });
+
   for (const rolle of ["objektpartner", "vertriebspartner"]) {
-    it(`schickt ${rolle} auf die Verwaltungsansicht`, () => {
-      objekte.rolle = rolle;
-      objekte.liste = { o1: objekt("o1", [we("w1")]) };
-      renderMit("/objekte/o1/einheiten/w1");
-      expect(screen.getByText("Verwaltungsansicht")).toBeInTheDocument();
-    });
 
     it(`zeigt ${rolle} auch ohne Zugangsprüfung keinen Stift und keinen Pflegeknopf`, () => {
       objekte.rolle = rolle;
