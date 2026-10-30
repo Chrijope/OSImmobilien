@@ -15,7 +15,7 @@ import { rollenVarianteVonProfil } from "@/lib/rollenLabel";
 import type { Session, User } from "@supabase/supabase-js";
 import { seedTestDemoData, clearTestDemoData } from "@/lib/testDemoSeed";
 import { clearPersistedSupabaseSession } from "@/lib/sessionSecurity";
-import { GERAET_DUNKEL_ABFRAGE, istDunkel, ladeFarbschema, merkeFarbschema, type Farbschema } from "@/lib/farbschema";
+import { istDunkel, istNacht, ladeFarbschema, merkeFarbschema, type Farbschema } from "@/lib/farbschema";
 
 interface UserContextType {
   user: UserProfile;
@@ -64,24 +64,16 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<UserProfile>(DEFAULT_PROFILE);
   const [farbschema, setFarbschema] = useState<Farbschema>(() => ladeFarbschema());
-  const [geraetDunkel, setGeraetDunkel] = useState<boolean>(() => {
-    try { return window.matchMedia?.(GERAET_DUNKEL_ABFRAGE).matches ?? false; } catch { return false; }
-  });
-  const darkMode = istDunkel(farbschema, geraetDunkel);
-  // Bei „Automatisch“ dem Gerät folgen, auch wenn es während der Arbeit umschaltet.
+  const [nacht, setNacht] = useState<boolean>(() => istNacht(new Date()));
+  const darkMode = istDunkel(farbschema, nacht);
+  // Bei „Automatisch“ jede Minute und beim Zurückkehren in den Tab nach der Uhr sehen.
   useEffect(() => {
-    let abfrage: MediaQueryList | undefined;
-    try { abfrage = window.matchMedia?.(GERAET_DUNKEL_ABFRAGE); } catch { abfrage = undefined; }
-    if (!abfrage) return;
-    const aendern = (e: MediaQueryListEvent) => setGeraetDunkel(e.matches);
-    // Zusätzlich beim Zurückkehren in den Tab nachsehen: Wechselt das Gerät,
-    // während der Tab im Hintergrund liegt, kommt nicht überall ein Ereignis an.
-    const nachsehen = () => { if (document.visibilityState === "visible") setGeraetDunkel(abfrage!.matches); };
-    abfrage.addEventListener?.("change", aendern);
+    const nachsehen = () => setNacht(istNacht(new Date()));
+    const takt = window.setInterval(nachsehen, 60_000);
     document.addEventListener("visibilitychange", nachsehen);
     window.addEventListener("focus", nachsehen);
     return () => {
-      abfrage?.removeEventListener?.("change", aendern);
+      window.clearInterval(takt);
       document.removeEventListener("visibilitychange", nachsehen);
       window.removeEventListener("focus", nachsehen);
     };

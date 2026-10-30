@@ -969,7 +969,7 @@ export function HeaderBar() {
                       {([
                         { wert: "hell", label: "Hell", Icon: Sun },
                         { wert: "dunkel", label: "Dunkel", Icon: Moon },
-                        { wert: "auto", label: "Automatisch wie das Gerät", Icon: SunMoon },
+                        { wert: "auto", label: "Automatisch: dunkel von 19 bis 7 Uhr", Icon: SunMoon },
                       ] as const).map(({ wert, label, Icon }) => (
                         <Tooltip key={wert}>
                           <TooltipTrigger asChild>

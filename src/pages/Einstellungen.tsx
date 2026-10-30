@@ -1072,7 +1072,7 @@ const Einstellungen = () => {
           <TabsContent value="profil" className="space-y-6">
             {/* Darstellung (26.10.2026): Hell, Dunkel, Automatisch, vorher in der Kopfleiste. Wirkt sofort, gilt je Gerät. */}
             {setzeFarbschema && (
-              <Section title="Darstellung" desc="Hell, Dunkel oder Automatisch wie dein Gerät. Gilt für dieses Gerät und wirkt sofort, ohne Speichern.">
+              <Section title="Darstellung" desc="Hell, Dunkel oder Automatisch: von 19 bis 7 Uhr dunkel, sonst hell. Gilt für dieses Gerät und wirkt sofort, ohne Speichern.">
                 <div role="radiogroup" aria-label="Darstellung" className="inline-flex flex-wrap gap-1 rounded-xl border bg-muted/40 p-1">
                   {([
                     { wert: "hell", label: "Hell", Icon: Sun },

@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it } from "vitest";
-import { istDunkel, ladeFarbschema, leseFarbschema, merkeFarbschema } from "./farbschema";
+import { istDunkel, istNacht, ladeFarbschema, leseFarbschema, merkeFarbschema } from "./farbschema";
 
 describe("Farbschema", () => {
   // jsdom bringt hier keinen localStorage mit, deshalb ein kleiner Ersatz wie in bewerberFormularEntwurf.test.ts.
@@ -28,7 +28,14 @@ describe("Farbschema", () => {
     expect(ladeFarbschema()).toBe("auto");
   });
 
-  it("Automatisch folgt dem Gerät, Hell und Dunkel nicht", () => {
+  it("Nacht ist von 19 bis 7 Uhr", () => {
+    expect(istNacht(new Date(2026, 9, 30, 18, 59))).toBe(false);
+    expect(istNacht(new Date(2026, 9, 30, 19, 0))).toBe(true);
+    expect(istNacht(new Date(2026, 9, 31, 6, 59))).toBe(true);
+    expect(istNacht(new Date(2026, 9, 31, 7, 0))).toBe(false);
+  });
+
+  it("Automatisch folgt der Uhrzeit, Hell und Dunkel nicht", () => {
     expect(istDunkel("auto", true)).toBe(true);
     expect(istDunkel("auto", false)).toBe(false);
     expect(istDunkel("hell", true)).toBe(false);
