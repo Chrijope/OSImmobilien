@@ -33,6 +33,11 @@ const NUR_SELBSTAUSKUNFT = process.env.NUR_SELBSTAUSKUNFT === "1";
 const LAUFZEIT_DATEIEN = [
   "fonts/PlusJakartaSans-Regular.ttf",
   "fonts/PlusJakartaSans-Bold.ttf",
+  // Exposé-Schriften für das PDF „Finanzierungsrahmen“ (finanzierungsrahmenPdf.ts).
+  "fonts/PlayfairDisplay-Medium.ttf",
+  "fonts/PlayfairDisplay-Italic.ttf",
+  "fonts/Outfit-Regular.ttf",
+  "fonts/Outfit-SemiBold.ttf",
   "images/os-real-estate-logo-quer.png",
   "images/os-real-estate-logo-quer-dunkel.png",
   // Objektfotos und Vertriebsdokumente braucht nur die Präsentation.
