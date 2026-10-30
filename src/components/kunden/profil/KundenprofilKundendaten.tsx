@@ -257,11 +257,13 @@ interface LeadProps {
   /** Der vorhandene Ablauf „Vertriebspartner ändern“; ohne ihn kein Stift. */
   onVertriebspartnerAendern?: () => void;
   onKontaktOeffnen: (kontaktId: string) => void;
+  /** Wer Einblick in den Kunden hat, steht direkt unter dem Vertriebspartner. */
+  einblick?: ReactNode;
   zusatz?: ReactNode;
 }
 
 /** Lead- und Verwaltungsdaten samt zuständigem Vertriebspartner. */
-export function LeadFelder({ kunde, meta, rolle, speichere, ersteller, vertriebspartnerName, onVertriebspartnerAendern, onKontaktOeffnen, zusatz }: LeadProps) {
+export function LeadFelder({ kunde, meta, rolle, speichere, ersteller, vertriebspartnerName, onVertriebspartnerAendern, onKontaktOeffnen, einblick, zusatz }: LeadProps) {
   const empfName = (meta.empfehlungsgeberName as string | undefined) || "";
   const empfBez = (meta.empfehlungsgeberBeziehung as string | undefined) || "";
   const empfId = meta.empfehlungsgeberKontaktId as string | undefined;
@@ -310,6 +312,7 @@ export function LeadFelder({ kunde, meta, rolle, speichere, ersteller, vertriebs
         <KundenprofilFeld label="Setter" wert={kunde.setter} />
         <KundenprofilFeld label="Vertriebspartner" wert={vertriebspartnerName} onStift={onVertriebspartnerAendern} />
       </dl>
+      {einblick}
       {/* Liefert Paare aus Beschriftung und Wert, hier untereinander gesetzt. */}
       <div className="kundenprofil-paare">
         <BeraterVerlauf kunde={kunde} />

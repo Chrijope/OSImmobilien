@@ -173,6 +173,13 @@ describe("Rechte je Rolle", () => {
     expect(screen.queryByText("Kampagne")).not.toBeInTheDocument();
   });
 
+  it("der Einblick steht direkt unter dem Vertriebspartner", () => {
+    render(<LeadFelder kunde={kunde()} meta={{}} rolle="admin" vertriebspartnerName="Erika" onKontaktOeffnen={() => {}} einblick={<p data-testid="einblick">Einblick</p>} />);
+    const liste = Array.from(document.querySelectorAll("dl")).find((d) => d.textContent?.includes("Vertriebspartner"))!;
+    expect(liste.lastElementChild?.textContent).toContain("Vertriebspartner");
+    expect(liste.nextElementSibling).toBe(screen.getByTestId("einblick"));
+  });
+
   it("Admin und Inhaber sehen „Erstellt von“", () => {
     render(<LeadFelder kunde={kunde()} meta={{ erstelltVonName: "Anna" }} rolle="admin" ersteller={{ nutzer: [] }} vertriebspartnerName="Erika" onKontaktOeffnen={() => {}} />);
     expect(screen.getByText("Erstellt von")).toBeInTheDocument();

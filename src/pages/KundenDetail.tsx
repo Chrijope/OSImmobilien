@@ -5309,13 +5309,13 @@ export default function KundenDetail() {
         hinweis: vertriebspartnerName || undefined,
         inhalt: (
           <>
-          {einblick.length > 0 && (
-            <div data-pruefung="kundenprofil-einblick" className="mb-3 space-y-1.5">
-              <p className="text-xs text-muted-foreground">Diese Partner haben Einblick in den Kunden</p>
-              <EinblickReihe personen={einblick} />
-            </div>
-          )}
           <LeadFelder
+            einblick={einblick.length > 0 && (
+              <div data-pruefung="kundenprofil-einblick" className="mt-3 space-y-1.5">
+                <p className="text-xs text-muted-foreground">Diese Partner haben Einblick in den Kunden</p>
+                <EinblickReihe personen={einblick} />
+              </div>
+            )}
             kunde={kunde}
             meta={rawMeta}
             rolle={user.role}
