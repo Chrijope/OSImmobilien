@@ -31,6 +31,8 @@
  * meist null. `extras` ist am Objekt oft ein leeres Array.
  */
 
+import { mitHandAngaben } from "../../supabase/functions/_shared/hand-angaben";
+
 /** Was diese Datei von einem Objekt oder einer Einheit braucht. */
 export interface MitInvestagonRohdaten {
   meta?: Record<string, unknown> | null;
@@ -150,8 +152,20 @@ export function rohdaten(
   if (!d || typeof d !== "object") return undefined;
   const meta = d.meta;
   if (!istObjekt(meta)) return undefined;
-  const roh = meta.investagonRaw;
-  return istObjekt(roh) ? roh : undefined;
+  // Von Hand gepflegte Angaben gewinnen (30.10.2026, Investagon soll wegfallen).
+  return mitHandAngaben(meta.investagonRaw, meta);
+}
+
+/** Was eine Einheit für `rohdaten` mitbringt: Investagon-Datensatz und Handangaben. */
+export interface EinheitQuelle {
+  investagonRaw?: Record<string, unknown> | null;
+  balkonArt?: string | null;
+  angaben?: unknown;
+}
+
+/** Eine Einheit in der Form, die `rohdaten` und alle Leser hier erwarten. */
+export function einheitQuelle(w: EinheitQuelle | null | undefined): MitInvestagonRohdaten {
+  return { meta: { investagonRaw: w?.investagonRaw ?? undefined, balkonArt: w?.balkonArt ?? undefined, angaben: w?.angaben } };
 }
 
 /* ------------------------------------------------------------------ */
@@ -613,6 +627,8 @@ export function objektDetails(d: MitInvestagonRohdaten | null | undefined): Deta
   nimm("Balkon", balkonText(roh.object_balcony));
   nimm("Miteigentumsanteil", miteigentumsanteilText(d));
   nimm("Grunderwerbsteuer", prozent(roh.transaction_tax_rate, 2));
+  nimm("Stellplatz", text(roh.parking_type));
+  nimm("Mietart", text(roh.rent_type));
 
   return zeilen;
 }

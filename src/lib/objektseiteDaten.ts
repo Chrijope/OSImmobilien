@@ -1,7 +1,7 @@
 import type { ObjektData } from "@/lib/objekteStore";
 import type { AnlageKonzept } from "@/lib/anlageZiele";
 import type { ObjekttypId } from "@/lib/objekttypen";
-import { ausweisartText, beschreibungsTexte, energieeffizienzklasse, merkmalWert } from "./investagonFelder";
+import { ausweisartText, beschreibungsTexte, energieeffizienzklasse, merkmalWert, einheitQuelle } from "./investagonFelder";
 import { istGlobalobjekt } from "../../supabase/functions/_shared/globalobjekt";
 
 /**
@@ -335,7 +335,7 @@ export function istWgKonzept(objekt: WgPruefObjekt): boolean {
 
   const quellen = [
     objekt,
-    ...(objekt.wohnungen || []).map((w) => ({ meta: { investagonRaw: w?.investagonRaw } })),
+    ...(objekt.wohnungen || []).map((w) => (einheitQuelle(w))),
   ];
   for (const quelle of quellen) {
     if (nenntWgKonzept(merkmalWert(quelle, "Mietmodell"))) return true;

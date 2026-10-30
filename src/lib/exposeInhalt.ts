@@ -19,7 +19,7 @@ import type { ObjektBild, ObjektData, ObjektWohnung } from "@/lib/objekteStore";
 import { getHausgeldMonatForWohnung, getHausgeldNichtUmlegbarForWohnung } from "@/lib/objekteStore";
 import { einheitenImHaus, objektseiteFelder, objektartInfo, objektartAbleiten, istNeubauArt, type Sanierung } from "@/lib/objektseiteDaten";
 import { rundumVerwaltung, sanierungenAnzeige, verwaltungAnzeige } from "@/lib/objektdetailsAnzeige";
-import { nummeriereMerkmale, objektDetails, rohdaten } from "@/lib/investagonFelder";
+import { nummeriereMerkmale, objektDetails, rohdaten, einheitQuelle } from "@/lib/investagonFelder";
 import { kaltmieteVon, renditeVon, eur0, dez, prozent, zimmerText } from "@/lib/objektKennzahlen";
 import { objektBauzustand, objektStruktur, type ObjektStruktur } from "@/lib/objektKlassen";
 import { ANZAHL_MARKTARGUMENTE, anzuzeigendeObjektTexte } from "@/lib/objektTexteKi";
@@ -1122,7 +1122,7 @@ export function baueExposeInhalt(e: ExposeInhaltEingabe): ExposeInhalt {
   // Einheit. Ohne diesen Rückfall meldete das Exposé „Baujahr fehlt“, während
   // die Tabelle darüber es aus Investagon zeigte.
   const baujahr = objekt.globalDaten?.baujahr
-    || [rohdaten(objekt), rohdaten({ meta: { investagonRaw: w.investagonRaw } })]
+    || [rohdaten(objekt), rohdaten(einheitQuelle(w))]
       .map((r) => Number(r?.object_building_year))
       .find((j) => Number.isInteger(j) && j >= 1800 && j <= 2100)
     || undefined;
@@ -1193,7 +1193,7 @@ export function baueExposeInhalt(e: ExposeInhaltEingabe): ExposeInhalt {
    */
   const chips = ohneDoppelte([
     // Beim Balkon zählt die Einheit, bei einer Einzelwohnung auch das Objekt.
-    balkonMerkmal([{ meta: { investagonRaw: w.investagonRaw } }, ...(struktur === "einzelwohnung" ? [objekt] : [])], t),
+    balkonMerkmal([einheitQuelle(w), ...(struktur === "einzelwohnung" ? [objekt] : [])], t),
     skala.klasse ? t.chipEnergieklasse(skala.klasse) : "",
     w.stellplatzPreis ? t.chipStellplatzInklusive : "",
     afa ? abschreibungMerkmal(afa.afaSatz, sprache) : "",
@@ -1285,7 +1285,7 @@ export function baueExposeInhalt(e: ExposeInhaltEingabe): ExposeInhalt {
    * Energieträger stehen schon in der eigenen Karte darüber.
    */
   // Die Rohdaten der Einheit liegen in `investagonRaw`; Balkon wie bei den Merkmal-Chips.
-  const einheitRoh = { meta: { investagonRaw: w.investagonRaw } };
+  const einheitRoh = einheitQuelle(w);
   const heizung = [...objektDetails(einheitRoh), ...objektDetails(objekt)].find((z) => z.label === "Heizung")?.wert;
   const balkon = balkonMerkmal([einheitRoh, ...(struktur === "einzelwohnung" ? [objekt] : [])], t);
   const ausstattung = [

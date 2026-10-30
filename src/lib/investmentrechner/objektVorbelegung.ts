@@ -37,7 +37,7 @@ import { objektUnterlagenQuelle, type ObjektUnterlagenQuelle } from "./objektUnt
 
 import type { ObjektData, ObjektWohnung } from "@/lib/objekteStore";
 import { exposeObjektdatenAus } from "@/lib/exposeInhalt";
-import { rohdaten } from "@/lib/investagonFelder";
+import { rohdaten, einheitQuelle } from "@/lib/investagonFelder";
 import { objektartInfo, objektseiteFelder } from "@/lib/objektseiteDaten";
 import { objektAnlageklasse } from "@/lib/objektKlassen";
 import { bundeslandFromPlz, gepflegteKaufnebenkostenTeile, GRUNDBUCH_PROZENT, kaufnebenkostenSaetze, NOTAR_PROZENT } from "@/lib/kaufnebenkosten";
@@ -120,7 +120,7 @@ function positiv(wert: number | null | undefined): number {
 
 /** Die Rohdaten der Einheit in der Form, die `investagonFelder.ts` erwartet. */
 function einheitRohdaten(wohnung: ObjektWohnung) {
-  return { meta: { investagonRaw: wohnung.investagonRaw } };
+  return einheitQuelle(wohnung);
 }
 
 /** Das Baujahr aus den Investagon-Rohdaten, erst am Objekt, dann an der Einheit. Nur ein plausibles Jahr, sonst 0. */

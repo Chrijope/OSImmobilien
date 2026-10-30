@@ -15,6 +15,7 @@
  * Reine Funktionen, geprüft in `src/lib/lotseRegeln.test.ts`.
  */
 
+import { mitHandAngaben } from "./hand-angaben.ts";
 import { hausgeldTeile } from "./einheit-hausgeld.ts";
 
 function alsObjekt(v: unknown): Record<string, unknown> | undefined {
@@ -63,9 +64,10 @@ export interface FesteZahlen {
  * und 7b-Angaben stehen nur in `fehlt`, wenn das Objekt überhaupt als
  * Denkmal beziehungsweise mit 7b geführt wird; sonst wären sie Rauschen.
  */
-export function festeZahlenEinheit(meta: unknown): FesteZahlen {
+export function festeZahlenEinheit(meta: unknown, objektMeta?: unknown): FesteZahlen {
   const m = alsObjekt(meta) ?? {};
-  const roh = alsObjekt(m.investagonRaw) ?? {};
+  // Handangaben am Objekt und an der Einheit vor Investagon (30.10.2026).
+  const roh = mitHandAngaben(m.investagonRaw, objektMeta, m) ?? {};
   const werte: Record<string, number | string> = {};
   const fehlt: string[] = [];
   const setze = (name: string, wert: number | string | undefined, pflicht = true) => {

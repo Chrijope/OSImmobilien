@@ -1,4 +1,5 @@
 import { cacheGet, cacheInsert, cacheUpdate, cacheDelete, cacheFilter, cacheSet, cacheReload, cacheUpsert, SchreibenAbgelehnt } from "./dataCache";
+import { handAngabenLesen, type HandAngaben } from "../../supabase/functions/_shared/hand-angaben";
 import { konzeptLesen, type ObjektKonzept } from "@/lib/objektKonzept";
 import { EXKLUSIV_KENNUNG_SCHLUESSEL, exklusivKennungenFuerNamen, exklusivKennungenLesen } from "../../supabase/functions/_shared/objekt-zugang.ts";
 import { supabase } from "@/integrations/supabase/client";
@@ -227,6 +228,8 @@ export interface ObjektWohnung {
   balkonArt?: BalkonArt;
   /** Anzahl Badezimmer, seit dem 28.10.2026 */
   badezimmer?: number;
+  /** Merkmale und Freitexte wie in Investagon, von Hand (`meta.angaben`, siehe `_shared/hand-angaben.ts`) */
+  angaben?: HandAngaben;
   /** Roh aus `meta.grundriss3d`, gelesen wird mit `planAusMeta` (`components/grundriss3d/plan.ts`). Geschrieben nur von dort. */
   grundriss3d?: unknown;
 }
@@ -722,6 +725,7 @@ function dbRowToWohnung(w: any, tableBilder: any[] = [], mitDokumentenCache = tr
     vermietetSeit: metaText(meta.vermietetSeit),
     balkonArt: BALKON_ARTEN.includes(meta.balkonArt) ? meta.balkonArt : undefined,
     badezimmer: metaZahl(meta.badezimmer),
+    ...(meta.angaben ? { angaben: handAngabenLesen(meta) } : {}),
     ...(meta.grundriss3d ? { grundriss3d: meta.grundriss3d } : {}),
     ...(Array.isArray(meta.interneHighlightsHand) ? { interneHighlightsHand: meta.interneHighlightsHand.filter((t: unknown) => typeof t === "string") } : {}),
   };
@@ -884,6 +888,7 @@ export function wohnungToDbRow(
       ...(w.finanzierungsnebenkostenSatz !== undefined ? { finanzierungsnebenkostenSatz: w.finanzierungsnebenkostenSatz } : {}),
       ...(w.ruecklageZufuehrungMonat !== undefined ? { ruecklageZufuehrungMonat: w.ruecklageZufuehrungMonat } : {}),
       ...(w.interneHighlightsHand !== undefined ? { interneHighlightsHand: w.interneHighlightsHand } : {}),
+      ...(w.angaben !== undefined ? { angaben: w.angaben } : {}),
       ...(w.hausgeldUmlagefaehigEuro !== undefined ? { hausgeldUmlagefaehigEuro: w.hausgeldUmlagefaehigEuro } : {}),
     },
   };

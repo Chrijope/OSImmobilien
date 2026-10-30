@@ -1,5 +1,5 @@
 import type { ObjektData, ObjektWohnung } from "@/lib/objekteStore";
-import { heizungText, merkmale, merkmalWert, miteigentumsanteilText, type MitInvestagonRohdaten } from "@/lib/investagonFelder";
+import { heizungText, merkmale, merkmalWert, miteigentumsanteilText, type MitInvestagonRohdaten, einheitQuelle } from "@/lib/investagonFelder";
 import { einheitenImHaus, istNeubauArt, istWgKonzept, objektartAbleiten, objektartInfo, objektseiteHandwerte } from "@/lib/objektseiteDaten";
 import { eur0 } from "@/lib/objektKennzahlen";
 import { STANDARD_SPRACHE, type Sprache } from "@/lib/seitenSprache";
@@ -104,7 +104,7 @@ const ganzeZahl = (n: number, sprache: Sprache | undefined) =>
 function rohdatenQuellen(objekt: ObjektFuerAnzeige): MitInvestagonRohdaten[] {
   return [
     objekt,
-    ...(objekt.wohnungen || []).map((w) => ({ meta: { investagonRaw: w?.investagonRaw } })),
+    ...(objekt.wohnungen || []).map((w) => (einheitQuelle(w))),
   ];
 }
 
@@ -242,7 +242,7 @@ export function gemeinschaftseigentumAnzeige(
   sprache?: Sprache,
 ): DetailAnzeige & { angaben: string[]; gepflegt: boolean } {
   const t = texte(sprache);
-  const anteil = wohnung ? miteigentumsanteilText({ meta: { investagonRaw: wohnung.investagonRaw } }) : undefined;
+  const anteil = wohnung ? miteigentumsanteilText(einheitQuelle(wohnung)) : undefined;
   const anteilText = anteil ? t.miteigentumsanteil(anteil) : undefined;
 
   const hand = objektseiteHandwerte(objekt).gemeinschaftseigentum;

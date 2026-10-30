@@ -4,7 +4,7 @@ import { getEigeneSaData, getInvestments } from "@/lib/investmentsStore";
 import { getKontaktById } from "@/lib/kundenStore";
 import { calculateFinanzierbarkeitFromSaData } from "@/lib/finanzierbarkeitUtils";
 import { selbstauskunftEntfaellt } from "@/lib/selbstauskunftEntfaellt";
-import { energieeffizienzklasse, rohdaten, type MitInvestagonRohdaten } from "@/lib/investagonFelder";
+import { energieeffizienzklasse, rohdaten, type MitInvestagonRohdaten, einheitQuelle } from "@/lib/investagonFelder";
 import { objektartAbleiten, objektartInfo, objektseiteFelder } from "@/lib/objektseiteDaten";
 import { istGemessen, type StandortAnalyse } from "@/lib/standortanalyse";
 import { wohnortAus, wohnortGeoAmInvestment } from "@/lib/wohnortKoordinate";
@@ -103,7 +103,7 @@ export interface EinheitScoreBasis {
   eingabe: InvestmentEingabe | null;
 }
 
-const alsRoh = (w?: ObjektWohnung | null): MitInvestagonRohdaten | null => (w ? { meta: { investagonRaw: w.investagonRaw } } : null);
+const alsRoh = (w?: ObjektWohnung | null): MitInvestagonRohdaten | null => (w ? einheitQuelle(w) : null);
 const KLASSE = /^(A\+|[A-H])$/;
 
 function rohJahr(wert: unknown): number | undefined {

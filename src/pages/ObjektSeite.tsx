@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { HandAngabenDetails } from "@/components/objektseite/HandAngabenDetails";
 import { Link, Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft, Building2, CalendarCheck, ExternalLink, Eye, FileText, Hammer, KeyRound, Link2, Loader2, Mail, MapPin, Pencil, Phone, Zap,
@@ -772,6 +773,7 @@ function ObjektAnsicht({ objekt, onPflege, eigeneId }: {
                 wert={details.verwaltung.wert}
                 unter={details.verwaltung.unter} />
               <ObjektGarantieDetails objekt={objekt} />
+              <HandAngabenDetails objekt={objekt} />
             </div>
           </div>
           <InterneHighlightsKarte objekt={objekt} />

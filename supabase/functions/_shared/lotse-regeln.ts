@@ -758,8 +758,8 @@ function spalten(zeile: Record<string, unknown>, erlaubt: readonly string[]): Re
 }
 
 /** Die festen Zahlen der Einheit als Textblock, siehe `festeZahlenEinheit`. */
-function festeZahlenText(einheitMeta: unknown): string {
-  const { werte, fehlt } = festeZahlenEinheit(einheitMeta);
+function festeZahlenText(einheitMeta: unknown, objektMeta?: unknown): string {
+  const { werte, fehlt } = festeZahlenEinheit(einheitMeta, objektMeta);
   const zeilen = Object.entries(werte).map(([name, wert]) => `- ${name}: ${wert}`);
   if (fehlt.length) zeilen.push(`- fehlt (nicht erfasst, nie als 0 nennen): ${fehlt.join("; ")}`);
   return zeilen.join("\n");
@@ -825,7 +825,7 @@ ${alsJson(objekt)}
 
 ${einheit ? `OBJEKTDATEN (Einheit):\n${alsJson(einheit)}` : "EINHEIT: keine Einheit gewählt, es geht um das ganze Objekt."}
 
-${k.einheit ? `FESTE ZAHLEN DER EINHEIT (vom CRM gerechnet, Quelle „Einheit“):\n${festeZahlenText(k.einheit.meta)}\n\n` : ""}${hausText(k.haus)}
+${k.einheit ? `FESTE ZAHLEN DER EINHEIT (vom CRM gerechnet, Quelle „Einheit“):\n${festeZahlenText(k.einheit.meta, k.objekt?.meta)}\n\n` : ""}${hausText(k.haus)}
 LAGE (gemessen, OpenStreetMap):
 ${lage ? alsJson(lage) : "Liegt nicht vor."}
 

@@ -22,7 +22,7 @@
  * ist, erscheint nicht; eine Zeile „nicht vorhanden“ gibt es nicht.
  */
 
-import { beschreibungsTexte, objektDetails } from "@/lib/investagonFelder";
+import { beschreibungsTexte, objektDetails, einheitQuelle } from "@/lib/investagonFelder";
 import { linearerAfaSatz } from "@/lib/afaSaetze";
 import { dez, eur0, eur2, kaltmieteVon, preisJeQm, prozent } from "@/lib/objektKennzahlen";
 import { objektseiteFelder } from "@/lib/objektseiteDaten";
@@ -122,7 +122,7 @@ function datum(iso: string): string {
 /** Feste Punkte zur Einheit: Lage im Haus, Miete und Potenzial, Preis je m², Garantie, Sanierung. */
 function einheitPunkte(objekt: ObjektFuerHighlights, w: ObjektWohnung): string[] {
   const punkte: string[] = [];
-  const balkon = objektDetails({ meta: { investagonRaw: w.investagonRaw } }).find((z) => z.label === "Balkon")?.wert;
+  const balkon = objektDetails(einheitQuelle(w)).find((z) => z.label === "Balkon")?.wert;
   const lage = [
     w.etage ? `Etage ${w.etage}` : "",
     w.lage || "",
@@ -192,7 +192,7 @@ export function interneHighlights(objekt: ObjektFuerHighlights, wohnung?: Objekt
   // Investagons „Extras“ der Einheit gehören zu den internen Highlights der
   // Einheit (Christian, 28.10.2026). Nur gelesen, nicht ins Handfeld kopiert:
   // So überschreibt kein Import, was jemand von Hand pflegt.
-  const extras = (wohnung ? beschreibungsTexte({ meta: { investagonRaw: wohnung.investagonRaw } }) : [])
+  const extras = (wohnung ? beschreibungsTexte(einheitQuelle(wohnung)) : [])
     .filter((text) => !hand.some((h) => h.text === text))
     .map((text): HighlightZeile => ({ text, herkunft: "daten" }));
   const fest = (wohnung ? einheitPunkte(objekt, wohnung) : objektPunkte(objekt))

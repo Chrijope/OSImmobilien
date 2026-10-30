@@ -18,6 +18,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Plus, Upload, X, ImagePlus, ArrowLeft, Pencil, Trash2, FileText, AlertCircle, Search, Copy, ChevronDown, ChevronUp, Building2, TrendingUp, Star, Users } from "lucide-react";
 import { DateInput } from "@/components/ui/date-input";
+import { HandAngabenFormular } from "@/components/objekte/HandAngabenFormular";
+import { handAngabenLesen, type HandAngaben } from "../../supabase/functions/_shared/hand-angaben";
 // Im CRM rollt der Inhaltskasten, nicht das Fenster. Siehe lib/rollen.ts.
 import { rolleSeiteNachOben } from "@/lib/rollen";
 import { EuroInput } from "@/components/ui/euro-input";
@@ -94,6 +96,7 @@ type ObjektNeuDraft = {
   globalDaten: typeof initialGlobalDaten;
   objektangaben?: ObjektseiteFelder;
   interneHighlightsText?: string;
+  angaben?: HandAngaben;
   einzelWohnungen: Partial<ObjektWohnung>[];
   hauptbildPreview: string;
   hauptbildFile: File | null;
@@ -427,6 +430,8 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
    */
   const [objektangaben, setObjektangaben] = useState<ObjektseiteFelder>(leereObjektangaben);
   const [interneHighlightsText, setInterneHighlightsText] = useState("");
+  // Angaben, die es bisher nur aus Investagon gab (30.10.2026), siehe `_shared/hand-angaben.ts`.
+  const [angaben, setAngaben] = useState<HandAngaben>({});
   // Objektdaten aus „Basisdaten“ (Vergleichsmiete, Kappungsgrenze, Reservierungsdauer und mehr).
   const [objektdatenForm, setObjektdatenForm] = useState<ObjektFormDaten | null>(null);
 
@@ -559,6 +564,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
       setObjektangaben(objektseiteHandwerte(existingObjekt));
       setExklusivKennungen(exklusivKennungenLesen(existingObjekt.meta));
       setInterneHighlightsText(handHighlights(existingObjekt).join("\n"));
+      setAngaben(handAngabenLesen(existingObjekt.meta));
       setEinzelWohnungen(existingObjekt.wohnungen || []);
       // Restore externen Unterlagen-Link
       if ((existingObjekt as any)?.meta?.unterlagenLink) {
@@ -993,6 +999,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
     globalDaten,
     objektangaben,
     interneHighlightsText,
+    angaben,
     einzelWohnungen,
     hauptbildPreview,
     hauptbildFile,
@@ -1038,7 +1045,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
       interneDocs,
       customWohnungDocs,
     }),
-  }), [nf, isGlobalObjekt, isEinzelwohnung, gewaehlteObjektart, verkaeuferDaten, sanierungskosten, afaDaten, afaDraft, globalDaten, objektangaben, interneHighlightsText,
+  }), [nf, isGlobalObjekt, isEinzelwohnung, gewaehlteObjektart, verkaeuferDaten, sanierungskosten, afaDaten, afaDraft, globalDaten, objektangaben, interneHighlightsText, angaben,
       einzelWohnungen, hauptbildPreview, hauptbildFile, slideshowPreviews, slideshowFiles,
       objektDocs, objektDocFiles, extraDocs, interneDocs, wohnungDocs, wohnungDocFiles,
       expandedWohnungDocs, customWohnungDocs, newCustomWohnungDocName, wohnungBilder,
@@ -1349,6 +1356,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
         if (draft.globalDaten) setGlobalDaten({ ...initialGlobalDaten, ...draft.globalDaten });
         if (draft.objektangaben) setObjektangaben(draft.objektangaben);
         if (draft.interneHighlightsText !== undefined) setInterneHighlightsText(draft.interneHighlightsText);
+        if (draft.angaben) setAngaben(draft.angaben);
         if (draft.einzelWohnungen) setEinzelWohnungen(draft.einzelWohnungen);
         if (draft.editingIdx !== undefined) setEditingIdx(draft.editingIdx);
         if (draft.hauptbildPreview !== undefined) setHauptbildPreview(draft.hauptbildPreview);
@@ -2297,6 +2305,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
         bilder: uploadedWImages,
         unterlagenLink: (w as any).unterlagenLink || undefined,
         ...(w.interneHighlightsHand !== undefined ? { interneHighlightsHand: zeilenListe(w.interneHighlightsHand.join("\n")) } : {}),
+        ...(w.angaben !== undefined ? { angaben: handAngabenLesen({ angaben: w.angaben }) } : {}),
       };
     });
 
@@ -2412,6 +2421,9 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
     const handPunkte = zeilenListe(interneHighlightsText);
     if (handPunkte.length > 0) metaNeu[HAND_HIGHLIGHTS_SCHLUESSEL] = handPunkte;
     else delete metaNeu[HAND_HIGHLIGHTS_SCHLUESSEL];
+    const handAngaben = handAngabenLesen({ angaben });
+    if (Object.keys(handAngaben).length > 0) metaNeu.angaben = handAngaben;
+    else delete metaNeu.angaben;
     newObj.meta = exklusivKennungenInMeta(metaNeu, nf.exklusivPartner, exklusivKennungen);
     // Eine Energieklasse statt zwei: die aus dem Energieausweis gilt auch für die Objektspalte.
     if (objektangaben.energieausweis.klasse && newObj.globalDaten) {
@@ -2665,6 +2677,10 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
             <Label className="text-xs">Interne Highlights dieser Einheit (ein Punkt je Zeile)</Label>
             <Textarea rows={2} value={(w.interneHighlightsHand || []).join("\n")} onChange={e => onChange("interneHighlightsHand", e.target.value ? e.target.value.split("\n") : [])} />
             <p className="text-bildunterschrift text-muted-foreground mt-0.5">Nur intern, auf der Einheitenseite vor den Highlights des Objekts.</p>
+          </div>
+          <div>
+            <p className="text-[11px] font-semibold text-muted-foreground mb-2">Merkmale und Freitexte dieser Einheit (wie Investagon „Tags“ und „Extra 1–4“)</p>
+            <HandAngabenFormular ebene="einheit" wert={w.angaben ?? {}} onChange={neu => onChange("angaben", neu)} />
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {zahl("moebelPreis", "Davon Möbel im Kaufpreis (€)", { euro: true })}
@@ -3246,6 +3262,14 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
                   }}
                   objekt={isEditMode ? existingObjekt : undefined}
                 />
+              </div>
+              {/* Was es bisher nur aus Investagon gab, jetzt von Hand (30.10.2026). */}
+              <div className="pt-4 border-t space-y-3" data-testid="weitere-angaben">
+                <div>
+                  <h3 className="text-sm font-semibold">Weitere Angaben</h3>
+                  <p className="text-xs text-muted-foreground">Merkmale, Freitexte, Heizung, Stellplatz, Mietart, Rundgang, Denkmal- und degressive AfA, Kaufpreisraten nach MaBV. Gelten für alle Einheiten; Merkmale und Freitexte je Einheit gehen vor.</p>
+                </div>
+                <HandAngabenFormular ebene="objekt" wert={angaben} onChange={neu => { setAngaben(neu); markDirty(); }} />
               </div>
               {/* Objektdaten: Mietsubvention, Mieterhöhung, Reservierung */}
               <div className="pt-4 border-t space-y-3" data-testid="objektdaten-felder">
