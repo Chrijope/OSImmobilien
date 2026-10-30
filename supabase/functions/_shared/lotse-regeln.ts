@@ -22,6 +22,7 @@
 import { EINHEIT_SPALTEN, INTERNE_ROHDATEN_ZAHLEN, OBJEKT_DETAIL_SPALTEN, verkaufsstand } from "./objektdaten.ts";
 import { kundenMeta, schlichteFelder } from "./kunden-meta.ts";
 import { festeZahlenEinheit, sanierungStand } from "./lotse-feste-zahlen.ts";
+import { handAngabenLesen } from "./hand-angaben.ts";
 import { HAUS_STAND_TEXT, type HausGesamtStand } from "./haus-stand.ts";
 import {
   BETRAG, fuerSuche, type GelbeArt, istUeberschrift, KEINE_KAEUFERPROVISION, ohneErlaubteKostenbegriffe, ohneQuellenangabe, istVerguetungssatz, ohneVerguetungsangaben, saetze,
@@ -350,6 +351,11 @@ export function lotseMeta(meta: unknown, art: "objekt" | "wohnung", heute: Date 
   );
   const zahlen = Object.fromEntries(Object.entries(intern).filter(([, wert]) => typeof wert === "number"));
   if (Object.keys(zahlen).length) gefiltert.investagonRaw = { ...((gefiltert.investagonRaw as Record<string, unknown>) || {}), ...zahlen };
+  // Von Hand gepflegt (30.10.2026): Ratenplan und Rundgang kennt die Kundenliste nicht, der Lotse braucht sie.
+  const hand = handAngabenLesen(m);
+  if (hand.mabvRaten) gefiltert.kaufpreisratenMabv = hand.mabvRaten;
+  if (hand.rundgangUrl) gefiltert.virtuellerRundgang = hand.rundgangUrl;
+  if (hand.degressiveAfa !== undefined) gefiltert.degressiveAfa = hand.degressiveAfa;
   return gefiltert;
 }
 

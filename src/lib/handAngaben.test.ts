@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { handAngabenLesen, handAlsRohdaten, mitHandAngaben } from "../../supabase/functions/_shared/hand-angaben";
 import { festeZahlenEinheit } from "../../supabase/functions/_shared/lotse-feste-zahlen";
+import { kundenMeta } from "../../supabase/functions/_shared/kunden-meta";
+import { lotseMeta } from "../../supabase/functions/_shared/lotse-regeln";
 import { beschreibungsTexte, einheitQuelle, heizungText, merkmalWert, objektDetails, rohdaten } from "./investagonFelder";
 
 describe("Handangaben statt Investagon (30.10.2026)", () => {
@@ -51,5 +53,11 @@ describe("Handangaben statt Investagon (30.10.2026)", () => {
     expect(werte["Denkmal-Anteil in Prozent"]).toBe(70);
     expect(werte["Denkmal-AfA Jahre 1 bis 8 in Prozent"]).toBe(9);
     expect(werte["Energiekennwert in kWh je m² und Jahr"]).toBe(95);
+  });
+
+  it("Kundenansicht und Lotse bekommen die Handangaben ohne Investagon", () => {
+    const meta = { angaben: { heizung: "gas", merkmale: ["Aufzug: Ja"], stellplatzArt: "Garage", mabvRaten: [{ bezeichnung: "Erdarbeiten", prozent: 30 }] } };
+    expect(kundenMeta(meta, "objekt").investagonRaw).toMatchObject({ heating_type: "gas", tags: ["Aufzug: Ja"], parking_type: "Garage" });
+    expect(lotseMeta(meta, "objekt")).toMatchObject({ kaufpreisratenMabv: [{ bezeichnung: "Erdarbeiten", prozent: 30 }] });
   });
 });

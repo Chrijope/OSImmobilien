@@ -15,6 +15,7 @@ import {
   oeffentlicheStandortanalyse, texteAutomatisch,
 } from "./expose-oeffentlich.ts";
 import { mitHausgeldMonat } from "./einheit-hausgeld.ts";
+import { mitHandAngaben } from "./hand-angaben.ts";
 
 function alsObjekt(v: unknown): Record<string, unknown> | undefined {
   return v && typeof v === "object" && !Array.isArray(v) ? (v as Record<string, unknown>) : undefined;
@@ -79,6 +80,7 @@ const ROHDATEN_SCHLICHT = [
   "object_share_owner", "share_land", "transaction_tax_rate",
   "heating_type", "energy_certificate_type", "energy_efficiency_class",
   "property_kind", "property_usage", "rent_status", "rented_since",
+  "parking_type", "rent_type",
 ] as const;
 
 /** Die Rohdaten auf die geprüfte Liste zusammenstreichen. Freitexte und Merkmale nur als Text. */
@@ -164,7 +166,8 @@ export function kundenMeta(meta: unknown, art: "objekt" | "wohnung" | "wohnung_g
     if (Object.keys(werte).length) ziel[schluessel] = werte;
   }
 
-  const roh = kundenRohdaten(m.investagonRaw);
+  // Handangaben vor Investagon (30.10.2026), dieselbe Regel wie im CRM.
+  const roh = kundenRohdaten(mitHandAngaben(m.investagonRaw, m));
   if (roh) ziel.investagonRaw = roh;
   const ki = oeffentlicheSanierungenKi(m.objekttexteKi);
   if (ki) ziel.objekttexteKi = ki;
