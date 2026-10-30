@@ -312,7 +312,9 @@ export function aktiveCacheRolle(): string {
  * Grenze selbst zieht die Datenbank, hier geht es nur um keine Abfragen ohne
  * Berechtigung.
  */
-const ROLLEN_TABELLEN = ["bewerbungen"] as const;
+// `finanzierungen`: Der Finanzierer liest sie ueber eine Datenbankfunktion,
+// die nur seine eigenen Angebote liefert (Migration 20261030120000).
+const ROLLEN_TABELLEN = ["bewerbungen", "finanzierungen"] as const;
 
 function fuerRolleGesperrt(table: string): boolean {
   if (table !== "bewerbungen") return false;
@@ -699,6 +701,12 @@ async function ladeTabelle(
   beiBlock?: (bisher: any[]) => void,
 ): Promise<any[]> {
   if (fuerRolleGesperrt(table)) return [];
+  if (table === "finanzierungen" && _aktiveRolle === "finanzierungspartner") {
+    const { data, error } = await db.rpc("finanzierer_finanzierungen");
+    if (!error) return (data || []) as any[];
+    // Vor der Migration gibt es die Funktion nicht; dann wie bisher.
+    if (!["PGRST202", "42883"].includes(String(error.code || ""))) throw new Error(error.message);
+  }
   const grenze = zeilenGrenze(table);
 
   if (!SEITENWEISE_TABELLEN.has(table)) {

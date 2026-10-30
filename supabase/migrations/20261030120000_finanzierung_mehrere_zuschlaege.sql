@@ -14,8 +14,18 @@
 --      und die Leitung (inhaber, admin, vertriebsleiter, backoffice, nicht
 --      gesperrt) ein, wenn sie fehlen. Vorher kam der Finanzierer nur beim
 --      Anlegen dazu und die Leitung nur einmal je Chat.
+--   3. Jeder Finanzierer sieht nur sein eigenes Angebot (Christian,
+--      30.10.2026: „jeder Finanzierer soll nur sein eigenes hochgeladenes
+--      Angebot einsehen koennen, alle anderen Nutzerrollen sehen alle“).
+--      Jedes Angebot in `finanzierungen.angebote` traegt dazu `finanziererId`.
+--      Der Finanzierer liest und schreibt die Tabelle nicht mehr direkt,
+--      sondern ueber `finanzierer_finanzierungen` (nur eigene Angebote) und
+--      `finanzierer_angebote_speichern` (nur eigene Angebote aendern). Seine
+--      Dateien nur zu eigenen Angeboten (`finanzierer_darf_pfad`).
 --
--- Ruecknahme: die beiden Funktionen aus 20261028120000 erneut einspielen.
+-- Ruecknahme: die Funktionen aus 20261027120000 und 20261028120000 erneut
+-- einspielen und die beiden Finanzierer-Regeln auf `finanzierungen` wieder
+-- anlegen.
 -- ===========================================================================
 
 BEGIN;
@@ -173,6 +183,139 @@ END;
 $$;
 REVOKE ALL ON FUNCTION public.finanzierung_chat_oeffnen(uuid) FROM public, anon;
 GRANT EXECUTE ON FUNCTION public.finanzierung_chat_oeffnen(uuid) TO authenticated;
+
+
+-- ---------------------------------------------------------------------------
+-- 3) Jeder Finanzierer nur sein eigenes Angebot
+-- ---------------------------------------------------------------------------
+
+-- Bestand: Hat ein Kauf genau einen Zuschlag, gehoeren die unmarkierten
+-- Angebote diesem Finanzierer. So sieht er nach der Umstellung, was er vorher sah.
+UPDATE public.finanzierungen f
+   SET angebote = (
+     SELECT jsonb_agg(CASE WHEN a ? 'finanziererId' THEN a
+                           ELSE a || jsonb_build_object('finanziererId', z.finanzierer_id) END
+                      ORDER BY o)
+       FROM jsonb_array_elements(f.angebote) WITH ORDINALITY AS t(a, o))
+  FROM (SELECT investment_id, min(finanzierer_id::text) AS finanzierer_id
+          FROM public.finanzierung_einreichungen
+         WHERE status = 'zuschlag'
+         GROUP BY investment_id
+        HAVING count(*) = 1) z
+ WHERE f.kunde_id = z.investment_id::text
+   AND jsonb_typeof(f.angebote) = 'array'
+   AND jsonb_array_length(f.angebote) > 0;
+
+-- Die ganze Zeile traegt alle Angebote; eine Zeilenregel kann sie nicht
+-- teilen. Deshalb kein direkter Zugriff mehr fuer den Finanzierer.
+DROP POLICY IF EXISTS "Finanzierer mit Zuschlag sehen Finanzierung" ON public.finanzierungen;
+DROP POLICY IF EXISTS "Finanzierer mit Zuschlag bearbeiten Finanzierung" ON public.finanzierungen;
+
+-- Die Finanzierungen mit Zuschlag, darin nur die eigenen Angebote.
+CREATE OR REPLACE FUNCTION public.finanzierer_finanzierungen()
+RETURNS SETOF public.finanzierungen
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public
+AS $$
+  SELECT jsonb_populate_record(f, jsonb_build_object('angebote', coalesce((
+           SELECT jsonb_agg(a ORDER BY o)
+             FROM jsonb_array_elements(
+                    CASE WHEN jsonb_typeof(f.angebote) = 'array' THEN f.angebote ELSE '[]'::jsonb END)
+                  WITH ORDINALITY AS t(a, o)
+            WHERE a ->> 'finanziererId' = auth.uid()::text), '[]'::jsonb)))
+    FROM public.finanzierungen f
+   WHERE public.has_role(auth.uid(), 'finanzierungspartner'::public.app_role)
+     AND public.finanzierer_hat_zuschlag(auth.uid(), f.kunde_id)
+$$;
+REVOKE ALL ON FUNCTION public.finanzierer_finanzierungen() FROM public, anon;
+GRANT EXECUTE ON FUNCTION public.finanzierer_finanzierungen() TO authenticated;
+
+-- Der Finanzierer aendert nur Angebote, die ihm gehoeren (Grundschuld,
+-- Darlehensvertrag). Fremde Angebote bleiben, wie sie sind; anlegen und
+-- entfernen bleibt bei der Leitung.
+CREATE OR REPLACE FUNCTION public.finanzierer_angebote_speichern(_investment_id text, _angebote jsonb)
+RETURNS void
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = public
+AS $$
+DECLARE
+  v_uid uuid := auth.uid();
+  v_alt jsonb;
+BEGIN
+  IF v_uid IS NULL
+     OR NOT public.has_role(v_uid, 'finanzierungspartner'::public.app_role)
+     OR NOT public.finanzierer_hat_zuschlag(v_uid, _investment_id) THEN
+    RAISE EXCEPTION 'Keine Berechtigung' USING ERRCODE = '42501';
+  END IF;
+  IF jsonb_typeof(_angebote) IS DISTINCT FROM 'array' THEN
+    RAISE EXCEPTION 'Angebote fehlen' USING ERRCODE = '22023';
+  END IF;
+
+  SELECT angebote INTO v_alt FROM public.finanzierungen WHERE kunde_id = _investment_id FOR UPDATE;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Keine Finanzierung zu diesem Kauf' USING ERRCODE = 'P0002';
+  END IF;
+
+  UPDATE public.finanzierungen
+     SET aktualisiert_am = now(),
+         angebote = (
+           SELECT coalesce(jsonb_agg(
+                    CASE WHEN alt ->> 'finanziererId' = v_uid::text
+                         THEN coalesce((SELECT neu || jsonb_build_object('finanziererId', v_uid::text)
+                                          FROM jsonb_array_elements(_angebote) AS n(neu)
+                                         WHERE neu ->> 'id' = alt ->> 'id'
+                                         LIMIT 1), alt)
+                         ELSE alt END
+                    ORDER BY o), '[]'::jsonb)
+             FROM jsonb_array_elements(
+                    CASE WHEN jsonb_typeof(v_alt) = 'array' THEN v_alt ELSE '[]'::jsonb END)
+                  WITH ORDINALITY AS t(alt, o))
+   WHERE kunde_id = _investment_id;
+END;
+$$;
+REVOKE ALL ON FUNCTION public.finanzierer_angebote_speichern(text, jsonb) FROM public, anon;
+GRANT EXECUTE ON FUNCTION public.finanzierer_angebote_speichern(text, jsonb) TO authenticated;
+
+-- Wortlaut wie 20261027120000; neu ist nur `finanziererId` beim Angebotsordner.
+CREATE OR REPLACE FUNCTION public.finanzierer_darf_pfad(_user_id uuid, _name text)
+RETURNS boolean
+LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path = public
+AS $$
+DECLARE
+  teile text[] := storage.foldername(_name);
+  uuid_muster constant text := '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$';
+  kontakt uuid;
+BEGIN
+  IF NOT public.has_role(_user_id, 'finanzierungspartner'::public.app_role) THEN
+    RETURN false;
+  END IF;
+
+  IF teile[1] = 'finanzierung' AND teile[2] IS DISTINCT FROM 'eigen' THEN
+    IF coalesce(teile[2], '') !~* uuid_muster THEN
+      RETURN false;
+    END IF;
+    IF coalesce(teile[3], '') LIKE 'einreichung-%' THEN
+      RETURN EXISTS (
+        SELECT 1 FROM public.finanzierung_einreichungen e
+         WHERE e.id::text = substr(teile[3], 13)
+           AND e.investment_id = teile[2]::uuid
+           AND e.finanzierer_id = _user_id
+           AND e.status NOT IN ('abgelehnt', 'abgesagt', 'zurueckgezogen')
+      );
+    END IF;
+    RETURN public.finanzierer_hat_zuschlag(_user_id, teile[2])
+       AND EXISTS (
+         SELECT 1 FROM public.finanzierungen f
+          CROSS JOIN LATERAL jsonb_array_elements(
+            CASE WHEN jsonb_typeof(f.angebote) = 'array' THEN f.angebote ELSE '[]'::jsonb END) a
+          WHERE f.kunde_id = teile[2] AND a ->> 'id' = teile[3]
+            AND a ->> 'finanziererId' = _user_id::text
+       );
+  END IF;
+
+  kontakt := public.unterlagen_lese_kontakt(_name);
+  RETURN kontakt IS NOT NULL AND public.finanzierer_sieht_kontakt(_user_id, kontakt);
+END;
+$$;
+REVOKE ALL ON FUNCTION public.finanzierer_darf_pfad(uuid, text) FROM public, anon, authenticated;
 
 NOTIFY pgrst, 'reload schema';
 

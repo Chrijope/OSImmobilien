@@ -28,4 +28,22 @@ describe("Migration mehrere Zuschläge", () => {
     expect(sql).toContain("ur.role::text IN ('admin', 'inhaber', 'vertriebsleiter', 'backoffice')");
     expect(sql).toContain("coalesce(p.gesperrt, false) = false");
   });
+  it("Finanzierer liest und schreibt nur eigene Angebote, Dateien nur zu eigenen", () => {
+    expect(sql).toContain('DROP POLICY IF EXISTS "Finanzierer mit Zuschlag sehen Finanzierung" ON public.finanzierungen;');
+    expect(sql).toContain('DROP POLICY IF EXISTS "Finanzierer mit Zuschlag bearbeiten Finanzierung" ON public.finanzierungen;');
+    expect(sql).toContain("WHERE a ->> 'finanziererId' = auth.uid()::text");
+    expect(sql).toContain("CASE WHEN alt ->> 'finanziererId' = v_uid::text");
+    expect(sql).toContain("AND a ->> 'finanziererId' = _user_id::text");
+  });
+});
+
+describe("Browser: Finanzierer über die Datenbankfunktionen", () => {
+  const quelle = (d: string) => readFileSync(resolve(process.cwd(), d), "utf8");
+  it("lädt per finanzierer_finanzierungen und speichert per finanzierer_angebote_speichern", () => {
+    expect(quelle("src/lib/dataCache.ts")).toContain('db.rpc("finanzierer_finanzierungen")');
+    expect(quelle("src/lib/finanzierungStore.ts")).toContain('.rpc("finanzierer_angebote_speichern"');
+  });
+  it("das übernommene Angebot trägt den Finanzierer", () => {
+    expect(quelle("src/components/finanzierung/FinanzierungEinreichungen.tsx")).toContain("finanziererId: e.finanzierer_id,");
+  });
 });

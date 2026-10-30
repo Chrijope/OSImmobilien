@@ -292,6 +292,8 @@ async function inFinanzierungUebernehmen(investmentId: string, e: Einreichung, e
   const komma = (v: number) => String(v).replace(".", ",");
   const neu = createAngebot(investmentId);
   updateAngebot(investmentId, neu.id, {
+    // Nur dieser Finanzierer sieht das Angebot (Christian, 30.10.2026).
+    finanziererId: e.finanzierer_id,
     bank: a.bank,
     summe: a.summe,
     zins: komma(a.sollzins),
