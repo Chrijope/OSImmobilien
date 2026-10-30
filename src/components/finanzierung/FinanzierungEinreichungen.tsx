@@ -109,10 +109,18 @@ function LeitungsAnsicht({ investmentId, liste, neuLaden, steuern }: { investmen
   const [zugriffe, setZugriffe] = useState<Array<{ user_id: string; aktion: string; am: string }> | null>(null);
   const [arbeitet, setArbeitet] = useState(false);
 
+  // Mehrere Zuschlaege (Christian, 30.10.2026): Der erste sagt den anderen ab,
+  // jeder weitere geht auch an eine so abgesagte Einreichung.
+  const hatZuschlag = liste.some((e) => e.status === "zuschlag");
+  const zuschlagMoeglich = (e: Einreichung) => laeuft(e) || (hatZuschlag && e.status === "abgesagt");
+
   const zuschlag = async (e: Einreichung) => {
+    const weiterer = hatZuschlag;
     const ok = await confirmDialog({
-      title: `Zuschlag an ${name(e.finanzierer_id)}?`,
-      description: "Alle anderen laufenden Einreichungen dieses Kunden werden abgesagt, die Finanzierer bekommen eine Glocke. Das Angebot ersetzt die bisherigen Angebote in der Finanzierung; diese und die anderen Angebote bleiben gespeichert und stehen im Verlauf der Finanzierungskarte. Für den Kunden sichtbar wird es erst, wenn es dort freigegeben ist.",
+      title: `${weiterer ? "Weiteren Zuschlag" : "Zuschlag"} an ${name(e.finanzierer_id)}?`,
+      description: weiterer
+        ? "Es gibt schon einen Zuschlag. Dieser Finanzierer bekommt zusätzlich den Zuschlag und wieder Zugang zum Kunden; sein Angebot kommt in der Finanzierung zu den bisherigen dazu. Niemandem wird abgesagt."
+        : "Alle anderen laufenden Einreichungen dieses Kunden werden abgesagt, die Finanzierer bekommen eine Glocke. Das Angebot ersetzt die bisherigen Angebote in der Finanzierung; diese und die anderen Angebote bleiben gespeichert und stehen im Verlauf der Finanzierungskarte. Für den Kunden sichtbar wird es erst, wenn es dort freigegeben ist.",
       confirmText: "Zuschlag geben",
       cancelText: "Abbrechen",
     });
@@ -120,7 +128,7 @@ function LeitungsAnsicht({ investmentId, liste, neuLaden, steuern }: { investmen
     setArbeitet(true);
     try {
       await gibZuschlag(e.id);
-      if (e.angebot) await inFinanzierungUebernehmen(investmentId, e);
+      if (e.angebot) await inFinanzierungUebernehmen(investmentId, e, !weiterer);
       toast.success("Zuschlag erteilt.");
     } catch (f: any) {
       toast.error(f?.message || "Zuschlag fehlgeschlagen.");
@@ -169,15 +177,15 @@ function LeitungsAnsicht({ investmentId, liste, neuLaden, steuern }: { investmen
               {!e.gesichtet_am && laeuft(e) && <span className="text-xs text-muted-foreground">noch nicht geöffnet</span>}
               <span className="ml-auto flex gap-1">
                 <ChatKnopf einreichung={e} />
+                {steuern && zuschlagMoeglich(e) && (
+                  <Button size="sm" variant="outline" className="h-7 text-xs" disabled={arbeitet} onClick={() => zuschlag(e)}>
+                    <Award className="h-3.5 w-3.5 mr-1" /> {hatZuschlag ? "Weiterer Zuschlag" : "Zuschlag"}
+                  </Button>
+                )}
                 {steuern && laeuft(e) && (
-                  <>
-                    <Button size="sm" variant="outline" className="h-7 text-xs" disabled={arbeitet} onClick={() => zuschlag(e)}>
-                      <Award className="h-3.5 w-3.5 mr-1" /> Zuschlag
-                    </Button>
-                    <Button size="sm" variant="ghost" className="h-7 text-xs text-muted-foreground" onClick={() => zurueckziehen(e)}>
-                      <Undo2 className="h-3.5 w-3.5 mr-1" /> Zurückziehen
-                    </Button>
-                  </>
+                  <Button size="sm" variant="ghost" className="h-7 text-xs text-muted-foreground" onClick={() => zurueckziehen(e)}>
+                    <Undo2 className="h-3.5 w-3.5 mr-1" /> Zurückziehen
+                  </Button>
                 )}
               </span>
             </div>
@@ -277,9 +285,10 @@ function LeitungsAnsicht({ investmentId, liste, neuLaden, steuern }: { investmen
  * gibt die Datenbank auch nur fuer Angebote frei, die hier stehen
  * (`finanzierer_darf_pfad`).
  */
-async function inFinanzierungUebernehmen(investmentId: string, e: Einreichung) {
+async function inFinanzierungUebernehmen(investmentId: string, e: Einreichung, ersetzen = true) {
   const a = e.angebot!;
-  saveFinanzierung(investmentId, { angebote: [] });
+  // Beim weiteren Zuschlag bleibt das Angebot des ersten stehen.
+  if (ersetzen) saveFinanzierung(investmentId, { angebote: [] });
   const komma = (v: number) => String(v).replace(".", ",");
   const neu = createAngebot(investmentId);
   updateAngebot(investmentId, neu.id, {
@@ -378,12 +387,20 @@ function FinanziererAnsicht({ e, neuLaden }: { e: Einreichung; neuLaden: () => v
   );
 
   return (
-    <div className="mb-4 rounded-lg border px-4 py-3 space-y-4" data-finanzierung-einreichung>
+    <div className="mb-4 rounded-lg border-2 border-primary/40 px-4 py-3 space-y-4" data-finanzierung-einreichung>
       <div className="flex flex-wrap items-center gap-2">
-        <p className="text-sm font-semibold">Finanzierungsanfrage</p>
+        <p className="text-sm font-semibold">Finanzierungsanfrage an Sie</p>
         <StatusMarke status={e.status} />
         <Frist e={e} />
       </div>
+      {/* Der Finanzierer soll auf einen Blick sehen, dass er finanzieren soll (Christian, 30.10.2026). */}
+      {(offen || e.status === "zuschlag") && (
+        <p className="rounded-md bg-primary/10 px-3 py-2 text-sm" data-pruefung="finanzierer-auftrag">
+          {e.status === "zuschlag"
+            ? "Sie haben den Zuschlag: Bitte setzen Sie die Finanzierung für diesen Kunden um."
+            : `Sie sind angefragt, diesen Kauf zu finanzieren. Bitte prüfen Sie die Unterlagen und geben Sie Ihr Angebot ab${e.frist_bis ? ` bis ${datum(e.frist_bis)}` : ""}. Rückfragen im Chat.`}
+        </p>
+      )}
 
       {offen && (
         <div className="flex flex-wrap gap-2">

@@ -67,6 +67,9 @@ export interface ChatData {
    * sie nicht einzeln verlassen, siehe darfVerlassen in Chat.tsx.
    */
   kind?: string;
+  /** Nur Finanzierungschats: Kunde und Finanzierer aus `meta`, fuer den Ruecksprung zur Finanzierung. */
+  kontaktId?: string;
+  finanziererId?: string;
   teilnehmer: ChatParticipant[];
   nachrichten: ChatMessage[];
   angepinnt: boolean;
@@ -280,6 +283,8 @@ function chatFromDb(chatRow: any, nachrichten: any[], teilnehmer: any[]): ChatDa
     erstelltVonId: chatRow.erstellt_von || undefined,
     erstelltAm: chatRow.erstellt_am || "",
     kind: meta.kind || undefined,
+    kontaktId: meta.kontaktId || undefined,
+    finanziererId: meta.finanziererId || undefined,
     typ: (chatRow.typ === "kundenkommunikation" || meta.typ === "kundenkommunikation") ? "kundenkommunikation" : "intern",
     teilnehmer: teilnehmer
       .filter((t: any) => t.chat_id === chatRow.id)
@@ -491,7 +496,7 @@ export function updateChat(chat: ChatData) {
       typ: chat.typ,
       // `kind` mitschreiben: Sonst verloere ein Admin beim Anpinnen die Bauart
       // (Tippgeber-, Finanzierungschat), die Nicht-Admins die Datenbank haelt.
-      meta: { kundeId: chat.kundeId, kundeStatus: chat.kundeStatus, erstelltVon: chat.erstelltVon, typ: chat.typ, angepinnt: chat.angepinnt, ungelesen: chat.ungelesen, stummgeschaltet: chat.stummgeschaltet, archiviert: chat.archiviert, ...(chat.kind ? { kind: chat.kind } : {}) },
+      meta: { kundeId: chat.kundeId, kundeStatus: chat.kundeStatus, erstelltVon: chat.erstelltVon, typ: chat.typ, angepinnt: chat.angepinnt, ungelesen: chat.ungelesen, stummgeschaltet: chat.stummgeschaltet, archiviert: chat.archiviert, ...(chat.kind ? { kind: chat.kind } : {}), ...(chat.kontaktId ? { kontaktId: chat.kontaktId } : {}), ...(chat.finanziererId ? { finanziererId: chat.finanziererId } : {}) },
     });
   }
 }
