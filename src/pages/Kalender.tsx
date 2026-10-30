@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
+import { SaisonEi } from "@/components/saison/Saisonfiguren";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageHeader } from "@/components/PageHeader";
 import { Card } from "@/components/ui/card";
@@ -349,6 +350,7 @@ const Kalender = () => {
         subtitle="Deine CRM-Termine, deine gebuchten Videocalls und die Termine aus verbundenen Kalendern."
       >
         <div className="flex items-center gap-2">
+          <SaisonEi ort="kalender" />
           <Button variant="outline" size="sm" onClick={fetchEvents} disabled={loading} aria-label="Neu laden">
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
           </Button>

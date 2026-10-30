@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { SaisonKopfleiste, SaisonMenue } from "@/components/saison/Saisonfiguren";
 import { Bell, Moon, Sun, SunMoon, Settings, MessageSquare, CheckSquare, Calendar, Trophy, GitBranch, Monitor, GraduationCap, ChevronRight, SlidersHorizontal, AtSign, LogOut, ShieldCheck, ShieldOff, Info, User, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { TestModeHeaderBadge } from "@/components/TestModeBadge";
@@ -680,6 +681,9 @@ export function HeaderBar() {
 
       <div className="flex items-center gap-1 sm:gap-3 shrink-0">
 
+        {/* Saisonfigur: Geist zu Halloween, Eierzähler zu Ostern. */}
+        <SaisonKopfleiste />
+
         {/* Notifications */}
         <Popover open={popoverOpen} onOpenChange={(open) => { setPopoverOpen(open); if (open) loadNotifications(); else setShowAllNotifications(false); }}>
           <PopoverTrigger asChild>
@@ -989,6 +993,8 @@ export function HeaderBar() {
                   <DropdownMenuSeparator />
                 </>
               )}
+              {/* Saisonfiguren an oder aus, für Admin und Inhaber auch für alle. */}
+              <SaisonMenue />
               <DropdownMenuLabel>Einstellungen</DropdownMenuLabel>
               <DropdownMenuSeparator />
               {einstellungenMenue(user.role).map((eintrag) =>

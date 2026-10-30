@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
+import { SaisonBegruessung } from "@/components/saison/Saisonfiguren";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { ObjektpartnerDashboard } from "@/components/dashboard/ObjektpartnerDashboard";
 import { FinanzierungspartnerDashboard } from "@/components/dashboard/FinanzierungspartnerDashboard";
@@ -279,9 +280,13 @@ const Index = () => {
           </h1>
           {subtitle && <p className="mt-2 max-w-2xl text-sm md:text-base leading-relaxed text-muted-foreground">{subtitle}</p>}
         </div>
-        <div className="flex items-center gap-2 rounded-full border border-primary/10 bg-card/60 px-3 py-2 text-xs text-muted-foreground tabular-nums">
-          <GreetIcon className={`h-4 w-4 shrink-0 ${greetingMeta.accent}`} aria-hidden="true" />
-          <span>{tagesform} · {uhrzeit} Uhr</span>
+        <div className="flex items-center gap-3">
+          {/* Geschenk zu Weihnachten, Hase zu Ostern. */}
+          <SaisonBegruessung />
+          <div className="flex items-center gap-2 rounded-full border border-primary/10 bg-card/60 px-3 py-2 text-xs text-muted-foreground tabular-nums">
+            <GreetIcon className={`h-4 w-4 shrink-0 ${greetingMeta.accent}`} aria-hidden="true" />
+            <span>{tagesform} · {uhrzeit} Uhr</span>
+          </div>
         </div>
       </div>
       <div className="relative mt-5 flex items-start gap-3 rounded-2xl border border-primary/10 bg-card/70 p-4 md:px-5">

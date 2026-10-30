@@ -1,4 +1,5 @@
 import { useVideocallFreigabe } from "@/hooks/useVideocallFreigabe";
+import { SaisonLogo } from "@/components/saison/Saisonfiguren";
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -883,11 +884,13 @@ export function AppSidebar() {
     <>
     {isMobile && tabEintraege.length > 0 && <TabLeiste eintraege={tabEintraege} />}
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
-       <div className="hidden md:flex h-28 items-center justify-center px-2 py-2 border-b border-sidebar-border">
+       <div className="relative hidden md:flex h-28 items-center justify-center px-2 py-2 border-b border-sidebar-border">
           {!collapsed ? (
             <>
               <img src={logoImg} alt="OS Real Estate GmbH" className="w-full h-full object-contain block dark:hidden" />
               <img src={logoImgDark} alt="OS Real Estate GmbH" className="w-full h-full object-contain hidden dark:block" />
+              {/* Tannenbaum zu Weihnachten, öffnet den Adventskalender. */}
+              <SaisonLogo />
             </>
           ) : (
             <img src={iconImg} alt="OS Real Estate GmbH" className="h-8 w-8 object-contain" />

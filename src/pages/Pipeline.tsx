@@ -1,4 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from "react";
+import { SaisonEi } from "@/components/saison/Saisonfiguren";
 import { useLiveVersion } from "@/hooks/useLiveData";
 import { useCacheReady } from "@/hooks/useCacheReady";
 import { formatDatum } from "@/lib/utils";
@@ -1330,7 +1331,7 @@ export default function Pipeline() {
       */}
       <div className="flex flex-col h-full min-h-[26rem]">
         <div className="space-y-6 flex-shrink-0">
-          <PageHeader title="Kunden-Pipeline" />
+          <PageHeader title="Kunden-Pipeline"><SaisonEi ort="pipeline" /></PageHeader>
           <p className="text-[11px] text-muted-foreground -mt-3 flex items-center gap-1.5">
             <Info className="h-3 w-3" /> Tipp: Kunden-Kacheln können per Drag &amp; Drop zwischen den Stufen verschoben werden. Vor jedem Verschieben kommt eine Rückfrage.
           </p>

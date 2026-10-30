@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { SaisonEi } from "@/components/saison/Saisonfiguren";
 import { useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Card, CardContent } from "@/components/ui/card";
@@ -419,6 +420,7 @@ export default function Unterlagen() {
             Alle Vertriebsmaterialien, Tools, Steuer-Strategien und Vorlagen — kuratiert und an einem Ort.
           </p>
           <div className="la-hero-actions">
+            <SaisonEi ort="unterlagen" />
             <span className="la-count-pill" style={{ background: "hsl(0 0% 100% / 0.1)", border: "1px solid hsl(0 0% 100% / 0.18)", color: "hsl(0 0% 100% / 0.85)" }}>
               {visibleAbschnitte.length} Kategorien
             </span>

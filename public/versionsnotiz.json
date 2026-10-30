@@ -3073,5 +3073,38 @@
     ],
     "soFindestDuEs": "Seitenleiste, Investmentkalkulation",
     "kritisch": false
+  },
+  {
+    "nr": 151,
+    "datum": "2026-10-30",
+    "art": "neu",
+    "titel": "Saisonfiguren: Geist, Tannenbaum und Osterhase",
+    "zielrollen": [
+      "admin",
+      "inhaber",
+      "vertriebsleiter",
+      "vertriebspartner",
+      "backoffice",
+      "setterin",
+      "buchhaltung",
+      "finanzierungspartner",
+      "objektpartner",
+      "hausverwaltung",
+      "marketing",
+      "hr",
+      "individuell",
+      "versicherungsexperte",
+      "testaccount"
+    ],
+    "kurztext": "Zu Halloween, Weihnachten und Ostern taucht im CRM eine kleine 3D-Figur auf. Ein Klick darauf bringt dir etwas Nützliches.",
+    "wasHeisstDasFuerDich": [
+      "Halloween (24. bis 31. Oktober): Der Geist an der Glocke zeigt dir die Leads, die seit über 14 Tagen herumgeistern. Ein Klick öffnet den Kunden.",
+      "Weihnachten (1. Advent bis 26. Dezember): Tannenbaum am Logo und Geschenk auf dem Dashboard öffnen einen Adventskalender mit einem Tipp oder einer eigenen Zahl je Tag. Am 24. wartet dein Jahr in Zahlen.",
+      "Ostern (Gründonnerstag bis Ostermontag): Der Osterhase hat drei Eier im CRM versteckt. Wer alle findet, bekommt das Osterabzeichen.",
+      "Kunden sehen nie etwas davon. Im Videogespräch und im Vorführmodus verschwinden die Figuren von selbst.",
+      "Nicht dein Ding? Im Zahnradmenü oben rechts schaltest du „Saisonfiguren anzeigen“ aus, oder du blendest die Figur für heute aus."
+    ],
+    "soFindestDuEs": "Zahnradmenü oben rechts, Saisonfiguren anzeigen",
+    "kritisch": false
   }
 ]

@@ -3195,3 +3195,6 @@
     animation-duration: 150ms;
   }
 }
+
+/* Saisonfiguren (30.10.2026): leichtes Schweben, nur mit motion-safe genutzt. */
+@keyframes logo-haus-schweben { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }

@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from "react";
+import { SaisonEi } from "@/components/saison/Saisonfiguren";
 import { nurLesendKundendaten } from "@/lib/nurLesend";
 import { useLiveVersion } from "@/hooks/useLiveData";
 import { useCacheReady } from "@/hooks/useCacheReady";
@@ -813,7 +814,7 @@ export default function AlleKontakte() {
     <DashboardLayout>
       <div className="space-y-6">
         <div className="flex items-center justify-between gap-4 flex-wrap">
-          <PageHeader title="Alle Kontakte" subtitle={`${filtered.length} Kontakte`} />
+          <PageHeader title="Alle Kontakte" subtitle={`${filtered.length} Kontakte`}><SaisonEi ort="kontakte" /></PageHeader>
           {/*
             Import und Export stehen rechts neben "Kontakt anlegen" und nicht
             mehr unter der Ueberschrift. Beides sind Handlungen an der Seite

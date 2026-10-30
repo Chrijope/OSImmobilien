@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
+import { SaisonEi } from "@/components/saison/Saisonfiguren";
 import { usePersistedState } from "@/hooks/usePersistedState";
 import { useLiveVersion } from "@/hooks/useLiveData";
 import { useCacheReady } from "@/hooks/useCacheReady";
@@ -269,7 +270,7 @@ export default function Kontakte() {
     <DashboardLayout>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <PageHeader title="Kontakte" subtitle={`${entries.length} Deals in Kontakten`} />
+          <PageHeader title="Kontakte" subtitle={`${entries.length} Deals in Kontakten`}><SaisonEi ort="kontakte" /></PageHeader>
           <div className="flex gap-2">
             <Button size="sm" variant="outline" className="gap-1" onClick={() => ["inhaber", "admin"].includes(user.role) ? setShowPowerdialer(!showPowerdialer) : null} disabled={!["inhaber", "admin"].includes(user.role)}>
               <Phone className="h-4 w-4" /> {showPowerdialer ? "Liste anzeigen" : "Powerdialer"}

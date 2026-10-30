@@ -33,6 +33,7 @@ import { darfBewerberprozess } from "@/lib/bewerberprozessFreigabe";
 import { WeeklyCallReminderBanner } from "@/components/WeeklyCallReminderBanner";
 import { WeeklyCallVorbereitungBanner } from "@/components/WeeklyCallVorbereitungBanner";
 import { GeburtstagPopup } from "@/components/dashboard/GeburtstagPopup";
+import { SaisonDialoge } from "@/components/saison/Saisonfiguren";
 import { KundenportalLockGuard } from "@/components/KundenportalLockGuard";
 import { KundenMfaGuard } from "@/components/kunde/KundenMfaGuard";
 import { KundeErrorBoundary } from "@/components/kunde/KundeErrorBoundary";
@@ -369,6 +370,8 @@ export function AppShell() {
         </div>
       </div>
       <GeburtstagPopup />
+      {/* Adventskalender und Eiersuche, geöffnet von den Saisonfiguren. */}
+      <SaisonDialoge />
       <IdleTimeoutGuard />
       <PushNotificationsBootstrap />
      </CrmTutorialProvider>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useRef, lazy, Suspense } from "react";
+import { SaisonEi } from "@/components/saison/Saisonfiguren";
 import { useLiveVersion } from "@/hooks/useLiveData";
 import { useCacheReady } from "@/hooks/useCacheReady";
 import { ladeObjekteFilter, speichereObjekteFilter } from "@/lib/objekteFilter";
@@ -1044,7 +1045,7 @@ export default function Objekte() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <PageHeader title="Objekte" />
+        <PageHeader title="Objekte"><SaisonEi ort="objekte" /></PageHeader>
         <div className="flex items-center gap-4 flex-wrap">
           {/*
             Auf dem Handy nimmt die Suche die ganze Breite, und die Knopfleiste
