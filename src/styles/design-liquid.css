@@ -59,7 +59,7 @@
   --success: 157 71% 22%;             /* Markengrün tief, eine Stufe dunkler */
   --destructive: 5 55% 38%;           /* Fehler #A23B32, eine Stufe dunkler */
   --warning: 25 90% 29%;              /* Warnschrift #9A4508, eine Stufe dunkler */
-  --border: 148 17% 82%;
+  --border: 135 7% 86%;
 
   /* Blau 600 traegt als Schrift auf Glas nur 3,5:1. Schrift nimmt Blau 700. */
   --lg-schrift-blau: 157 71% 23%;     /* Markengrün tief, eine Stufe dunkler */
@@ -73,10 +73,11 @@
   --lg-primaer-tief: 158 60% 21%;
 
   /*
-    Der Grund: Nebel, einen Hauch gruener (#ECF2EF). Das Gruen liegt im
-    Hintergrund, die weisseren Karten heben sich davon ab (18.10.2026).
+    Der Grund: fast weiss mit einem Hauch frischem Gruen (#F2F8F3), nach dem
+    Vorbild MOREImmo. Bewusst Gelbgruen statt Tuerkis, damit kein Schleier
+    entsteht (Christian, 30.10.2026).
   */
-  --lg-grund: 150 16% 94%;
+  --lg-grund: 130 25% 96%;
   --lg-glas: 0 0% 100%;
 
   /*
@@ -85,10 +86,10 @@
     sich klar vom Grund ab, das Gruen liegt im Hintergrund und schimmert nur
     noch leicht durch.
   */
-  --lg-deckkraft: .76;                /* Karten */
-  --lg-deckkraft-leiste: .74;         /* Seitenleiste, Kopfleiste */
-  --lg-deckkraft-schwebend: .86;      /* Dialoge, Menues, Hinweise, Bannerstapel */
-  --lg-deckkraft-einlage: .7;         /* Karte in der Karte, ohne eigene Weichzeichnung */
+  --lg-deckkraft: .82;                /* Karten */
+  --lg-deckkraft-leiste: .8;         /* Seitenleiste, Kopfleiste */
+  --lg-deckkraft-schwebend: .9;      /* Dialoge, Menues, Hinweise, Bannerstapel */
+  --lg-deckkraft-einlage: .76;         /* Karte in der Karte, ohne eigene Weichzeichnung */
 
   /*
     Die Weichzeichnung als Token. So schalten die Ruecksichten weiter unten
@@ -217,10 +218,10 @@
   position: absolute;
   inset: -18%;
   background:
-    radial-gradient(36% 40% at 14% 20%, hsl(157 69% 32% / .06), transparent 70%),
-    radial-gradient(34% 40% at 86% 14%, hsl(158 38% 75% / .30), transparent 70%),
-    radial-gradient(40% 44% at 76% 84%, hsl(158 38% 75% / .22), transparent 70%),
-    radial-gradient(30% 34% at 24% 88%, hsl(42 41% 74% / .30), transparent 70%);
+    radial-gradient(36% 40% at 14% 20%, hsl(145 60% 42% / .08), transparent 70%),
+    radial-gradient(34% 40% at 86% 14%, hsl(130 55% 78% / .26), transparent 70%),
+    radial-gradient(40% 44% at 76% 84%, hsl(110 45% 82% / .18), transparent 70%),
+    radial-gradient(30% 34% at 24% 88%, hsl(42 41% 74% / .22), transparent 70%);
   animation: lg-wolken 48s ease-in-out infinite alternate;
   will-change: transform;
 }

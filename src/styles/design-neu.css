@@ -22,22 +22,22 @@
 
 [data-design="neu"] {
   /* Neutraltoene, Markenrichtlinie 3.3 */
-  --background: 140 14% 96%;        /* Nebel #F3F6F4 (Markenrichtlinie 18.10.2026) */
+  --background: 130 25% 96%;        /* fast weiss, Hauch frisches Gruen #F2F8F3 (30.10.2026) */
   --foreground: 0 0% 9%;   /* fast Schwarz #171717, mehr Kontrast als Tannengrün (Christian, 21.10.2026) */
   --card: 0 0% 100%;                /* Weiss */
   --card-foreground: 0 0% 9%;
   --popover: 0 0% 100%;
   --popover-foreground: 0 0% 9%;
 
-  --secondary: 148 17% 92%;
+  --secondary: 135 14% 94%;
   --secondary-foreground: 0 0% 9%;
-  --muted: 148 17% 92%;
+  --muted: 135 14% 94%;
   --muted-foreground: 0 0% 34%;  /* neutrales Grau #575757 */
 
-  --border: 148 17% 85%;            /* Linie #D3E0D9 */
-  --input: 148 17% 80%;
+  --border: 135 7% 88%;             /* Linie, fast neutral */
+  --input: 135 7% 83%;
 
-  --accent: 154 33% 92%;            /* Mint hell #E3F1EB */
+  --accent: 140 45% 92%;            /* frisches Hellgruen #E0F4E5 */
   --accent-foreground: 157 69% 26%; /* Markengrün tief #15724F */
   --ring: 157 69% 32%;              /* Markengrün #198A5F, der Fokusring */
 
@@ -74,7 +74,7 @@
   --sidebar-background: 0 0% 100%;
   --sidebar-foreground: 0 0% 9%;
   --sidebar-border: 148 17% 85%;
-  --sidebar-accent: 154 33% 92%;
+  --sidebar-accent: 140 45% 92%;
   --sidebar-accent-foreground: 157 69% 26%;
 }
 

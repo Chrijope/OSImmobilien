@@ -13,7 +13,7 @@
 
   :root {
     /* Apple Light Surface – #F5F5F7 / Text #1D1D1F */
-    --background: 140 14% 96%;   /* Nebel #F3F6F4 */
+    --background: 130 25% 96%;   /* fast weiss, Hauch Gruen #F2F8F3 */
     --foreground: 0 0% 9%;   /* fast Schwarz #171717, mehr Kontrast als Tannengrün (Christian, 21.10.2026) */
 
     --card: 0 0% 100%;
@@ -28,20 +28,20 @@
     --primary: 157 69% 26%;      /* Markengrün tief #15724F, weiße Schrift 5,9:1 */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 148 17% 92%;
+    --secondary: 135 14% 94%;
     --secondary-foreground: 0 0% 9%;
 
-    --muted: 148 17% 92%;
+    --muted: 135 14% 94%;
     --muted-foreground: 0 0% 34%;  /* neutrales Grau #575757 */
 
-    --accent: 154 33% 92%;        /* Mint hell #E3F1EB */
+    --accent: 140 45% 92%;        /* frisches Hellgruen #E0F4E5 */
     --accent-foreground: 157 69% 26%; /* Markengrün tief #15724F */
 
     --destructive: 5 53% 42%;    /* Fehler #A23B32, 6,6:1 */
     --destructive-foreground: 0 0% 100%;
 
-    --border: 148 17% 85%;       /* Linie #D3E0D9 */
-    --input: 148 17% 80%;
+    --border: 135 7% 88%;        /* Linie, fast neutral */
+    --input: 135 7% 83%;
     --ring: 157 69% 32%;
 
     /* Markenrichtlinie: Karten 16 px. In px, weil html auf 90 % steht. */
@@ -60,9 +60,9 @@
     --sidebar-foreground: 0 0% 9%;
     --sidebar-primary: 157 69% 26%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 154 33% 92%;
+    --sidebar-accent: 140 45% 92%;
     --sidebar-accent-foreground: 157 69% 26%;
-    --sidebar-border: 148 17% 85%;
+    --sidebar-border: 135 7% 88%;
     --sidebar-ring: 157 69% 32%;
     --sidebar-muted: 152 7% 36%;
 
