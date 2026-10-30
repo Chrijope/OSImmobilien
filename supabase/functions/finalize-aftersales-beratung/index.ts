@@ -41,19 +41,13 @@ function pdfAusBase64(b64: unknown): Uint8Array | null {
 
 const PROTOKOLL_VORLAGE = "qualitaetsprotokoll-2026-10";
 
-/** Eintrag im Kundenordner (Kategorie „Beratungsdokument“), für den Kunden freigegeben. */
-// deno-lint-ignore no-explicit-any
-function mitKundenordner(meta: Record<string, any>, investmentId: string, filename: string, pfad: string) {
-  // deno-lint-ignore no-explicit-any
-  const ko: any[] = Array.isArray(meta.kundenordner) ? [...meta.kundenordner] : [];
-  ko.push({
-    id: `ko-aftersales-${Date.now()}`, investmentId, kategorie: "Beratungsdokument", filename,
-    uploadedBy: "System (Aftersales-Beratung)", uploadedAt: new Date().toISOString(), fileUrl: pfad, freigegeben: true,
-  });
-  return ko;
-}
+/*
+ * Seit dem 30.10.2026 kein Eintrag mehr im Kundenordner (Christian): Das
+ * unterschriebene Protokoll liegt nur in der Karte „After Sales“ (`pdfPath`),
+ * so wie die Reservierungsvereinbarung bei der Reservierung.
+ */
 
-/** Das unterschriebene Protokoll ablegen: Speicher, `pdfPath`, Kundenordner. */
+/** Das unterschriebene Protokoll ablegen: Speicher und `pdfPath`. */
 async function protokollAblegen(
   // deno-lint-ignore no-explicit-any
   supabase: any,
@@ -71,7 +65,7 @@ async function protokollAblegen(
   const meta = (inv?.meta as Record<string, any>) || a.meta;
   const ab = { ...(meta.aftersalesBeratung || a.ab), pdfPath: pfad };
   await supabase.from("investments")
-    .update({ meta: { ...meta, aftersalesBeratung: ab, kundenordner: mitKundenordner(meta, a.investmentId, filename, pfad) } })
+    .update({ meta: { ...meta, aftersalesBeratung: ab } })
     .eq("id", a.investmentId);
 }
 
@@ -491,7 +485,7 @@ Deno.serve(async (req) => {
         if (pdfPath) {
           nextAb.pdfPath = pdfPath;
           await supabase.from("investments")
-            .update({ meta: { ...meta, aftersalesBeratung: nextAb, kundenordner: mitKundenordner(meta, investmentId, aftersalesDateiname(kundeName, sprache), pdfPath) } })
+            .update({ meta: { ...meta, aftersalesBeratung: nextAb } })
             .eq("id", investmentId);
         }
       }

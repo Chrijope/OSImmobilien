@@ -42,7 +42,15 @@ async function bildLaden(pfad: string): Promise<string | null> {
   }
 }
 
-export async function erzeugeMietzuzahlungPdf(d: MietzuzahlungDaten): Promise<jsPDF> {
+/** Unterschrift des Käufers aus der Signaturseite (data:image/png). */
+export interface KaeuferUnterschrift {
+  signatureData: string;
+  ort?: string;
+  /** ISO-Datum der Unterschrift */
+  datum?: string;
+}
+
+export async function erzeugeMietzuzahlungPdf(d: MietzuzahlungDaten, kaeufer?: KaeuferUnterschrift): Promise<jsPDF> {
   const r = rechne(d);
   const doc = new jsPDF("p", "mm", "a4");
   await ensureUnicodeFont(doc);
@@ -163,7 +171,7 @@ export async function erzeugeMietzuzahlungPdf(d: MietzuzahlungDaten): Promise<js
     zeilenT.forEach((t, i) => doc.text(t, x, y + 29 + i * 3.6));
     doc.setTextColor(20, 20, 20);
   };
-  block(RAND, d.ort1, d.datum1, `Unterschrift Vertragspartner 1 (${d.kaeuferName || LUECKE})`);
+  block(RAND, kaeufer?.ort || d.ort1, kaeufer?.datum || d.datum1, `Unterschrift Vertragspartner 1 (${d.kaeuferName || LUECKE})`, kaeufer?.signatureData);
   block(RAND + spalte + 12, d.ort2, d.datum2, `Unterschrift Vertragspartner 2 (${VP2}, Geschäftsführer OS Mietpool Verwaltung UG i. G.)`, unterschrift);
   return doc;
 }
