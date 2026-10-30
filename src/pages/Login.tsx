@@ -564,7 +564,7 @@ const Login = () => {
         }
       `}</style>
 
-      {/* Linke Spalte: das Formular auf Weiß, ohne Karte und ohne Logo. */}
+      {/* Linke Spalte: das Formular in einer hellen Karte, damit es nicht frei auf dem Verlauf schwebt. */}
       <div data-login="formular" className="relative flex w-full flex-col items-center px-6 py-12 sm:px-10 lg:w-1/2 lg:px-14">
         {/*
           Sprachumschalter, dezent oben rechts in der Formularspalte und auf
@@ -575,7 +575,7 @@ const Login = () => {
         <div className="absolute right-3 top-3 sm:right-5 sm:top-5">
           <LanguageToggle className="text-muted-foreground" />
         </div>
-        <div data-studio="login-karte" className={`my-auto w-full ${zugangsWeg ? "max-w-[440px]" : "max-w-[400px]"}`}>
+        <div data-studio="login-karte" className={`my-auto w-full rounded-3xl border border-border/70 bg-white/85 p-6 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_18px_48px_-20px_rgba(15,60,40,0.25)] backdrop-blur-md dark:bg-card/85 sm:p-9 ${zugangsWeg ? "max-w-[520px]" : "max-w-[480px]"}`}>
           {/*
             Marke nur auf schmalen Fenstern. Ab lg traegt sie die Buehne rechts,
             darunter faellt die Buehne weg und die Seite waere sonst voellig
