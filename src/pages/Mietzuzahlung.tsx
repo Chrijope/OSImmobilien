@@ -14,7 +14,7 @@ import { getKontaktById } from "@/lib/kundenStore";
 import { listendatenFuerEinheit } from "@/lib/listendaten";
 import { garageFuerEinheit } from "@/lib/mietgarantie";
 import {
-  datumDe, ENTWURF_SCHLUESSEL, entwurfErgaenzen, euro, neuesSchreiben, rechne, vorbelegen, type MietzuzahlungDaten,
+  datumDe, ENTWURF_SCHLUESSEL, entwurfErgaenzen, euro, fuerPdf, neuesSchreiben, rechne, vorbelegen, type MietzuzahlungDaten,
 } from "@/lib/mietzuzahlung";
 import { erzeugeMietzuzahlungPdf } from "@/lib/mietzuzahlungPdf";
 import { getObjektById } from "@/lib/objekteStore";
@@ -79,7 +79,7 @@ function MietzuzahlungInhalt({ kontaktId, investmentId }: { kontaktId: string; i
   }, [daten, investmentId]);
 
   const herunterladen = async () => {
-    const doc = await erzeugeMietzuzahlungPdf(daten);
+    const doc = await erzeugeMietzuzahlungPdf(fuerPdf(daten));
     doc.save(`Mietzuzahlung ${daten.kaeuferName || "Kunde"}${daten.weNr ? ` WE ${daten.weNr}` : ""}.pdf`);
   };
 
@@ -185,13 +185,12 @@ function MietzuzahlungInhalt({ kontaktId, investmentId }: { kontaktId: string; i
               {feld("iban", "IBAN")}
             </div>
           </Block>
-          <Block titel="Unterschriften">
-            <div className="grid gap-3 sm:grid-cols-4">
+          <Block titel="Unterschrift Käufer">
+            <div className="grid gap-3 sm:grid-cols-2">
               {feld("ort1", "Ort Käufer")}
               {feld("datum1", "Datum Käufer", { datum: true })}
-              {feld("ort2", "Ort Vertragspartner 2")}
-              {feld("datum2", "Datum Vertragspartner 2", { datum: true })}
             </div>
+            <p className="text-bildunterschrift text-muted-foreground">Vertragspartner 2 unterschreibt immer in Mittenwalde mit dem heutigen Datum und Olivers Unterschrift.</p>
           </Block>
           <Card className="space-y-1 p-4 text-sm" data-testid="mietzuzahlung-summe">
             <p className="font-semibold">Rechnung</p>
@@ -202,7 +201,7 @@ function MietzuzahlungInhalt({ kontaktId, investmentId }: { kontaktId: string; i
           </Card>
         </div>
         <div className={`min-w-0 lg:sticky lg:top-4 ${ansicht === "vorschau" ? "" : "hidden lg:block"}`}>
-          <LivePdfVorschau erzeuge={() => erzeugeMietzuzahlungPdf(daten)} schluessel={JSON.stringify(daten)} titel="Vereinbarung über eine Mietzuzahlung" />
+          <LivePdfVorschau erzeuge={() => erzeugeMietzuzahlungPdf(fuerPdf(daten))} schluessel={JSON.stringify(daten)} titel="Vereinbarung über eine Mietzuzahlung" />
         </div>
       </div>
     </div>

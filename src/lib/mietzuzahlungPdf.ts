@@ -19,7 +19,14 @@ const BREITE = W - 2 * RAND;
 const UNTEN = 297 - 20;
 const LUECKE = "……………";
 
-async function bildAlsDataUrl(pfad: string): Promise<string | null> {
+const bildCache = new Map<string, Promise<string | null>>();
+/** Einmal laden je Sitzung: Die Vorschau zeichnet bei jeder Eingabe neu. */
+function bildAlsDataUrl(pfad: string): Promise<string | null> {
+  if (!bildCache.has(pfad)) bildCache.set(pfad, bildLaden(pfad).then((b) => { if (!b) bildCache.delete(pfad); return b; }));
+  return bildCache.get(pfad)!;
+}
+
+async function bildLaden(pfad: string): Promise<string | null> {
   try {
     const antwort = await fetch(pfad);
     if (!antwort.ok || !(antwort.headers.get("content-type") || "").startsWith("image/")) return null;

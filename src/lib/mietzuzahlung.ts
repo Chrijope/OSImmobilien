@@ -66,10 +66,18 @@ export const heuteIso = (jetzt = new Date()) => jetzt.toLocaleDateString("sv-SE"
 
 /**
  * Ein neues Schreiben: alles aus dem System, Ort Mittenwalde und als Datum
- * des Vertragspartners 2 das Erstellungsdatum.
+ * des Vertragspartners 2 das Erstellungsdatum (zeigt die Karte an).
  */
 export function neuesSchreiben(ausSystem: MietzuzahlungDaten, heute = heuteIso()): MietzuzahlungDaten {
   return { ...ausSystem, ort2: ORT_VERTRAGSPARTNER_2, datum2: heute };
+}
+
+/**
+ * Was ins PDF geht: Vertragspartner 2 immer Mittenwalde und das aktuelle
+ * Datum (Christian, 30.10.2026), unabhängig vom gespeicherten Entwurf.
+ */
+export function fuerPdf(d: MietzuzahlungDaten, heute = heuteIso()): MietzuzahlungDaten {
+  return { ...d, ort2: ORT_VERTRAGSPARTNER_2, datum2: heute };
 }
 
 const cent = (n: number) => Math.round(n * 100) / 100;
