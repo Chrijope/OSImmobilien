@@ -2679,7 +2679,7 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
             <p className="text-bildunterschrift text-muted-foreground mt-0.5">Nur intern, auf der Einheitenseite vor den Highlights des Objekts.</p>
           </div>
           <div>
-            <p className="text-[11px] font-semibold text-muted-foreground mb-2">Merkmale und Freitexte dieser Einheit (wie Investagon „Tags“ und „Extra 1–4“)</p>
+            <p className="text-[11px] font-semibold text-muted-foreground mb-2">Merkmale, Freitexte und Miteigentumsanteil dieser Einheit</p>
             <HandAngabenFormular ebene="einheit" wert={w.angaben ?? {}} onChange={neu => onChange("angaben", neu)} />
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -3267,9 +3267,9 @@ export default function ObjektNeu({ Rahmen = DashboardLayout }: { Rahmen?: React
               <div className="pt-4 border-t space-y-3" data-testid="weitere-angaben">
                 <div>
                   <h3 className="text-sm font-semibold">Weitere Angaben</h3>
-                  <p className="text-xs text-muted-foreground">Merkmale, Freitexte, Heizung, Stellplatz, Mietart, Rundgang, Denkmal- und degressive AfA, Kaufpreisraten nach MaBV. Gelten für alle Einheiten; Merkmale und Freitexte je Einheit gehen vor.</p>
+                  <p className="text-xs text-muted-foreground">Merkmale, Freitexte, Heizung, Stellplatz, Mietart, Rundgang, degressive AfA, Kaufpreisraten nach MaBV; bei Bauzustand „Denkmal“ auch die Denkmal-AfA. Gelten für alle Einheiten; Merkmale und Freitexte je Einheit gehen vor.</p>
                 </div>
-                <HandAngabenFormular ebene="objekt" wert={angaben} onChange={neu => { setAngaben(neu); markDirty(); }} />
+                <HandAngabenFormular ebene="objekt" denkmal={globalDaten.zustand === "Denkmal"} wert={angaben} onChange={neu => { setAngaben(neu); markDirty(); }} />
               </div>
               {/* Objektdaten: Mietsubvention, Mieterhöhung, Reservierung */}
               <div className="pt-4 border-t space-y-3" data-testid="objektdaten-felder">

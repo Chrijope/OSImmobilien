@@ -1,4 +1,5 @@
 import { cacheGet, cacheInsert, cacheUpdate, cacheDelete, cacheFilter, cacheSet, cacheReload, cacheUpsert, SchreibenAbgelehnt } from "./dataCache";
+import type { ObjektSichtStufe } from "./objektVorankuendigung";
 import { handAngabenLesen, type HandAngaben } from "../../supabase/functions/_shared/hand-angaben";
 import { konzeptLesen, type ObjektKonzept } from "@/lib/objektKonzept";
 import { EXKLUSIV_KENNUNG_SCHLUESSEL, exklusivKennungenFuerNamen, exklusivKennungenLesen } from "../../supabase/functions/_shared/objekt-zugang.ts";
@@ -2166,6 +2167,31 @@ export async function setObjektSichtbar(objektId: string, sichtbar: boolean): Pr
     console.error("Sichtbarkeit ändern fehlgeschlagen:", e);
     return { ok: false, fehlerText: e instanceof Error ? e.message : String(e) };
   }
+}
+
+/**
+ * Entwurf, Vorankündigung oder sichtbar (30.10.2026, `objektVorankuendigung.ts`).
+ * Erst `meta.vorankuendigung`, dann die Sichtbarkeit über denselben Weg wie
+ * bisher. Ein selbst angelegter Entwurf wird mit der Sichtbarkeit freigegeben,
+ * wie mit „Freigeben“ auf der Objektseite.
+ */
+export async function setObjektSichtStufe(objektId: string, stufe: ObjektSichtStufe): Promise<{ ok: boolean; fehlerText?: string }> {
+  const obj = getObjektById(objektId);
+  if (!obj) return { ok: false, fehlerText: "Objekt nicht gefunden." };
+  const meta = { ...((obj.meta as Record<string, unknown>) || {}) };
+  const voran = stufe === "vorankuendigung";
+  try {
+    if ((meta.vorankuendigung === true) !== voran) {
+      if (voran) meta.vorankuendigung = true;
+      else delete meta.vorankuendigung;
+      await updateObjektFieldFast(objektId, { meta });
+    }
+    if (stufe !== "entwurf" && obj.status === "entwurf") await updateObjektFieldFast(objektId, { status: "freigegeben" });
+  } catch (e) {
+    return { ok: false, fehlerText: e instanceof Error ? e.message : String(e) };
+  }
+  if (!!obj.sichtbar === (stufe !== "entwurf")) return { ok: true };
+  return setObjektSichtbar(objektId, stufe !== "entwurf");
 }
 
 /** Free all units where this kunde is reserviert */

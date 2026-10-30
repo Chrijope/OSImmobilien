@@ -1,4 +1,5 @@
 import type { ObjektData, ObjektWohnung } from "@/lib/objekteStore";
+import { istVorankuendigung } from "./objektVorankuendigung";
 import { einheitImAngebot, kaltmieteVon, renditeProzent, eur0 } from "@/lib/objektKennzahlen";
 import { angebotsBelegung } from "@/lib/einheitBelegung";
 import { gepflegterKaufnebenkostenSatz, kaufnebenkostenPct } from "@/lib/kaufnebenkosten";
@@ -337,6 +338,8 @@ export function empfehlungsKandidaten(objekte: ObjektData[], opt: KandidatenOpti
 
   for (const objekt of objekte || []) {
     if (!objekt?.sichtbar) continue;
+    // Vorankündigung: noch nicht im Vertrieb, also keinem Kunden empfehlen.
+    if (istVorankuendigung(objekt)) continue;
     if (!objektExklusivSichtbar(objekt, opt.nutzer)) continue;
 
     const alle = [...(objekt.wohnungen || []), ...(objekt.wohnungenNichtImAngebot || [])];

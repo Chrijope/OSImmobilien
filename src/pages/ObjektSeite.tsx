@@ -1,4 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
+import { einheitenGesperrt, istVorankuendigung, VORANKUENDIGUNG_HINWEIS } from "@/lib/objektVorankuendigung";
+import { toast } from "sonner";
+import { MerkmalTags } from "@/components/objektseite/MerkmalTags";
 import { HandAngabenDetails } from "@/components/objektseite/HandAngabenDetails";
 import { Link, Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import {
@@ -184,7 +187,9 @@ function ObjektAnsicht({ objekt, onPflege, eigeneId }: {
   */
   const istAdmin = siehtAdminOnlyNavigation(user.role);
   // Kundenlink, Kundenansicht und Exposé seit dem 05.10.2026 auch für Vertriebsleitung und Vertriebspartner, siehe EinheitSeite.
-  const kundenaktionen = darfKundenaktionen(user.role);
+  // Vorankündigung (30.10.2026): Vertriebspartner sehen Objekt und Einheitenübersicht, öffnen aber keine Einheit.
+  const einheitenZu = einheitenGesperrt(objekt, user.role);
+  const kundenaktionen = darfKundenaktionen(user.role) && !einheitenZu;
   const globalobjekt = istGlobalobjekt(objekt);
 
   const felder = objektseiteFelder(objekt);
@@ -271,8 +276,13 @@ function ObjektAnsicht({ objekt, onPflege, eigeneId }: {
   // Der Rückweg ins Kundenprofil reist beim Öffnen einer Einheit mit, damit
   // auch dort „Zurück zu <Kunde>" steht.
   const kundenRueck = kundenRueckwegAusSuche(location.search);
-  const oeffneEinheit = (w: ObjektWohnung) =>
+  const oeffneEinheit = (w: ObjektWohnung) => {
+    if (einheitenZu) {
+      toast.info(VORANKUENDIGUNG_HINWEIS);
+      return;
+    }
     navigate(mitRueckweg(mitEmpfehlung(`/objekte/${objekt.id}/einheiten/${w.id}`, empfehlung), kundenRueck));
+  };
   const auswahlBeenden = () => navigate({ pathname: location.pathname, search: ohneEmpfehlung(location.search) }, { replace: true });
 
   /*
@@ -299,7 +309,7 @@ function ObjektAnsicht({ objekt, onPflege, eigeneId }: {
    */
   const kundenansichtPfad = `/objekte/${objekt.id}/kundenansicht${empfehlung ? `?investmentId=${encodeURIComponent(empfehlung)}` : ""}`;
   const empfehlungKundeId = empfehlung ? getInvestmentById(empfehlung)?.kontaktId : undefined;
-  const hausKnopf = hausKnopfStand(objekt, { darfReservieren: darfReservieren(user.role), kundeId: empfehlungKundeId });
+  const hausKnopf = hausKnopfStand(objekt, { darfReservieren: darfReservieren(user.role) && !einheitenZu, kundeId: empfehlungKundeId });
   const hausAnzeige = globalobjekt ? hausBelegungsAnzeige(objekt, rechteKontext) : null;
   // Haus frei, aber schon Einheiten vergeben: „teilweise reserviert, nicht verfügbar“ (05.10.2026).
   const hausTeilweise = hausTeilweiseHinweis(objekt);
@@ -586,6 +596,7 @@ function ObjektAnsicht({ objekt, onPflege, eigeneId }: {
               ? "Abgeleitet aus Bauzustand, Titel und Anlageklasse. Festlegen über den Stift an den Objektdetails."
               : "Abgeleitet aus Bauzustand, Titel und Anlageklasse."} /></ArtChip>}
             <ObjektStatusChip status={objekt.status} />
+            {istVorankuendigung(objekt) && <Badge className="bg-violet-500 text-white hover:bg-violet-500" data-testid="chip-vorankuendigung">Vorankündigung</Badge>}
             {/* Das reservierte oder verkaufte Haus, nur beim Globalobjekt. */}
             {globalobjekt && objekt.belegung && objekt.belegung !== "frei" && <EinheitStatusChip status={objekt.belegung} />}
             {!objekt.sichtbar && <Badge variant="outline" className="text-muted-foreground">Ausgeblendet</Badge>}
@@ -594,6 +605,10 @@ function ObjektAnsicht({ objekt, onPflege, eigeneId }: {
             <MapPin className="h-4 w-4 shrink-0" />
             <span>{[adresse, bundesland].filter(Boolean).join(", ")}{anlageklasse ? ` · ${anlageklasse}` : ""}{bauzustand ? ` · ${bauzustand}` : ""}</span>
           </div>
+          <MerkmalTags objekt={objekt} className="mt-2" />
+          {istVorankuendigung(objekt) && (
+            <p className="mt-2 rounded-md border border-violet-500/40 bg-violet-500/10 px-3 py-2 text-sm" data-testid="hinweis-vorankuendigung">{VORANKUENDIGUNG_HINWEIS}</p>
+          )}
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Badge variant="outline" className="gap-1 text-muted-foreground">

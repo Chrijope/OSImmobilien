@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from "react";
+import { istVorankuendigung } from "@/lib/objektVorankuendigung";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -582,6 +583,8 @@ export function FreieWohnungenCard({
       // Nur was im Angebot steht. Die gesetzte oder reservierte Wohnung des
       // Kunden weiter oben sucht bewusst in allen Einheiten, sein Kauf muss
       // sichtbar bleiben (Christians Regel vom 23.09.2026).
+      // Vorankündigung: noch nicht im Vertrieb (30.10.2026).
+      if (istVorankuendigung(obj)) return null;
       const freie = obj.wohnungen.filter(w => w.status === "frei" && einheitImAngebot(w));
       if (freie.length === 0) return null;
       const preise = freie.map(w => w.vkGesamt).filter(Boolean);

@@ -32,8 +32,8 @@ const stand = vi.hoisted(() => ({
   /** Die gespeicherten Einstellungen des angemeldeten Nutzers. */
   einstellungen: {} as Record<string, unknown>,
   gespeichert: [] as [string, unknown][],
-  /** Aufrufe von `setObjektSichtbar`: Objekt und neuer Wert. */
-  sichtbarGesetzt: [] as [string, boolean][],
+  /** Aufrufe von `setObjektSichtStufe`: Objekt und neue Stufe. */
+  sichtbarGesetzt: [] as [string, string][],
 }));
 
 vi.mock("@/integrations/supabase/client", () => ({
@@ -88,8 +88,8 @@ vi.mock("@/lib/objekteStore", async (importOriginal) => {
     // wird mit der echten Regel, nur die Datenquelle ist ersetzt.
     getObjekteImAngebot: () => stand.objekte.map(echt.objektImAngebot),
     markObjekteSeen: () => undefined,
-    setObjektSichtbar: async (id: string, sichtbar: boolean) => {
-      stand.sichtbarGesetzt.push([id, sichtbar]);
+    setObjektSichtStufe: async (id: string, stufe: string) => {
+      stand.sichtbarGesetzt.push([id, stufe]);
       return { ok: true };
     },
   };
@@ -459,7 +459,7 @@ describe("Das blaue Kennzeichen an der Kachel", () => {
     stand.objekte = [objekt("a", "Haus A", langesKennzeichen)];
     zeigeSeite();
     const kennzeichen = screen.getByText(langesKennzeichen).closest("[data-ui='badge']")!;
-    const punkt = screen.getByLabelText("Sichtbar");
+    const punkt = screen.getByLabelText("Status: Sichtbar");
     expect(kennzeichen.parentElement).toBe(punkt.parentElement);
     const reihe = [...kennzeichen.parentElement!.children];
     expect(reihe.indexOf(kennzeichen)).toBeLessThan(reihe.indexOf(punkt));
@@ -478,7 +478,7 @@ describe("Das blaue Kennzeichen an der Kachel", () => {
   it("zeigt den Punkt auch ohne Kennzeichen", () => {
     stand.objekte = [objekt("a", "Haus A")];
     zeigeSeite();
-    expect(screen.getByLabelText("Sichtbar")).toBeInTheDocument();
+    expect(screen.getByLabelText("Status: Sichtbar")).toBeInTheDocument();
   });
 });
 
@@ -655,36 +655,44 @@ describe("Das Kennzeichen Neu", () => {
  * blenden Admin, Inhaber und Objektpartner das Objekt per Klick fuer die
  * Vertriebspartner aus oder ein, immer erst nach einer Rueckfrage.
  */
-describe("Der Punkt schaltet die Sichtbarkeit von Investagon-Objekten", () => {
-  const investagon = { investagonId: "p1" };
+describe("Der Punkt stellt Sichtbar, Vorankündigung oder Entwurf ein (30.10.2026)", () => {
   const investagonObjekt = (sichtbar: boolean) =>
-    objekt("i", "Haus I", "", { sichtbar, meta: investagon, wohnungen: [einheit("i1", "frei")] });
+    objekt("i", "Haus I", "", { sichtbar, meta: { investagonId: "p1" }, wohnungen: [einheit("i1", "frei")] });
+  /** Öffnet das Menü am Punkt; Radix öffnet über die Tastatur auch in jsdom. */
+  const menueOeffnen = (name: string) => fireEvent.keyDown(screen.getByRole("button", { name }), { key: "Enter" });
 
-  it.each(["admin", "inhaber", "objektpartner"])("blendet als %s nach Rueckfrage aus", async (rolle) => {
+  it.each(["admin", "inhaber", "objektpartner"])("stellt als %s nach Rueckfrage auf Entwurf", async (rolle) => {
     stand.rolle = rolle;
     stand.objekte = [investagonObjekt(true)];
     zeigeSeite();
-    const punkt = screen.getByRole("button", { name: "Sichtbar" });
-    fireEvent.click(punkt);
+    menueOeffnen("Status: Sichtbar");
+    fireEvent.click(await screen.findByRole("menuitem", { name: "Entwurf" }));
     // Die Rueckfrage allein aendert nichts.
     expect(stand.sichtbarGesetzt).toEqual([]);
-    fireEvent.click(await screen.findByRole("button", { name: "Ausblenden" }));
-    await waitFor(() => expect(stand.sichtbarGesetzt).toEqual([["i", false]]));
+    fireEvent.click(await screen.findByRole("button", { name: "Entwurf" }));
+    await waitFor(() => expect(stand.sichtbarGesetzt).toEqual([["i", "entwurf"]]));
   });
 
-  it("schaltet ein ausgeblendetes Objekt wieder sichtbar", async () => {
+  it("stellt auch ein selbst angelegtes Objekt auf Vorankündigung", async () => {
+    stand.objekte = [objekt("a", "Haus A")];
+    zeigeSeite();
+    menueOeffnen("Status: Sichtbar");
+    fireEvent.click(await screen.findByRole("menuitem", { name: "Vorankündigung" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Vorankündigung" }));
+    await waitFor(() => expect(stand.sichtbarGesetzt).toEqual([["a", "vorankuendigung"]]));
+  });
+
+  it("zeigt ein ausgeblendetes Investagon-Objekt als Ausgeblendet", () => {
     stand.objekte = [investagonObjekt(false)];
     zeigeSeite();
-    const punkt = screen.getByRole("button", { name: "Ausgeblendet" });
-    fireEvent.click(punkt);
-    fireEvent.click(await screen.findByRole("button", { name: "Sichtbar schalten" }));
-    await waitFor(() => expect(stand.sichtbarGesetzt).toEqual([["i", true]]));
+    expect(screen.getByRole("button", { name: "Status: Ausgeblendet" })).toBeInTheDocument();
   });
 
   it("aendert bei „So lassen“ nichts", async () => {
     stand.objekte = [investagonObjekt(true)];
     zeigeSeite();
-    fireEvent.click(screen.getByRole("button", { name: "Sichtbar" }));
+    menueOeffnen("Status: Sichtbar");
+    fireEvent.click(await screen.findByRole("menuitem", { name: "Entwurf" }));
     fireEvent.click(await screen.findByRole("button", { name: "So lassen" }));
     await new Promise((r) => setTimeout(r, 0));
     expect(stand.sichtbarGesetzt).toEqual([]);
@@ -695,13 +703,7 @@ describe("Der Punkt schaltet die Sichtbarkeit von Investagon-Objekten", () => {
     stand.objekte = [investagonObjekt(true)];
     zeigeSeite();
     expect(screen.getByText("Haus I")).toBeInTheDocument();
-    expect(screen.queryByLabelText("Sichtbar")).toBeNull();
-  });
-
-  it("bleibt bei selbst angelegten Objekten eine reine Anzeige", () => {
-    stand.objekte = [objekt("a", "Haus A")];
-    zeigeSeite();
-    expect(screen.getByLabelText("Sichtbar").tagName).toBe("SPAN");
-    expect(screen.queryByRole("button", { name: "Sichtbar" })).toBeNull();
+    expect(screen.queryByLabelText("Status: Sichtbar")).toBeNull();
   });
 });
+

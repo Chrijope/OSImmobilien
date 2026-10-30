@@ -22,7 +22,9 @@ import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Building2, LayoutGrid, List, Plus, Ruler, Euro, TrendingUp, MapPin, ChevronDown, ChevronUp, Loader2, UserPlus, Pencil, Trash2, BedDouble, CalendarDays, Home, Tag, Hammer, Star, Target } from "lucide-react";
-import { getObjekteImAngebot, type ObjektData, markObjekteSeen, updateWohnung, deleteObjekt, removeReservierung, setObjektSichtbar } from "@/lib/objekteStore";
+import { getObjekteImAngebot, type ObjektData, markObjekteSeen, updateWohnung, deleteObjekt, removeReservierung, setObjektSichtStufe } from "@/lib/objekteStore";
+import { objektSichtStufe, SICHT_STUFEN, type ObjektSichtStufe } from "@/lib/objektVorankuendigung";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { einheitLoeschenMitRueckfrage } from "@/lib/einheitLoeschen";
 import { zielRouteFuerObjekt } from "@/lib/objektseiteDaten";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -344,7 +346,8 @@ export default function Objekte() {
     }
     if (fBauzustand !== "alle" && (o.globalDaten?.zustand || "") !== fBauzustand) return false;
     if (fAnlageklasse !== "alle" && ((o.meta as any)?.anlageklasse || "") !== fAnlageklasse) return false;
-    if (fObjStatus === "sichtbar" && !o.sichtbar) return false;
+    if (fObjStatus === "sichtbar" && objektSichtStufe(o) !== "sichtbar") return false;
+    if (fObjStatus === "vorankuendigung" && objektSichtStufe(o) !== "vorankuendigung") return false;
     if (fObjStatus === "entwurf" && o.sichtbar) return false;
     const stats = computeObjektStats(o);
     const kpMin = fKpMin ? parseFloat(fKpMin) : null;
@@ -476,26 +479,28 @@ export default function Objekte() {
      * Selbst angelegte Objekte behalten ihren Entwurf und die Freigabe auf
      * der Objektseite.
      */
-    const sichtbarText = obj.sichtbar ? "Sichtbar" : investagonObjekt ? "Ausgeblendet" : "Entwurf";
-    const punktFarbe = obj.sichtbar ? "hsl(142 76% 42%)" : "hsl(30 95% 55%)";
-    const sichtbarkeitUmschalten = async () => {
-      const einblenden = !obj.sichtbar;
+    // Drei Stufen seit dem 30.10.2026: sichtbar, Vorankündigung, Entwurf (`objektVorankuendigung.ts`).
+    const stufe = objektSichtStufe(obj);
+    const stufeInfo = SICHT_STUFEN.find((x) => x.stufe === stufe)!;
+    const sichtbarText = stufe === "entwurf" && investagonObjekt ? "Ausgeblendet" : stufeInfo.text;
+    const punktFarbe = stufeInfo.farbe;
+    const sichtStufeSetzen = async (neu: ObjektSichtStufe) => {
+      if (neu === stufe) return;
+      const info = SICHT_STUFEN.find((x) => x.stufe === neu)!;
       const ja = await confirmDialog({
-        title: einblenden ? "Objekt für Vertriebspartner sichtbar schalten?" : "Objekt für Vertriebspartner ausblenden?",
-        description: einblenden
-          ? `„${obj.titel}“ erscheint danach wieder in der Objektübersicht der Vertriebspartner.`
-          : `„${obj.titel}“ verschwindet danach aus der Objektübersicht der Vertriebspartner. Admin, Inhaber und Objektpartner sehen es weiter, mit orangem Punkt.`,
-        confirmText: einblenden ? "Sichtbar schalten" : "Ausblenden",
+        title: `„${obj.titel}“ auf „${info.text}“ stellen?`,
+        description: info.erklaerung,
+        confirmText: info.text,
         cancelText: "So lassen",
       });
       if (!ja) return;
-      const ergebnis = await setObjektSichtbar(obj.id, einblenden);
+      const ergebnis = await setObjektSichtStufe(obj.id, neu);
       if (!ergebnis.ok) {
-        toast({ title: "Sichtbarkeit nicht geändert", description: ergebnis.fehlerText, variant: "destructive" });
+        toast({ title: "Status nicht geändert", description: ergebnis.fehlerText, variant: "destructive" });
         return;
       }
-      // Die Kachel folgt von selbst: `setObjektSichtbar` laedt den Cache neu.
-      toast({ title: einblenden ? "Objekt ist sichtbar" : "Objekt ist ausgeblendet" });
+      // Die Kachel folgt von selbst: der Store laedt den Cache neu.
+      toast({ title: `Objekt: ${info.text}` });
     };
     /*
      * Der Stern zum Merken. Kachel- und Listenansicht benutzen denselben
@@ -602,23 +607,28 @@ export default function Objekte() {
                     <span className="truncate">{obj.badge}</span>
                   </Badge>
                 )}
-                {canEdit(user.role) && (investagonObjekt ? (
-                  <button
-                    type="button"
-                    className="h-4 w-4 shrink-0 rounded-full shadow-md ring-2 ring-white/90 hover:scale-125 transition-transform focus-visible:outline-none focus-visible:ring-primary"
-                    style={{ backgroundColor: punktFarbe }}
-                    title={`${sichtbarText}. Klicken, um das Objekt für Vertriebspartner ${obj.sichtbar ? "auszublenden" : "sichtbar zu schalten"}.`}
-                    aria-label={sichtbarText}
-                    onClick={(e) => { e.stopPropagation(); void sichtbarkeitUmschalten(); }}
-                  />
-                ) : (
-                  <span
-                    className="h-4 w-4 shrink-0 rounded-full shadow-md ring-2 ring-white/90"
-                    style={{ backgroundColor: punktFarbe }}
-                    title={sichtbarText}
-                    aria-label={sichtbarText}
-                  />
-                ))}
+                {canEdit(user.role) && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        type="button"
+                        className="h-4 w-4 shrink-0 rounded-full shadow-md ring-2 ring-white/90 hover:scale-125 transition-transform focus-visible:outline-none focus-visible:ring-primary"
+                        style={{ backgroundColor: punktFarbe }}
+                        title={`${sichtbarText}. Klicken, um den Status zu ändern.`}
+                        aria-label={`Status: ${sichtbarText}`}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                      {SICHT_STUFEN.map((x) => (
+                        <DropdownMenuItem key={x.stufe} onClick={() => void sichtStufeSetzen(x.stufe)} className="gap-2">
+                          <span className="h-3 w-3 rounded-full" style={{ backgroundColor: x.farbe }} />
+                          <span className={x.stufe === stufe ? "font-semibold" : ""}>{x.text}</span>
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
               </div>
             )}
             {sternKnopf("absolute top-2 left-2 h-[40px] w-[40px] sm:h-8 sm:w-8")}
@@ -682,7 +692,7 @@ export default function Objekte() {
             )}
             {sternKnopf("absolute top-1 left-1 h-[40px] w-[40px] sm:h-7 sm:w-7")}
             {canEdit(user.role) && (
-              <Badge variant={obj.sichtbar ? "default" : "destructive"} className={`absolute bottom-1 left-1 text-bildunterschrift ${obj.sichtbar ? "bg-green-500 hover:bg-green-600 text-white" : ""}`}>
+              <Badge variant={obj.sichtbar ? "default" : "destructive"} className={`absolute bottom-1 left-1 text-bildunterschrift ${stufe === "vorankuendigung" ? "bg-violet-500 hover:bg-violet-600 text-white" : obj.sichtbar ? "bg-green-500 hover:bg-green-600 text-white" : ""}`}>
                 {sichtbarText}
               </Badge>
             )}
@@ -1181,6 +1191,7 @@ export default function Objekte() {
                     <SelectContent>
                       <SelectItem value="alle">Alle</SelectItem>
                       <SelectItem value="sichtbar">Sichtbar</SelectItem>
+                      <SelectItem value="vorankuendigung">Vorankündigung</SelectItem>
                       <SelectItem value="entwurf">Entwurf</SelectItem>
                     </SelectContent>
                   </Select>

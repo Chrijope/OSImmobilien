@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { einheitenGesperrt, VORANKUENDIGUNG_HINWEIS } from "@/lib/objektVorankuendigung";
+import { MerkmalTags } from "@/components/objektseite/MerkmalTags";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { CalendarCheck, CalendarDays, Clock, ExternalLink, Eye, FileText, Home, Languages, Link2, Loader2, MapPin, Pencil, Phone, Sparkles } from "lucide-react";
 import { DashboardLayout } from "@/components/DashboardLayout";
@@ -91,6 +93,20 @@ function EinheitSeiteInhalt({ id, weId }: { id: string; weId: string }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const objekt = useMemo(() => getObjektById(id), [id, liveVersion]);
   const wohnung = objekt?.wohnungen.find((w) => w.id === weId);
+  const { user } = useUser();
+
+  // Vorankündigung (30.10.2026): Einheiten öffnen sich für Vertriebspartner erst mit dem Vertriebsstart.
+  if (objekt && einheitenGesperrt(objekt, user.role)) {
+    return (
+      <DashboardLayout>
+        <div className="mx-auto flex max-w-xl flex-col items-center gap-4 py-20 text-center" data-testid="einheit-vorankuendigung">
+          <p className="text-lg font-semibold">{objekt.titel || "Objekt"}</p>
+          <p className="rounded-md border border-violet-500/40 bg-violet-500/10 px-4 py-3 text-sm">{VORANKUENDIGUNG_HINWEIS}</p>
+          {(objekt.wohnungen?.length ?? 0) > 1 && <Button variant="outline" onClick={() => navigate(`/objekte/${objekt.id}`)}>Zur Objektseite</Button>}
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   if (!objekt || !wohnung) {
     return (
@@ -507,6 +523,7 @@ function EinheitAnsicht({ objekt, wohnung: w }: { objekt: ObjektData; wohnung: O
             {art && <ArtChip>{art.label}{bauzustand && art.id === "sanierter_bestand" ? `, ${bauzustand.toLowerCase()}` : ""}</ArtChip>}
           </div>
           <div className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground"><MapPin className="h-4 w-4 shrink-0" />{adresse}</div>
+          <MerkmalTags objekt={objekt} einheit={w} className="mt-2" />
         </div>
         {/*
           * Oben rechts zwei Gruppen (Bauplan Kundenansicht vom 23.09.2026,

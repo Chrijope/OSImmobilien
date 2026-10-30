@@ -39,6 +39,8 @@ export interface HandAngaben {
   rundgangUrl?: string;
   /** Kaufpreisraten nach MaBV. */
   mabvRaten?: MabvRate[];
+  /** Miteigentumsanteil der Einheit in Prozent, wie Investagon `object_share_owner`. */
+  miteigentumsanteil?: number;
 }
 
 /** Dieselben Schlüssel wie Investagon `heating_type`, damit die Anzeige eine Übersetzung hat. */
@@ -112,6 +114,7 @@ export function handAngabenLesen(meta: unknown): HandAngaben {
     // Nur echte https-Adressen: Der Wert landet als Link auf der Seite.
     rundgangUrl: url && /^https:\/\//i.test(url) ? url : undefined,
     mabvRaten: raten.length ? raten : undefined,
+    miteigentumsanteil: zahl(a.miteigentumsanteil),
   };
   return Object.fromEntries(Object.entries(ergebnis).filter(([, v]) => v !== undefined)) as HandAngaben;
 }
@@ -141,6 +144,7 @@ export function handAlsRohdaten(meta: unknown): Record<string, unknown> {
   setze("depreciation_start_monument_input", a.denkmalAfaBeginn);
   setze("virtual_tour_url", a.rundgangUrl);
   setze("mabv_raten", a.mabvRaten);
+  setze("object_share_owner", a.miteigentumsanteil);
 
   // Vorhandene Handfelder, die bisher niemand las.
   setze("object_balcony", BALKON_TEXT[String(m.balkonArt ?? "")]);

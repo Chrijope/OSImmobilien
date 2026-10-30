@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { einheitQuelle, rohdaten } from "@/lib/investagonFelder";
 import { FileDown, FileSpreadsheet, Mail, Plus, RotateCcw, Save, Trash2 } from "lucide-react";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageHeader } from "@/components/PageHeader";
@@ -81,7 +82,8 @@ function statusAusCrm(w: ObjektWohnung): string {
 /** CRM-Einheit als Zeile; MEA aus Investagon (`object_share_owner` in %, also × 10 für 1.000stel). */
 function zeileAusCrm(w: ObjektWohnung, stand: string): KplZeile {
   const pos = (n: unknown) => (Number(n) > 0 ? Number(n) : null);
-  const meaProzent = pos(w.investagonRaw?.object_share_owner);
+  // Hand vor Investagon (30.10.2026).
+  const meaProzent = pos(rohdaten(einheitQuelle(w))?.object_share_owner);
   const seit = w.vermietetSeit ? (w.vermietetSeit.length === 7 ? `${w.vermietetSeit}-01` : w.vermietetSeit) : "";
   const status = statusAusCrm(w);
   const reserviert = (status === "reserviert" || status === "verkauft") && w.kundeName

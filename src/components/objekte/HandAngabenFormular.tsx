@@ -41,7 +41,13 @@ function Auswahl({ label, wert, optionen, onChange }: { label: string; wert?: st
  * sich je Wohnung (Investagon „Tags“ und „Extra 1–4“). Gespeichert in
  * `meta.angaben`, gelesen über `rohdaten` (Hand vor Investagon).
  */
-export function HandAngabenFormular({ wert, onChange, ebene }: { wert: HandAngaben; onChange: (neu: HandAngaben) => void; ebene: "objekt" | "einheit" }) {
+export function HandAngabenFormular({ wert, onChange, ebene, denkmal = false }: {
+  wert: HandAngaben;
+  onChange: (neu: HandAngaben) => void;
+  ebene: "objekt" | "einheit";
+  /** Bauzustand „Denkmal“: nur dann die Felder der Denkmal-AfA (Christian, 30.10.2026). */
+  denkmal?: boolean;
+}) {
   const setze = <K extends keyof HandAngaben>(k: K, v: HandAngaben[K]) => onChange({ ...wert, [k]: v });
   const freitexte = Array.from({ length: FREITEXTE }, (_, i) => wert.freitexte?.[i] ?? "");
   const raten = wert.mabvRaten ?? [];
@@ -69,6 +75,16 @@ export function HandAngabenFormular({ wert, onChange, ebene }: { wert: HandAngab
           </div>
         ))}
       </div>
+      {ebene === "einheit" && (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div>
+            <Label className="text-xs">Miteigentumsanteil (%)</Label>
+            <Input className="h-8" inputMode="decimal" defaultValue={wert.miteigentumsanteil ?? ""} placeholder="z. B. 2,345"
+              onBlur={(e) => setze("miteigentumsanteil", zahlAus(e.target.value))} />
+            <p className="text-bildunterschrift text-muted-foreground mt-0.5">In Prozent, wie in Kaufpreisliste und Exposé.</p>
+          </div>
+        </div>
+      )}
       {ebene === "objekt" && (
         <>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -80,11 +96,12 @@ export function HandAngabenFormular({ wert, onChange, ebene }: { wert: HandAngab
               <Input className="h-8" value={wert.rundgangUrl ?? ""} placeholder="https://…" onChange={(e) => setze("rundgangUrl", e.target.value.trim() || undefined)} />
             </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3 items-end">
-            <div className="flex items-center gap-2 pb-1">
-              <Switch checked={!!wert.degressiveAfa} onCheckedChange={(v) => setze("degressiveAfa", v || undefined)} />
-              <Label className="text-xs">Degressive AfA erlauben</Label>
-            </div>
+          <div className="flex items-center gap-2">
+            <Switch checked={!!wert.degressiveAfa} onCheckedChange={(v) => setze("degressiveAfa", v || undefined)} />
+            <Label className="text-xs">Degressive AfA erlauben <span className="text-muted-foreground font-normal">(aus: linear)</span></Label>
+          </div>
+          {denkmal && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 items-end" data-testid="denkmal-afa">
             <div>
               <Label className="text-xs">Denkmal-Anteil (%)</Label>
               <Input className="h-8" inputMode="decimal" defaultValue={wert.denkmalAnteil ?? ""} onBlur={(e) => setze("denkmalAnteil", zahlAus(e.target.value))} />
@@ -102,6 +119,7 @@ export function HandAngabenFormular({ wert, onChange, ebene }: { wert: HandAngab
               <DateInput value={wert.denkmalAfaBeginn ?? ""} onChange={(v) => setze("denkmalAfaBeginn", v || undefined)} />
             </div>
           </div>
+          )}
           <div className="space-y-2" data-testid="mabv-raten">
             <div className="flex items-center justify-between gap-2">
               <Label className="text-xs">Kaufpreisraten nach MaBV {raten.length > 0 && <span className="text-muted-foreground font-normal">(Summe {raten.reduce((s, r) => s + (r.prozent || 0), 0).toLocaleString("de-DE", { maximumFractionDigits: 2 })} %)</span>}</Label>

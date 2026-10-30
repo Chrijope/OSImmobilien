@@ -22,6 +22,7 @@
  * ist, erscheint nicht; eine Zeile „nicht vorhanden“ gibt es nicht.
  */
 
+import { handAngabenLesen } from "../../supabase/functions/_shared/hand-angaben";
 import { beschreibungsTexte, objektDetails, einheitQuelle } from "@/lib/investagonFelder";
 import { linearerAfaSatz } from "@/lib/afaSaetze";
 import { dez, eur0, eur2, kaltmieteVon, preisJeQm, prozent } from "@/lib/objektKennzahlen";
@@ -192,7 +193,10 @@ export function interneHighlights(objekt: ObjektFuerHighlights, wohnung?: Objekt
   // Investagons „Extras“ der Einheit gehören zu den internen Highlights der
   // Einheit (Christian, 28.10.2026). Nur gelesen, nicht ins Handfeld kopiert:
   // So überschreibt kein Import, was jemand von Hand pflegt.
-  const extras = (wohnung ? beschreibungsTexte(einheitQuelle(wohnung)) : [])
+  // Dazu die Freitexte, die am Objekt von Hand gepflegt sind (30.10.2026).
+  const objektFreitexte = handAngabenLesen((objekt as { meta?: unknown }).meta).freitexte ?? [];
+  const extras = [...(wohnung ? beschreibungsTexte(einheitQuelle(wohnung)) : []), ...objektFreitexte]
+    .filter((text, i, alle) => alle.indexOf(text) === i)
     .filter((text) => !hand.some((h) => h.text === text))
     .map((text): HighlightZeile => ({ text, herkunft: "daten" }));
   const fest = (wohnung ? einheitPunkte(objekt, wohnung) : objektPunkte(objekt))
