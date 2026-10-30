@@ -122,7 +122,7 @@ describe("Das Raster bleibt paarweise", () => {
 describe("Die Unternavigation zeigt den Ablauf", () => {
   it("führt Objektauswahl und Reservierung vor Bonität und Bankprüfung", () => {
     const reihenfolge = ["ueberblick", "erstgespraech", "selbstauskunft", "objektauswahl",
-      "reservierung", "bonitaet", "finanzierung", "notar", "abwicklung", "kundenordner"];
+      "reservierung", "bonitaet", "finanzierung", "notar", "aftersales", "abwicklung", "kundenordner"];
     const abschnitt = kundenDetail.slice(
       kundenDetail.indexOf("const INVESTMENT_ABSCHNITTE"),
       kundenDetail.indexOf("// Grundliste kommt aus src/lib/bankpruefungDocs.ts"),

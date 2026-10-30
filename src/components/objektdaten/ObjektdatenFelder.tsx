@@ -40,6 +40,9 @@ export function EinheitObjektdatenFelder({ wert, onChange }: { wert: EinheitForm
           <Feld label="Sollmiete (€)" typ="zahl" wert={wert.sollMiete} onChange={(v) => setze({ sollMiete: v })} hinweis="Miete, die die Wohnung erzielen soll" />
           <Feld label="Letzte Mieterhöhung ab" typ="date" wert={wert.letzteErhoehung} onChange={(v) => setze({ letzteErhoehung: v })} />
           <Feld label="Miete vor letzter Erhöhung (€)" typ="zahl" wert={wert.mieteVorErhoehung} onChange={(v) => setze({ mieteVorErhoehung: v })} hinweis="Für die Kappungsgrenze" />
+          <Feld label="Nächste Mieterhöhung möglich ab" typ="date" wert={wert.naechsteErhoehungAb} onChange={(v) => setze({ naechsteErhoehungAb: v })} hinweis="Leer: 15 Monate nach der letzten Erhöhung" />
+          <Feld label="Nächste Erhöhung um (%)" typ="zahl" wert={wert.naechsteErhoehungProzent} onChange={(v) => setze({ naechsteErhoehungProzent: v })} platzhalter="4" hinweis="Leer: Kappungsgrenze des Objekts" />
+          <Feld label="Grundbuch Blatt" wert={wert.grundbuchBlatt} onChange={(v) => setze({ grundbuchBlatt: v })} hinweis="Für die Mietzuzahlung" />
         </div>
         <div>
           <p className="mb-2 text-[11px] font-semibold text-muted-foreground">Mieter (Kaltmiete ist die Miete oben)</p>
@@ -108,6 +111,8 @@ export function ObjektObjektdatenFelder({ wert, onChange }: { wert: ObjektFormDa
           <Feld label="Kappungsgrenze (%)" typ="zahl" wert={wert.kappungsgrenzeProzent} onChange={(v) => setze({ kappungsgrenzeProzent: v })} hinweis="Leer: 20 %, Berlin 15 %" />
           <Feld label="Quelle der Vergleichsmiete" wert={wert.vergleichsmieteQuelle} onChange={(v) => setze({ vergleichsmieteQuelle: v })} platzhalter="Mietspiegel 2026" />
           <Feld label="Reservierung gilt (Tage)" typ="zahl" wert={wert.reservierungTage} onChange={(v) => setze({ reservierungTage: v })} hinweis="Leer: keine Ablauffrist" />
+          <Feld label="Grundbuch von" wert={wert.grundbuchVon} onChange={(v) => setze({ grundbuchVon: v })} platzhalter="Caputh" hinweis="Für die Mietzuzahlung" />
+          <Feld label="Amtsgericht" wert={wert.amtsgericht} onChange={(v) => setze({ amtsgericht: v })} platzhalter="Potsdam" />
         </div>
       </div>
       <div>

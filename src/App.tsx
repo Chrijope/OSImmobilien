@@ -108,6 +108,8 @@ const BestandskundenImport = lazyRoute(() => import("./pages/BestandskundenImpor
 const BestandskundenImportCsv = lazyRoute(() => import("./pages/BestandskundenImportCsv"));
 const UnterlagenRechnungsvorlage = lazyRoute(() => import("./pages/unterlagen/Rechnungsvorlage"));
 const BeratungsprotokollSeite = lazyRoute(() => import("./pages/Beratungsprotokoll"));
+// Vereinbarung über eine Mietzuzahlung (After Sales, 30.10.2026).
+const MietzuzahlungSeite = lazyRoute(() => import("./pages/Mietzuzahlung"));
 const UnterlagenEmailSignatur = lazyRoute(() => import("./pages/unterlagen/EmailSignatur"));
 const UnterlagenWhatsappCommunity = lazyRoute(() => import("./pages/unterlagen/WhatsappCommunity"));
 const UnterlagenKundentypen = lazyRoute(() => import("./pages/unterlagen/Kundentypen"));
@@ -722,6 +724,7 @@ const App = () => (
                   <Route path="/kunden/:id" element={<KundenDetail />} />
                   {/* Beratungs- und Qualitätsprotokoll (17.10.2026): unter /kunden/:id, damit es die Rechte des Kundenprofils erbt. */}
                   <Route path="/kunden/:id/beratungsprotokoll/:investmentId" element={<BeratungsprotokollSeite />} />
+                  <Route path="/kunden/:id/mietzuzahlung/:investmentId" element={<MietzuzahlungSeite />} />
                   <Route path="/kunde/profil/:id" element={<Kundenprofilseite />} />
                   <Route path="/kunde/profil" element={<Kundenprofilseite />} />
                   

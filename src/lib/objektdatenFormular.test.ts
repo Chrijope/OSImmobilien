@@ -29,7 +29,7 @@ describe("Objektdaten im Formular Objekt anlegen", () => {
   it("übersetzt Subvention, Kappungsgrenze und Reservierung hin und zurück", () => {
     const meta = objektFormInMeta({
       subventionArt: "ziel", zielQm: "13,50", steigerungProzent: "", einmalBetrag: "", garageAnrechnung: "100",
-      laufzeitMonate: "", garagenSubventionMonate: "", vergleichsmieteQm: "9,8", kappungsgrenzeProzent: "15", reservierungTage: "14",
+      laufzeitMonate: "", garagenSubventionMonate: "", vergleichsmieteQm: "9,8", kappungsgrenzeProzent: "15", reservierungTage: "14", grundbuchVon: "", amtsgericht: "",
       vergleichsmieteQuelle: "Mietspiegel 2026", mieteZielQm: "20", mieteZielJahr: "2060", garageMieteZiel: "",
     }, { meilensteine: { abnahme: "2026-06-30" } }, { hausPunkte: ["Baujahr 1994"], garageMieteZiel: 150 });
     expect(meta.mietgarantie).toEqual({ art: "ziel", zielQm: 13.5, steigerung: 0, einmalBetrag: 0, garageAnrechnung: 100, laufzeitMonate: 36, garagenSubventionMonate: 12 });

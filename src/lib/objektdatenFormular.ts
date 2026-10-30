@@ -20,6 +20,8 @@ import type { EinheitGarage, GaragenArt, GaragenStatus, ObjektMietgarantie, Subv
 
 export interface EinheitFormDaten {
   haus: string; mea: string; flaecheTe: string; sollMiete: string; letzteErhoehung: string; mieteVorErhoehung: string;
+  /** Für die Mietzuzahlung (30.10.2026): ab wann und um wie viel Prozent die nächste Erhöhung möglich ist, Grundbuchblatt. */
+  naechsteErhoehungAb: string; naechsteErhoehungProzent: string; grundbuchBlatt: string;
   garageNr: string; garageArt: GaragenArt; garageStatus: GaragenStatus; garageIstMiete: string;
   mieterName: string; mietbeginn: string; befristetBis: string; kaution: string;
 }
@@ -30,10 +32,13 @@ export interface ObjektFormDaten {
   laufzeitMonate: string; garagenSubventionMonate: string;
   vergleichsmieteQm: string; kappungsgrenzeProzent: string; reservierungTage: string;
   vergleichsmieteQuelle: string; mieteZielQm: string; mieteZielJahr: string; garageMieteZiel: string;
+  /** Grundbuch des Hauses für die Mietzuzahlung (30.10.2026). */
+  grundbuchVon: string; amtsgericht: string;
 }
 
 export const LEERE_EINHEIT: EinheitFormDaten = {
   haus: "", mea: "", flaecheTe: "", sollMiete: "", letzteErhoehung: "", mieteVorErhoehung: "",
+  naechsteErhoehungAb: "", naechsteErhoehungProzent: "", grundbuchBlatt: "",
   garageNr: "", garageArt: "garage", garageStatus: "frei", garageIstMiete: "",
   mieterName: "", mietbeginn: "", befristetBis: "", kaution: "",
 };
@@ -58,6 +63,7 @@ export function einheitFormAus(werte: Werte | undefined, garage: EinheitGarage |
   return {
     haus: text(w.haus), mea: text(w.mea), flaecheTe: text(w.flaecheTe), sollMiete: text(w.sollMiete),
     letzteErhoehung: datum(w.letzteErhoehung), mieteVorErhoehung: text(w.mieteVorErhoehung),
+    naechsteErhoehungAb: datum(w.naechsteErhoehungAb), naechsteErhoehungProzent: text(w.naechsteErhoehungProzent), grundbuchBlatt: text(w.grundbuchBlatt),
     garageNr: garage?.nr ?? "", garageArt: garage?.art ?? "garage", garageStatus: garage?.status ?? "frei", garageIstMiete: text(garage?.istMiete ?? ""),
     mieterName: mieter ? `${mieter.vorname} ${mieter.nachname}`.trim() : "",
     mietbeginn: mieter?.mietvertragBeginn ?? "", befristetBis: mieter?.mietvertragEnde ?? "", kaution: mieter?.kaution ? text(mieter.kaution) : "",
@@ -78,6 +84,9 @@ export function einheitFormInDaten(f: EinheitFormDaten, alteWerte: Werte | undef
   setze("sollMiete", zahlAus(f.sollMiete));
   setze("letzteErhoehung", f.letzteErhoehung);
   setze("mieteVorErhoehung", zahlAus(f.mieteVorErhoehung));
+  setze("naechsteErhoehungAb", f.naechsteErhoehungAb);
+  setze("naechsteErhoehungProzent", zahlAus(f.naechsteErhoehungProzent));
+  setze("grundbuchBlatt", f.grundbuchBlatt.trim());
   const garage: EinheitGarage | null = f.garageNr.trim()
     ? { nr: f.garageNr.trim(), art: f.garageArt, status: f.garageStatus, istMiete: f.garageStatus === "frei" ? null : zahlAus(f.garageIstMiete) }
     : null;
@@ -90,6 +99,7 @@ export function einheitFormInDaten(f: EinheitFormDaten, alteWerte: Werte | undef
 export function objektFormAus(meta: unknown, mietgarantie: ObjektMietgarantie | null): ObjektFormDaten {
   const m = (meta ?? {}) as {
     mieterhoehung?: { kappungsgrenze?: unknown; vergleichsmieteQm?: unknown }; aufteilung?: { reservierungTage?: unknown };
+    grundbuch?: { von?: unknown; amtsgericht?: unknown };
     objektvergleich?: { vergleichsmieteQuelle?: unknown; mieteZielQm?: unknown; mieteZielJahr?: unknown; garageMieteZiel?: unknown };
   };
   const ov = m.objektvergleich ?? {};
@@ -109,6 +119,8 @@ export function objektFormAus(meta: unknown, mietgarantie: ObjektMietgarantie | 
     mieteZielQm: text(ov.mieteZielQm ?? ""),
     mieteZielJahr: text(ov.mieteZielJahr ?? ""),
     garageMieteZiel: text(ov.garageMieteZiel ?? ""),
+    grundbuchVon: typeof m.grundbuch?.von === "string" ? m.grundbuch.von : "",
+    amtsgericht: typeof m.grundbuch?.amtsgericht === "string" ? m.grundbuch.amtsgericht : "",
   };
 }
 
@@ -150,5 +162,9 @@ export function objektFormInMeta(
   const jahr = zahlAus(f.mieteZielJahr);
   setze("mieteZielJahr", jahr && jahr > 2000 ? Math.round(jahr) : null);
   setze("garageMieteZiel", zahlAus(f.garageMieteZiel));
-  return { mietgarantie, mieterhoehung, aufteilung, objektvergleich };
+  const grundbuch = {
+    ...(f.grundbuchVon.trim() ? { von: f.grundbuchVon.trim() } : {}),
+    ...(f.amtsgericht.trim() ? { amtsgericht: f.amtsgericht.trim() } : {}),
+  };
+  return { mietgarantie, mieterhoehung, aufteilung, objektvergleich, grundbuch };
 }

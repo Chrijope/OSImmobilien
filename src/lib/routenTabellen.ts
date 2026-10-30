@@ -286,6 +286,7 @@ export const ROUTEN_TABELLEN: Record<string, readonly string[]> = {
   ],
   // Beratungs- und Qualitätsprotokoll: Kontakt, Investment, Objekt mit Garage, Mieter der Einheit.
   "/kunden/:id/beratungsprotokoll/:investmentId": [...KONTAKT_TABELLEN, ...OBJEKT_TABELLEN, "mieter"],
+  "/kunden/:id/mietzuzahlung/:investmentId": [...KONTAKT_TABELLEN, ...OBJEKT_TABELLEN],
   "/kunde/profil/:id": [
     ...KONTAKT_TABELLEN, ...OBJEKT_TABELLEN, "finanzierungen", "aufgaben", "empfehlungen", "empfehlungsprogramme",
   ],

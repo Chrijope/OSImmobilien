@@ -216,6 +216,7 @@ import { ProzessstrasseAusschnitt } from "@/components/kunde/prozessstrasse/Proz
 import { KontaktversucheCard } from "@/components/kunde/KontaktversucheCard";
 import { NaechsteSchritteKarte } from "@/components/kunde/NaechsteSchritteKarte";
 import { AftersalesBeratungCard } from "@/components/kunde/investments/AftersalesBeratungCard";
+import { MietzuzahlungCard } from "@/components/kunde/investments/MietzuzahlungCard";
 import { LockedPhaseCard } from "@/components/kunde/investments/LockedPhaseGrid";
 import { Switch } from "@/components/ui/switch";
 import { AlsTippgeberAnlegenButton } from "@/components/kunde/AlsTippgeberAnlegenButton";
@@ -729,6 +730,7 @@ const INVESTMENT_ABSCHNITTE: { key: string; label: string; karten: string[] }[] 
   { key: "bonitaet", label: "Bonität und Bankprüfung", karten: [STEP_TO_CARD_ID.bonitaetsunterlagen] },
   { key: "finanzierung", label: "Finanzierung", karten: [STEP_TO_CARD_ID.finanzierung] },
   { key: "notar", label: "Notar", karten: [STEP_TO_CARD_ID.notar] },
+  { key: "aftersales", label: "After Sales", karten: ["card-aftersales"] },
   { key: "abwicklung", label: "Abwicklung", karten: [STEP_TO_CARD_ID.abrechnung] },
   { key: "kundenordner", label: "Kundenordner", karten: ["card-kundenordner"] },
 ];
@@ -11082,22 +11084,7 @@ export default function KundenDetail() {
                           </div>
                         )}
 
-                        {/* Aftersales-Beratungsdokument (am Notartermin freigeschaltet) */}
-                        {hasTermin && (
-                          <AftersalesBeratungCard
-                            investmentId={inv.id}
-                            kontaktId={id || ""}
-                            kundeName={`${kunde.vorname} ${kunde.nachname}`.trim()}
-                            kundeEmail={kunde.email}
-                            vpName={user.name}
-                            notarDatum={terminDatum}
-                            notarUhrzeit={terminUhrzeit}
-                            kundeAnschrift={[kunde.strasse, [kunde.plz, kunde.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ")}
-                            objektAdresse={[inv.objektTitel, inv.weNr ? `WE ${inv.weNr}` : null].filter(Boolean).join(" – ")}
-                            meta={(inv as any).meta || inv}
-                            onChanged={() => forceUpdate(n => n + 1)}
-                          />
-                        )}
+                        {/* Das Beratungs- und Qualitätsprotokoll steht seit dem 30.10.2026 in der Karte „After Sales“. */}
                       </div>
 
                       {/* Notarfoto – direkt unter Notardaten */}
@@ -11186,29 +11173,6 @@ export default function KundenDetail() {
                         <p className="text-sm text-muted-foreground">Der Notartermin kann erst eingetragen werden, nachdem der Aufnahmebogen ausgefüllt wurde.</p>
                       </div>
                     )}
-                    {/* Musterkunden-Vorschau: Aftersales-Beratungsdokument für Frank Otto sichtbar machen,
-                        damit Admin/VP einsehen kann, wie das Beratungsprotokoll aussieht. */}
-                    {id === "086acaeb-0ff9-4577-b114-3b973797d635" && (
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <span className="text-bildunterschrift font-semibold uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded">Musterkunden-Vorschau</span>
-                          <span className="text-[11px] text-muted-foreground">So sieht das Aftersales-Beratungsdokument am Notartermin aus</span>
-                        </div>
-                        <AftersalesBeratungCard
-                          investmentId={inv.id}
-                          kontaktId={id || ""}
-                          kundeName={`${kunde.vorname} ${kunde.nachname}`.trim()}
-                          kundeEmail={kunde.email}
-                          vpName={user.name}
-                          notarDatum={terminDatum || "10.06.2026"}
-                          notarUhrzeit={terminUhrzeit || "10:00"}
-                          kundeAnschrift={[kunde.strasse, [kunde.plz, kunde.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ")}
-                          objektAdresse={[inv.objektTitel, inv.weNr ? `WE ${inv.weNr}` : null].filter(Boolean).join(" – ")}
-                          meta={(inv as any).meta || inv}
-                          onChanged={() => forceUpdate(n => n + 1)}
-                        />
-                      </div>
-                    )}
                   </div>
                 );
               })()
@@ -11224,6 +11188,64 @@ export default function KundenDetail() {
               )}
               </KundenprofilAbschnitt>
             </Card>
+
+            {/* ── After Sales (30.10.2026): Beratungs- und Qualitätsprotokoll und Mietzuzahlung ── */}
+            {(() => {
+              const nd = getInvestmentNotarData(inv.id);
+              const terminDatum = nd.datum || inv.notarTermin || "";
+              const terminUhrzeit = nd.uhrzeit || inv.notarUhrzeit || "00:00";
+              const hasTermin = !!terminDatum;
+              return (
+                <Card id={`card-aftersales-${inv.id}`} className="p-6 transition-all duration-500">
+                  <div className="w-8 h-1 bg-primary mb-3" />
+                  <KundenprofilAbschnitt kopf={<h3 className="font-bold mb-4">After Sales</h3>}>
+                    <div className="space-y-3">
+                      {hasTermin ? (
+                        <AftersalesBeratungCard
+                          investmentId={inv.id}
+                          kontaktId={id || ""}
+                          kundeName={`${kunde.vorname} ${kunde.nachname}`.trim()}
+                          kundeEmail={kunde.email}
+                          vpName={user.name}
+                          notarDatum={terminDatum}
+                          notarUhrzeit={terminUhrzeit}
+                          kundeAnschrift={[kunde.strasse, [kunde.plz, kunde.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ")}
+                          objektAdresse={[inv.objektTitel, inv.weNr ? `WE ${inv.weNr}` : null].filter(Boolean).join(" – ")}
+                          meta={(inv as any).meta || inv}
+                          onChanged={() => forceUpdate(n => n + 1)}
+                        />
+                      ) : (
+                        <p className="text-sm text-muted-foreground">Das Beratungs- und Qualitätsprotokoll erscheint, sobald der Notartermin eingetragen ist.</p>
+                      )}
+                      {!isFinanzierer && <MietzuzahlungCard kontaktId={id || ""} investmentId={inv.id} />}
+                      {/* Musterkunden-Vorschau: Aftersales-Beratungsdokument für Frank Otto sichtbar machen,
+                          damit Admin/VP einsehen kann, wie das Beratungsprotokoll aussieht. */}
+                      {id === "086acaeb-0ff9-4577-b114-3b973797d635" && (
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-bildunterschrift font-semibold uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded">Musterkunden-Vorschau</span>
+                            <span className="text-[11px] text-muted-foreground">So sieht das Aftersales-Beratungsdokument am Notartermin aus</span>
+                          </div>
+                          <AftersalesBeratungCard
+                            investmentId={inv.id}
+                            kontaktId={id || ""}
+                            kundeName={`${kunde.vorname} ${kunde.nachname}`.trim()}
+                            kundeEmail={kunde.email}
+                            vpName={user.name}
+                            notarDatum={terminDatum || "10.06.2026"}
+                            notarUhrzeit={terminUhrzeit || "10:00"}
+                            kundeAnschrift={[kunde.strasse, [kunde.plz, kunde.ort].filter(Boolean).join(" ")].filter(Boolean).join(", ")}
+                            objektAdresse={[inv.objektTitel, inv.weNr ? `WE ${inv.weNr}` : null].filter(Boolean).join(" – ")}
+                            meta={(inv as any).meta || inv}
+                            onChanged={() => forceUpdate(n => n + 1)}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </KundenprofilAbschnitt>
+                </Card>
+              );
+            })()}
 
             {/* ── Abwicklung / Fälligkeit (right column) ── */}
             {["notar", "notar_ohne_gs", "notar_mit_gs", "faelligkeit", "abrechnung", "abgeschlossen"].includes(inv.pipelineStufe) && ABWICKLUNG_ROLLEN.includes(user.role) ? (() => {
@@ -11676,6 +11698,7 @@ export default function KundenDetail() {
           <>
             {/* Fälligkeit ist die gesperrte Fassung der Abwicklung, deshalb deren Sprungziel. */}
             <LockedPhaseCard id={`card-notar-${inv.id}`} title="Notar" reason="Wird nach unterschriebener Reservierungsvereinbarung freigeschaltet." />
+            <LockedPhaseCard id={`card-aftersales-${inv.id}`} title="After Sales" reason="Wird nach unterschriebener Reservierungsvereinbarung freigeschaltet." />
             <LockedPhaseCard id={`card-abwicklung-${inv.id}`} title="Fälligkeit" reason="Wird nach unterschriebener Reservierungsvereinbarung freigeschaltet." />
           </>
         )}
