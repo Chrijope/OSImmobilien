@@ -89,10 +89,12 @@ describe("einheitScoreBasis", () => {
 describe("kundenScoreDaten", () => {
   it("Rahmen, Überschuss, Eigenkapital, Ziele und gemerkter Wohnort aus der Selbstauskunft", () => {
     const d = kundenScoreDaten("inv-1", "k-1");
-    expect(d.kunde.ueberschussMonat).toBe(1200);
+    // 3.000 − 900 Miete − 1.000 Mindest-Lebenshaltung (Bankansatz, seit 30.10.2026 statt 800)
+    expect(d.kunde.ueberschussMonat).toBe(1100);
     expect(d.kunde.eigenkapital).toBe(30000);
     expect(d.kunde.ziele).toEqual(["steuer", "vermoegen"]);
-    expect(d.kunde.rahmen?.bis).toBeGreaterThan(250000);
+    // 1.100 × 80 % × 12 ÷ 6 % = 176.000 Darlehen, × 120 % + 30.000 Eigenkapital
+    expect(d.kunde.rahmen?.bis).toBe(241200);
     expect(d.steuerBekannt).toBe(true);
     expect(d.wohnort).toEqual({ lat: 47.9, lng: 12.1 });
     expect(d.saStand).toBe("18.09.2026");

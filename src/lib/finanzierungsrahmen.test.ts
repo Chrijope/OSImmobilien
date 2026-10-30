@@ -35,22 +35,22 @@ describe("Finanzierungsrahmen", () => {
     // Eingabe darueber bleibt stehen
     expect(bankLebenshaltung(1800, 4000)).toBe(1800);
     // Ohne Einkommensangabe greift der Mindestbetrag
-    expect(bankLebenshaltung(300, 0)).toBe(800);
+    expect(bankLebenshaltung(300, 0)).toBe(1000);
     // Kleines Einkommen: der Mindestbetrag schlaegt die 30 Prozent
-    expect(bankLebenshaltung(0, 1000)).toBe(800);
+    expect(bankLebenshaltung(0, 1000)).toBe(1000);
   });
 
   it("dichtet einem leeren Haushalt keine Ausgaben an", () => {
     /*
      * Eine gerade erst geoeffnete Selbstauskunft hat weder Einkommen noch
-     * Lebenshaltung. Ohne diese Regel bekam sie 800 Euro Ausgaben zugerechnet,
-     * bei zwei Personen 1600, und die Uebersicht zeigte ein Minus, obwohl der
+     * Lebenshaltung. Ohne diese Regel bekam sie die Mindestpauschale als Ausgabe
+     * zugerechnet, bei zwei Personen doppelt, und die Uebersicht zeigte ein Minus, obwohl der
      * Kunde noch nichts eingetragen hatte.
      */
     expect(bankLebenshaltung(0, 0)).toBe(0);
     // Sobald etwas bekannt ist, greift die Pauschale wieder
-    expect(bankLebenshaltung(0, 3000)).toBe(900);
-    expect(bankLebenshaltung(500, 0)).toBe(800);
+    expect(bankLebenshaltung(0, 3000)).toBe(1000);
+    expect(bankLebenshaltung(500, 0)).toBe(1000);
   });
 
   it("ordnet Kredite ueberall gleich zu", () => {

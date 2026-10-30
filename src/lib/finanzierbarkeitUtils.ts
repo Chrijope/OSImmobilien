@@ -187,7 +187,8 @@ export function buergschaftenSumme(data: any): number {
 
 /**
  * Was eine Bank mindestens als Lebenshaltung ansetzt: 30 Prozent des
- * Nettoeinkommens, mindestens aber 800 Euro.
+ * Nettoeinkommens, mindestens aber 1.000 Euro (bis 30.10.2026: 800 Euro,
+ * angehoben auf Wunsch von Christian, gleich wie im Bonitäts-Check).
  *
  * Diese Regel stand früher im Selbstauskunftsformular und hob die Eingabe des
  * Kunden still an. Das war falsch am Platz: Die Selbstauskunft geht zur Bank,
@@ -200,13 +201,13 @@ export function buergschaftenSumme(data: any): number {
  * Bank je bestätigt. Deshalb wirkt die Pauschale hier und nur hier.
  */
 export const BANK_LEBENSHALTUNG_ANTEIL = 0.3;
-export const BANK_LEBENSHALTUNG_MINDEST = 800;
+export const BANK_LEBENSHALTUNG_MINDEST = 1000;
 
 export function bankLebenshaltung(eingetragen: number, nettoEinkommen: number): number {
   /*
    * Ueber einen Haushalt, zu dem nichts eingetragen ist, gibt es nichts zu
-   * sagen. Ohne diese Zeile bekam jede leere Selbstauskunft 800 Euro Ausgaben
-   * angedichtet, bei zwei Personen 1600, und die Ueberschussrechnung stand im
+   * sagen. Ohne diese Zeile bekam jede leere Selbstauskunft die Mindestpauschale
+   * als Ausgabe angedichtet, bei zwei Personen doppelt, und die Ueberschussrechnung stand im
    * Minus, obwohl der Kunde noch gar nichts angegeben hatte.
    */
   if (eingetragen <= 0 && nettoEinkommen <= 0) return 0;

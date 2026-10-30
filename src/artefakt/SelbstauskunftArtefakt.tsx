@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ArrowLeft, CheckCircle2, Download, Loader2, RotateCcw } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Download, Loader2, RotateCcw, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   SelbstauskunftForm,
@@ -10,6 +10,7 @@ import {
   type SelbstauskunftData,
 } from "@/components/selbstauskunft/SelbstauskunftForm";
 import { generateSelbstauskunftPDF } from "@/lib/selbstauskunftPdf";
+import { erstelleFinanzierungsrahmenPdf, euro, finanzierungsrahmenAusSelbstauskunft, RAHMEN_ERKLAERUNG } from "@/lib/finanzierungsrahmenPdf";
 import { auswahlDialog, confirmDialog } from "@/lib/confirm";
 import { useToast } from "@/hooks/use-toast";
 import { speichereDatei } from "./speichern";
@@ -32,6 +33,102 @@ function dateiname(data: SelbstauskunftData): string {
   const name = [data.vorname, data.nachname].map((t) => (t || "").trim()).filter(Boolean).join("_");
   const sicher = name.replace(/[^\p{L}\p{N}_-]+/gu, "_");
   return `Selbstauskunft${sicher ? `_${sicher}` : ""}_${new Date().toISOString().slice(0, 10)}.pdf`;
+}
+
+/*
+ * Finanzierungsrahmen nach der Selbstauskunft (Christian, 30.10.2026): Der
+ * Vertriebspartner sieht, in welchem Kaufpreisrahmen er ein Objekt aussucht.
+ * Gleicher Rechenkern wie im Kundenprofil (finanzierbarkeitUtils), siehe
+ * finanzierungsrahmenPdf.ts.
+ */
+function FinanzierungsrahmenKarte({ data }: { data: SelbstauskunftData }) {
+  const { toast } = useToast();
+  const [laeuft, setLaeuft] = useState(false);
+  const rahmen = useMemo(() => finanzierungsrahmenAusSelbstauskunft(data), [data]);
+  if (!rahmen) return null;
+  const name = [data.vorname, data.nachname].map((t) => (t || "").trim()).filter(Boolean).join(" ");
+
+  const alsPdf = async () => {
+    setLaeuft(true);
+    try {
+      const doc = await erstelleFinanzierungsrahmenPdf(rahmen, name);
+      const datei = dateiname(data).replace(/^Selbstauskunft/, "Finanzierungsrahmen");
+      const ergebnis = await speichereDatei(datei, doc.output("blob"));
+      if (ergebnis === "gespeichert") toast({ title: "PDF gespeichert ✓", description: "Mit diesem Rahmen geht es in die Objektwahl." });
+    } catch (e) {
+      console.error("[Artefakt] Finanzierungsrahmen-PDF fehlgeschlagen", e);
+      toast({ title: "PDF konnte nicht erstellt werden", description: "Bitte versuche es noch einmal.", variant: "destructive" });
+    } finally {
+      setLaeuft(false);
+    }
+  };
+
+  const kachel = (titel: string, wert: number, hervor = false) => (
+    <div className={hervor ? "rounded-xl border-2 border-primary bg-primary/10 p-4" : "rounded-xl bg-muted/60 p-4"}>
+      <p className={hervor ? "text-xs font-semibold text-primary" : "text-xs text-muted-foreground"}>{titel}</p>
+      <p className={hervor ? "mt-1 text-2xl font-bold tabular-nums" : "mt-1 text-xl font-semibold tabular-nums"}>{euro(wert)}</p>
+    </div>
+  );
+
+  return (
+    <div className="mt-6 rounded-xl border bg-card p-6" data-testid="finanzierungsrahmen">
+      <div className="flex items-start gap-3">
+        <Wallet className="h-6 w-6 text-primary mt-0.5 shrink-0" />
+        <div className="min-w-0 flex-1">
+          <h3 className="font-bold text-lg">Finanzierungsrahmen für die Objektwahl</h3>
+          <p className="text-sm text-muted-foreground mt-1">
+            Aus den Angaben dieser Selbstauskunft, gleicher Rechenweg wie im CRM{rahmen.zweiPersonen ? ", beide Personen zusammen" : ""}.
+          </p>
+          {rahmen.ohneRahmen ? (
+            <p className="mt-4 rounded-lg bg-destructive/10 p-3 text-sm">
+              Derzeit kein Finanzierungsrahmen: Die Ausgaben sind höher als die Einnahmen (Überschuss {euro(rahmen.ueberschuss)}).
+            </p>
+          ) : (
+            <>
+              <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                {kachel("Kaufpreis von", rahmen.kaufpreisVon)}
+                {kachel("Empfehlung", rahmen.kaufpreisEmpfehlung, true)}
+                {kachel("Kaufpreis bis", rahmen.kaufpreisBis)}
+              </div>
+              <p className="mt-3 text-sm">
+                Such im Kaufpreis bis rund {euro(rahmen.kaufpreisEmpfehlung)}, höchstens bis {euro(rahmen.kaufpreisBis)}. Die Kaufnebenkosten sind nicht abgezogen, sie kommen aus Eigenkapital oder einem Nachrangdarlehen.
+              </p>
+            </>
+          )}
+          <div className="mt-4 grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
+            <div><p className="text-xs text-muted-foreground">Überschuss</p><p className="font-semibold tabular-nums">{euro(rahmen.ueberschuss)}/Monat</p></div>
+            <div><p className="text-xs text-muted-foreground">Tragbare Rate</p><p className="font-semibold tabular-nums">{euro(rahmen.tragbareRate)}/Monat</p></div>
+            <div><p className="text-xs text-muted-foreground">Darlehen</p><p className="font-semibold tabular-nums">{euro(Math.max(0, rahmen.maxDarlehen))}</p></div>
+            <div><p className="text-xs text-muted-foreground">Eigenkapital</p><p className="font-semibold tabular-nums">{euro(rahmen.eigenkapital)}</p></div>
+          </div>
+          <details className="mt-4 rounded-lg bg-muted/40 p-3 text-sm">
+            <summary className="cursor-pointer font-semibold">Rechenweg anzeigen</summary>
+            <table className="mt-2 w-full text-sm tabular-nums">
+              <tbody>
+                <tr><td className="py-1">Einnahmen im Monat (Bankansatz)</td><td className="py-1 text-right">{euro(rahmen.einnahmen)}</td></tr>
+                <tr><td className="py-1">Ausgaben im Monat (Bankansatz)</td><td className="py-1 text-right">− {euro(rahmen.ausgaben)}</td></tr>
+                <tr className="font-semibold"><td className="py-1">Überschuss</td><td className="py-1 text-right">{euro(rahmen.ueberschuss)}</td></tr>
+                <tr><td className="py-1">Tragbare Rate (80 %)</td><td className="py-1 text-right">{euro(rahmen.tragbareRate)}</td></tr>
+                <tr><td className="py-1">Darlehen (Rate × 12 ÷ 6 %)</td><td className="py-1 text-right">{euro(Math.max(0, rahmen.maxDarlehen))}</td></tr>
+                <tr><td className="py-1">+ Eigenkapital</td><td className="py-1 text-right">{euro(rahmen.eigenkapital)}</td></tr>
+              </tbody>
+            </table>
+            <ul className="mt-2 list-disc pl-5 text-xs text-muted-foreground">
+              {RAHMEN_ERKLAERUNG.map((t) => <li key={t}>{t}</li>)}
+            </ul>
+          </details>
+          {rahmen.immobilienHinweis && <p className="mt-3 text-xs text-muted-foreground">{rahmen.immobilienHinweis}</p>}
+          <div className="mt-4">
+            <Button variant="brand" onClick={alsPdf} disabled={laeuft} data-testid="rahmen-als-pdf">
+              {laeuft ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
+              Finanzierungsrahmen als PDF
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground mt-3">Unverbindliche Orientierung, keine Finanzierungszusage. Die Entscheidung trifft die Bank.</p>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function Abschluss({ data, onNeu }: { data: SelbstauskunftData; onNeu: () => void }) {
@@ -84,6 +181,7 @@ function Abschluss({ data, onNeu }: { data: SelbstauskunftData; onNeu: () => voi
           </div>
         </div>
       </div>
+      <FinanzierungsrahmenKarte data={data} />
     </div>
   );
 }
