@@ -193,17 +193,17 @@ describe("Summenleiste der Kunden-Pipeline", () => {
     expect(kopfVon("neuer_lead").querySelector('button[aria-label="Logik-Hinweis Neuer Lead"]')).toBeTruthy();
   });
 
-  it("trennt die Stufen mit einem leichten senkrechten Strich, nicht vor der ersten", () => {
+  it("setzt jede Spalte in einen weissen Kasten mit Pfeilform am Kopf, nicht an der letzten", () => {
     stand.kontakte = [kontakt("k1", "neuer_lead")];
     render(<MemoryRouter><Pipeline /></MemoryRouter>);
 
-    // Seit dem 29.10.2026 beginnt der Strich unter dem Kopf; dort steht der Richtungspfeil.
+    // Seit dem 30.10.2026 Kasten statt Trennstrich, Ausbuchtung statt Pfeilsymbol.
     const spalten = [...document.querySelectorAll<HTMLElement>('[data-pruefung="pipeline-spalte"]')];
     spalten.forEach((spalte, i) => {
-      expect(spalte.className).toContain("before:bg-border/60");
-      expect(spalte.className).toContain("before:top-10");
-      expect(spalte.className).toContain("first:before:hidden");
-      expect(!!spalte.querySelector('[data-pruefung="pipeline-richtung"]')).toBe(i > 0);
+      expect(spalte.className).toContain("bg-card");
+      expect(spalte.className).toContain("border");
+      expect(!!spalte.querySelector('[data-pruefung="pipeline-richtung"]')).toBe(i < spalten.length - 1);
+      expect(spalte.querySelector("svg.lucide-chevron-right")).toBeNull();
     });
   });
 

@@ -11,7 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Archive, Search, User, Users, Calendar, Building2, Banknote, Scale, Clock, Info, ChevronRight } from "lucide-react";
+import { Archive, Search, User, Users, Calendar, Building2, Banknote, Scale, Clock, Info } from "lucide-react";
+import { waagerechtesRad } from "@/lib/pipelineRollen";
 import { EinblickReihe } from "@/components/kunden/EinblickReihe";
 import { kundenEinblick, type EinblickPerson } from "@/lib/kundenEinblick";
 import { useEinblickTeamleiter } from "@/hooks/useEinblickTeamleiter";
@@ -1275,6 +1276,48 @@ export default function Pipeline() {
   const totalInPipeline = pipelineEntries.length;
   const totalValue = filteredKontakte.reduce((sum, k) => sum + (k.kaufpreis || 0), 0);
 
+  /*
+   * Board mit Mausrad und gedrückter Maus verschieben, in beide Richtungen
+   * (Christian, 30.10.2026). Das Rad hängt von Hand am Element, weil React
+   * `onWheel` passiv anmeldet und `preventDefault` dort nichts bewirkt.
+   * Ziehen geht auf freier Fläche; Kacheln, Knöpfe und Links behalten ihr
+   * eigenes Verhalten (Kacheln werden per Drag & Drop verschoben).
+   */
+  const boardRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = boardRef.current;
+    if (!el) return;
+    const beiRad = (e: WheelEvent) => {
+      if (e.ctrlKey) return; // Zoomen per Trackpad bleibt beim Browser
+      const liste = (e.target as HTMLElement).closest<HTMLElement>('[data-pruefung="pipeline-karten"]');
+      const dx = waagerechtesRad(e, liste);
+      if (!dx) return;
+      e.preventDefault();
+      el.scrollLeft += dx;
+    };
+    let start: { x: number; links: number } | null = null;
+    const beiDruck = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse" || e.button !== 0) return;
+      if ((e.target as HTMLElement).closest('[draggable="true"], button, a, input, select, textarea, [role="button"]')) return;
+      start = { x: e.clientX, links: el.scrollLeft };
+    };
+    const beiBewegung = (e: PointerEvent) => {
+      if (!start) return;
+      el.scrollLeft = start.links - (e.clientX - start.x);
+    };
+    const beiLoslassen = () => { start = null; };
+    el.addEventListener("wheel", beiRad, { passive: false });
+    el.addEventListener("pointerdown", beiDruck);
+    window.addEventListener("pointermove", beiBewegung);
+    window.addEventListener("pointerup", beiLoslassen);
+    return () => {
+      el.removeEventListener("wheel", beiRad);
+      el.removeEventListener("pointerdown", beiDruck);
+      window.removeEventListener("pointermove", beiBewegung);
+      window.removeEventListener("pointerup", beiLoslassen);
+    };
+  }, []);
+
   // Ein anderer Filter heisst andere Spalteninhalte. Dann wieder oben anfangen,
   // sonst zeigt eine Spalte nach dem Umschalten stillschweigend hundert Kacheln.
   useEffect(() => {
@@ -1410,11 +1453,12 @@ export default function Pipeline() {
           darunter noch ein eigener Schieberegler (`input type="range"`), der
           dasselbe tat; Christian sah zwei Regler uebereinander. Ziehen mit der
           Maus, Trackpad, Shift mit Mausrad und Wischen auf dem Handy erledigt
-          die Scrollleiste von selbst.
+          die Scrollleiste von selbst. Seit 30.10.2026 zusaetzlich Mausrad und
+          Ziehen auf freier Flaeche, siehe `boardRef`.
           `overscroll-x-contain`: Am linken Rand loeste ein Wischen auf dem
           Trackpad sonst „Zurueck" im Browser aus.
         */}
-        <div className="overflow-x-auto overflow-y-hidden overscroll-x-contain flex-1 min-h-0 mt-4" id="pipeline-scroll">
+        <div ref={boardRef} className="overflow-x-auto overflow-y-hidden overscroll-x-contain flex-1 min-h-0 mt-4" id="pipeline-scroll">
           <div className="min-w-max flex flex-col h-full min-h-0">
             <div data-pruefung="pipeline-spalten" className="flex gap-4 flex-1 min-h-0">
               {!cacheReady || wartetAufKennung ? (
@@ -1446,25 +1490,19 @@ export default function Pipeline() {
                 const isBlurred = isVExperte && stufe.key !== "vermoegensaufbau";
                 const isDropTarget = dragOverStufe === stufe.key && dragEntry && dragEntry.from !== stufe.key;
                 /*
-                  Spaltenkopf und Trennstriche (Christian, 25.09.2026): Der
-                  Kopf steht frei auf dem Seitenhintergrund, ohne helles
-                  Kaestchen dahinter. Das Info-Symbol folgt direkt auf den
-                  Namen. Rechtsbuendig steht die Anzahl als reine Zahl, ohne
-                  „Leads" (zweite Runde am selben Tag: unten in der
-                  Summenleiste steht nur noch die Gesamtsumme).
-                  Zwischen zwei Stufen laeuft ein leichter senkrechter Strich
-                  mitten in der Luecke (`gap-4`, also 8px links der Spalte),
-                  vom Kopf bis zur Summenleiste. Die erste Spalte hat keinen.
-                  Der Kopf klebte vorher mit `sticky top-0` und deckender
-                  Flaeche; gescrollt wird aber nur die Kartenliste darunter,
-                  geklebt hat er also nie.
+                  Jede Spalte samt Kopf in einem weissen Kasten (Christian,
+                  30.10.2026), statt Trennstrich und Richtungspfeil. Die
+                  Laufrichtung zeigt eine Ausbuchtung in Pfeilform rechts am
+                  Kopf, die in die Luecke zur naechsten Spalte ragt; die
+                  letzte Spalte hat keine. Info-Symbol direkt hinter dem
+                  Namen, rechts die Anzahl als reine Zahl (25.09.2026).
                 */
                 return (
                   <div
                     key={stufe.key}
                     data-pruefung="pipeline-spalte"
                     data-stufe={stufe.key}
-                    className={`relative w-56 flex-shrink-0 flex flex-col min-h-0 rounded-md transition-colors before:pointer-events-none before:absolute before:top-10 before:bottom-0 before:-left-2 before:w-px before:bg-border/60 first:before:hidden ${isBlurred ? "select-none pointer-events-none" : ""} ${isDropTarget ? "ring-2 ring-primary bg-primary/5" : ""}`}
+                    className={`relative w-56 flex-shrink-0 flex flex-col min-h-0 rounded-xl border border-border/60 bg-card p-2 shadow-sm transition-colors [&:not(:last-child)]:rounded-tr-none ${isBlurred ? "select-none pointer-events-none" : ""} ${isDropTarget ? "ring-2 ring-primary bg-primary/5" : ""}`}
                     onDragOver={(e) => {
                       if (!dragEntry || isBlurred) return;
                       e.preventDefault();
@@ -1474,15 +1512,19 @@ export default function Pipeline() {
                     onDragLeave={() => { if (dragOverStufe === stufe.key) setDragOverStufe(null); }}
                     onDrop={(e) => { e.preventDefault(); handleDropOnStufe(stufe.key, stufe.label); }}
                   >
-                    {/* Laufrichtung der Pipeline, auf Höhe der Anzahl; die Trennlinie beginnt erst darunter. */}
-                    {spaltenIndex > 0 && (
-                      <ChevronRight
+                    {spaltenIndex < RENDER_STUFEN.length - 1 && (
+                      <svg
                         data-pruefung="pipeline-richtung"
                         aria-hidden="true"
-                        className="pointer-events-none absolute -left-2 top-[11px] h-3.5 w-3.5 -translate-x-1/2 text-muted-foreground/70"
-                      />
+                        viewBox="0 0 14 46"
+                        className="pointer-events-none absolute -top-px left-[calc(100%-1px)] z-10 h-[46px] w-3.5 overflow-visible"
+                      >
+                        {/* Füllung deckt die rechte Kante des Kastens ab, der Strich läuft nur über die Spitze. */}
+                        <path d="M0 0 L14 23 L0 46 Z" fill="hsl(var(--card))" />
+                        <path d="M0 0 L14 23 L0 46" fill="none" stroke="hsl(var(--border))" strokeOpacity="0.6" />
+                      </svg>
                     )}
-                    <div data-pruefung="pipeline-kopf" className={`flex items-center gap-2 mb-3 py-2 ${isBlurred ? "blur-[3px] opacity-40" : ""}`}>
+                    <div data-pruefung="pipeline-kopf" className={`flex h-9 items-center gap-2 mb-2 px-1 ${isBlurred ? "blur-[3px] opacity-40" : ""}`}>
                       <div className={`w-2 h-2 rounded-full shrink-0 ${headerColor(stufe.key)}`} />
                       <h3 className="font-semibold text-sm">{stufe.label}</h3>
                       {STUFEN_ERKLAERUNG[stufe.key] && (
