@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { betragInWorten, LEER, monateZwischen, plusMonate, rechne, vorbelegen, zahlInWorten } from "./mietzuzahlung";
+import { betragInWorten, LEER, monateZwischen, neuesSchreiben, plusMonate, rechne, vorbelegen, zahlInWorten } from "./mietzuzahlung";
 
 /** Vereinbarung über eine Mietzuzahlung (30.10.2026): Rechnung nach der Vorlage im Drive. */
 
@@ -65,5 +65,12 @@ describe("Betrag in Worten", () => {
     expect(zahlInWorten(21)).toBe("einundzwanzig");
     expect(zahlInWorten(1000)).toBe("eintausend");
     expect(betragInWorten(2989.44)).toBe("zweitausendneunhundertneunundachtzig Euro und 44 Cent");
+  });
+});
+
+describe("Neues Schreiben", () => {
+  it("setzt für Vertragspartner 2 immer Mittenwalde und das Erstellungsdatum", () => {
+    const d = neuesSchreiben({ ...LEER, kaeuferName: "Anna Muster" }, "2026-10-30");
+    expect(d).toMatchObject({ kaeuferName: "Anna Muster", ort2: "Mittenwalde", datum2: "2026-10-30", ort1: "", datum1: "" });
   });
 });

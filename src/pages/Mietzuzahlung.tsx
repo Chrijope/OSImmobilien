@@ -14,7 +14,7 @@ import { getKontaktById } from "@/lib/kundenStore";
 import { listendatenFuerEinheit } from "@/lib/listendaten";
 import { garageFuerEinheit } from "@/lib/mietgarantie";
 import {
-  datumDe, ENTWURF_SCHLUESSEL, entwurfErgaenzen, euro, rechne, vorbelegen, type MietzuzahlungDaten,
+  datumDe, ENTWURF_SCHLUESSEL, entwurfErgaenzen, euro, neuesSchreiben, rechne, vorbelegen, type MietzuzahlungDaten,
 } from "@/lib/mietzuzahlung";
 import { erzeugeMietzuzahlungPdf } from "@/lib/mietzuzahlungPdf";
 import { getObjektById } from "@/lib/objekteStore";
@@ -58,8 +58,9 @@ function MietzuzahlungInhalt({ kontaktId, investmentId }: { kontaktId: string; i
   const inv = getInvestmentById(investmentId);
   const kunde = getKontaktById(kontaktId);
   const ausSystem = useMemo(() => systemWerte(kontaktId, investmentId), [kontaktId, investmentId]);
+  // Ohne Entwurf (Adresse direkt aufgerufen) wie über den Knopf: Mittenwalde und heutiges Datum.
   const [daten, setDaten] = useState<MietzuzahlungDaten>(() =>
-    entwurfErgaenzen(getInvestmentMetaField<Partial<MietzuzahlungDaten> | null>(investmentId, ENTWURF_SCHLUESSEL, null), ausSystem));
+    entwurfErgaenzen(getInvestmentMetaField<Partial<MietzuzahlungDaten> | null>(investmentId, ENTWURF_SCHLUESSEL, null), neuesSchreiben(ausSystem)));
   const [ansicht, setAnsicht] = useState<"formular" | "vorschau">("formular");
   const r = useMemo(() => rechne(daten), [daten]);
   const setze = (feld: keyof MietzuzahlungDaten, wert: string) => setDaten((d) => ({ ...d, [feld]: wert }));
@@ -113,7 +114,7 @@ function MietzuzahlungInhalt({ kontaktId, investmentId }: { kontaktId: string; i
         </div>
         <div className="flex items-center gap-2">
           <span className="text-xs text-muted-foreground">{gespeichert ? "Entwurf gespeichert" : "Speichert …"}</span>
-          <Button variant="outline" size="sm" onClick={() => setDaten({ ...ausSystem, bank: daten.bank, iban: daten.iban })} title="Alle Werte erneut aus dem System übernehmen, Bank und IBAN bleiben">
+          <Button variant="outline" size="sm" onClick={() => setDaten({ ...ausSystem, bank: daten.bank, iban: daten.iban, ort2: daten.ort2, datum2: daten.datum2 })} title="Alle Werte erneut aus dem System übernehmen; Bank, IBAN, Ort und Datum bleiben">
             <RotateCcw className="h-4 w-4 mr-1" /> Aus dem System neu laden
           </Button>
           <Button size="sm" onClick={() => void herunterladen()}><Download className="h-4 w-4 mr-1" /> PDF herunterladen</Button>

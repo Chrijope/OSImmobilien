@@ -58,6 +58,20 @@ export const LEER: MietzuzahlungDaten = {
 /** Schlüssel des Entwurfs in `investments.meta`. */
 export const ENTWURF_SCHLUESSEL = "mietzuzahlungEntwurf";
 
+/** Ort des Vertragspartners 2, immer Mittenwalde (Christian, 30.10.2026). */
+export const ORT_VERTRAGSPARTNER_2 = "Mittenwalde";
+
+/** Heute als ISO-Datum in deutscher Zeit. */
+export const heuteIso = (jetzt = new Date()) => jetzt.toLocaleDateString("sv-SE", { timeZone: "Europe/Berlin" });
+
+/**
+ * Ein neues Schreiben: alles aus dem System, Ort Mittenwalde und als Datum
+ * des Vertragspartners 2 das Erstellungsdatum.
+ */
+export function neuesSchreiben(ausSystem: MietzuzahlungDaten, heute = heuteIso()): MietzuzahlungDaten {
+  return { ...ausSystem, ort2: ORT_VERTRAGSPARTNER_2, datum2: heute };
+}
+
 const cent = (n: number) => Math.round(n * 100) / 100;
 const z = (s: string) => zahlAus(s) ?? 0;
 
