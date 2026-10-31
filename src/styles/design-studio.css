@@ -47,11 +47,20 @@
 
   /* Hell: Kästchen und Seitenleiste weiß vor grünem Grund (Christian,
      31.10.2026). Die Sättigung im Glasfilter färbte den grünen Grund durch
-     die Karten, deshalb nur leicht. Kein grünes Fensterlicht im hellen
-     Modus, das war zu viel (Christian, 31.10.2026). */
+     die Karten, deshalb nur leicht. Der Lichtring am Rand ist grün wie im
+     Dunkelmodus (weiß wäre auf weißer Karte unsichtbar); der Lichtkegel auf
+     der Fläche bleibt aus, das war zu viel (Christian, 31.10.2026). */
   [data-crm-design="studio"][data-glas="liquid"]:not(.dark) {
     --lg-deckkraft: .97;
     --lg-deckkraft-leiste: .97;
+    --lg-licht: hsl(157 60% 36% / .6);
+    --studio-einlage: hsl(135 14% 93% / .92);
+  }
+  /* Gewählter Reiter deutlich: weiß auf weiß war kaum zu erkennen. */
+  [data-crm-design="studio"][data-glas="liquid"]:not(.dark) [role="tab"][data-state="active"] {
+    color: hsl(var(--primary));
+    font-weight: 600;
+    box-shadow: 0 0 0 1px hsl(var(--primary) / .45), 0 3px 8px -3px hsl(160 50% 14% / .3);
   }
   /* Nur mit Maus: am Handy bleibt die Weichzeichnung der Karten aus. */
   @media (min-width: 768px) and (hover: hover) {
