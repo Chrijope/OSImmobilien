@@ -11195,10 +11195,18 @@ export default function KundenDetail() {
               const terminDatum = nd.datum || inv.notarTermin || "";
               const terminUhrzeit = nd.uhrzeit || inv.notarUhrzeit || "00:00";
               const hasTermin = !!terminDatum;
+              // After Sales erst, wenn auch Notar freigeschaltet ist (Christian, 31.10.2026).
+              const notarFrei = FREIGESCHALTET_AB_RESERVIERUNG.includes(inv.pipelineStufe) && getRvSigned(inv.id);
               return (
                 <Card id={`card-aftersales-${inv.id}`} className="p-6 transition-all duration-500">
                   <div className="w-8 h-1 bg-primary mb-3" />
                   <KundenprofilAbschnitt kopf={<h3 className="font-bold mb-4">After Sales</h3>}>
+                    {!notarFrei ? (
+                      <div className="bg-muted/50 rounded-lg p-4 flex items-center gap-2 text-sm text-muted-foreground">
+                        <Lock className="h-4 w-4" />
+                        <span>After Sales wird freigeschaltet, sobald Notar freigeschaltet ist.</span>
+                      </div>
+                    ) : (
                     <div className="space-y-3">
                       {hasTermin ? (
                         <AftersalesBeratungCard
@@ -11242,6 +11250,7 @@ export default function KundenDetail() {
                         </div>
                       )}
                     </div>
+                    )}
                   </KundenprofilAbschnitt>
                 </Card>
               );
