@@ -3,6 +3,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { automatikSchutz } from "../_shared/automatik-schutz.ts";
 import { ESKALATION_STICHTAG, vorStichtag } from "../_shared/eskalation-bezug.ts";
+import { slaMeldung } from "../_shared/sla-meldung.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -72,9 +73,7 @@ Deno.serve(async (req) => {
 
     const { error: insError } = await supabase.from("benachrichtigungen").insert({
       benutzer_id: uid,
-      titel: `⚠️ SLA-Verstoß: ${rot.length} Lead${rot.length > 1 ? "s" : ""} vernachlässigt`,
-      nachricht: `Du hast ${rot.length} Lead${rot.length > 1 ? "s" : ""}, die seit über der SLA-Schwelle keine Aktivität haben. Bitte zeitnah kontaktieren.`,
-      link: "/",
+      ...slaMeldung(rot),
       gelesen: false,
     });
     if (insError) { errors.push(`${uid}: ${insError.message}`); continue; }

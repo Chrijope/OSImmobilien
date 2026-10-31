@@ -60,6 +60,7 @@ import { istBewerberMeldung, siehtBewerberMeldungen } from "@/lib/bewerberRechte
 import { SuchFeld } from "@/components/GlobaleSuche";
 import { VorfuehrmodusSchalter } from "@/components/vorfuehrmodus/VorfuehrmodusSchalter";
 import { benachrichtigungZiel } from "@/lib/benachrichtigungZiel";
+import { altesSlaZiel } from "../../supabase/functions/_shared/sla-meldung.ts";
 import { objektbereichGesperrt } from "@/lib/sidebarNavigation";
 import { FehlerMeldenEintrag } from "@/components/FehlerMeldenEintrag";
 
@@ -405,7 +406,7 @@ export function HeaderBar() {
               read: row.gelesen,
               category,
               icon: Info,
-              link: row.link || "/inbox",
+              link: altesSlaZiel(titel, row.link) || row.link || "/inbox",
             };
           });
       }
