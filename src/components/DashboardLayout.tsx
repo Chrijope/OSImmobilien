@@ -33,6 +33,7 @@ import { darfBewerberprozess } from "@/lib/bewerberprozessFreigabe";
 import { WeeklyCallReminderBanner } from "@/components/WeeklyCallReminderBanner";
 import { WeeklyCallVorbereitungBanner } from "@/components/WeeklyCallVorbereitungBanner";
 import { GeburtstagPopup } from "@/components/dashboard/GeburtstagPopup";
+import { Festtagskarte } from "@/components/saison/Festtagskarte";
 import { SaisonDialoge } from "@/components/saison/Saisonfiguren";
 import { KundenportalLockGuard } from "@/components/KundenportalLockGuard";
 import { KundenMfaGuard } from "@/components/kunde/KundenMfaGuard";
@@ -248,6 +249,8 @@ export function AppShell() {
             </Suspense>
           </KundeErrorBoundary>
         </KundePortalLayout>
+        {/* Postkarte zu Weihnachten, Silvester und Geburtstag. */}
+        <Festtagskarte />
         <TestModeBadge />
         <IdleTimeoutGuard />
         <PushNotificationsBootstrap />
@@ -272,6 +275,7 @@ export function AppShell() {
           </div>
         </div>
         <TippgeberRoleSwitcher />
+        <Festtagskarte />
         <TestModeBadge />
         <IdleTimeoutGuard />
       </>
@@ -370,6 +374,7 @@ export function AppShell() {
         </div>
       </div>
       <GeburtstagPopup />
+      <Festtagskarte />
       {/* Adventskalender und Eiersuche, geöffnet von den Saisonfiguren. */}
       <SaisonDialoge />
       <IdleTimeoutGuard />

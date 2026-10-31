@@ -1,0 +1,166 @@
+/*
+ * Festtagskarten (Weihnachten, Silvester, Geburtstag), 31.10.2026.
+ *
+ * Aus der freigegebenen Vorschau übernommen. Statt Fraunces, Manrope und
+ * Pinyon Script die selbst gehosteten Hausschriften, weil die
+ * Sicherheitsrichtlinie fremde Schriftserver ausschließt (font-src 'self').
+ * Alles hängt an `.ftk`, damit die übrige App unberührt bleibt.
+ */
+@font-face { font-family: "FTK Playfair"; src: url("/fonts/playfair-display-latin.woff2") format("woff2"); font-weight: 400 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "FTK Playfair"; src: url("/fonts/playfair-display-italic-latin.woff2") format("woff2"); font-weight: 400 700; font-style: italic; font-display: swap; }
+@font-face { font-family: "FTK Outfit"; src: url("/fonts/outfit-latin.woff2") format("woff2"); font-weight: 300 600; font-display: swap; }
+@font-face { font-family: "FTK Caveat"; src: url("/fonts/caveat-600-latin.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+
+.ftk {
+  --tanne: #12362A; --nacht: #0A1F18; --gold: #D8B46A; --gold-hell: #F3DFA8; --kerze: #FFB65C;
+  --schnee: #F7F5EF; --orange: #E8742C; --tinte: #1E2A25;
+  --serif: "FTK Playfair", Georgia, serif; --sans: "FTK Outfit", system-ui, sans-serif; --hand: "FTK Caveat", cursive;
+  position: fixed; inset: 0; z-index: 100; font-family: var(--sans); color: var(--tinte);
+}
+.ftk *, .ftk *::before, .ftk *::after { box-sizing: border-box; }
+.ftk-schleier { position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(10,31,24,.6), rgba(10,31,24,.88)); backdrop-filter: blur(6px); animation: ftk-ein .5s ease both; }
+@keyframes ftk-ein { from { opacity: 0; } }
+.ftk-buehne { position: absolute; inset: 0; display: grid; place-items: center; perspective: 2000px; padding: 24px 16px 96px; overflow: auto; }
+.ftk-halter { position: relative; perspective: 2000px; }
+/* Breite auch nach der Höhe begrenzen, damit Karte und Knöpfe auf flache Bildschirme passen. */
+.ftk-karte { position: relative; width: min(880px, 92vw, calc((100dvh - 150px) * 1.5714)); aspect-ratio: 880/560; transform-style: preserve-3d; transition: transform 1.2s cubic-bezier(.2,.8,.2,1); }
+.ftk-karte.rein { animation: ftk-rein 1.3s cubic-bezier(.2,.9,.25,1.05) both; }
+@keyframes ftk-rein { from { transform: translateY(60vh) rotate(-14deg) scale(.6); opacity: 0; } 60% { opacity: 1; } to { transform: none; } }
+.ftk-karte.dreh { transform: rotateY(180deg); }
+.ftk-seite { position: absolute; inset: 0; border-radius: 14px; overflow: hidden; backface-visibility: hidden; -webkit-backface-visibility: hidden; box-shadow: 0 40px 80px -20px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.06); container-type: inline-size; }
+.ftk-rueck { transform: rotateY(180deg); }
+.ftk-zu { position: absolute; top: -14px; right: -14px; z-index: 5; width: 36px; height: 36px; border-radius: 50%; border: 0; background: var(--schnee); color: var(--tanne); font-size: 22px; line-height: 1; cursor: pointer; box-shadow: 0 6px 16px rgba(0,0,0,.35); }
+.ftk-knoepfe { position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; width: max-content; max-width: calc(100vw - 32px); }
+.ftk-knopf { font: 600 14px var(--sans); color: var(--nacht); background: var(--gold); border: 0; border-radius: 999px; padding: 12px 22px; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,.4); }
+.ftk-knopf.zweit { background: rgba(247,245,239,.12); color: var(--schnee); border: 1px solid rgba(216,180,106,.5); }
+.ftk-knopf:disabled { opacity: .7; cursor: wait; }
+.ftk button:focus-visible { outline: 2px solid var(--gold-hell); outline-offset: 3px; }
+.ftk canvas.voll { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+
+/* Gemeinsame Bausteine. Schriftgrößen in cqw, damit das PDF der Bildschirmkarte gleicht. */
+.ftk .folie { background: linear-gradient(100deg,#9c7a3a 0%,#F3DFA8 22%,#b8913f 40%,#fff3cf 50%,#b8913f 60%,#F3DFA8 78%,#9c7a3a 100%); background-size: 250% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: ftk-glanz 5s ease-in-out infinite; }
+@keyframes ftk-glanz { 0%,100% { background-position: 100% 0; } 50% { background-position: 0 0; } }
+.ftk .augenbraue { font: 500 1.25cqw var(--sans); letter-spacing: .32em; text-transform: uppercase; color: var(--gold); }
+.ftk .kurz { font: 400 1.85cqw/1.6 var(--sans); color: #cfe0d7; margin: 0; max-width: 30ch; }
+.ftk .textspalte { position: absolute; right: 6%; top: 50%; transform: translateY(-50%); width: 40%; color: var(--schnee); }
+.ftk .textspalte h1 { font: 400 italic 9cqw/.9 var(--serif); margin: 1.6cqw 0 2cqw; letter-spacing: -.02em; }
+.ftk .textspalte h1 em { font-style: italic; }
+.ftk .gruen { background: radial-gradient(ellipse 70% 90% at 30% 45%, #1f5442 0%, #12362A 45%, #081a14 100%); }
+.ftk .nachtblau { background: linear-gradient(180deg, #071612 0%, #0f2e25 55%, #1a3f33 100%); }
+
+/* Schneekugel */
+.ftk .kugelwrap { position: absolute; left: 4%; top: 6%; width: 52%; height: 88%; display: grid; place-items: center; transition: transform .3s ease-out; }
+.ftk .kugel { position: relative; width: 88%; aspect-ratio: 1/1.12; }
+.ftk .kugel svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.ftk .kugel canvas { position: absolute; left: 8%; top: 2%; width: 84%; aspect-ratio: 1; border-radius: 50%; pointer-events: none; }
+
+/* Adventshaus */
+.ftk .stadt { position: absolute; inset: 0; width: 100%; height: 100%; }
+.ftk .fenster { fill: #21392f; transition: fill .5s ease, filter .5s; }
+.ftk .fenster.an { fill: var(--kerze); filter: url(#ftk-leuchten); }
+.ftk .tuer { transition: transform 1.4s cubic-bezier(.6,0,.2,1); transform-origin: left center; transform-box: fill-box; }
+.ftk .offen .tuer { transform: scaleX(.08); }
+.ftk .titel-links { position: absolute; left: 6%; top: 9%; color: var(--schnee); max-width: 46%; }
+.ftk .titel-links h1 { font: 400 7.6cqw/.92 var(--serif); margin: 1.4cqw 0 0; letter-spacing: -.02em; }
+.ftk .titel-links h1 em { font-style: italic; }
+.ftk .schlitten { position: absolute; top: 16%; left: -30%; width: 34%; animation: ftk-flug 11s linear infinite; }
+@keyframes ftk-flug { from { transform: translate(0,30px) rotate(-4deg); } to { transform: translate(420%,-40px) rotate(-8deg); } }
+.ftk .zaehler { position: absolute; right: 6%; top: 10%; text-align: right; color: var(--gold); }
+.ftk .zaehler b { display: block; font: 400 italic 10.5cqw/1 var(--serif); }
+.ftk .zaehler span { font: 500 1.25cqw var(--sans); letter-spacing: .24em; text-transform: uppercase; }
+
+/* Exposé (Weihnachten und Geburtstag) */
+.ftk .expose { background: #F7F5EF; display: grid; grid-template-columns: 1.15fr 1fr; }
+.ftk .foto { position: relative; overflow: hidden; background: linear-gradient(180deg,#05110e 0%,#0d2a2a 60%,#1b3b37 100%); }
+.ftk .foto.abend { background: linear-gradient(180deg,#1b2f4a 0%,#7a5a6e 55%,#e8a46c 100%); }
+.ftk .polar { position: absolute; inset: -20% -10% 30%; filter: blur(22px); opacity: .85; mix-blend-mode: screen; }
+.ftk .polar i { position: absolute; border-radius: 50%; animation: ftk-wabern 9s ease-in-out infinite alternate; }
+.ftk .polar i:nth-child(1) { left: 5%; top: 20%; width: 70%; height: 30%; background: #3ee6a8; }
+.ftk .polar i:nth-child(2) { left: 30%; top: 10%; width: 65%; height: 26%; background: #5fb6ff; animation-delay: -3s; }
+.ftk .polar i:nth-child(3) { left: 15%; top: 35%; width: 55%; height: 18%; background: #a07cff; animation-delay: -6s; }
+@keyframes ftk-wabern { from { transform: translateX(-8%) skewX(-10deg) scaleY(.8); } to { transform: translateX(8%) skewX(12deg) scaleY(1.25); } }
+.ftk .foto svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.ftk .marke { position: absolute; left: 2cqw; top: 2cqw; font: 500 1.15cqw var(--sans); letter-spacing: .2em; text-transform: uppercase; color: #cfe0d7; background: rgba(10,31,24,.6); padding: .7cqw 1.1cqw; border-radius: 4px; }
+.ftk .daten { padding: 4.4cqw; display: flex; flex-direction: column; position: relative; }
+.ftk .daten .augenbraue { color: var(--orange); }
+.ftk .daten h1 { font: 500 5cqw/1 var(--serif); color: var(--tanne); margin: 1.1cqw 0 .5cqw; letter-spacing: -.02em; }
+.ftk .ort { font: 400 1.5cqw var(--sans); color: #5d6b64; margin-bottom: 2.4cqw; }
+.ftk .daten dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 1cqw 1.8cqw; font: 400 1.5cqw var(--sans); border-top: 1px solid #d9d3c4; padding-top: 1.8cqw; }
+.ftk .daten dt { color: #7a857f; }
+.ftk .daten dd { margin: 0; color: var(--tinte); text-align: right; }
+.ftk .preis { margin-top: auto; display: flex; justify-content: space-between; align-items: baseline; border-top: 1px solid #d9d3c4; padding-top: 1.4cqw; }
+.ftk .preis span { font: 500 1.25cqw var(--sans); letter-spacing: .2em; text-transform: uppercase; color: #7a857f; }
+.ftk .preis b { font: 400 italic 3.6cqw var(--serif); color: var(--tanne); }
+.ftk .stempel { position: absolute; right: 8%; top: 71%; font: 600 2.2cqw var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--orange); border: 3px solid var(--orange); border-radius: 6px; padding: .9cqw 1.6cqw; transform: rotate(-14deg) scale(3); opacity: 0; mix-blend-mode: multiply; }
+.ftk .stempel::after { content: ""; position: absolute; inset: 3px; border: 1px solid var(--orange); border-radius: 3px; }
+.ftk .stempel.da { animation: ftk-knall .5s cubic-bezier(.2,1.6,.4,1) forwards; }
+.ftk .stempel.fest { opacity: .92; transform: rotate(-14deg); animation: none; }
+@keyframes ftk-knall { to { transform: rotate(-14deg) scale(1); opacity: .92; } }
+.ftk .ballon { transform-box: fill-box; transform-origin: 50% 100%; animation: ftk-schweben 4s ease-in-out infinite alternate; }
+.ftk .ballon:nth-of-type(2) { animation-delay: -1.3s; }
+.ftk .ballon:nth-of-type(3) { animation-delay: -2.6s; }
+@keyframes ftk-schweben { from { transform: translateY(0) rotate(-3deg); } to { transform: translateY(-4%) rotate(3deg); } }
+
+/* Silvester */
+.ftk .silvester { background: radial-gradient(ellipse 90% 70% at 50% 0%, #163a4a 0%, #0b2028 45%, #06120f 100%); }
+.ftk .jahr { position: absolute; left: 0; right: 0; top: 8%; display: flex; justify-content: center; font: 400 italic 21cqw/1 var(--serif); letter-spacing: -.03em; }
+.ftk .ziffer { display: inline-block; height: 1em; overflow: hidden; }
+.ftk .ziffer > span { display: block; transition: transform 1.1s cubic-bezier(.5,-0.4,.3,1.4); }
+.ftk .ziffer.um > span { transform: translateY(-50%); }
+.ftk .ziffer i { display: block; font-style: italic; height: 1em; }
+.ftk .countdown { position: absolute; right: 6%; top: 6%; font: 400 italic 6cqw/1 var(--serif); color: var(--gold-hell); pointer-events: none; }
+.ftk .countdown b { display: inline-block; }
+.ftk .countdown b { font-weight: 400; animation: ftk-puls .9s ease-out both; }
+@keyframes ftk-puls { from { transform: scale(1.6); opacity: 0; } 30% { opacity: 1; } to { transform: scale(.9); opacity: 0; } }
+.ftk .silvester .unten { position: absolute; left: 6%; right: 6%; bottom: 34%; display: flex; justify-content: space-between; align-items: flex-end; gap: 4cqw; color: var(--schnee); }
+.ftk .silvester h1 { font: 400 italic 6.4cqw/.95 var(--serif); margin: 1.2cqw 0 0; }
+.ftk .schild { transform-origin: 50% 0; animation: ftk-pendel 3.5s ease-in-out infinite alternate; transform-box: fill-box; }
+@keyframes ftk-pendel { from { transform: rotate(-4deg); } to { transform: rotate(4deg); } }
+.ftk .skyline { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 32%; }
+.ftk .skyline .fenster.an { fill: var(--kerze); filter: none; }
+
+/* Geburtstag: Torte und Geschenk */
+.ftk .torte { position: absolute; left: 6%; bottom: 0; width: 48%; height: 92%; }
+.ftk .flamme { opacity: 0; transform-box: fill-box; transform-origin: 50% 100%; transition: opacity .3s; }
+.ftk .flamme.an { opacity: 1; animation: ftk-flackern .5s ease-in-out infinite alternate; }
+@keyframes ftk-flackern { from { transform: scale(.9, 1) rotate(-3deg); } to { transform: scale(1.05, 1.12) rotate(3deg); } }
+.ftk .geschenk { position: absolute; left: 6%; bottom: 0; width: 48%; height: 94%; }
+.ftk .deckel, .ftk .schluessel { transform-box: fill-box; transition: transform 1s cubic-bezier(.3,1.5,.5,1); }
+.ftk .deckel { transform-origin: 0% 100%; }
+.ftk .auf .deckel { transform: translate(-6%, -55%) rotate(-24deg); }
+.ftk .schluessel { transform: translateY(70%); opacity: 0; transition: transform 1.2s cubic-bezier(.2,1.2,.4,1) .35s, opacity .4s .35s; }
+.ftk .auf .schluessel { transform: none; opacity: 1; }
+
+/* Rückseite: echte Postkarte */
+.ftk-rueck { background: #FBFAF6; background-image: radial-gradient(rgba(18,54,42,.035) 1px, transparent 1px); background-size: 6px 6px; display: grid; grid-template-columns: 1.25fr 1fr; }
+.ftk-rueck .botschaft { padding: 5.9cqw; border-right: 1px solid #d9d3c4; display: flex; flex-direction: column; }
+.ftk-rueck .augenbraue { color: var(--orange); }
+.ftk-rueck .gruss { font: 400 italic 5.2cqw/1 var(--serif); color: var(--tanne); margin: 1.1cqw 0 2.3cqw; }
+.ftk-rueck .brief { font: 400 1.85cqw/1.7 var(--sans); color: #33423b; margin: 0; }
+.ftk-rueck .brief strong { font-weight: 600; }
+.ftk-rueck .unterschrift { margin-top: auto; padding-top: 1.6cqw; }
+.ftk-rueck .unterschrift .name { font: 600 4.6cqw/1 var(--hand); color: var(--tanne); }
+.ftk-rueck .unterschrift .team { font: 500 1.25cqw var(--sans); letter-spacing: .2em; text-transform: uppercase; color: #7a857f; margin-top: .7cqw; }
+.ftk-rueck .adresse { position: relative; padding: 5cqw; }
+.ftk .briefmarke { position: absolute; right: 4cqw; top: 4cqw; width: 12.2cqw; aspect-ratio: 4/5; padding: 5px; background: radial-gradient(circle, transparent 3px, var(--tanne) 3.6px) -5px -5px/10px 10px; filter: drop-shadow(0 2px 3px rgba(0,0,0,.15)); }
+.ftk .briefmarke div { width: 100%; height: 100%; background: var(--tanne); outline: 1px solid var(--gold); outline-offset: -5px; display: grid; place-items: center; text-align: center; color: var(--gold); font: 400 italic 3cqw/1 var(--serif); }
+.ftk .briefmarke small { display: block; font: 500 .9cqw var(--sans); letter-spacing: .16em; margin-top: .7cqw; font-style: normal; padding: 0 .4cqw; }
+.ftk .poststempel { position: absolute; right: 10.5cqw; top: 8.2cqw; width: 14cqw; opacity: .75; transform: rotate(-12deg); }
+.ftk .zeilen { position: absolute; left: 5cqw; right: 5cqw; bottom: 6.2cqw; }
+.ftk .zeilen div { border-bottom: 1px solid #cfc8b6; height: 5cqw; display: flex; align-items: flex-end; padding-bottom: 4px; font: 600 3.3cqw var(--hand); color: var(--tanne); }
+.ftk .zeilen div.klein { font: 500 1.3cqw var(--sans); letter-spacing: .14em; text-transform: uppercase; color: #7a857f; }
+
+/* Handy hochkant: die Karte quer legen wie eine Postkarte, sonst wäre der Gruß zu klein. */
+@media (max-width: 640px) and (orientation: portrait) {
+  .ftk-buehne { overflow: hidden; padding: 0 0 88px; }
+  .ftk-halter { transform: rotate(-90deg); }
+  .ftk-karte { width: min(calc(100dvh - 130px), calc(92vw * 1.5714)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ftk *, .ftk *::before, .ftk *::after { animation: none !important; transition: none !important; }
+  .ftk .stempel { opacity: .92; transform: rotate(-14deg); }
+  .ftk .schlitten { display: none; }
+  .ftk .flamme { opacity: 1; }
+  .ftk .schluessel { transform: none; opacity: 1; }
+}

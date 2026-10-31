@@ -1450,7 +1450,7 @@ export default function Pipeline() {
 
           Geblaettert wird allein mit der Scrollleiste dieses Bereichs (Aussehen
           in `index.css`, fuer das ganze CRM gleich). Bis zum 25.09.2026 stand
-          darunter noch ein eigener Schieberegler (`input type="range"`), der
+          darunter noch ein eigener Schieberegler (ein Range-Eingabefeld), der
           dasselbe tat; Christian sah zwei Regler uebereinander. Ziehen mit der
           Maus, Trackpad, Shift mit Mausrad und Wischen auf dem Handy erledigt
           die Scrollleiste von selbst. Seit 30.10.2026 zusaetzlich Mausrad und

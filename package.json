@@ -64,6 +64,7 @@
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.6.0",
     "heic2any": "^0.0.4",
+    "html-to-image": "1.11.11",
     "html2canvas-pro": "^2.0.4",
     "i18next": "^26.2.0",
     "i18next-browser-languagedetector": "^8.2.1",

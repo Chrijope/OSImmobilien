@@ -22,7 +22,7 @@ import { KundenMfaGuard } from "@/components/kunde/KundenMfaGuard";
 
 // Oeffentliche Seiten (eager, klein und immer noetig)
 import Login from "./pages/Login";
-import { VorschauCrm, VorschauBeratungspraesentation, VorschauErstgespraech, VorschauInvestmentrechner, VorschauNaechsteAktionen, VorschauMikroseite, VorschauPipeline, VorschauProvision, VorschauRechnungsvorlage, VorschauKundeKomplett, VorschauKundenchat, VorschauObjektAnlegen, VorschauHandbuchEntwurf, VorschauGrundriss3d, VorschauAnalysetoolErgebnis, VorschauBeratungsprotokoll, VorschauKundenprofilLinks, VorschauBeratungDruck, VorschauObjektvergleich } from "./vorschauRouten";
+import { VorschauCrm, VorschauBeratungspraesentation, VorschauErstgespraech, VorschauInvestmentrechner, VorschauNaechsteAktionen, VorschauMikroseite, VorschauPipeline, VorschauProvision, VorschauRechnungsvorlage, VorschauKundeKomplett, VorschauKundenchat, VorschauObjektAnlegen, VorschauHandbuchEntwurf, VorschauGrundriss3d, VorschauAnalysetoolErgebnis, VorschauBeratungsprotokoll, VorschauKundenprofilLinks, VorschauBeratungDruck, VorschauObjektvergleich, VorschauFesttagskarten } from "./vorschauRouten";
 
 /** /investmentrechner-plus → /investmentrechner mit Schalter „Bankgespräch & Bankunterlagen“, Parameter bleiben. */
 function InvestmentrechnerPlusWeiterleitung() {
@@ -381,6 +381,7 @@ const App = () => (
                 {/* Lokale Vorschau der Investmentkalkulation, nur im Entwicklungsmodus
                     und ohne Anmeldung (siehe vorschauRouten.ts). */}
                 {VorschauObjektvergleich && <Route path="/vorschau/objektvergleich" element={<VorschauObjektvergleich />} />}
+                {VorschauFesttagskarten && <Route path="/vorschau/festtagskarten" element={<VorschauFesttagskarten />} />}
                 {VorschauInvestmentrechner && (
                   <>
                     <Route path="/vorschau/investmentrechner" element={<VorschauInvestmentrechner />} />

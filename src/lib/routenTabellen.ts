@@ -237,6 +237,7 @@ export const ROUTEN_TABELLEN: Record<string, readonly string[]> = {
   // Lokale Vorschau, nur im Entwicklungsmodus und ohne Datenbank (vorschauRouten.ts).
   "/vorschau/investmentrechner": [],
   "/vorschau/objektvergleich": [],
+  "/vorschau/festtagskarten": [],
   "/vorschau/investmentrechner-plus": [],
   "/vorschau/beratungspraesentation": [],
   "/vorschau/erstgespraech": [],

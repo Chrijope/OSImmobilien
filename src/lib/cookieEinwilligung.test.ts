@@ -107,6 +107,7 @@ describe("Wo der Banner hingehört", () => {
       "/vorschau/investmentrechner",
       "/vorschau/investmentrechner-plus",
       "/vorschau/objektvergleich",
+      "/vorschau/festtagskarten",
       "/vorschau/beratungspraesentation",
       "/vorschau/erstgespraech",
       "/vorschau/provision",

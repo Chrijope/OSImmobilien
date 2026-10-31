@@ -32,6 +32,12 @@ describe("Vorschau-Route der Investmentkalkulation", () => {
     expect(VorschauAnalysetoolErgebnis).toBeNull();
   });
 
+  it("die Vorschau der Festtagskarten gibt es nur im Entwicklungsmodus", async () => {
+    vi.stubEnv("DEV", false);
+    vi.stubEnv("PROD", true);
+    expect((await import("./vorschauRouten")).VorschauFesttagskarten).toBeNull();
+  });
+
   it("die Vorschau 3D-Grundriss gibt es ebenso nur im Entwicklungsmodus", async () => {
     vi.stubEnv("DEV", false);
     vi.stubEnv("PROD", true);

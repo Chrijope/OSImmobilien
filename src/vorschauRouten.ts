@@ -109,3 +109,8 @@ export const VorschauCrm = import.meta.env.DEV
 export const VorschauObjektvergleich = import.meta.env.DEV
   ? lazy(() => import("./pages/VorschauObjektvergleich"))
   : null;
+
+/** /vorschau/festtagskarten: Weihnachts-, Silvester- und Geburtstagskarten (31.10.2026). */
+export const VorschauFesttagskarten = import.meta.env.DEV
+  ? lazy(() => import("./pages/VorschauFesttagskarten"))
+  : null;
