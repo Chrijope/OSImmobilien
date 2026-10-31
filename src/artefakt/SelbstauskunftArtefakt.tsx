@@ -119,7 +119,8 @@ function FinanzierungsrahmenKarte({ data }: { data: SelbstauskunftData }) {
           </details>
           {rahmen.immobilienHinweis && <p className="mt-3 text-xs text-muted-foreground">{rahmen.immobilienHinweis}</p>}
           <div className="mt-4">
-            <Button variant="brand" onClick={alsPdf} disabled={laeuft} data-testid="rahmen-als-pdf">
+            {/* Grün statt Orange: Die Hauptaktion bleibt „Als PDF speichern“ oben (Christian, 31.10.2026). */}
+            <Button variant="default" onClick={alsPdf} disabled={laeuft} data-testid="rahmen-als-pdf">
               {laeuft ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
               Finanzierungsrahmen als PDF
             </Button>
@@ -131,7 +132,7 @@ function FinanzierungsrahmenKarte({ data }: { data: SelbstauskunftData }) {
   );
 }
 
-function Abschluss({ data, onNeu }: { data: SelbstauskunftData; onNeu: () => void }) {
+export function Abschluss({ data, onNeu }: { data: SelbstauskunftData; onNeu: () => void }) {
   const { toast } = useToast();
   const [laeuft, setLaeuft] = useState(false);
 
@@ -166,16 +167,23 @@ function Abschluss({ data, onNeu }: { data: SelbstauskunftData; onNeu: () => voi
               Speichere das PDF und schicke es dem Kunden per E-Mail oder WhatsApp zur Unterschrift. Er schickt es unterschrieben zurück.
             </p>
             <div className="mt-4 flex flex-col sm:flex-row flex-wrap gap-2">
-              <Button variant="brand" onClick={alsPdf} disabled={laeuft} data-testid="als-pdf-speichern">
-                {laeuft ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
-                Als PDF speichern
-              </Button>
+              {/* Pulsierender Ring hinter dem Hauptknopf: Das ist der nächste Schritt (Christian, 31.10.2026). */}
+              <span className="relative inline-flex">
+                {!laeuft && <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-md bg-brand-orange/50 animate-ping motion-reduce:animate-none" />}
+                <Button variant="brand" onClick={alsPdf} disabled={laeuft} data-testid="als-pdf-speichern" className="relative">
+                  {laeuft ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
+                  Als PDF speichern
+                </Button>
+              </span>
               <Button variant="outline" onClick={onNeu} className="gap-1.5">
                 <RotateCcw className="h-4 w-4" />
                 Neue Selbstauskunft beginnen
               </Button>
             </div>
-            <p className="text-xs text-muted-foreground mt-3">
+            <p className="mt-3 text-sm font-medium text-foreground" data-testid="hinweis-unterschrift">
+              PDF herunterladen und dem Kunden bzw. Interessenten zur Unterschrift zusenden.
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
               Die Angaben bleiben nur in diesem Browser gespeichert und werden nirgendwohin gesendet.
             </p>
           </div>
