@@ -450,8 +450,6 @@ button.kundenprofil-leadscore:hover { background: hsl(var(--muted) / .5); }
 button.kundenprofil-leadscore:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
 .kundenprofil-leadscore-text { display: flex; flex-direction: column; gap: 1px; line-height: 1.2; }
 .kundenprofil-leadscore-bogen { transition: stroke-dashoffset 600ms cubic-bezier(.2, .7, .2, 1); }
-/* Nur die beste Stufe leuchtet, dezent und ohne Blinken. */
-.kundenprofil-leadscore[data-stufe="A"] .kundenprofil-leadscore-bogen { filter: drop-shadow(0 0 3px currentColor); }
 @media (prefers-reduced-motion: reduce) { .kundenprofil-leadscore-bogen { transition: none; } }
 
 /* Angaben aus Rechnern und Gesprächen: eine Zeile je Quelle */

@@ -48,7 +48,8 @@ export function leadScoreTipp(ergebnis: LeadScoreResult): string | null {
 
 const DURCHMESSER = 60;
 const STRICH = 6;
-const RADIUS = (DURCHMESSER - STRICH) / 2;
+// Ein Pixel Rand, damit die Kantenglättung nicht am SVG-Rand abgeschnitten wird.
+const RADIUS = (DURCHMESSER - STRICH) / 2 - 1;
 const UMFANG = 2 * Math.PI * RADIUS;
 
 /**
