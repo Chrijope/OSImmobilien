@@ -62,7 +62,7 @@ describe("Der Sprung landet im richtigen Investment", () => {
     const anker = kundenDetail.slice(kundenDetail.indexOf("const ankerSprungGetan"), kundenDetail.indexOf("const investmentsGeladen"));
     expect(anker).toContain("oeffneInvestment(inv.id, { nachObenRollen: false })");
     expect(anker).toContain("scrollIntoView");
-    expect(anker).toContain("markiereProfilAbschnitt(el)");
+    expect(anker).toContain("markiereProfilAbschnitt(el, { bleibend: hash === \"finanzierung\" })");
   });
 
   it("springt, sobald der Abschnitt da ist, ohne feste Wartezeit und ohne Umweg nach oben", () => {

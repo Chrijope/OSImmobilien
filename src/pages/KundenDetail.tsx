@@ -1934,7 +1934,9 @@ export default function KundenDetail() {
       oeffneInvestment(inv.id, { nachObenRollen: false });
       // Ohne Gleiten: Man soll gleich dort stehen, nicht hinfahren.
       el.scrollIntoView({ behavior: "auto", block: "center" });
-      markiereProfilAbschnitt(el);
+      // Aus Glocke, Mail oder Chat zur Finanzierung: Der Rahmen bleibt stehen,
+      // damit der Finanzierer sofort sieht, wo er arbeiten soll.
+      markiereProfilAbschnitt(el, { bleibend: hash === "finanzierung" });
     };
 
     /*
@@ -10218,7 +10220,8 @@ export default function KundenDetail() {
                 }
                 return (
                 <div data-finanz-editable>
-                <EigenfinanzierungSection
+                {/* Eigenfinanzierung durch den Kunden ist nichts für den Finanzierer (Christian, 30.10.2026). */}
+                {!isFinanzierer && <EigenfinanzierungSection
                   investmentId={inv.id}
                   kundeId={id || ""}
                   kundeName={`${kunde.vorname} ${kunde.nachname}`}
@@ -10230,7 +10233,7 @@ export default function KundenDetail() {
                     notifyKundePipelineStufe(id || "", "notar");
                     reloadKunde();
                   }}
-                />
+                />}
                 <FinanzierungCard
                   freigabe={finanzFreigabe}
                   investmentId={inv.id}

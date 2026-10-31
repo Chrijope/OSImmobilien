@@ -23,6 +23,8 @@ const INV = "22222222-2222-2222-2222-222222222222";
 let finanzierungsZeilen: any[] = [];
 
 vi.mock("@/lib/dataCache", () => ({
+  aktiveCacheRolle: () => "admin",
+  cacheSet: vi.fn(),
   cacheGet: (tabelle: string) => (tabelle === "finanzierungen" ? finanzierungsZeilen : []),
   cacheInsert: vi.fn(async (_tabelle: string, zeile: any) => {
     // Wie im Original: der Zwischenspeicher bekommt die Zeile erst nach dem
