@@ -9,6 +9,8 @@
  * ohne neues Passwort bleibt das alte.
  */
 import { antwort, corsHeaders, dienst, nutzerAus } from "../_shared/mail-anfrage.ts";
+import { OAUTH, oauthEingerichtet, oauthRueckweg } from "../_shared/oauth.ts";
+import { statusSignieren } from "../_shared/kalender-status.ts";
 import { anmeldungPruefen, fehlerText, IMAP_PORTS, KONTO_SPALTEN, klein, kontoAbholen, passwortLesen, SMTP_PORTS, type MailKonto } from "../_shared/mailkonto.ts";
 
 const HOST = /^[a-z0-9.-]+\.[a-z]{2,}$/i;
@@ -25,6 +27,22 @@ Deno.serve(async (req) => {
   const nutzer = await nutzerAus(req);
   if (!nutzer) return antwort({ error: "Nicht angemeldet" }, 401);
   const b = await req.json().catch(() => ({}));
+
+  // Gmail und Outlook über die Anmeldung beim Anbieter statt mit Passwort.
+  if (b?.aktion === "oauth-status") return antwort({ google: oauthEingerichtet("google"), microsoft: oauthEingerichtet("microsoft") });
+  if (b?.aktion === "oauth-start") {
+    const art = b.art === "microsoft" ? "microsoft" : "google";
+    if (!oauthEingerichtet(art)) return antwort({ error: "Diese Anmeldung ist noch nicht eingerichtet." }, 409);
+    const herkunft = String(b.herkunft ?? "");
+    if (!/^https?:\/\/[^/]+$/.test(herkunft)) return antwort({ error: "Ungültige Herkunft" }, 400);
+    const o = OAUTH[art];
+    const q = new URLSearchParams({
+      client_id: o.id(), redirect_uri: oauthRueckweg(), response_type: "code", scope: o.scope.mail,
+      state: await statusSignieren({ u: nutzer.id, a: art, z: "mail", o: herkunft }),
+      ...(art === "google" ? { access_type: "offline", prompt: "consent" } : { prompt: "select_account" }),
+    });
+    return antwort({ url: `${o.auth}?${q}` });
+  }
   if (b?.aktion !== "speichern") return antwort({ error: "Unbekannte Aktion" }, 400);
 
   const adresse = klein(b.adresse);
@@ -47,8 +65,9 @@ Deno.serve(async (req) => {
 
   let passwort = typeof b.passwort === "string" && b.passwort !== "" ? b.passwort : null;
   if (b.id) {
-    const { data: alt } = await admin.from("email_konten").select("id").eq("id", b.id).eq("benutzer_id", nutzer.id).maybeSingle();
+    const { data: alt } = await admin.from("email_konten").select("id, art").eq("id", b.id).eq("benutzer_id", nutzer.id).maybeSingle();
     if (!alt) return antwort({ error: "Konto nicht gefunden." }, 404);
+    if (alt.art !== "imap") return antwort({ error: "Dieses Konto ist über die Anmeldung verbunden. Zum Ändern trennen und neu verbinden." }, 400);
     if (!passwort) passwort = await passwortLesen(admin, b.id).catch(() => null);
   }
   if (!passwort) return antwort({ error: "Bitte das Passwort oder App-Passwort eingeben." }, 400);

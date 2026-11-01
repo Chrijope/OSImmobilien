@@ -1,257 +1,230 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { CalendarCheck, CheckCircle, Loader2 } from "lucide-react";
+import { AlertTriangle, CalendarCheck, Copy, Link2, Trash2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
-import { useUserSettings } from "@/hooks/useUserSettings";
+import { edgeFehlerMitGrund } from "@/lib/edgeFehler";
+import { ladeKalenderVerbindungen, type KalenderVerbindung } from "@/lib/kalenderSync";
+import { oauthFensterOeffnen } from "@/lib/oauthFenster";
 
 /**
- * Kalenderkonten verbinden: Google ueber die Anmeldung mit dem Google-Konto,
- * Apple ueber CalDAV mit einem app-spezifischen Passwort.
+ * Kalender verbinden (01.11.2026): Google und Outlook/Microsoft 365 über die
+ * Anmeldung beim Anbieter, Apple iCloud und jeder andere CalDAV-Server mit
+ * Passwort, beliebige Kalender per Abo-Link (nur lesen). Mehrere gleichzeitig;
+ * einer ist Ziel für neue CRM-Termine. Dazu der eigene Abo-Link, mit dem die
+ * CRM-Termine in jedem Kalender erscheinen.
  *
- * Bewusst eine einzige Komponente fuer alle Stellen, an denen man verbinden
- * kann. Vorher stand die Logik nur in den Einstellungen. Wer den Kalender
- * oeffnete und nichts sah, musste erst suchen, wo man ihn verbindet.
+ * Eine Komponente für alle Stellen (Einstellungen und Kalenderseite).
  */
 
 interface Props {
-  /** Kompakt: ohne die Liste der gefundenen Kalender, fuer schmale Stellen. */
+  /** Kompakt: ohne Abo-Link und ohne Kalenderliste, für schmale Stellen. */
   kompakt?: boolean;
-  /** Nach erfolgreicher Verbindung, etwa um Termine neu zu laden. */
+  /** Nach jeder Änderung, etwa um Termine neu zu laden. */
   aufAenderung?: () => void;
 }
 
+const ART_NAME: Record<KalenderVerbindung["art"], string> = {
+  google: "Google Kalender",
+  microsoft: "Outlook / Microsoft 365",
+  caldav: "Apple iCloud / CalDAV",
+  abo: "Abonnierter Kalender",
+};
+
+type Formular = null | "caldav" | "abo";
+
+async function rufe(body: Record<string, unknown>) {
+  const { data, error } = await supabase.functions.invoke("kalender", { body });
+  if (error) throw await edgeFehlerMitGrund(error, { functionName: "kalender" });
+  return data;
+}
+
 export function KalenderKonten({ kompakt = false, aufAenderung }: Props) {
-  const { settings, saveSettings, appleCalendar, setAppleCalendar } = useUserSettings();
+  const [liste, setListe] = useState<KalenderVerbindung[]>([]);
+  const [oauth, setOauth] = useState<{ google: boolean; microsoft: boolean } | null>(null);
+  const [formular, setFormular] = useState<Formular>(null);
+  const [laeuft, setLaeuft] = useState(false);
+  const [caldav, setCaldav] = useState({ server: "", benutzer: "", passwort: "" });
+  const [abo, setAbo] = useState({ url: "", name: "" });
+  const [feed, setFeed] = useState<string | null>(null);
 
-  const [appleLaeuft, setAppleLaeuft] = useState(false);
-  const [appleFormular, setAppleFormular] = useState(false);
-  const [appleId, setAppleId] = useState("");
-  const [applePasswort, setApplePasswort] = useState("");
-  const [googleLaeuft, setGoogleLaeuft] = useState(false);
+  const laden = useCallback(async () => {
+    setListe(await ladeKalenderVerbindungen(true));
+  }, []);
 
-  const google = settings?.google_calendar as
-    | { connected?: boolean; email?: string; calendars?: { id: string; name: string; primary?: boolean }[] }
-    | null;
+  useEffect(() => {
+    void laden();
+    rufe({ aktion: "oauth-status" }).then(setOauth).catch(() => setOauth({ google: false, microsoft: false }));
+  }, [laden]);
 
-  const verbindeApple = async () => {
-    if (!appleId || !applePasswort) {
-      toast.error("Bitte Apple-ID und app-spezifisches Passwort eingeben.");
-      return;
-    }
-    setAppleLaeuft(true);
+  const geaendert = async () => {
+    await laden();
+    aufAenderung?.();
+  };
+
+  const anmelden = async (art: "google" | "microsoft") => {
     try {
-      const { data, error } = await supabase.functions.invoke("apple-calendar", {
-        body: { action: "test-connection", appleId, appPassword: applePasswort },
-      });
-      if (error) throw error;
-      const antwort = data as { connected?: boolean; message?: string; error?: string } | null;
-      if (antwort?.connected) {
-        setAppleCalendar(data as Parameters<typeof setAppleCalendar>[0]);
-        setAppleFormular(false);
-        setApplePasswort("");
-        toast.success(antwort.message || "Apple Kalender verbunden.");
-        aufAenderung?.();
-      } else {
-        toast.error(antwort?.error || "Die Verbindung kam nicht zustande.");
+      const { url } = await rufe({ aktion: "oauth-start", art, herkunft: window.location.origin });
+      oauthFensterOeffnen(url, () => void geaendert());
+    } catch (e) {
+      toast.error((e as Error).message);
+    }
+  };
+
+  const verbinden = async (): Promise<boolean> => {
+    setLaeuft(true);
+    try {
+      if (formular === "caldav") {
+        const r = await rufe({ aktion: "caldav-verbinden", server_url: caldav.server || undefined, benutzername: caldav.benutzer, passwort: caldav.passwort });
+        toast.success(`Kalender verbunden, ${r.kalender} Kalender gefunden`);
+        setCaldav({ server: "", benutzer: "", passwort: "" });
+      } else if (formular === "abo") {
+        const r = await rufe({ aktion: "abo-verbinden", url: abo.url, name: abo.name });
+        toast.success(`Kalender abonniert, ${r.termine} Termine gefunden`);
+        setAbo({ url: "", name: "" });
       }
-    } catch (fehler) {
-      toast.error("Die Verbindung kam nicht zustande. Bitte Apple-ID und Passwort prüfen.");
-      console.error("verbindeApple:", fehler);
+      setFormular(null);
+      await geaendert();
+      return true;
+    } catch (e) {
+      toast.error((e as Error).message);
+      return false;
     } finally {
-      setAppleLaeuft(false);
+      setLaeuft(false);
     }
   };
 
-  const trenneApple = async () => {
-    setAppleLaeuft(true);
+  const trennen = async (v: KalenderVerbindung) => {
+    const { error } = await supabase.from("kalender_verbindungen" as never).delete().eq("id", v.id);
+    if (error) return toast.error(`Nicht getrennt: ${error.message}`);
+    toast.success(`${ART_NAME[v.art]} getrennt, Zugang gelöscht`);
+    await geaendert();
+  };
+
+  const alsZiel = async (v: KalenderVerbindung) => {
     try {
-      const { error } = await supabase.functions.invoke("apple-calendar", { body: { action: "disconnect" } });
-      if (error) throw error;
-      setAppleCalendar(null);
-      toast.success("Apple Kalender getrennt.");
-      aufAenderung?.();
-    } catch (fehler) {
-      toast.error("Der Kalender konnte nicht getrennt werden.");
-      console.error("trenneApple:", fehler);
-    } finally {
-      setAppleLaeuft(false);
+      await rufe({ aktion: "schreibziel", id: v.id });
+      toast.success(`Neue CRM-Termine landen in ${v.konto}`);
+      await geaendert();
+    } catch (e) {
+      toast.error((e as Error).message);
     }
   };
 
-  const verbindeGoogle = async () => {
-    setGoogleLaeuft(true);
+  const feedErzeugen = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke("google-calendar", { body: { action: "get-auth-url" } });
-      if (error) throw error;
-      const url = (data as { url?: string })?.url;
-      if (!url) throw new Error("Keine Anmeldeadresse erhalten");
-
-      const fenster = window.open(url, "google-calendar", "width=520,height=680");
-      const beiNachricht = (ereignis: MessageEvent) => {
-        if (ereignis.data?.type === "google-calendar-success") {
-          window.removeEventListener("message", beiNachricht);
-          setGoogleLaeuft(false);
-          saveSettings({
-            ...settings,
-            google_calendar: { connected: true, email: ereignis.data.email, calendars: ereignis.data.calendars },
-          });
-          toast.success(`Google Calendar verbunden als ${ereignis.data.email}.`);
-          aufAenderung?.();
-        } else if (ereignis.data?.type === "google-calendar-error") {
-          window.removeEventListener("message", beiNachricht);
-          setGoogleLaeuft(false);
-          toast.error("Die Anmeldung bei Google wurde abgebrochen.");
-        }
-      };
-      window.addEventListener("message", beiNachricht);
-
-      // Wenn der Nutzer das Fenster einfach schliesst, kommt nie eine Antwort.
-      const wache = window.setInterval(() => {
-        if (fenster?.closed) {
-          window.clearInterval(wache);
-          window.removeEventListener("message", beiNachricht);
-          setGoogleLaeuft(false);
-        }
-      }, 800);
-    } catch (fehler) {
-      setGoogleLaeuft(false);
-      toast.error("Google Calendar konnte nicht geöffnet werden.");
-      console.error("verbindeGoogle:", fehler);
-    }
-  };
-
-  const trenneGoogle = async () => {
-    setGoogleLaeuft(true);
-    try {
-      const { error } = await supabase.functions.invoke("google-calendar", { body: { action: "disconnect" } });
-      if (error) throw error;
-      saveSettings({ ...settings, google_calendar: null });
-      toast.success("Google Calendar getrennt.");
-      aufAenderung?.();
-    } catch (fehler) {
-      toast.error("Der Kalender konnte nicht getrennt werden.");
-      console.error("trenneGoogle:", fehler);
-    } finally {
-      setGoogleLaeuft(false);
+      const r = await rufe({ aktion: "feed-link" });
+      setFeed(r.url);
+      await navigator.clipboard?.writeText(r.url).catch(() => {});
+      toast.success("Neuer Abo-Link erstellt und kopiert. Ein älterer Link gilt nicht mehr.");
+    } catch (e) {
+      toast.error((e as Error).message);
     }
   };
 
   return (
     <div className="space-y-3">
-      {/* Google */}
-      <Card className="p-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="min-w-0">
-            <p className="flex items-center gap-2 text-sm font-medium">
-              <CalendarCheck className="h-4 w-4" /> Google Calendar
-            </p>
-            <p className="mt-0.5 text-xs text-muted-foreground">
-              {google?.connected
-                ? `Verbunden als ${google.email || "Google-Konto"} · ${google.calendars?.length || 0} Kalender`
-                : "Nicht verbunden. Anmeldung mit deinem Google-Konto."}
-            </p>
-          </div>
-          {google?.connected ? (
-            <Button variant="outline" size="sm" onClick={() => void trenneGoogle()} disabled={googleLaeuft}>
-              {googleLaeuft ? "Wird getrennt…" : "Trennen"}
-            </Button>
-          ) : (
-            <Button size="sm" onClick={() => void verbindeGoogle()} disabled={googleLaeuft}>
-              {googleLaeuft ? <><Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />Verbinde…</> : "Verbinden"}
-            </Button>
-          )}
-        </div>
-
-        {!kompakt && google?.connected && (google.calendars?.length ?? 0) > 0 && (
-          <div className="mt-3 border-t pt-3">
-            <p className="mb-2 text-xs font-medium text-muted-foreground">Gefundene Kalender:</p>
-            <div className="space-y-1">
-              {google!.calendars!.map((kal, i) => (
-                <div key={i} className="flex items-center gap-2 text-xs">
-                  <CheckCircle className="h-3 w-3 text-primary" />
-                  <span>{kal.name}{kal.primary ? " (Primär)" : ""}</span>
-                </div>
-              ))}
+      {liste.map((v) => (
+        <Card key={v.id} className="p-4">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="flex items-center gap-2 text-sm font-medium"><CalendarCheck className="h-4 w-4 shrink-0" /> {ART_NAME[v.art]}</p>
+              <p className="mt-0.5 text-xs text-muted-foreground truncate">
+                {v.konto}{v.kalender.length ? ` · ${v.kalender.length} Kalender` : ""}{v.schreibziel ? " · neue CRM-Termine landen hier" : ""}
+              </p>
+              {v.letzter_fehler && <p className="mt-1 flex items-start gap-1 text-xs text-destructive"><AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" /> {v.letzter_fehler}</p>}
+              {!kompakt && v.kalender.length > 0 && (
+                <p className="mt-1 text-xs text-muted-foreground">{v.kalender.map((k) => k.name + (k.primary ? " (Haupt)" : "")).join(", ")}</p>
+              )}
+            </div>
+            <div className="flex items-center gap-1">
+              {v.art !== "abo" && !v.schreibziel && (
+                <Button variant="outline" size="sm" onClick={() => void alsZiel(v)}>Für CRM-Termine nutzen</Button>
+              )}
+              <Button variant="ghost" size="icon" aria-label="Trennen" onClick={() => void trennen(v)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
             </div>
           </div>
-        )}
-      </Card>
+        </Card>
+      ))}
 
-      {/* Apple */}
-      <Card className="p-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="min-w-0">
-            <p className="flex items-center gap-2 text-sm font-medium">
-              <CalendarCheck className="h-4 w-4" /> Apple Kalender
-            </p>
-            <p className="mt-0.5 text-xs text-muted-foreground">
-              {appleCalendar?.connected
-                ? `Verbunden als ${appleCalendar.apple_id || "Apple-ID"} · ${appleCalendar.calendars?.length || 0} Kalender`
-                : "Nicht verbunden. CalDAV-Verbindung zu iCloud."}
-            </p>
+      <div className="flex flex-wrap gap-2">
+        <Button size="sm" variant="outline" disabled={!oauth?.google} title={oauth && !oauth.google ? "Die Google-Anmeldung ist noch nicht eingerichtet." : undefined} onClick={() => void anmelden("google")}>
+          Mit Google verbinden
+        </Button>
+        <Button size="sm" variant="outline" disabled={!oauth?.microsoft} title={oauth && !oauth.microsoft ? "Die Microsoft-Anmeldung ist noch nicht eingerichtet." : undefined} onClick={() => void anmelden("microsoft")}>
+          Mit Outlook / Microsoft verbinden
+        </Button>
+        <Button size="sm" variant="outline" onClick={() => setFormular(formular === "caldav" ? null : "caldav")}>Apple iCloud / CalDAV</Button>
+        <Button size="sm" variant="outline" onClick={() => setFormular(formular === "abo" ? null : "abo")}><Link2 className="mr-1 h-4 w-4" /> Kalender abonnieren</Button>
+      </div>
+      {oauth && (!oauth.google || !oauth.microsoft) && (
+        <p className="text-xs text-muted-foreground">
+          {[!oauth.google && "Google", !oauth.microsoft && "Microsoft"].filter(Boolean).join(" und ")}: Die Anmeldung wird beim Umzug auf den eigenen Server eingerichtet. Bis dahin geht Outlook auch über „Kalender abonnieren“ (nur lesen).
+        </p>
+      )}
+
+      {formular === "caldav" && (
+        <Card className="space-y-3 p-4">
+          <div className="rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground">
+            iCloud: Apple-ID und ein app-spezifisches Passwort von account.apple.com (Anmeldung und Sicherheit, App-spezifische Passwörter). Für andere Anbieter (etwa Nextcloud, mailbox.org, IONOS) zusätzlich die CalDAV-Adresse eintragen.
           </div>
-          {appleCalendar?.connected ? (
-            <Button variant="outline" size="sm" onClick={() => void trenneApple()} disabled={appleLaeuft}>
-              {appleLaeuft ? "Wird getrennt…" : "Trennen"}
-            </Button>
-          ) : (
-            <Button size="sm" onClick={() => setAppleFormular((v) => !v)} disabled={appleLaeuft}>
-              Verbinden
-            </Button>
-          )}
-        </div>
+          <div>
+            <Label htmlFor="caldav-server">CalDAV-Adresse (leer lassen für iCloud)</Label>
+            <Input id="caldav-server" value={caldav.server} placeholder="https://caldav.icloud.com" onChange={(e) => setCaldav({ ...caldav, server: e.target.value })} />
+          </div>
+          <div>
+            <Label htmlFor="caldav-benutzer">Apple-ID oder Benutzername</Label>
+            <Input id="caldav-benutzer" value={caldav.benutzer} autoComplete="off" onChange={(e) => setCaldav({ ...caldav, benutzer: e.target.value })} />
+          </div>
+          <div>
+            <Label htmlFor="caldav-passwort">App-spezifisches Passwort</Label>
+            <Input id="caldav-passwort" type="password" value={caldav.passwort} autoComplete="new-password" placeholder="xxxx-xxxx-xxxx-xxxx" onChange={(e) => setCaldav({ ...caldav, passwort: e.target.value })} />
+          </div>
+          <div className="flex gap-2">
+            <Button disabled={laeuft || !caldav.benutzer || !caldav.passwort} onClick={verbinden}>{laeuft ? "Verbinde …" : "Verbinden"}</Button>
+            <Button variant="outline" onClick={() => setFormular(null)}>Abbrechen</Button>
+          </div>
+        </Card>
+      )}
 
-        {appleFormular && !appleCalendar?.connected && (
-          <div className="mt-4 space-y-3 border-t pt-4">
-            <div className="rounded-lg bg-muted/50 p-3">
-              <p className="mb-1 text-xs font-medium text-muted-foreground">So bekommst du das Passwort:</p>
-              <ol className="list-decimal space-y-1 pl-4 text-xs text-muted-foreground">
-                <li>
-                  Gehe zu{" "}
-                  <a href="https://appleid.apple.com/account/manage" target="_blank" rel="noopener noreferrer" className="text-primary underline">
-                    appleid.apple.com
-                  </a>
-                </li>
-                <li>Unter „Anmeldung und Sicherheit" auf „App-spezifische Passwörter"</li>
-                <li>Ein neues Passwort mit dem Namen „OS Immobilien CRM" erstellen</li>
-                <li>Das erzeugte Passwort hier einfügen</li>
-              </ol>
-            </div>
-            <div>
-              <Label htmlFor="apple-id">Apple-ID (E-Mail)</Label>
-              <Input id="apple-id" value={appleId} onChange={(e) => setAppleId(e.target.value)} placeholder="deine@icloud.com" className="mt-1.5" autoComplete="off" />
-            </div>
-            <div>
-              <Label htmlFor="apple-passwort">App-spezifisches Passwort</Label>
-              <Input id="apple-passwort" type="password" value={applePasswort} onChange={(e) => setApplePasswort(e.target.value)} placeholder="xxxx-xxxx-xxxx-xxxx" className="mt-1.5" autoComplete="off" />
-            </div>
+      {formular === "abo" && (
+        <Card className="space-y-3 p-4">
+          <div className="rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground">
+            Jeder Kalender, der einen Abo-Link (.ics oder webcal://) anbietet: Outlook (Kalender freigeben, ICS-Link veröffentlichen), Google (Geheime Adresse im iCal-Format), Feiertage, Teamkalender. Nur lesen.
+          </div>
+          <div>
+            <Label htmlFor="abo-url">Abo-Link</Label>
+            <Input id="abo-url" value={abo.url} placeholder="https://… oder webcal://…" onChange={(e) => setAbo({ ...abo, url: e.target.value })} />
+          </div>
+          <div>
+            <Label htmlFor="abo-name">Name</Label>
+            <Input id="abo-name" value={abo.name} placeholder="z. B. Outlook Büro" onChange={(e) => setAbo({ ...abo, name: e.target.value })} />
+          </div>
+          <div className="flex gap-2">
+            <Button disabled={laeuft || !abo.url} onClick={verbinden}>{laeuft ? "Prüfe …" : "Abonnieren"}</Button>
+            <Button variant="outline" onClick={() => setFormular(null)}>Abbrechen</Button>
+          </div>
+        </Card>
+      )}
+
+      {!kompakt && (
+        <Card className="space-y-2 p-4">
+          <p className="flex items-center gap-2 text-sm font-medium"><Link2 className="h-4 w-4" /> CRM-Termine in deinem Kalender abonnieren</p>
+          <p className="text-xs text-muted-foreground">
+            Ein persönlicher Link für Apple, Google und Outlook: Dort als Kalender abonnieren, und deine CRM-Termine erscheinen automatisch. Wer den Link hat, sieht deine Termine; ein neuer Link macht den alten ungültig.
+          </p>
+          {feed && (
             <div className="flex gap-2">
-              <Button onClick={() => void verbindeApple()} disabled={appleLaeuft || !appleId || !applePasswort}>
-                {appleLaeuft ? "Verbinde…" : "Jetzt verbinden"}
-              </Button>
-              <Button variant="outline" onClick={() => setAppleFormular(false)}>Abbrechen</Button>
+              <Input readOnly value={feed} onFocus={(e) => e.currentTarget.select()} />
+              <Button variant="outline" size="icon" aria-label="Kopieren" onClick={() => void navigator.clipboard?.writeText(feed)}><Copy className="h-4 w-4" /></Button>
             </div>
-          </div>
-        )}
-
-        {!kompakt && appleCalendar?.connected && (appleCalendar.calendars?.length ?? 0) > 0 && (
-          <div className="mt-3 border-t pt-3">
-            <p className="mb-2 text-xs font-medium text-muted-foreground">Gefundene Kalender:</p>
-            <div className="space-y-1">
-              {appleCalendar.calendars!.map((kal, i) => (
-                <div key={i} className="flex items-center gap-2 text-xs">
-                  <CheckCircle className="h-3 w-3 text-primary" />
-                  <span>{kal.name || "Unbenannt"}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </Card>
+          )}
+          <Button size="sm" variant="outline" onClick={() => void feedErzeugen()}>{feed ? "Neuen Link erstellen" : "Abo-Link erstellen"}</Button>
+        </Card>
+      )}
     </div>
   );
 }

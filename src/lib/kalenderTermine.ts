@@ -57,7 +57,9 @@ export interface RohFremdTermin {
  * gebucht hat. Sie stehen in der Tabelle `buchungen` und nicht zwingend in
  * den Aktivitaeten, deshalb sind sie eine eigene Quelle.
  */
-export type TerminQuelle = "crm" | "google" | "apple" | "buchung";
+/** Fremde Kalender seit 01.11.2026 zusätzlich: Microsoft, CalDAV, Abo. */
+export type TerminQuelle = "crm" | "google" | "apple" | "microsoft" | "caldav" | "abo" | "buchung";
+export type FremdQuelle = Exclude<TerminQuelle, "crm" | "buchung">;
 
 export interface KalenderEintrag {
   id: string;
@@ -217,7 +219,7 @@ export function sammleEigeneTermine({
  * iCloud liefert CalDAV-Zeitstempel wie "20260803T140000Z". Ohne
  * `fremdZeitZuIso` stuende im Kalender ueberall "Invalid Date".
  */
-export function zuFremdEintrag(roh: RohFremdTermin, quelle: "google" | "apple"): KalenderEintrag | null {
+export function zuFremdEintrag(roh: RohFremdTermin, quelle: FremdQuelle): KalenderEintrag | null {
   const start = fremdZeitZuIso(roh.start);
   const zeit = zeitstempelAus(start);
   if (zeit === null) return null;

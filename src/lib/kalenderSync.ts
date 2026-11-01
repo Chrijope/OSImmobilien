@@ -16,12 +16,15 @@ import { getCurrentUserId } from "@/lib/currentUser";
  * nichts nach oben.
  */
 
-export type KalenderTyp = "google" | "apple";
+/** „apple“ steht in älteren Verknüpfungen für iCloud, neue heißen „caldav“. */
+export type KalenderTyp = "google" | "apple" | "microsoft" | "caldav";
 
 export interface KalenderVerknuepfung {
   typ: KalenderTyp;
   eventId: string;
   url?: string;
+  /** Seit 01.11.2026: die Verbindung, in der der Eintrag steht. */
+  verbindungId?: string;
 }
 
 export interface TerminDaten {
@@ -33,25 +36,45 @@ export interface TerminDaten {
   dauerMinuten?: number;
 }
 
-interface GoogleEinstellung { connected?: boolean }
+/** Eine Zeile aus `kalender_verbindungen`, ohne Zugangsdaten (die liegen im Tresor). */
+export interface KalenderVerbindung {
+  id: string;
+  art: "google" | "microsoft" | "caldav" | "abo";
+  konto: string;
+  kalender: { id: string; name: string; primary?: boolean }[];
+  schreibziel: boolean;
+  letzter_fehler: string | null;
+}
+
+let verbindungen: KalenderVerbindung[] | null = null;
 
 /**
- * Welchen Kalender hat dieser Nutzer verbunden?
- *
- * Achtung, die beiden liegen an unterschiedlichen Stellen: Google steckt im
- * JSONB-Feld `einstellungen`, Apple in einer eigenen Spalte `apple_calendar`
- * derselben Zeile. Wer beides verbunden hat, bekommt seine CRM-Termine in
- * Google, weil dort die Erneuerung des Zugangs zuverlaessiger laeuft.
+ * Die verbundenen Kalender des Nutzers, einmal geladen und dann gemerkt.
+ * Mit `neu` nach einer Änderung frisch aus der Datenbank. Fehler ergeben eine
+ * leere Liste: Der Kalenderabgleich darf nie den eigentlichen Vorgang aufhalten.
+ */
+export async function ladeKalenderVerbindungen(neu = false): Promise<KalenderVerbindung[]> {
+  if (verbindungen && !neu) return verbindungen;
+  try {
+    const { data } = await supabase
+      .from("kalender_verbindungen" as never)
+      .select("id, art, konto, kalender, schreibziel, letzter_fehler")
+      .order("erstellt_am");
+    verbindungen = (data as unknown as KalenderVerbindung[]) ?? [];
+  } catch {
+    verbindungen = verbindungen ?? [];
+  }
+  return verbindungen;
+}
+
+/**
+ * Wohin neue CRM-Termine geschrieben werden: die Art des Kalenders, der als
+ * Ziel gewählt ist (in den Einstellungen unter Kalender). Vor dem ersten
+ * Laden null; `legeTerminAn` lädt deshalb vorher.
  */
 export function verbundenerKalender(): KalenderTyp | null {
-  const google = getUserSetting<GoogleEinstellung | null>("google_calendar", null);
-  if (google?.connected) return "google";
-
-  const benutzerId = getCurrentUserId();
-  const zeilen = cacheGet("user_settings") as Array<{ user_id?: string; apple_calendar?: { connected?: boolean } }>;
-  const zeile = zeilen.find((r) => !benutzerId || r.user_id === benutzerId);
-  if (zeile?.apple_calendar?.connected) return "apple";
-  return null;
+  const ziel = verbindungen?.find((v) => v.schreibziel && v.art !== "abo");
+  return ziel ? (ziel.art as KalenderTyp) : null;
 }
 
 /**
@@ -79,21 +102,18 @@ export function terminAbgleichAktiv(): boolean {
   return abgleichAktiv("termine");
 }
 
-function funktionsName(typ: KalenderTyp): string {
-  return typ === "google" ? "google-calendar" : "apple-calendar";
-}
-
 export async function legeTerminAn(
   daten: TerminDaten,
   schalter: SyncSchalter = "termine",
 ): Promise<KalenderVerknuepfung | null> {
-  const typ = verbundenerKalender();
-  if (!typ || !abgleichAktiv(schalter)) return null;
+  if (!abgleichAktiv(schalter)) return null;
+  await ladeKalenderVerbindungen();
+  if (!verbundenerKalender()) return null;
 
   try {
-    const { data, error } = await supabase.functions.invoke(funktionsName(typ), {
+    const { data, error } = await supabase.functions.invoke("kalender", {
       body: {
-        action: "create-event",
+        aktion: "anlegen",
         titel: daten.titel,
         beschreibung: daten.beschreibung,
         ort: daten.ort,
@@ -102,12 +122,12 @@ export async function legeTerminAn(
       },
     });
     if (error) throw error;
-    const antwort = data as { ok?: boolean; eventId?: string; error?: string };
+    const antwort = data as { ok?: boolean; eventId?: string; verbindungId?: string; typ?: KalenderTyp; error?: string };
     if (antwort?.error || !antwort?.eventId) {
       console.warn("Kalendereintrag nicht angelegt:", antwort?.error);
       return null;
     }
-    return { typ, eventId: antwort.eventId };
+    return { typ: antwort.typ ?? "google", eventId: antwort.eventId, verbindungId: antwort.verbindungId };
   } catch (fehler) {
     console.warn("Kalendereintrag nicht angelegt:", fehler);
     return null;
@@ -120,11 +140,12 @@ export async function aendereTermin(
 ): Promise<boolean> {
   if (!terminAbgleichAktiv()) return false;
   try {
-    const { data, error } = await supabase.functions.invoke(funktionsName(verknuepfung.typ), {
+    const { data, error } = await supabase.functions.invoke("kalender", {
       body: {
-        action: "update-event",
-        eventId: verknuepfung.eventId,
-        calendarUrl: verknuepfung.url,
+        aktion: "aendern",
+        typ: verknuepfung.typ,
+        verbindungId: verknuepfung.verbindungId,
+        eventId: verknuepfung.url || verknuepfung.eventId,
         titel: daten.titel,
         beschreibung: daten.beschreibung,
         ort: daten.ort,
@@ -142,11 +163,12 @@ export async function aendereTermin(
 
 export async function loescheTermin(verknuepfung: KalenderVerknuepfung): Promise<boolean> {
   try {
-    const { data, error } = await supabase.functions.invoke(funktionsName(verknuepfung.typ), {
+    const { data, error } = await supabase.functions.invoke("kalender", {
       body: {
-        action: "delete-event",
-        eventId: verknuepfung.eventId,
-        calendarUrl: verknuepfung.url,
+        aktion: "loeschen",
+        typ: verknuepfung.typ,
+        verbindungId: verknuepfung.verbindungId,
+        eventId: verknuepfung.url || verknuepfung.eventId,
       },
     });
     if (error) throw error;

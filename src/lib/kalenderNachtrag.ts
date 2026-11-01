@@ -24,7 +24,7 @@
  */
 
 import { cacheUpdate } from "./dataCache";
-import { legeTerminAn, terminZeitpunkt, dauerInMinuten, verbundenerKalender, terminAbgleichAktiv } from "./kalenderSync";
+import { legeTerminAn, terminZeitpunkt, dauerInMinuten, verbundenerKalender, terminAbgleichAktiv, ladeKalenderVerbindungen } from "./kalenderSync";
 import { terminGehoertMir, zeitstempelAus, type KalenderAktivitaet } from "./kalenderTermine";
 
 /** Mehr als das wird in einem Durchgang nicht uebertragen. */
@@ -122,6 +122,7 @@ export async function trageOffeneTermineNach(argumente: {
   jetzt?: number;
 }): Promise<number> {
   if (laeuft) return 0;
+  await ladeKalenderVerbindungen();
   if (!verbundenerKalender() || !terminAbgleichAktiv()) return 0;
 
   const kandidaten = waehleNachzutragende({ ...argumente, bereitsVersucht });
@@ -146,7 +147,7 @@ export async function trageOffeneTermineNach(argumente: {
         await cacheUpdate(
           "aktivitaeten",
           kandidat.id,
-          { kalender_typ: verknuepfung.typ, kalender_event_id: verknuepfung.eventId },
+          { kalender_typ: verknuepfung.typ, kalender_event_id: verknuepfung.eventId, ...(verknuepfung.verbindungId ? { kalender_verbindung_id: verknuepfung.verbindungId } : {}) },
           { silent: true },
         );
         uebertragen += 1;

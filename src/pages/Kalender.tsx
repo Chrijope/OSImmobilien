@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { CalendarDays, ChevronLeft, ChevronRight, Settings, RefreshCw, Loader2, Clock, MapPin, User, Video } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useUserSettings } from "@/hooks/useUserSettings";
+import { ladeKalenderVerbindungen, type KalenderVerbindung } from "@/lib/kalenderSync";
 import { useUser } from "@/contexts/UserContext";
 import { KalenderKonten } from "@/components/kalender/KalenderKonten";
 import { gleicheKalenderAb } from "@/lib/kalenderRueckrichtung";
@@ -20,6 +20,7 @@ import {
   gruppiereNachTag,
   tagSchluessel,
   type KalenderEintrag,
+  type FremdQuelle,
 } from "@/lib/kalenderTermine";
 import { trageOffeneTermineNach } from "@/lib/kalenderNachtrag";
 import { getAlleTermine } from "@/lib/aktivitaetenStore";
@@ -64,12 +65,15 @@ const QUELLE_LABEL: Record<KalenderEintrag["quelle"], string> = {
   crm: "CRM",
   google: "Google",
   apple: "Apple",
+  microsoft: "Outlook",
+  caldav: "CalDAV",
+  abo: "Abo",
   buchung: "Videocall",
 };
 
 const Kalender = () => {
   const navigate = useNavigate();
-  const { settings, appleCalendar } = useUserSettings();
+  const [verbindungen, setVerbindungen] = useState<KalenderVerbindung[]>([]);
   const { user, authUser } = useUser();
   const [fremdTermine, setFremdTermine] = useState<KalenderEintrag[]>([]);
   const [buchungen, setBuchungen] = useState<Buchung[]>([]);
@@ -81,8 +85,11 @@ const Kalender = () => {
   // hier wird nur ein neues Rechnen ausgeloest.
   const [datenStand, setDatenStand] = useState(0);
 
-  const googleCal = settings?.google_calendar as { connected?: boolean; email?: string } | null;
-  const hasAnyCalendar = Boolean(googleCal?.connected || appleCalendar?.connected);
+  const hasAnyCalendar = verbindungen.length > 0;
+  const verbindungenLaden = useCallback(async () => setVerbindungen(await ladeKalenderVerbindungen(true)), []);
+  useEffect(() => {
+    void verbindungenLaden();
+  }, [verbindungenLaden]);
 
   /** Kontakte, die dem angemeldeten Nutzer gehoeren, wie in der Inbox. */
   const ownedKundeIds = useMemo(() => {
@@ -198,41 +205,20 @@ const Kalender = () => {
     const rohFuerAbgleich: Array<{ id: string; start: string; summary?: string }> = [];
 
     try {
-      if (googleCal?.connected) {
-        const { data, error } = await supabase.functions.invoke("google-calendar", {
-          body: {
-            action: "fetch-events",
-            timeMin: rangeStart.toISOString(),
-            timeMax: rangeEnd.toISOString(),
-          },
-        });
-        if (!error && data?.events) {
-          for (const e of data.events as Array<{ id: string; summary?: string; start: string; end?: string; location?: string }>) {
-            rohFuerAbgleich.push({ id: e.id, start: e.start, summary: e.summary });
-            const eintrag = zuFremdEintrag(e, "google");
-            if (eintrag) geladen.push(eintrag);
-          }
-        }
+      // Alle verbundenen Kalender auf einmal; ein gestörter hält die anderen nicht auf.
+      const { data, error } = await supabase.functions.invoke("kalender", {
+        body: { aktion: "termine", von: rangeStart.toISOString(), bis: rangeEnd.toISOString() },
+      });
+      if (error) throw error;
+      for (const e of (data?.termine ?? []) as Array<{ id: string; uid?: string; art: FremdQuelle; titel: string; start: string; ende?: string; ort?: string }>) {
+        rohFuerAbgleich.push({ id: e.id, start: e.start, summary: e.titel });
+        // Ältere iCloud-Termine im CRM kennen nur die UID, neue die volle Adresse.
+        if (e.uid && e.uid !== e.id) rohFuerAbgleich.push({ id: e.uid, start: e.start, summary: e.titel });
+        const eintrag = zuFremdEintrag({ id: e.id, summary: e.titel, start: e.start, end: e.ende, location: e.ort }, e.art);
+        if (eintrag) geladen.push(eintrag);
       }
-
-      if (appleCalendar?.connected) {
-        const { data, error } = await supabase.functions.invoke("apple-calendar", {
-          body: {
-            action: "fetch-events",
-            startDate: rangeStart.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z",
-            endDate: rangeEnd.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z",
-          },
-        });
-        if (!error && data?.events) {
-          for (const e of data.events as Array<{ uid?: string; summary?: string; start: string; end?: string }>) {
-            const id = e.uid || `${e.summary || ""}${e.start}`;
-            rohFuerAbgleich.push({ id, start: e.start, summary: e.summary });
-            // iCloud liefert CalDAV-Zeitstempel, die Umschrift steckt in
-            // zuFremdEintrag. Ohne sie stuende ueberall "Invalid Date".
-            const eintrag = zuFremdEintrag({ id, summary: e.summary, start: e.start, end: e.end }, "apple");
-            if (eintrag) geladen.push(eintrag);
-          }
-        }
+      for (const f of (data?.fehler ?? []) as Array<{ konto: string; fehler: string }>) {
+        toast.error(`Kalender ${f.konto}: ${f.fehler}`);
       }
     } catch (e) {
       console.error("Kalender fetch error:", e);
@@ -273,7 +259,7 @@ const Kalender = () => {
     } catch (e) {
       console.warn("Kalenderabgleich fehlgeschlagen:", e);
     }
-  }, [hasAnyCalendar, googleCal?.connected, appleCalendar?.connected, currentDate]);
+  }, [hasAnyCalendar, verbindungen, currentDate]);
 
   useEffect(() => {
     fetchEvents();
@@ -595,7 +581,7 @@ const Kalender = () => {
           {/* Verbundene Kalender: hier auch das zweite Konto nachtragen oder trennen. */}
           <div>
             <h3 className="mb-2 text-xs font-medium text-muted-foreground">Verbundene Kalender</h3>
-            <KalenderKonten kompakt aufAenderung={fetchEvents} />
+            <KalenderKonten kompakt aufAenderung={() => void verbindungenLaden()} />
             {hasAnyCalendar ? (
               <p className="mt-2 px-1 text-[11px] leading-relaxed text-muted-foreground">
                 Termine, die du im CRM anlegst, werden in den verbundenen Kalender eingetragen.

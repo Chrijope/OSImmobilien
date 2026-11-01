@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { edgeFehlerMitGrund } from "@/lib/edgeFehler";
+import { oauthFensterOeffnen } from "@/lib/oauthFenster";
 import { ANBIETER, anbieterFuerAdresse, type MailAnbieter } from "@/lib/mailAnbieter";
 import { datumUhrzeitText } from "@/lib/sprachFormat";
 
@@ -22,6 +23,7 @@ import { datumUhrzeitText } from "@/lib/sprachFormat";
 
 export interface EmailKontoZeile {
   id: string;
+  art: "imap" | "google" | "microsoft";
   adresse: string;
   anzeigename: string | null;
   imap_host: string | null;
@@ -33,7 +35,7 @@ export interface EmailKontoZeile {
   letzter_fehler: string | null;
 }
 
-export const KONTO_FELDER = "id, adresse, anzeigename, imap_host, imap_port, smtp_host, smtp_port, benutzername, zuletzt_abgeholt, letzter_fehler";
+export const KONTO_FELDER = "id, art, adresse, anzeigename, imap_host, imap_port, smtp_host, smtp_port, benutzername, zuletzt_abgeholt, letzter_fehler";
 
 interface Entwurf {
   id?: string;
@@ -61,6 +63,7 @@ export function EmailKontenVerwaltung() {
   const [speichert, setSpeichert] = useState(false);
   const [holt, setHolt] = useState<string | null>(null);
   const [loeschen, setLoeschen] = useState<EmailKontoZeile | null>(null);
+  const [oauth, setOauth] = useState<{ google: boolean; microsoft: boolean } | null>(null);
 
   const laden = useCallback(async () => {
     const { data, error } = await supabase.from("email_konten" as never).select(KONTO_FELDER).order("erstellt_am");
@@ -71,7 +74,19 @@ export function EmailKontenVerwaltung() {
 
   useEffect(() => {
     void laden();
+    supabase.functions.invoke("email-konten", { body: { aktion: "oauth-status" } })
+      .then(({ data }) => setOauth(data ?? { google: false, microsoft: false }));
   }, [laden]);
+
+  /** Gmail oder Outlook über die Anmeldung beim Anbieter, ohne Passwort. */
+  const anmelden = async (art: "google" | "microsoft") => {
+    const { data, error } = await supabase.functions.invoke("email-konten", { body: { aktion: "oauth-start", art, herkunft: window.location.origin } });
+    if (error || !data?.url) {
+      const f = error ? await edgeFehlerMitGrund(error, { functionName: "email-konten" }) : null;
+      return toast.error((f as Error)?.message || "Anmeldung nicht möglich");
+    }
+    oauthFensterOeffnen(data.url, () => void laden());
+  };
 
   const anbieter = entwurf ? ANBIETER.find((a) => a.id === entwurf.anbieter) : undefined;
 
@@ -147,6 +162,7 @@ export function EmailKontenVerwaltung() {
             <Button variant="ghost" size="icon" aria-label="Jetzt abholen" disabled={holt === k.id} onClick={() => abholen(k)}>
               <RefreshCw className={`h-4 w-4 text-muted-foreground ${holt === k.id ? "animate-spin" : ""}`} />
             </Button>
+{k.art === "imap" && (
             <Button
               variant="ghost"
               size="icon"
@@ -166,11 +182,19 @@ export function EmailKontenVerwaltung() {
             >
               <Pencil className="h-4 w-4 text-muted-foreground" />
             </Button>
+            )}
             <Button variant="ghost" size="icon" aria-label="Entfernen" onClick={() => setLoeschen(k)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
           </div>
         </Card>
       ))}
-      <Button variant="outline" size="sm" onClick={() => setEntwurf({ ...LEER })}><Plus className="h-4 w-4 mr-1" /> E-Mail-Konto verbinden</Button>
+      <div className="flex flex-wrap gap-2">
+        <Button variant="outline" size="sm" disabled={!oauth?.google} title={oauth && !oauth.google ? "Die Google-Anmeldung ist noch nicht eingerichtet." : undefined} onClick={() => void anmelden("google")}>Mit Google anmelden (Gmail)</Button>
+        <Button variant="outline" size="sm" disabled={!oauth?.microsoft} title={oauth && !oauth.microsoft ? "Die Microsoft-Anmeldung ist noch nicht eingerichtet." : undefined} onClick={() => void anmelden("microsoft")}>Mit Microsoft anmelden (Outlook)</Button>
+        <Button variant="outline" size="sm" onClick={() => setEntwurf({ ...LEER })}><Plus className="h-4 w-4 mr-1" /> Anderes Postfach (IMAP)</Button>
+      </div>
+      {oauth && (!oauth.google || !oauth.microsoft) && (
+        <p className="text-xs text-muted-foreground">Die Anmeldung mit Google und Microsoft wird beim Umzug auf den eigenen Server eingerichtet. Gmail geht bis dahin über „Anderes Postfach“ mit App-Passwort.</p>
+      )}
 
       <Dialog open={!!entwurf} onOpenChange={(offen) => !offen && setEntwurf(null)}>
         <DialogContent>

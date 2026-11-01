@@ -56,8 +56,10 @@ export interface AktivitaetEntry {
   meetingKommunikation?: { icsUid?: string };
   meetingRevision?: number;
   /** Verknuepfung in den eigenen Kalender des Mitarbeiters, siehe kalenderSync. */
-  kalenderTyp?: "google" | "apple";
+  kalenderTyp?: import("./kalenderSync").KalenderTyp;
   kalenderEventId?: string;
+  /** Die Kalender-Verbindung, in der der Termin steht (seit 01.11.2026). */
+  kalenderVerbindungId?: string;
   kalenderUrl?: string;
   /**
    * Favorit einer Notiz, gemeinsam fuer alle am Kunden, nicht je Nutzer.
@@ -83,6 +85,8 @@ function toDbRow(a: AktivitaetEntry): Record<string, any> {
     benutzer_id: a.benutzerId || getCurrentUserId() || null,
     kalender_typ: a.kalenderTyp || null,
     kalender_event_id: a.kalenderEventId || null,
+    // Nur wenn gesetzt: So bleibt das Speichern auch ohne die neue Spalte möglich.
+    ...(a.kalenderVerbindungId ? { kalender_verbindung_id: a.kalenderVerbindungId } : {}),
     kalender_url: a.kalenderUrl || null,
   };
 }
@@ -101,6 +105,7 @@ function fromDbRow(r: any): AktivitaetEntry {
     meetingRevision: r.meeting_revision || 0,
     kalenderTyp: r.kalender_typ || undefined,
     kalenderEventId: r.kalender_event_id || undefined,
+    kalenderVerbindungId: r.kalender_verbindung_id || undefined,
     kalenderUrl: r.kalender_url || undefined,
     angepinntAm: r.angepinnt_am || undefined,
     angepinntVon: r.angepinnt_von || undefined,
@@ -316,9 +321,11 @@ export function uebertrageInKalender(eintrag: AktivitaetEntry): void {
 
       eintrag.kalenderTyp = verknuepfung.typ;
       eintrag.kalenderEventId = verknuepfung.eventId;
+      eintrag.kalenderVerbindungId = verknuepfung.verbindungId;
       await cacheUpdate("aktivitaeten", eintrag.id, {
         kalender_typ: verknuepfung.typ,
         kalender_event_id: verknuepfung.eventId,
+        ...(verknuepfung.verbindungId ? { kalender_verbindung_id: verknuepfung.verbindungId } : {}),
       }, { silent: true });
     } catch (e) {
       console.warn("Termin nicht in den Kalender uebertragen:", e);

@@ -14,6 +14,7 @@ import { ImapFlow } from "npm:imapflow@1.0.172";
 import { simpleParser } from "npm:mailparser@3.7.2";
 import nodemailer from "npm:nodemailer@6.9.16";
 import MailComposer from "npm:nodemailer@6.9.16/lib/mail-composer/index.js";
+import { tokenHolen, type Token } from "./oauth.ts";
 
 // deno-lint-ignore no-explicit-any
 type Admin = any;
@@ -51,6 +52,24 @@ export async function passwortLesen(admin: Admin, kontoId: string): Promise<stri
   if (error) throw new Error(`Zugang nicht lesbar: ${error.message}`);
   if (!data) throw new Error("Für dieses Konto ist kein Passwort hinterlegt.");
   return data as string;
+}
+
+/** Passwort oder (bei Google/Microsoft) ein gültiges Zugangstoken. */
+export interface Zugang { passwort?: string; accessToken?: string }
+
+async function zugangFuer(admin: Admin, konto: Pick<MailKonto, "id" | "art">): Promise<Zugang> {
+  const roh = await passwortLesen(admin, konto.id);
+  if (konto.art === "imap") return { passwort: roh };
+  const t = JSON.parse(roh) as Token;
+  if (t.access_token && (t.expires_at ?? 0) > Date.now() + 60_000) return { accessToken: t.access_token };
+  if (!t.refresh_token) throw new Error("Anmeldung abgelaufen. Bitte das Konto neu verbinden.");
+  const neu = await tokenHolen(konto.art as "google" | "microsoft", { grant_type: "refresh_token", refresh_token: t.refresh_token });
+  await admin.rpc("email_geheimnis_setzen", { _konto: konto.id, _wert: JSON.stringify({ access_token: neu.access_token, refresh_token: neu.refresh_token, expires_at: neu.expires_at }) });
+  return { accessToken: neu.access_token };
+}
+
+function zugangsArt(z: Zugang | string) {
+  return typeof z === "string" ? { passwort: z } : z;
 }
 
 export const IMAP_PORTS = [993, 143];
@@ -95,7 +114,8 @@ export async function sichererServer(host: string, port: number, erlaubt: number
   return adressen[0];
 }
 
-export async function imapClient(k: Pick<MailKonto, "imap_host" | "imap_port" | "benutzername" | "adresse">, passwort: string) {
+export async function imapClient(k: Pick<MailKonto, "imap_host" | "imap_port" | "benutzername" | "adresse">, zugang: Zugang | string) {
+  const z = zugangsArt(zugang);
   if (!k.imap_host) throw new Error("Kein IMAP-Server angegeben.");
   const port = k.imap_port || 993;
   const ip = await sichererServer(k.imap_host, port, IMAP_PORTS);
@@ -106,13 +126,14 @@ export async function imapClient(k: Pick<MailKonto, "imap_host" | "imap_port" | 
     // 993 ist verschlüsselt ab der ersten Zeile, 143 muss per STARTTLS wechseln.
     secure: port === 993,
     doSTARTTLS: port === 993 || Deno.env.get("MAIL_TEST_LOKALE_SERVER") === "1" ? undefined : true,
-    auth: { user: k.benutzername || k.adresse, pass: passwort },
+    auth: z.accessToken ? { user: k.benutzername || k.adresse, accessToken: z.accessToken } : { user: k.benutzername || k.adresse, pass: z.passwort! },
     logger: false,
     socketTimeout: 60_000,
   });
 }
 
-export async function smtpTransport(k: Pick<MailKonto, "smtp_host" | "smtp_port" | "benutzername" | "adresse">, passwort: string) {
+export async function smtpTransport(k: Pick<MailKonto, "smtp_host" | "smtp_port" | "benutzername" | "adresse">, zugang: Zugang | string) {
+  const z = zugangsArt(zugang);
   if (!k.smtp_host) throw new Error("Kein SMTP-Server angegeben.");
   const port = k.smtp_port || 465;
   const ip = await sichererServer(k.smtp_host, port, SMTP_PORTS);
@@ -123,7 +144,9 @@ export async function smtpTransport(k: Pick<MailKonto, "smtp_host" | "smtp_port"
     // 587: ohne STARTTLS keine Anmeldung, nie im Klartext.
     requireTLS: port !== 465,
     tls: { servername: k.smtp_host },
-    auth: { user: k.benutzername || k.adresse, pass: passwort },
+    auth: z.accessToken
+      ? { type: "OAuth2", user: k.benutzername || k.adresse, accessToken: z.accessToken }
+      : { user: k.benutzername || k.adresse, pass: z.passwort! },
     connectionTimeout: 30_000,
   });
 }
@@ -183,8 +206,7 @@ export interface AbholErgebnis {
 
 /** Holt neue Mails aus Posteingang und Gesendet, ordnet sie Kontakten zu und zieht Gelesen-Status nach. */
 export async function kontoAbholen(admin: Admin, konto: MailKonto): Promise<AbholErgebnis> {
-  const passwort = await passwortLesen(admin, konto.id);
-  const client = await imapClient(konto, passwort);
+  const client = await imapClient(konto, await zugangFuer(admin, konto));
   const ergebnis: AbholErgebnis = { neu: 0, gelesenNachgezogen: 0 };
   const stand = { ...(konto.ordner_stand ?? {}) };
   try {
@@ -307,7 +329,7 @@ async function gelesenNachziehen(admin: Admin, client: any, konto: MailKonto, pf
 
 /** Eine Aktion auf Mails eines Kontos im echten Postfach ausführen. */
 export async function imapArbeiten<T>(admin: Admin, konto: MailKonto, arbeit: (client: InstanceType<typeof ImapFlow>, ordner: Awaited<ReturnType<typeof ordnerFinden>>) => Promise<T>): Promise<T> {
-  const client = await imapClient(konto, await passwortLesen(admin, konto.id));
+  const client = await imapClient(konto, await zugangFuer(admin, konto));
   await client.connect();
   try {
     return await arbeit(client, await ordnerFinden(client));
@@ -343,7 +365,7 @@ export async function ordnerSperren(client: any, konto: MailKonto, pfad: string)
 /** Sendet über SMTP und legt die Mail in „Gesendet“ ab, sofern der Anbieter das nicht selbst tut. */
 /** Gibt einen Hinweis zurück, wenn gesendet, aber nicht in „Gesendet“ abgelegt wurde. */
 export async function senden(admin: Admin, konto: MailKonto, mail: Ausgang): Promise<string | null> {
-  const passwort = await passwortLesen(admin, konto.id);
+  const zugang = await zugangFuer(admin, konto);
   const nachricht = {
     from: konto.anzeigename ? { name: konto.anzeigename, address: konto.adresse } : konto.adresse,
     to: mail.an,
@@ -353,7 +375,7 @@ export async function senden(admin: Admin, konto: MailKonto, mail: Ausgang): Pro
     html: mail.html,
     ...(mail.antwortAufMessageId ? { inReplyTo: mail.antwortAufMessageId, references: mail.antwortAufMessageId } : {}),
   };
-  await (await smtpTransport(konto, passwort)).sendMail(nachricht);
+  await (await smtpTransport(konto, zugang)).sendMail(nachricht);
   // Ab hier ist die Mail beim Empfänger. Fehler danach dürfen nicht als
   // „nicht gesendet“ erscheinen, sonst schickt man sie ein zweites Mal.
   // Gmail legt gesendete Mails selbst ab; sonst gäbe es sie doppelt.

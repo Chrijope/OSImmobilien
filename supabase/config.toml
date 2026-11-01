@@ -413,6 +413,16 @@ verify_jwt = true
 [functions.email-konten]
 verify_jwt = true
 
+[functions.kalender]
+verify_jwt = true
+
+# Rückweg der Anbieter-Anmeldung und Abo-Link: ohne Anmeldetoken, geschützt durch signierten Status bzw. Zufallskennung.
+[functions.kalender-oauth]
+verify_jwt = false
+
+[functions.kalender-feed]
+verify_jwt = false
+
 [functions.fetch-email-body]
 verify_jwt = true
 
