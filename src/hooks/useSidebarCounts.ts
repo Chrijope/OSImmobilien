@@ -40,6 +40,8 @@ export function useSidebarCounts(userId: string | undefined) {
         .from("emails")
         .select("id", { count: "exact", head: true })
         .eq("benutzer_id", userId)
+        // Nur der Posteingang zählt, wie bei einem Mailprogramm.
+        .eq("ordner", "posteingang")
         .eq("gelesen", false),
       supabase
         .from("follow_ups")

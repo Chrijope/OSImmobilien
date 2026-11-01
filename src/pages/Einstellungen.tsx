@@ -49,16 +49,7 @@ import { useTranslation } from "react-i18next";
 import { portalSprache } from "@/i18n/portalSprache";
 import { datumUhrzeitText } from "@/lib/sprachFormat";
 import { friendlyError } from "@/lib/errorMessages";
-
-interface EmailKonto {
-  id: string;
-  typ: string;
-  email: string;
-  imapServer: string;
-  smtpServer: string;
-  benutzername: string;
-  passwort: string;
-}
+import { EmailKontenVerwaltung } from "@/components/email/EmailKontenVerwaltung";
 
 interface Signatur {
   aktiv: boolean;
@@ -81,7 +72,7 @@ interface KalenderSyncOptionen {
 
 interface EinstellungenData {
   profil: { vorname: string; nachname: string; telefon: string; position: string; strasse: string; hausnummer: string; plz: string; ort: string; land: string };
-  email: { passwort: string; signatur: Signatur; zusatzKonten: EmailKonto[]; syncOptionen?: { autoSync: boolean; intervall: string; nurUngelesen: boolean; maxAnzahl: number; ordnerSync: string[] } };
+  email: { passwort: string; signatur: Signatur; /** Altbestand: Konten stehen seit 01.11.2026 in email_konten. */ zusatzKonten?: unknown[]; syncOptionen?: { autoSync: boolean; intervall: string; nurUngelesen: boolean; maxAnzahl: number; ordnerSync: string[] } };
   kalender: { syncOptionen: KalenderSyncOptionen };
   gewerbedaten: { rechtsform: string; firmenname: string; strasse: string; hausnummer: string; plz: string; ort: string; land: string };
   benachrichtigungen: { kanaele: { email: boolean; feed: boolean; browser: boolean; popup: boolean }; themen: { leads: boolean; termine: boolean; pipeline: boolean; provisionen: boolean; team: boolean; system: boolean } };
@@ -118,7 +109,6 @@ const Einstellungen = () => {
   if (!userLoading && role === "kunde") {
     return <Navigate to="/kunde/einstellungen" replace />;
   }
-  const [deleteEmailId, setDeleteEmailId] = useState<string | null>(null);
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const initialTabParam = searchParams.get("tab");
@@ -462,70 +452,6 @@ const Einstellungen = () => {
   };
 
   // Email-Konto Dialog
-  const [emailDialog, setEmailDialog] = useState(false);
-  const [editEmailId, setEditEmailId] = useState<string | null>(null);
-  const [newEmail, setNewEmail] = useState<EmailKonto>({ id: "", typ: "IMAP", email: "", imapServer: "", smtpServer: "", benutzername: "", passwort: "" });
-  const [syncing, setSyncing] = useState(false);
-
-  const openEditEmail = (konto: EmailKonto) => {
-    setEditEmailId(konto.id);
-    setNewEmail({ ...konto });
-    setEmailDialog(true);
-  };
-
-  const openAddEmail = () => {
-    setEditEmailId(null);
-    setNewEmail({ id: "", typ: "IMAP", email: "", imapServer: "", smtpServer: "", benutzername: "", passwort: "" });
-    setEmailDialog(true);
-  };
-
-  const saveEmailKonto = () => {
-    if (!newEmail.email) return;
-    if (editEmailId) {
-      // Update existing
-      const updated = settings.email.zusatzKonten.map(k => k.id === editEmailId ? { ...newEmail, id: editEmailId } : k);
-      saveSettings({ ...settings, email: { ...settings.email, zusatzKonten: updated } });
-      toast.success("E-Mail-Konto aktualisiert");
-    } else {
-      // Add new
-      const konto = { ...newEmail, id: String(Date.now()) };
-      saveSettings({ ...settings, email: { ...settings.email, zusatzKonten: [...settings.email.zusatzKonten, konto] } });
-      toast.success("E-Mail-Konto hinzugefügt");
-    }
-    setNewEmail({ id: "", typ: "IMAP", email: "", imapServer: "", smtpServer: "", benutzername: "", passwort: "" });
-    setEditEmailId(null);
-    setEmailDialog(false);
-  };
-
-  const removeEmailKonto = (id: string) => {
-    saveSettings({ ...settings, email: { ...settings.email, zusatzKonten: settings.email.zusatzKonten.filter(k => k.id !== id) } });
-    toast.success("E-Mail-Konto entfernt");
-  };
-
-  const syncEmails = async () => {
-    setSyncing(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("sync-emails");
-      if (error) throw error;
-      if (data?.synced > 0) {
-        toast.success(`${data.synced} neue E-Mails synchronisiert`);
-      } else if (data?.error) {
-        toast.error(data.error);
-      } else {
-        toast.success("Postfach ist aktuell – keine neuen E-Mails");
-      }
-    } catch (e: any) {
-      toast.error("Sync fehlgeschlagen: " + (e.message || "Unbekannt"));
-    } finally {
-      setSyncing(false);
-    }
-  };
-
-  const updateEmailSyncOption = (key: string, value: any) => {
-    const current = settings.email.syncOptionen || { autoSync: false, intervall: "15", nurUngelesen: false, maxAnzahl: 50, ordnerSync: ["INBOX"] };
-    saveSettings({ ...settings, email: { ...settings.email, syncOptionen: { ...current, [key]: value } } });
-  };
-
   // Apple Calendar connection (real CalDAV)
   const [appleConnecting, setAppleConnecting] = useState(false);
   const [appleIdInput, setAppleIdInput] = useState("");
@@ -1620,65 +1546,12 @@ const Einstellungen = () => {
               </Card>
             </Section>
             <Separator />
-            <Section title="E-Mail-Konten" desc="Verbinde deine E-Mail-Konten für die IMAP-Synchronisierung. E-Mails werden automatisch in der Sidebar unter E-Mail angezeigt.">
-              {settings.email.zusatzKonten.map(konto => (
-                <Card key={konto.id} className="p-4 flex items-center justify-between mb-3">
-                  <div>
-                    <p className="text-sm font-medium flex items-center gap-2"><Mail className="h-4 w-4" /> {konto.email}</p>
-                    <p className="text-xs text-muted-foreground">{konto.typ} · {konto.imapServer}</p>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Button variant="ghost" size="icon" aria-label="Bearbeiten" onClick={() => openEditEmail(konto)}><Pencil className="h-4 w-4 text-muted-foreground" /></Button>
-                    <Button variant="ghost" size="icon" aria-label="Löschen" onClick={() => setDeleteEmailId(konto.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
-                  </div>
-                </Card>
-              ))}
-
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={openAddEmail}><Plus className="h-4 w-4 mr-1" /> E-Mail-Konto hinzufügen</Button>
-                {settings.email.zusatzKonten.length > 0 && (
-                  <Button variant="outline" size="sm" onClick={syncEmails} disabled={syncing}>
-                    <RefreshCw className={`h-4 w-4 mr-1 ${syncing ? "animate-spin" : ""}`} /> {syncing ? "Synchronisiere…" : "Jetzt synchronisieren"}
-                  </Button>
-                )}
-              </div>
-
-              <Dialog open={emailDialog} onOpenChange={(open) => { setEmailDialog(open); if (!open) setEditEmailId(null); }}>
-                <DialogContent>
-                  <DialogHeader><DialogTitle>{editEmailId ? "E-Mail-Konto bearbeiten" : "E-Mail-Konto hinzufügen"}</DialogTitle></DialogHeader>
-                  <div className="grid gap-4 py-4">
-                    <Field label="E-Mail-Adresse" value={newEmail.email} onChange={v => setNewEmail({ ...newEmail, email: v })} placeholder="max@example.com" />
-                    <div className="grid grid-cols-2 gap-4">
-                      <Field label="IMAP Server" value={newEmail.imapServer} onChange={v => setNewEmail({ ...newEmail, imapServer: v })} placeholder="imap.example.com" />
-                      <Field label="SMTP Server" value={newEmail.smtpServer} onChange={v => setNewEmail({ ...newEmail, smtpServer: v })} placeholder="smtp.example.com" />
-                    </div>
-                    <Field label="Benutzername" value={newEmail.benutzername} onChange={v => setNewEmail({ ...newEmail, benutzername: v })} placeholder="Benutzername oder E-Mail" />
-                    <Field label="Passwort" value={newEmail.passwort} onChange={v => setNewEmail({ ...newEmail, passwort: v })} type="password" placeholder="Passwort / App-Passwort" />
-                    <div className="flex justify-end gap-3">
-                      <Button variant="outline" onClick={() => setEmailDialog(false)}>Abbrechen</Button>
-                      <Button onClick={saveEmailKonto} disabled={!newEmail.email}>{editEmailId ? "Speichern" : "Hinzufügen"}</Button>
-                    </div>
-                  </div>
-                </DialogContent>
-              </Dialog>
+            <Section title="E-Mail-Konten" desc="Verbinde dein Postfach. Mails erscheinen unter E-Mail in der Seitenleiste, Mails von und an Kunden zusätzlich in deren Kundenprofil. Abgeholt wird alle 5 Minuten.">
+              <EmailKontenVerwaltung />
             </Section>
             <Separator />
-            <Section title="Synchronisierung" desc="Lege fest, wie deine E-Mails synchronisiert werden sollen.">
+            <Section title="Benachrichtigungen und Signatur" desc="Abgeholt wird automatisch alle 5 Minuten, gelesen am Handy gilt auch hier als gelesen.">
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium">Automatische Synchronisierung</p>
-                    <p className="text-xs text-muted-foreground">E-Mails werden im Hintergrund abgerufen</p>
-                  </div>
-                  <Switch checked={settings.email.syncOptionen?.autoSync || false} onCheckedChange={v => updateEmailSyncOption("autoSync", v)} />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium">Nur ungelesene E-Mails</p>
-                    <p className="text-xs text-muted-foreground">Synchronisiert nur neue, ungelesene Nachrichten</p>
-                  </div>
-                  <Switch checked={settings.email.syncOptionen?.nurUngelesen || false} onCheckedChange={v => updateEmailSyncOption("nurUngelesen", v)} />
-                </div>
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium">Benachrichtigung bei neuen E-Mails</p>
@@ -1883,28 +1756,6 @@ const Einstellungen = () => {
         </Tabs>
       </div>
 
-      <AlertDialog open={!!deleteEmailId} onOpenChange={(open) => { if (!open) setDeleteEmailId(null); }}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>E-Mail-Konto löschen?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Möchtest du dieses E-Mail-Konto wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Abbrechen</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              onClick={() => {
-                if (deleteEmailId) removeEmailKonto(deleteEmailId);
-                setDeleteEmailId(null);
-              }}
-            >
-              Löschen
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </DashboardLayout>
   );
 };

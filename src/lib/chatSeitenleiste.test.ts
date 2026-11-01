@@ -48,7 +48,8 @@ const INTERNE_ROLLEN = [
 
 describe("Chat in der Seitenleiste", () => {
   it("steht direkt unter der Inbox", () => {
-    expect(titelIn("mainItems")).toEqual(["Dashboard", "Inbox", "Chat", "Kalender", "News & Updates"]);
+    // E-Mail über Kalender seit 01.11.2026.
+    expect(titelIn("mainItems")).toEqual(["Dashboard", "Inbox", "Chat", "E-Mail", "Kalender", "News & Updates"]);
   });
 
   it("steht nicht mehr unter Support", () => {

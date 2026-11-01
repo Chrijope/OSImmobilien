@@ -76,7 +76,7 @@ const ROLE_ALLOWED_URLS_FALLBACK: Partial<Record<UserRole, string[]>> = {
     // (04.10.2026, Migration 20261004171000).
     "/kunden", "/pipeline",
     // 18.10.2026 (Christian): /kalender, /alle-kontakte, /auswertungen, /wettbewerb, /kultur
-    "/kalender", "/alle-kontakte", "/auswertungen", "/wettbewerb", "/kultur",
+    "/kalender", "/email", "/alle-kontakte", "/auswertungen", "/wettbewerb", "/kultur",
   ],
   setterin: [
     "/", "/inbox", "/news",
@@ -84,7 +84,7 @@ const ROLE_ALLOWED_URLS_FALLBACK: Partial<Record<UserRole, string[]>> = {
     "/ansprechpartner", "/academy", "/einstellungen",
     "/chat", "/vertriebsakademie", "/vertriebshandbuch",
     // 18.10.2026 (Christian): /kalender
-    "/kalender",
+    "/kalender", "/email",
   ],
   objektpartner: [
     "/", "/news",
@@ -95,7 +95,7 @@ const ROLE_ALLOWED_URLS_FALLBACK: Partial<Record<UserRole, string[]>> = {
     "/ansprechpartner", "/einstellungen",
     "/marktanalyse",
     // 18.10.2026 (Christian): /kalender
-    "/kalender",
+    "/kalender", "/email",
   ],
   kunde: ["/kunde/stammdaten", "/kunde/chat", "/kunde/investments", "/kunde/steuer-cockpit", "/kunde/kundenordner", "/kunde/empfehlungen", "/kunde/einstellungen", "/kunde/vp-bewertung"],
   tippgeber: [
@@ -119,7 +119,7 @@ const ROLE_ALLOWED_URLS_FALLBACK: Partial<Record<UserRole, string[]>> = {
     "/aftersales", "/leitfaeden", "/wissenswert", "/marketing", "/bonitaet",
     "/marktanalyse",
     // 18.10.2026 (Christian): /kalender, /kultur
-    "/kalender", "/kultur",
+    "/kalender", "/email", "/kultur",
   ],
   finanzierungspartner: [
     "/", "/inbox", "/news",
@@ -129,7 +129,7 @@ const ROLE_ALLOWED_URLS_FALLBACK: Partial<Record<UserRole, string[]>> = {
     "/chat", "/support-kontaktieren",
     "/ansprechpartner", "/einstellungen",
     // 18.10.2026 (Christian): /kalender
-    "/kalender",
+    "/kalender", "/email",
   ],
   hausverwaltung: [
     "/", "/inbox", "/news",

@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import {
   Pencil, Inbox, Send, FileText, Archive, Trash2, Star,
   Search, Reply, ReplyAll, Forward, ArrowLeft, MoreHorizontal,
-  Paperclip, MailOpen, Mail, AlertCircle, RefreshCw,
+  MailOpen, Mail, AlertCircle, RefreshCw,
 } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
@@ -20,10 +20,11 @@ import {
 import { PageHeader } from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useUserSettings } from "@/hooks/useUserSettings";
+import { edgeFehlerMitGrund } from "@/lib/edgeFehler";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
 
-import { FolderOpen } from "lucide-react";
 
 type EmailOrdner = "posteingang" | "gesendet" | "entwuerfe" | "archiviert" | "papierkorb";
 
@@ -39,13 +40,12 @@ type Email = {
   ordner: EmailOrdner;
   empfangen_am: string;
   benutzer_id: string;
+  konto_id: string | null;
+  message_id: string | null;
+  empfaenger: string[] | null;
 };
 
-type ImapFolder = {
-  name: string;
-  displayName: string;
-  konto: string;
-};
+type MailEintrag = Omit<Email, "benutzer_id">;
 
 const ORDNER = [
   { label: "Posteingang", icon: Inbox, id: "posteingang" as EmailOrdner },
@@ -55,121 +55,122 @@ const ORDNER = [
   { label: "Papierkorb", icon: Trash2, id: "papierkorb" as EmailOrdner },
 ];
 
-// No demo emails - will load from DB
-const DEMO_EMAILS: Omit<Email, "benutzer_id">[] = [];
+/** Felder, die die Seite liest. */
+const MAIL_FELDER = "id, konto_id, betreff, inhalt, absender_name, absender_email, empfaenger, message_id, vorschau, gelesen, markiert, ordner, empfangen_am";
+
+type MailKonto = { id: string; adresse: string; anzeigename: string | null };
+
+/** Adressen aus einem Eingabefeld: Komma, Semikolon oder Leerzeichen trennen. */
+function adressenAus(text: string): string[] {
+  return text.split(/[,;\s]+/).map((a) => a.trim()).filter(Boolean);
+}
+
+function htmlAusText(text: string): string {
+  const ersetzt = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  return ersetzt.split("\n").map((z) => z || "&nbsp;").map((z) => `<div>${z}</div>`).join("");
+}
 
 const EmailSeite = () => {
   const [aktuellerOrdner, setAktuellerOrdner] = useState<EmailOrdner>("posteingang");
-  const [emails, setEmails] = useState<Omit<Email, "benutzer_id">[]>(DEMO_EMAILS);
+  const [emails, setEmails] = useState<MailEintrag[]>([]);
   const [search, setSearch] = useState("");
-  const [selectedEmail, setSelectedEmail] = useState<Omit<Email, "benutzer_id"> | null>(null);
+  const [selectedEmail, setSelectedEmail] = useState<MailEintrag | null>(null);
   const [composeOpen, setComposeOpen] = useState(false);
   const [composeMode, setComposeMode] = useState<"new" | "reply" | "replyall" | "forward">("new");
   const [composeTo, setComposeTo] = useState("");
   const [composeSubject, setComposeSubject] = useState("");
   const [composeBody, setComposeBody] = useState("");
+  const [antwortAuf, setAntwortAuf] = useState<string | null>(null);
+  const [konten, setKonten] = useState<MailKonto[]>([]);
+  const [vonKonto, setVonKonto] = useState<string>("");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [syncing, setSyncing] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [imapFolders, setImapFolders] = useState<ImapFolder[]>([]);
-  const [loadingFolders, setLoadingFolders] = useState(false);
   const [loadingBody, setLoadingBody] = useState(false);
   const { toast } = useToast();
+  const { settings } = useUserSettings();
+  const [benutzerId, setBenutzerId] = useState<string | null>(null);
 
-  // Load emails from DB
-  const loadEmails = async () => {
+  const loadEmails = useCallback(async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+      setBenutzerId(user.id);
       const { data, error } = await supabase
         .from("emails")
-        .select("*")
+        .select(MAIL_FELDER)
         .eq("benutzer_id", user.id)
         .order("empfangen_am", { ascending: false })
-        .limit(200);
+        .limit(500);
       if (error) throw error;
-      if (data) {
-        setEmails(data.map((e: any) => ({
-          id: e.id,
-          betreff: e.betreff,
-          inhalt: e.inhalt,
-          absender_name: e.absender_name,
-          absender_email: e.absender_email,
-          vorschau: e.vorschau,
-          gelesen: e.gelesen,
-          markiert: e.markiert,
-          ordner: e.ordner as EmailOrdner,
-          empfangen_am: e.empfangen_am,
-        })));
-      }
+      setEmails((data as unknown as MailEintrag[]) ?? []);
     } catch (e) {
       console.error("Email load error:", e);
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    loadEmails();
-    loadFolders();
   }, []);
 
-  const loadFolders = async () => {
-    setLoadingFolders(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("list-email-folders");
-      if (error) throw error;
-      if (data?.folders) {
-        setImapFolders(data.folders);
-      }
-    } catch (e) {
-      console.error("Folder load error:", e);
-    } finally {
-      setLoadingFolders(false);
+  useEffect(() => {
+    void loadEmails();
+    void supabase.from("email_konten" as never).select("id, adresse, anzeigename").order("erstellt_am").then(({ data }) => {
+      const liste = (data as unknown as MailKonto[]) ?? [];
+      setKonten(liste);
+      if (liste[0]) setVonKonto((v) => v || liste[0].id);
+    });
+  }, [loadEmails]);
+
+  // Neue Mails aus dem automatischen Abholen erscheinen ohne Neuladen.
+  useEffect(() => {
+    if (!benutzerId) return;
+    const kanal = supabase
+      .channel(`emails-seite-${benutzerId}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "emails", filter: `benutzer_id=eq.${benutzerId}` }, () => void loadEmails())
+      .subscribe();
+    return () => { void supabase.removeChannel(kanal); };
+  }, [benutzerId, loadEmails]);
+
+  /** Eine Aktion im Postfach; die Liste ist schon vorab angepasst und wird bei Fehler neu geladen. */
+  const aktion = async (body: Record<string, unknown>): Promise<boolean> => {
+    const { error } = await supabase.functions.invoke("email-aktion", { body });
+    if (error) {
+      const f = await edgeFehlerMitGrund(error, { functionName: "email-aktion" });
+      toast({ title: "Im Postfach nicht übernommen", description: (f as Error)?.message, variant: "destructive" });
+      await loadEmails();
+      return false;
     }
+    return true;
   };
 
-  const syncEmails = async (folder?: string) => {
+  const syncEmails = async () => {
     setSyncing(true);
     try {
-      const { data, error } = await supabase.functions.invoke("sync-emails", {
-        body: folder ? { folder } : undefined,
-      });
-      
-      if (error) throw error;
-      if (data?.synced > 0) {
-        toast({ title: `${data.synced} neue E-Mails synchronisiert ✓` });
-        await loadEmails();
-      } else if (data?.error) {
-        toast({ title: data.error, variant: "destructive" });
+      const { data, error } = await supabase.functions.invoke("sync-emails", { body: {} });
+      if (error) throw await edgeFehlerMitGrund(error, { functionName: "sync-emails" });
+      if (data?.fehler?.length) {
+        toast({ title: "Nicht alle Konten abgeholt", description: data.fehler.map((f: { adresse: string; fehler: string }) => `${f.adresse}: ${f.fehler}`).join(" · "), variant: "destructive" });
+      } else if (!konten.length) {
+        toast({ title: "Noch kein Konto verbunden", description: "Unter Einstellungen, E-Mail, ein Postfach verbinden." });
       } else {
-        toast({ title: "Postfach ist aktuell – keine neuen E-Mails" });
+        toast({ title: data?.synced ? `${data.synced} neue E-Mails abgeholt` : "Postfach ist aktuell" });
       }
-    } catch (e: any) {
-      toast({ title: "Sync fehlgeschlagen", description: e.message, variant: "destructive" });
+      await loadEmails();
+    } catch (e) {
+      toast({ title: "Abholen fehlgeschlagen", description: (e as Error)?.message, variant: "destructive" });
     } finally {
       setSyncing(false);
     }
   };
 
-  // Count unread per folder
+  // Ungelesen im Posteingang, sonst die Anzahl.
   const ordnerCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     ORDNER.forEach((o) => {
-      counts[o.id] = emails.filter(
-        (e) => e.ordner === o.id && (o.id === "posteingang" ? !e.gelesen : true)
-      ).length;
-    });
-    // For non-inbox, show total count
-    ORDNER.forEach((o) => {
-      if (o.id !== "posteingang") {
-        counts[o.id] = emails.filter((e) => e.ordner === o.id).length;
-      }
+      counts[o.id] = emails.filter((e) => e.ordner === o.id && (o.id === "posteingang" ? !e.gelesen : true)).length;
     });
     return counts;
   }, [emails]);
 
-  // Filtered emails for current folder
   const filteredEmails = useMemo(() => {
     let result = emails.filter((e) => e.ordner === aktuellerOrdner);
     if (search) {
@@ -179,57 +180,36 @@ const EmailSeite = () => {
           (e.absender_name || "").toLowerCase().includes(q) ||
           e.betreff.toLowerCase().includes(q) ||
           (e.vorschau || "").toLowerCase().includes(q) ||
-          (e.absender_email || "").toLowerCase().includes(q)
+          (e.absender_email || "").toLowerCase().includes(q),
       );
     }
-    return result.sort(
-      (a, b) => new Date(b.empfangen_am).getTime() - new Date(a.empfangen_am).getTime()
-    );
+    return result.sort((a, b) => new Date(b.empfangen_am).getTime() - new Date(a.empfangen_am).getTime());
   }, [emails, aktuellerOrdner, search]);
 
-  const openEmail = async (email: Omit<Email, "benutzer_id">) => {
+  const openEmail = async (email: MailEintrag) => {
     setSelectedEmail(email);
-    // Mark as read
     if (!email.gelesen) {
-      setEmails((prev) =>
-        prev.map((e) => (e.id === email.id ? { ...e, gelesen: true } : e))
-      );
+      setEmails((prev) => prev.map((e) => (e.id === email.id ? { ...e, gelesen: true } : e)));
+      void aktion({ aktion: "gelesen", ids: [email.id], wert: true });
     }
-    // Fetch body on demand if not already loaded
     if (!email.inhalt) {
       setLoadingBody(true);
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          const { data, error } = await supabase.functions.invoke("fetch-email-body", {
-            body: {
-              emailId: email.id,
-              betreff: email.betreff,
-              absender_email: email.absender_email,
-              empfangen_am: email.empfangen_am,
-            },
-          });
-          if (!error && data?.inhalt) {
-            const updatedEmail = { ...email, inhalt: data.inhalt, gelesen: true };
-            setSelectedEmail(updatedEmail);
-            setEmails((prev) =>
-              prev.map((e) => (e.id === email.id ? { ...e, inhalt: data.inhalt } : e))
-            );
-          }
-        }
-      } catch (err) {
-        console.error("Error fetching email body:", err);
-      } finally {
-        setLoadingBody(false);
+      const { data, error } = await supabase.functions.invoke("email-aktion", { body: { aktion: "inhalt", id: email.id } });
+      setLoadingBody(false);
+      if (!error && typeof data?.inhalt === "string") {
+        setSelectedEmail({ ...email, inhalt: data.inhalt, gelesen: true });
+        setEmails((prev) => prev.map((e) => (e.id === email.id ? { ...e, inhalt: data.inhalt } : e)));
       }
     }
   };
 
-  const toggleStar = (id: string, e: React.MouseEvent) => {
+  // Der Stern ist eine Markierung im CRM, nicht im Postfach.
+  const toggleStar = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    setEmails((prev) =>
-      prev.map((em) => (em.id === id ? { ...em, markiert: !em.markiert } : em))
-    );
+    const neu = !emails.find((m) => m.id === id)?.markiert;
+    setEmails((prev) => prev.map((em) => (em.id === id ? { ...em, markiert: neu } : em)));
+    const { error } = await supabase.from("emails").update({ markiert: neu }).eq("id", id);
+    if (error) await loadEmails();
   };
 
   const toggleSelect = (id: string, e: React.MouseEvent) => {
@@ -242,10 +222,8 @@ const EmailSeite = () => {
     });
   };
 
-  const moveEmails = (ids: string[], target: EmailOrdner) => {
-    setEmails((prev) =>
-      prev.map((e) => (ids.includes(e.id) ? { ...e, ordner: target } : e))
-    );
+  const moveEmails = async (ids: string[], target: EmailOrdner) => {
+    setEmails((prev) => prev.map((e) => (ids.includes(e.id) ? { ...e, ordner: target } : e)));
     setSelectedIds(new Set());
     setSelectedEmail(null);
     const labels: Record<string, string> = {
@@ -253,35 +231,43 @@ const EmailSeite = () => {
       papierkorb: "in den Papierkorb verschoben",
       posteingang: "in den Posteingang verschoben",
     };
-    toast({ title: `E-Mail${ids.length > 1 ? "s" : ""} ${labels[target] || "verschoben"}` });
+    if (await aktion({ aktion: "verschieben", ids, ziel: target })) {
+      toast({ title: `E-Mail${ids.length > 1 ? "s" : ""} ${labels[target] || "verschoben"}` });
+    }
   };
 
-  const markAsUnread = (id: string) => {
-    setEmails((prev) =>
-      prev.map((e) => (e.id === id ? { ...e, gelesen: false } : e))
-    );
+  const markAsUnread = async (id: string) => {
+    setEmails((prev) => prev.map((e) => (e.id === id ? { ...e, gelesen: false } : e)));
     setSelectedEmail(null);
-    toast({ title: "Als ungelesen markiert" });
+    if (await aktion({ aktion: "gelesen", ids: [id], wert: false })) toast({ title: "Als ungelesen markiert" });
   };
 
-  const deleteForever = (ids: string[]) => {
+  const deleteForever = async (ids: string[]) => {
     setEmails((prev) => prev.filter((e) => !ids.includes(e.id)));
     setSelectedIds(new Set());
     setSelectedEmail(null);
-    toast({ title: "Endgültig gelöscht" });
+    if (await aktion({ aktion: "loeschen", ids })) toast({ title: "Endgültig gelöscht" });
   };
 
-  const openCompose = (mode: "new" | "reply" | "replyall" | "forward", email?: Omit<Email, "benutzer_id">) => {
+  const eigeneAdressen = useMemo(() => new Set(konten.map((k) => k.adresse.toLowerCase())), [konten]);
+
+  const openCompose = (mode: "new" | "reply" | "replyall" | "forward", email?: MailEintrag) => {
     setComposeMode(mode);
-    if (mode === "new") {
+    setAntwortAuf(mode === "reply" || mode === "replyall" ? email?.id ?? null : null);
+    if (email?.konto_id) setVonKonto(email.konto_id);
+    const zitat = email
+      ? `Am ${format(new Date(email.empfangen_am), "dd.MM.yyyy HH:mm", { locale: de })} schrieb ${email.absender_name || email.absender_email}:\n\n${email.inhalt || ""}`
+      : "";
+    if (mode === "new" || !email) {
       setComposeTo("");
       setComposeSubject("");
       setComposeBody("");
-    } else if (mode === "reply" && email) {
-      setComposeTo(email.absender_email || "");
-      setComposeSubject(`Re: ${email.betreff}`);
-      setComposeBody(`\n\n---\nAm ${format(new Date(email.empfangen_am), "dd.MM.yyyy HH:mm", { locale: de })} schrieb ${email.absender_name}:\n\n${email.inhalt || ""}`);
-    } else if (mode === "forward" && email) {
+    } else if (mode === "reply" || mode === "replyall") {
+      const weitere = mode === "replyall" ? (email.empfaenger ?? []).filter((a) => !eigeneAdressen.has(a.toLowerCase())) : [];
+      setComposeTo([email.absender_email || "", ...weitere].filter(Boolean).join(", "));
+      setComposeSubject(/^re:/i.test(email.betreff) ? email.betreff : `Re: ${email.betreff}`);
+      setComposeBody(`\n\n---\n${zitat}`);
+    } else {
       setComposeTo("");
       setComposeSubject(`Fwd: ${email.betreff}`);
       setComposeBody(`\n\n--- Weitergeleitete Nachricht ---\nVon: ${email.absender_name} <${email.absender_email}>\nDatum: ${format(new Date(email.empfangen_am), "dd.MM.yyyy HH:mm", { locale: de })}\nBetreff: ${email.betreff}\n\n${email.inhalt || ""}`);
@@ -289,44 +275,51 @@ const EmailSeite = () => {
     setComposeOpen(true);
   };
 
-  const handleSend = () => {
-    if (!composeTo.trim() || !composeSubject.trim()) {
-      toast({ title: "Fehler", description: "Empfänger und Betreff sind Pflichtfelder.", variant: "destructive" });
-      return;
+  const handleSend = async (): Promise<boolean> => {
+    const an = adressenAus(composeTo);
+    if (!vonKonto) {
+      toast({ title: "Kein Konto zum Senden", description: "Unter Einstellungen, E-Mail, ein Postfach verbinden.", variant: "destructive" });
+      return false;
     }
-    const newEmail: Omit<Email, "benutzer_id"> = {
-      id: `sent-${Date.now()}`,
-      absender_name: "Christian Peetz",
-      absender_email: "os@os-immobilien.com",
-      betreff: composeSubject,
-      inhalt: composeBody,
-      vorschau: composeBody.slice(0, 80) + "...",
-      gelesen: true,
-      markiert: false,
-      ordner: "gesendet",
-      empfangen_am: new Date().toISOString(),
-    };
-    setEmails((prev) => [newEmail, ...prev]);
+    if (an.length === 0 || !composeSubject.trim()) {
+      toast({ title: "Fehler", description: "Empfänger und Betreff sind Pflichtfelder.", variant: "destructive" });
+      return false;
+    }
+    const signatur = settings?.email?.signatur;
+    const html = htmlAusText(composeBody) + (signatur?.aktiv && signatur.html ? `<br>${signatur.html}` : "");
+    const { data, error } = await supabase.functions.invoke("email-aktion", {
+      body: { aktion: "senden", kontoId: vonKonto, an, betreff: composeSubject, text: composeBody, html, antwortAuf },
+    });
+    if (error) {
+      const f = await edgeFehlerMitGrund(error, { functionName: "email-aktion" });
+      toast({ title: "Nicht gesendet", description: (f as Error)?.message, variant: "destructive" });
+      return false;
+    }
     setComposeOpen(false);
-    toast({ title: "E-Mail gesendet ✓", description: `An ${composeTo}` });
+    toast({ title: "E-Mail gesendet ✓", description: data?.hinweis || `An ${an.join(", ")}` });
+    await loadEmails();
+    return true;
   };
 
-  const handleSaveDraft = () => {
-    const draft: Omit<Email, "benutzer_id"> = {
-      id: `draft-${Date.now()}`,
-      absender_name: "Christian Peetz",
-      absender_email: "os@os-immobilien.com",
+  // Entwürfe bleiben im CRM, sie gehen nicht ins Postfach.
+  const handleSaveDraft = async () => {
+    if (!benutzerId) return;
+    const { error } = await supabase.from("emails").insert({
+      benutzer_id: benutzerId,
+      ordner: "entwuerfe",
       betreff: composeSubject || "(Kein Betreff)",
       inhalt: composeBody,
       vorschau: composeBody.slice(0, 80) || "(Leerer Entwurf)",
+      empfaenger: adressenAus(composeTo),
       gelesen: true,
-      markiert: false,
-      ordner: "entwuerfe",
-      empfangen_am: new Date().toISOString(),
-    };
-    setEmails((prev) => [draft, ...prev]);
+    } as never);
+    if (error) {
+      toast({ title: "Entwurf nicht gespeichert", description: error.message, variant: "destructive" });
+      return;
+    }
     setComposeOpen(false);
     toast({ title: "Entwurf gespeichert ✓" });
+    await loadEmails();
   };
 
   const selectAll = () => {
@@ -351,7 +344,7 @@ const EmailSeite = () => {
       <div className="space-y-4">
         <PageHeader title="E-Mail" subtitle={loading ? "Lade E-Mails…" : `${emails.length} E-Mails`}>
           <div className="flex gap-2">
-            <Button size="sm" variant="outline" onClick={() => syncEmails()} disabled={syncing}>
+            <Button size="sm" variant="outline" onClick={() => void syncEmails()} disabled={syncing}>
               <RefreshCw className={`h-4 w-4 mr-1 ${syncing ? "animate-spin" : ""}`} /> {syncing ? "Synchronisiere…" : "Synchronisieren"}
             </Button>
             <Button size="sm" onClick={() => openCompose("new")}>
@@ -389,39 +382,6 @@ const EmailSeite = () => {
               </button>
             ))}
 
-            {/* IMAP Folders */}
-            {imapFolders.length > 0 && (
-              <>
-                <Separator className="my-2" />
-                <p className="text-bildunterschrift uppercase tracking-wider text-muted-foreground px-3 py-1 font-semibold">
-                  IMAP Ordner
-                </p>
-                {imapFolders
-                  .filter((f) => {
-                    // Filter out standard folders that are already shown above
-                    const n = f.name.toLowerCase();
-                    return !["inbox", "sent", "drafts", "trash", "junk", "spam"].includes(n) &&
-                      !n.includes("sent") && !n.includes("draft") && !n.includes("trash") &&
-                      !n.includes("junk") && !n.includes("spam") && !n.includes("deleted");
-                  })
-                  .map((f) => (
-                    <button
-                      key={f.name}
-                      onClick={() => {
-                        // Sync this specific folder
-                        syncEmails(f.name);
-                      }}
-                      className="w-full flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors text-foreground hover:bg-muted"
-                    >
-                      <FolderOpen className="h-4 w-4" />
-                      <span className="flex-1 text-left truncate">{f.displayName}</span>
-                    </button>
-                  ))}
-              </>
-            )}
-            {loadingFolders && (
-              <p className="text-bildunterschrift text-muted-foreground px-3 py-2">Lade Ordner…</p>
-            )}
           </div>
 
           {/* Main Content */}
@@ -524,7 +484,7 @@ const EmailSeite = () => {
                       onChange={(e) => setSearch(e.target.value)}
                     />
                   </div>
-                  <Button variant="ghost" size="icon" aria-label="Neu laden" className="h-9 w-9" onClick={() => syncEmails()} disabled={syncing}>
+                  <Button variant="ghost" size="icon" aria-label="Neu laden" className="h-9 w-9" onClick={() => void syncEmails()} disabled={syncing}>
                     <RefreshCw className="h-4 w-4" />
                   </Button>
                 </div>
@@ -630,7 +590,18 @@ const EmailSeite = () => {
           <div className="space-y-3 mt-2">
             <div className="flex items-center gap-2">
               <Label className="w-12 text-xs text-muted-foreground">Von</Label>
-              <Input value="os@os-immobilien.com" disabled className="bg-muted/30 text-sm" />
+              {konten.length > 0 ? (
+                <select
+                  value={vonKonto}
+                  onChange={(e) => setVonKonto(e.target.value)}
+                  className="flex h-10 w-full rounded-md border border-input bg-card px-3 text-sm"
+                  data-ui="field"
+                >
+                  {konten.map((k) => <option key={k.id} value={k.id}>{k.anzeigename ? `${k.anzeigename} <${k.adresse}>` : k.adresse}</option>)}
+                </select>
+              ) : (
+                <Input value="Kein Konto verbunden (Einstellungen, E-Mail)" disabled className="bg-muted/30 text-sm" />
+              )}
             </div>
             <div className="flex items-center gap-2">
               <Label className="w-12 text-xs text-muted-foreground">An</Label>
@@ -657,16 +628,12 @@ const EmailSeite = () => {
               className="min-h-[250px] text-sm"
             />
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="sm">
-                  <Paperclip className="h-4 w-4 mr-1" /> Anhang
-                </Button>
-              </div>
+              <div />
               <div className="flex items-center gap-2">
                 <Button variant="outline" size="sm" onClick={handleSaveDraft}>
                   <FileText className="h-4 w-4 mr-1" /> Entwurf speichern
                 </Button>
-                <Button size="sm" onClick={handleSend}>
+                <Button size="sm" haken onClick={handleSend}>
                   <Send className="h-4 w-4 mr-1" /> Senden
                 </Button>
               </div>

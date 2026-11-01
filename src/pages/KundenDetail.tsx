@@ -218,6 +218,7 @@ import { NaechsteSchritteKarte } from "@/components/kunde/NaechsteSchritteKarte"
 import { AftersalesBeratungCard } from "@/components/kunde/investments/AftersalesBeratungCard";
 import { MietzuzahlungCard } from "@/components/kunde/investments/MietzuzahlungCard";
 import { Skeleton } from "@/components/ui/skeleton";
+import { KundenEmails } from "@/components/email/KundenEmails";
 import { LockedPhaseCard } from "@/components/kunde/investments/LockedPhaseGrid";
 import { Switch } from "@/components/ui/switch";
 import { AlsTippgeberAnlegenButton } from "@/components/kunde/AlsTippgeberAnlegenButton";
@@ -12694,6 +12695,7 @@ export default function KundenDetail() {
     if (activeTab === "vermoegensaufbau") return renderVermoegenaufbau();
     if (activeTab === "kommunikation") {
       return (
+        <div className="space-y-4">
         <KommunikationReiter
           kontaktId={kunde.id}
           kundeName={`${kunde.vorname ?? ""} ${kunde.nachname ?? ""}`.trim()}
@@ -12712,6 +12714,9 @@ export default function KundenDetail() {
           onInvestmentOeffnen={(invId) => oeffneInvestment(invId)}
           vorauswahl={verlaufVorauswahl}
         />
+        {/* Mails aus dem eigenen Postfach mit diesem Kunden (01.11.2026). */}
+        <KundenEmails kontaktId={kunde.id} kundeEmail={kunde.email} />
+        </div>
       );
     }
     if (activeTab === "dokumente") {

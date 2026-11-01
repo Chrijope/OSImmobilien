@@ -407,6 +407,12 @@ verify_jwt = true
 [functions.extract-loan-terms]
 verify_jwt = true
 
+[functions.email-aktion]
+verify_jwt = true
+
+[functions.email-konten]
+verify_jwt = true
+
 [functions.fetch-email-body]
 verify_jwt = true
 

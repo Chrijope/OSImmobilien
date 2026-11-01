@@ -16,7 +16,7 @@
  */
 import type { ComponentType, ReactNode } from "react";
 import {
-  LayoutDashboard, Inbox, Calendar, Newspaper, Users, UserPlus,
+  LayoutDashboard, Inbox, Mail, Calendar, Newspaper, Users, UserPlus,
   GitBranch, Zap, Building2, BarChart3, PieChart,
   Search, Receipt, Trophy, Calculator, Megaphone, Target, CreditCard,
   GraduationCap, BookOpen, BookMarked, Presentation, FolderOpen,
@@ -55,6 +55,8 @@ const mainItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard, suchbegriffe: ["start", "startseite", "uebersicht", "home"] },
   { title: "Inbox", url: "/inbox", icon: Inbox, suchbegriffe: ["aufgaben", "todo", "posteingang", "heute", "faellig"] },
   { title: "Chat", url: "/chat", icon: MessageCircle, suchbegriffe: ["nachricht", "schreiben", "kollegen", "intern"] },
+  // Eigenes Postfach im CRM, Badge mit ungelesenen Mails (01.11.2026).
+  { title: "E-Mail", url: "/email", icon: Mail, suchbegriffe: ["mail", "postfach", "posteingang", "nachrichten", "imap"] },
   // Seit 18.10.2026 für alle internen Rollen frei, kein Entwurf mehr (Christian).
   { title: "Kalender", url: "/kalender", icon: Calendar, suchbegriffe: ["termine", "woche", "monat", "agenda"] },
   { title: "News & Updates", url: "/news", icon: Newspaper, suchbegriffe: ["neuigkeiten", "mitteilungen", "ankuendigung", "neu im crm"] },
