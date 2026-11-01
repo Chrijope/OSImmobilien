@@ -632,9 +632,10 @@ function KundeCard({ kunde, stufe, investmentId, zusatzBereit, datenstand, einbl
               const d = datum ? new Date(datum) : null;
               const isOverdue = d ? d < new Date() : false;
               return (
-                <div className={`text-xs flex items-center gap-1 ${isOverdue ? "text-destructive font-semibold" : "text-muted-foreground"}`}>
+                <div className={`text-xs flex flex-wrap items-center gap-x-1 ${isOverdue ? "text-destructive font-semibold" : "text-muted-foreground"}`}>
                   <Clock className="h-3 w-3 shrink-0" />
-                  <span>Kaufpreisfälligkeit: {datum ? formatDatum(datum) : "–"}</span>
+                  {/* Umbrechen statt über den Rand ragen: Die Spalte ist schmal (01.11.2026). */}
+                  <span className="min-w-0">Kaufpreisfälligkeit: {datum ? formatDatum(datum) : "–"}</span>
                   {isOverdue && <span className="text-bildunterschrift">(überfällig)</span>}
                 </div>
               );
@@ -1566,6 +1567,12 @@ export default function Pipeline() {
                         if (el.scrollTop + el.clientHeight >= el.scrollHeight - 200) mehrZeigen(stufe.key);
                       }}
                     >
+                      {/* Beim Ziehen zeigt ein gestricheltes Kästchen, wo die Karte landet (01.11.2026). */}
+                      {isDropTarget && dragEntry && (
+                        <div data-pipeline-platzhalter="" aria-hidden="true" className="bew-einreihen flex h-16 items-center justify-center rounded-lg border-2 border-dashed border-primary/60 bg-primary/5 px-3 text-center text-xs font-medium text-primary">
+                          {dragEntry.kundeName || "Hier ablegen"}
+                        </div>
+                      )}
                       {gezeigt.map((entry) => (
                         <KundeCard
                           key={entry.entryKey}

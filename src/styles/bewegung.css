@@ -107,16 +107,15 @@
   }
 
   /* 12. Pipeline: Die gegriffene Karte bleibt abgesenkt stehen, die
-         Zielspalte hebt sich federnd und öffnet unten Platz, neu
+         Zielspalte zeigt ein gestricheltes Kästchen (Pipeline.tsx), neu
          einsortierte Karten gleiten ein. Zurückfedern: lib/bewegung.ts. */
   [data-pipeline-karte] {
     transition: opacity var(--bew-kurz) var(--bew-standard), scale var(--feder-dauer) var(--feder), box-shadow var(--bew-kurz);
   }
   [data-pipeline-karte][data-gezogen] { opacity: .4; scale: .96; }
   [data-pruefung="pipeline-spalte"] {
-    transition: background-color var(--bew-mittel) var(--bew-standard), box-shadow var(--bew-mittel) var(--bew-standard), padding-bottom var(--feder-dauer) var(--feder);
+    transition: background-color var(--bew-mittel) var(--bew-standard), box-shadow var(--bew-mittel) var(--bew-standard);
   }
-  [data-pruefung="pipeline-spalte"][data-ziel] { padding-bottom: 3.5rem; }
   .bew-einreihen { animation: bew-auftauchen var(--bew-mittel) var(--bew-standard) backwards; }
 
   /* 13. Zähler wie die Glocke springen mit leichtem Überschwingen herein,
