@@ -913,6 +913,11 @@ async function glockeAnAdmins(titel: string, nachricht: string, link: string): P
  * Finanzierung (`finanzierungIntern`).
  */
 
+/** Notar ist bedienbar; After Sales folgt derselben Freischaltung (31.10.2026). */
+function notarFreigeschaltet(inv: { id: string; pipelineStufe: string }): boolean {
+  return FREIGESCHALTET_AB_RESERVIERUNG.includes(inv.pipelineStufe) && getRvSigned(inv.id);
+}
+
 export default function KundenDetail() {
   /*
    * Fuer welchen Kunden der Hintergrund-Abgleich schon gelaufen ist.
@@ -10329,7 +10334,7 @@ export default function KundenDetail() {
                   </div>
                 );
               })()}
-              {FREIGESCHALTET_AB_RESERVIERUNG.includes(inv.pipelineStufe) && getRvSigned(inv.id) ? (
+              {notarFreigeschaltet(inv) ? (
               (() => {
                 const isAdminOrInhaberNotar = ["admin", "inhaber"].includes(user.role);
                 const isVPNotar = user.role === "vertriebspartner";
@@ -11196,7 +11201,7 @@ export default function KundenDetail() {
               const terminUhrzeit = nd.uhrzeit || inv.notarUhrzeit || "00:00";
               const hasTermin = !!terminDatum;
               // After Sales erst, wenn auch Notar freigeschaltet ist (Christian, 31.10.2026).
-              const notarFrei = FREIGESCHALTET_AB_RESERVIERUNG.includes(inv.pipelineStufe) && getRvSigned(inv.id);
+              const notarFrei = notarFreigeschaltet(inv);
               return (
                 <Card id={`card-aftersales-${inv.id}`} className="p-6 transition-all duration-500">
                   <div className="w-8 h-1 bg-primary mb-3" />
