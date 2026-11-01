@@ -3,6 +3,7 @@ import { Outlet, Navigate, useLocation } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { HeaderBar } from "@/components/HeaderBar";
+import { useSeitenBewegung } from "@/hooks/useSeitenBewegung";
 import { Kopfbereich } from "@/components/Kopfbereich";
 import { useUser } from "@/contexts/UserContext";
 import { useNotarfotoReminder } from "@/hooks/useNotarfotoReminder";
@@ -60,6 +61,7 @@ import { CrmTutorialProvider } from "@/components/tutorial/CrmTutorial";
 export function AppShell() {
   const { isLoggedIn, loading, user, authUser } = useUser();
   const location = useLocation();
+  const { spalteRef, hauptRef } = useSeitenBewegung(location.pathname);
   const { loaded: settingsLoaded, onboardingComplete, customPermissions } = useUserSettings();
   useNotarfotoReminder(user.role, user.name, authUser?.id);
   useKaufpreisFaelligkeitReminder(user.role, authUser?.id);
@@ -318,7 +320,7 @@ export function AppShell() {
           schwebt der Kopfbereich ueber dem Inhalt, und die Banner liegen
           gemeinsam auf einer Glasscheibe unter der Kopfleiste.
         */}
-        <div data-lg="spalte" className="flex-1 flex flex-col min-w-0 min-h-0">
+        <div ref={spalteRef} data-lg="spalte" className="flex-1 flex flex-col min-w-0 min-h-0">
           <Kopfbereich>
             <HeaderBar />
             <div data-lg="bannerstapel" className="contents">
@@ -335,7 +337,7 @@ export function AppShell() {
             Inhalt steht so links und rechts buendig darunter (Christian,
             18.10.2026). Seiten begrenzen ihre Breite deshalb nicht selbst.
           */}
-          <main className="flex-1 min-h-0 overflow-auto px-3 py-3 sm:py-6 bg-background max-md:pb-[calc(5.5rem+env(safe-area-inset-bottom))]">
+          <main ref={hauptRef} className="flex-1 min-h-0 overflow-auto px-3 py-3 sm:py-6 bg-background max-md:pb-[calc(5.5rem+env(safe-area-inset-bottom))]">
             <KundenportalLockGuard>
                 {/*
                   Pflichtunterlagen: Banner waehrend der Frist, Sperre danach.

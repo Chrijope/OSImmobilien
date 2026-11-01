@@ -217,6 +217,7 @@ import { KontaktversucheCard } from "@/components/kunde/KontaktversucheCard";
 import { NaechsteSchritteKarte } from "@/components/kunde/NaechsteSchritteKarte";
 import { AftersalesBeratungCard } from "@/components/kunde/investments/AftersalesBeratungCard";
 import { MietzuzahlungCard } from "@/components/kunde/investments/MietzuzahlungCard";
+import { Skeleton } from "@/components/ui/skeleton";
 import { LockedPhaseCard } from "@/components/kunde/investments/LockedPhaseGrid";
 import { Switch } from "@/components/ui/switch";
 import { AlsTippgeberAnlegenButton } from "@/components/kunde/AlsTippgeberAnlegenButton";
@@ -4176,9 +4177,23 @@ export default function KundenDetail() {
   if (loadingKunde) {
     return (
       <DashboardLayout>
-        <div className="flex flex-col items-center justify-center py-20 gap-4">
-          <RefreshCw className="h-5 w-5 animate-spin text-muted-foreground" />
-          <p className="text-muted-foreground">Lade Kundendaten…</p>
+        {/* Platzhalter in der Form des Profils statt eines Kreisels (01.11.2026). */}
+        <div role="status" aria-busy="true" className="kundenprofil-layout" data-aktivitaeten="ohne">
+          <span className="sr-only">Lade Kundendaten…</span>
+          <div className="rounded-2xl border bg-card p-5 space-y-3" aria-hidden="true">
+            <Skeleton className="h-6 w-2/3" />
+            <Skeleton className="h-3 w-1/3" />
+            <Skeleton className="h-14 w-14 rounded-full" />
+            {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-8 w-full" />)}
+          </div>
+          <div className="space-y-4" aria-hidden="true">
+            <Skeleton className="h-12 w-full rounded-2xl" />
+            <div className="rounded-2xl border bg-card p-5 space-y-3">
+              <Skeleton className="h-5 w-1/4" />
+              <Skeleton className="h-40 w-full" />
+              <Skeleton className="h-24 w-full" />
+            </div>
+          </div>
         </div>
       </DashboardLayout>
     );
