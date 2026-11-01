@@ -682,15 +682,17 @@
   border-color: var(--lg-kante);
   box-shadow: var(--lg-innen), var(--lg-schatten-schwebend);
 }
-[data-glas="liquid"] [data-ui="dialog"]:is(.bg-card, .bg-background, .bg-popover) { border-radius: 22px; }
+/* Dialoge und Meldungen runden wie alle Kästchen (Christian, 01.11.2026). */
+[data-glas="liquid"] [data-ui="dialog"]:is(.bg-card, .bg-background, .bg-popover) { border-radius: var(--lg-radius); }
 /* Am Handy ist der Dialog ein Blatt von unten (A4, ui/blattHandy.tsx): oben
    rund, unten bündig mit dem Rand. Die feste Ecke oben würde das sonst brechen. */
 @media (max-width: 639px) {
   [data-glas="liquid"] [data-ui="dialog"]:is(.bg-card, .bg-background, .bg-popover) { border-radius: 24px 24px 0 0; }
 }
 [data-glas="liquid"] [data-radix-popper-content-wrapper] > :is(.bg-popover, .bg-background, .bg-card) { border-radius: 16px; }
-/* Rückmeldungen als Glaskapsel oben in der Mitte (A5, 26.10.2026). */
-[data-glas="liquid"] :is(.toaster [data-sonner-toast], [data-ui="toast"]:not(.destructive)) { border-radius: 9999px; padding-left: 1.25rem; padding-right: 1.25rem; }
+/* Rückmeldungen oben in der Mitte (A5, 26.10.2026). Seit 01.11.2026 mit der
+   Rundung der Kästchen statt als Kapsel: Mehrzeiliger Text stieß sonst an die Rundung. */
+[data-glas="liquid"] :is(.toaster [data-sonner-toast], [data-ui="toast"]:not(.destructive)) { border-radius: var(--lg-radius); padding-left: 1.25rem; padding-right: 1.25rem; }
 
 /* ═══════════════════════════════════════════════════════════════════════════
    8. Reiter und Tabellen
