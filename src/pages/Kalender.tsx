@@ -2,6 +2,8 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { SaisonEi } from "@/components/saison/Saisonfiguren";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageHeader } from "@/components/PageHeader";
+import { useBisUntenBuendig } from "@/hooks/useBisUntenBuendig";
+import { TagesZeitleiste } from "@/components/kalender/TagesZeitleiste";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CalendarDays, ChevronLeft, ChevronRight, Settings, RefreshCw, Loader2, Clock, MapPin, User, Video } from "lucide-react";
@@ -80,7 +82,8 @@ const Kalender = () => {
   const [loading, setLoading] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [view, setView] = useState<"month" | "week">("month");
+  const [view, setView] = useState<"month" | "week" | "tag">("month");
+  const { ref: flaeche, mass } = useBisUntenBuendig<HTMLDivElement>();
   // Zaehler statt Datenliste: Die Termine kommen aus dem Zwischenspeicher,
   // hier wird nur ein neues Rechnen ausgeloest.
   const [datenStand, setDatenStand] = useState(0);
@@ -329,6 +332,14 @@ const Kalender = () => {
     setCurrentDate(d);
   };
 
+  const navigateTag = (delta: number) => {
+    const d = new Date(currentDate);
+    d.setDate(d.getDate() + delta);
+    setCurrentDate(d);
+    setSelectedDate(d);
+  };
+  const blaettern = (delta: number) => (view === "month" ? navigateMonth(delta) : view === "week" ? navigateWeek(delta) : navigateTag(delta));
+
   return (
     <DashboardLayout>
       <PageHeader
@@ -346,20 +357,27 @@ const Kalender = () => {
         </div>
       </PageHeader>
 
-      <div className="mt-4 grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6">
+      {/* Bis unten bündig mit der Seitenleiste (01.11.2026). */}
+      <div
+        ref={flaeche}
+        className="mt-4 grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6"
+        style={mass ? { height: mass.hoehe, marginBottom: mass.abstandUnten } : undefined}
+      >
         {/* Raster */}
-        <Card className="p-4">
+        <Card className="p-4 flex flex-col min-h-0">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" aria-label="Zurück" onClick={() => (view === "month" ? navigateMonth(-1) : navigateWeek(-1))}>
+              <Button variant="ghost" size="icon" aria-label="Zurück" onClick={() => blaettern(-1)}>
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               <h2 className="text-lg font-semibold min-w-[180px] text-center">
                 {view === "month"
                   ? `${MONTH_NAMES[currentDate.getMonth()]} ${currentDate.getFullYear()}`
-                  : `KW ${getWeekNumber(currentDate)} · ${currentDate.getFullYear()}`}
+                  : view === "week"
+                    ? `KW ${getWeekNumber(currentDate)} · ${currentDate.getFullYear()}`
+                    : currentDate.toLocaleDateString("de-DE", { weekday: "short", day: "2-digit", month: "long", year: "numeric" })}
               </h2>
-              <Button variant="ghost" size="icon" aria-label="Weiter" onClick={() => (view === "month" ? navigateMonth(1) : navigateWeek(1))}>
+              <Button variant="ghost" size="icon" aria-label="Weiter" onClick={() => blaettern(1)}>
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
@@ -370,12 +388,17 @@ const Kalender = () => {
               <Button variant={view === "week" ? "default" : "outline"} size="sm" onClick={() => setView("week")} className="text-xs">
                 Woche
               </Button>
+              <Button variant={view === "tag" ? "default" : "outline"} size="sm" onClick={() => { setCurrentDate(selectedDate); setView("tag"); }} className="text-xs">
+                Tag
+              </Button>
+              {/* Heute: nur der heutige Tag mit Zeitleiste (Christian, 01.11.2026). */}
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => {
                   setCurrentDate(new Date());
                   setSelectedDate(new Date());
+                  setView("tag");
                 }}
                 className="text-xs ml-1"
               >
@@ -384,18 +407,20 @@ const Kalender = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-7 gap-px mb-1">
+          {view !== "tag" && <div className="grid grid-cols-7 gap-px mb-1">
             {WEEKDAYS.map((d) => (
               <div key={d} className="text-center text-xs font-medium text-muted-foreground py-1">
                 {d}
               </div>
             ))}
-          </div>
+          </div>}
 
-          {view === "month" ? (
-            <div className="grid grid-cols-7 gap-px">
+          {view === "tag" ? (
+            <TagesZeitleiste tag={currentDate} termine={eventsForDate(currentDate)} farbeFuer={farbeFuer} />
+          ) : view === "month" ? (
+            <div className="grid flex-1 min-h-0 grid-cols-7 gap-px auto-rows-fr">
               {monthGrid.map((date, i) => {
-                if (!date) return <div key={`empty-${i}`} className="h-20 bg-muted/30 rounded" />;
+                if (!date) return <div key={`empty-${i}`} className="min-h-20 bg-muted/30 rounded" />;
                 const dayEvents = eventsForDate(date);
                 const isToday = isSameDay(date, today);
                 const isSelected = isSameDay(date, selectedDate);
@@ -404,7 +429,7 @@ const Kalender = () => {
                   <button
                     key={date.toISOString()}
                     onClick={() => setSelectedDate(date)}
-                    className={`h-20 p-1 rounded text-left transition-colors relative
+                    className={`min-h-20 p-1 rounded text-left transition-colors relative overflow-hidden
                       ${isSelected ? "ring-2 ring-primary bg-primary/5" : "hover:bg-muted/50"}
                       ${!isCurrentMonth ? "opacity-40" : ""}
                     `}
@@ -431,7 +456,7 @@ const Kalender = () => {
               })}
             </div>
           ) : (
-            <div className="grid grid-cols-7 gap-px">
+            <div className="grid flex-1 min-h-0 grid-cols-7 gap-px">
               {weekDays.map((date) => {
                 const dayEvents = eventsForDate(date);
                 const isToday = isSameDay(date, today);
@@ -440,7 +465,7 @@ const Kalender = () => {
                   <button
                     key={date.toISOString()}
                     onClick={() => setSelectedDate(date)}
-                    className={`min-h-[200px] p-2 rounded text-left transition-colors
+                    className={`min-h-[200px] p-2 rounded text-left transition-colors overflow-y-auto
                       ${isSelected ? "ring-2 ring-primary bg-primary/5" : "hover:bg-muted/50"}
                     `}
                   >
@@ -489,8 +514,9 @@ const Kalender = () => {
         </Card>
 
         {/* Tagesliste */}
-        <div className="space-y-4">
-          <Card className="p-4">
+        {/* Tagesliste wächst, damit die Spalte unten bündig mit dem Raster endet. */}
+        <div className="flex flex-col gap-4 min-h-0">
+          <Card className="p-4 lg:flex-1 lg:min-h-[160px] lg:overflow-y-auto">
             <h3 className="text-sm font-semibold mb-3">
               {selectedDate.toLocaleDateString("de-DE", { weekday: "long", day: "2-digit", month: "long", year: "numeric" })}
             </h3>
@@ -579,7 +605,7 @@ const Kalender = () => {
           </Card>
 
           {/* Verbundene Kalender: hier auch das zweite Konto nachtragen oder trennen. */}
-          <div>
+          <Card className="p-4 shrink-0 lg:max-h-[55%] lg:overflow-y-auto">
             <h3 className="mb-2 text-xs font-medium text-muted-foreground">Verbundene Kalender</h3>
             <KalenderKonten kompakt aufAenderung={() => void verbindungenLaden()} />
             {hasAnyCalendar ? (
@@ -597,7 +623,7 @@ const Kalender = () => {
                 </span>
               </p>
             )}
-          </div>
+          </Card>
         </div>
       </div>
     </DashboardLayout>

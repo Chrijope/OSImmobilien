@@ -17,6 +17,8 @@ import KundenDetail from "./KundenDetail";
 import Objekte from "./Objekte";
 import Inbox from "./Inbox";
 import AlleKontakte from "./AlleKontakte";
+import Kalender from "./Kalender";
+import Email from "./Email";
 import { heuteAlsString } from "@/lib/faelligkeit";
 
 /* DEV-only: Originalansichten, eigener Beispieldatensatz, kein Schreibzugriff.
@@ -128,6 +130,8 @@ export default function VorschauCrm() {
               <Route path="objekte" element={<Objekte />} />
               <Route path="inbox" element={<Inbox />} />
               <Route path="kontakte" element={<AlleKontakte />} />
+              <Route path="kalender" element={<Kalender />} />
+              <Route path="email" element={<Email />} />
             </Routes>
           </main>
           {/* Wie im echten Rahmen (DashboardLayout): Tastenkürzel (A8). */}

@@ -21,6 +21,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useUserSettings } from "@/hooks/useUserSettings";
+import { useBisUntenBuendig } from "@/hooks/useBisUntenBuendig";
 import { edgeFehlerMitGrund } from "@/lib/edgeFehler";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
@@ -89,6 +90,7 @@ const EmailSeite = () => {
   const [loadingBody, setLoadingBody] = useState(false);
   const { toast } = useToast();
   const { settings } = useUserSettings();
+  const { ref: flaeche, mass } = useBisUntenBuendig<HTMLDivElement>();
   const [benutzerId, setBenutzerId] = useState<string | null>(null);
 
   const loadEmails = useCallback(async () => {
@@ -342,18 +344,11 @@ const EmailSeite = () => {
   return (
     <DashboardLayout>
       <div className="space-y-4">
-        <PageHeader title="E-Mail" subtitle={loading ? "Lade E-Mails…" : `${emails.length} E-Mails`}>
-          <div className="flex gap-2">
-            <Button size="sm" variant="outline" onClick={() => void syncEmails()} disabled={syncing}>
-              <RefreshCw className={`h-4 w-4 mr-1 ${syncing ? "animate-spin" : ""}`} /> {syncing ? "Synchronisiere…" : "Synchronisieren"}
-            </Button>
-            <Button size="sm" onClick={() => openCompose("new")}>
-              <Pencil className="h-4 w-4 mr-1" /> Verfassen
-            </Button>
-          </div>
-        </PageHeader>
+        {/* Schreiben über „Neue E-Mail“ in der Ordnerspalte, Abholen neben der Suche (01.11.2026). */}
+        <PageHeader title="E-Mail" subtitle={loading ? "Lade E-Mails…" : `${emails.length} E-Mails`} />
 
-        <div className="flex gap-4 min-h-[calc(100vh-220px)]">
+        {/* Bis unten bündig mit der Seitenleiste, wie der Kalender. */}
+        <div ref={flaeche} className="flex gap-4 min-h-[calc(100vh-220px)] lg:min-h-0" style={mass ? { height: mass.hoehe, marginBottom: mass.abstandUnten } : undefined}>
           {/* Sidebar */}
           <div className="w-48 flex-shrink-0 space-y-1">
             <Button className="w-full mb-3" size="sm" onClick={() => openCompose("new")}>
@@ -484,8 +479,8 @@ const EmailSeite = () => {
                       onChange={(e) => setSearch(e.target.value)}
                     />
                   </div>
-                  <Button variant="ghost" size="icon" aria-label="Neu laden" className="h-9 w-9" onClick={() => void syncEmails()} disabled={syncing}>
-                    <RefreshCw className="h-4 w-4" />
+                  <Button variant="ghost" size="icon" aria-label="Neue E-Mails abholen" title="Neue E-Mails abholen" className="h-9 w-9" onClick={() => void syncEmails()} disabled={syncing}>
+                    <RefreshCw className={`h-4 w-4 ${syncing ? "animate-spin" : ""}`} />
                   </Button>
                 </div>
 
