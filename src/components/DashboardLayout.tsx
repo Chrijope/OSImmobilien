@@ -337,7 +337,7 @@ export function AppShell() {
             Inhalt steht so links und rechts buendig darunter (Christian,
             18.10.2026). Seiten begrenzen ihre Breite deshalb nicht selbst.
           */}
-          <main ref={hauptRef} className="flex-1 min-h-0 overflow-auto px-3 py-3 sm:py-6 bg-background max-md:pb-[calc(5.5rem+env(safe-area-inset-bottom))]">
+          <main className="flex-1 min-h-0 overflow-auto px-3 py-3 sm:py-6 bg-background max-md:pb-[calc(5.5rem+env(safe-area-inset-bottom))]" ref={hauptRef}>
             <KundenportalLockGuard>
                 {/*
                   Pflichtunterlagen: Banner waehrend der Frist, Sperre danach.

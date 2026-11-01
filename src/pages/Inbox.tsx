@@ -15,6 +15,7 @@ import { getInboxTasks, removeInboxTask, type InboxTask } from "@/lib/aktivitaet
 import { type InboxTermin } from "@/lib/inboxTermine";
 import { erledigeAufgabe, getAufgaben, getMeineAufgaben, oeffneAufgabe } from "@/lib/aufgabenStore";
 import { useToast } from "@/hooks/use-toast";
+import { wegGleiten } from "@/lib/bewegung";
 import { useUser } from "@/contexts/UserContext";
 import { markInboxTaskDone, unmarkInboxTaskDone, getDoneInboxIds, isTaskOverdue, toDateString, getTodayDateString } from "@/lib/inboxCountStore";
 import { completeFollowUp, uncompleteFollowUp } from "@/lib/followUpStore";
@@ -420,6 +421,8 @@ const Inbox = () => {
         return;
       }
     }
+    // Die Zeile gleitet erst weg, dann rückt die Liste nach (01.11.2026).
+    await wegGleiten(document.getElementById(`inbox-${task.id}`));
     setAufgaben((prev) => prev.filter((a) => a.id !== task.id));
     setErledigteAufgaben((prev) => [...prev, { ...task, erledigtAm: new Date().toISOString() }]);
 
@@ -450,6 +453,13 @@ const Inbox = () => {
     toast({
       title: "Erledigt ✓",
       description: `${task.titel} wurde als erledigt markiert und im Kundenprofil von ${task.kundeName} protokolliert.`,
+      // 5 Sekunden lang rückgängig zu machen, wie in Apples Erinnerungen.
+      duration: 5000,
+      action: (
+        <Button size="sm" variant="outline" onClick={() => handleUndoComplete(task)}>
+          Rückgängig
+        </Button>
+      ),
     });
   };
 

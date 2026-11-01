@@ -691,7 +691,7 @@ export function HeaderBar() {
             <Button variant="ghost" size="icon" aria-label="Benachrichtigungen" className="relative">
               <Bell className="h-5 w-5 text-muted-foreground" />
               {unreadCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-destructive text-bildunterschrift font-bold text-destructive-foreground flex items-center justify-center">
+                <span key={unreadCount} className="bew-plopp absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-destructive text-bildunterschrift font-bold text-destructive-foreground flex items-center justify-center">
                   {unreadCount}
                 </span>
               )}

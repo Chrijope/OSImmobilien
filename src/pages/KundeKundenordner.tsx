@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
+import { ListenPlatzhalter } from "@/components/ui/listen-platzhalter";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { FolderOpen, Building2, Download, Loader2, ChevronRight, FileText, Home, ArrowRight, User as UserIcon, FileCheck, AlertCircle } from "lucide-react";
+import { FolderOpen, Building2, Download, ChevronRight, FileText, Home, ArrowRight, User as UserIcon, FileCheck, AlertCircle } from "lucide-react";
 import { KundeEmptyState } from "@/components/kunde/KundeEmptyState";
 import { supabase } from "@/integrations/supabase/client";
 import { openUnterlage } from "@/lib/storage";
@@ -145,9 +146,7 @@ export default function KundeKundenordner() {
   if (loading) {
     return (
       <DashboardLayout>
-        <div className="flex items-center justify-center h-64">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-        </div>
+        <ListenPlatzhalter anzahl={5} />
       </DashboardLayout>
     );
   }

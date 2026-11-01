@@ -1,6 +1,7 @@
 import { useVideocallFreigabe } from "@/hooks/useVideocallFreigabe";
 import { SaisonLogo } from "@/components/saison/Saisonfiguren";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useGleiter } from "@/hooks/useGleiter";
 import { useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -438,6 +439,9 @@ function NavGroup({
 }
 
 export function AppSidebar() {
+  // Die Markierung des aktiven Eintrags gleitet beim Seitenwechsel mit (01.11.2026).
+  const inhalt = useRef<HTMLDivElement>(null);
+  useGleiter(inhalt, true, ".sidebar-aktiv", ["class"]);
   const { state, isMobile } = useSidebar();
   const collapsed = state === "collapsed";
   const { user, authUser } = useUser();
@@ -815,7 +819,7 @@ export function AppSidebar() {
               <img src={iconImg} alt="OS Real Estate GmbH" className="h-8 w-8 object-contain" />
             )}
          </div>
-        <SidebarContent className="px-2 py-2 flex-1">
+        <SidebarContent ref={inhalt} className="px-2 py-2 flex-1">
           <NavGroup label="" items={gruppen[0].items.map(item =>
             item.title === "Chat" ? { ...item, badgeCount: unreadChats } : item
           )} collapsed={collapsed} userRole={user.role} iconTint={gruppen[0].iconTint} />
@@ -839,7 +843,7 @@ export function AppSidebar() {
             <img src={iconImg} alt="OS Real Estate GmbH" className="h-8 w-8 object-contain" />
           )}
         </div>
-        <SidebarContent className="px-2 py-2 flex-1">
+        <SidebarContent ref={inhalt} className="px-2 py-2 flex-1">
           <NavGroup label="" items={gruppen[0].items} collapsed={collapsed} userRole={user.role} iconTint={gruppen[0].iconTint} />
         </SidebarContent>
         <SidebarRoleSelector />
@@ -896,7 +900,7 @@ export function AppSidebar() {
             <img src={iconImg} alt="OS Real Estate GmbH" className="h-8 w-8 object-contain" />
           )}
        </div>
-      <SidebarContent className="px-2 py-2 flex-1">
+      <SidebarContent ref={inhalt} className="px-2 py-2 flex-1">
         {showFavoritesBlock && (
           <NavGroup label="★ Favoriten" items={favoriteItems} collapsed={collapsed} userRole={user.role} customPermissions={customPermissions} onboardingLocked={locked} iconTint="text-amber-500" showBookmarks={!isMobile && !collapsed} isFavorite={isFavorite} toggleFavorite={toggleFavorite} />
         )}

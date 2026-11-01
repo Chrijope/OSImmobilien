@@ -1,5 +1,6 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { HochZahl } from "@/components/ui/hochzahl";
 import type { LucideIcon } from "lucide-react";
 
 interface StatTileProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -47,7 +48,7 @@ export function StatTile({ label, value, hint, icon: Icon, trend, className, ...
             </div>
           )}
         </div>
-        <div data-ui="kennzahl-wert" className="mt-2 text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">{value}</div>
+        <div data-ui="kennzahl-wert" className="mt-2 text-2xl sm:text-3xl font-semibold tracking-tight text-foreground"><HochZahl wert={value} /></div>
         {hint && (
           <div
             data-ui="kennzahl-zusatz"

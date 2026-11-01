@@ -23,6 +23,11 @@
   [data-radix-popper-content-wrapper] > * {
     transform-origin: var(--radix-popper-transform-origin);
   }
+  /* Tooltips kennen statt „open“ zwei eigene Zustände. */
+  [data-feder]:is([data-state="delayed-open"], [data-state="instant-open"]) {
+    animation-timing-function: var(--feder);
+    animation-duration: var(--feder-dauer);
+  }
   /* Schließen schneller als Öffnen, ohne Überschwingen. */
   [data-feder][data-state="closed"] {
     animation-duration: var(--bew-kurz);
@@ -92,12 +97,84 @@
     box-shadow: var(--lg-innen), var(--lg-schatten-hoch);
   }
 
+  /* 10. Aufklappen mit Höhe (ui/collapsible.tsx). Abgeschnitten wird nur
+         während der Bewegung, danach ragen Menüs wieder heraus. */
+  .bew-aufklapp[data-state="open"] { animation: bew-auf var(--bew-mittel) var(--bew-standard); }
+  .bew-aufklapp[data-state="closed"] { animation: bew-zu var(--bew-kurz) var(--bew-aus); }
+  /* Pfeile drehen mit, wo sie sich schon per Klasse drehen. */
+  :is(.lucide-chevron-down, .lucide-chevron-right, .lucide-chevron-up) {
+    transition: transform var(--bew-mittel) var(--bew-standard), rotate var(--bew-mittel) var(--bew-standard);
+  }
+
+  /* 12. Pipeline: Die gegriffene Karte bleibt abgesenkt stehen, die
+         Zielspalte hebt sich federnd und öffnet unten Platz, neu
+         einsortierte Karten gleiten ein. Zurückfedern: lib/bewegung.ts. */
+  [data-pipeline-karte] {
+    transition: opacity var(--bew-kurz) var(--bew-standard), scale var(--feder-dauer) var(--feder), box-shadow var(--bew-kurz);
+  }
+  [data-pipeline-karte][data-gezogen] { opacity: .4; scale: .96; }
+  [data-pruefung="pipeline-spalte"] {
+    transition: background-color var(--bew-mittel) var(--bew-standard), box-shadow var(--bew-mittel) var(--bew-standard), padding-bottom var(--feder-dauer) var(--feder);
+  }
+  [data-pruefung="pipeline-spalte"][data-ziel] { padding-bottom: 3.5rem; }
+  .bew-einreihen { animation: bew-auftauchen var(--bew-mittel) var(--bew-standard) backwards; }
+
+  /* 13. Zähler wie die Glocke springen mit leichtem Überschwingen herein,
+         neu bei jeder Änderung der Zahl (key in HeaderBar). */
+  .bew-plopp { animation: bew-plopp var(--feder-dauer) var(--feder) both; }
+  /* Häkchen springen beim Setzen federnd auf (Indikator erscheint erst dann). */
+  [role="checkbox"] > [data-state="checked"] { animation: bew-plopp var(--feder-dauer) var(--feder) both; }
+
+  /* 5. Seitenleiste: Die Markierung des aktiven Eintrags (sonst
+        .sidebar-aktiv in index.css) gleitet beim Seitenwechsel mit. */
+  [data-sidebar="content"][data-gleiter] { position: relative; }
+  [data-sidebar="content"][data-gleiter]::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--tab-w);
+    height: var(--tab-h);
+    translate: var(--tab-x) var(--tab-y);
+    border-radius: var(--tab-r, 11px);
+    background-image:
+      linear-gradient(hsl(var(--primary)), hsl(var(--primary))),
+      linear-gradient(90deg, hsl(var(--primary) / .22) 0%, hsl(var(--primary) / .08) 60%, transparent 100%);
+    background-size: 3px 60%, 100% 100%;
+    background-position: left center, 0 0;
+    background-repeat: no-repeat;
+    pointer-events: none;
+    transition-property: translate, width, height;
+    transition-duration: var(--feder-dauer);
+    transition-timing-function: var(--feder);
+  }
+  [data-crm-design="studio"][data-glas="liquid"] [data-sidebar="content"][data-gleiter]::before {
+    box-shadow: inset 0 1px 0 hsl(0 0% 100% / .25), 0 5px 12px -5px hsl(157 60% 21% / .4);
+  }
+  [data-sidebar="content"][data-gleiter] [data-sidebar].sidebar-aktiv {
+    background-image: none;
+    box-shadow: none;
+  }
+  [data-sidebar="content"][data-gleiter] :is([data-sidebar="menu-button"], [data-sidebar="menu-sub-button"]) { position: relative; z-index: 1; }
+
   /* 6. Platzhalter schimmern wie in Apples Listen, statt zu pulsieren. */
   .bew-schimmer {
     background-image: linear-gradient(100deg, transparent 30%, hsl(var(--card) / .7) 50%, transparent 70%);
     background-size: 220% 100%;
     animation: bew-schimmer 1.6s var(--bew-standard) infinite;
   }
+
+  /* Kästchen in Rastern blenden beim Erscheinen leicht versetzt ein. Nur mit
+     Liquid Glass: Exporte schalten es ab und bekommen so keine halb
+     eingeblendeten Kästchen. */
+  [data-glas="liquid"] main .grid > [data-ui="card"] {
+    animation: bew-auftauchen var(--bew-mittel) var(--bew-standard) backwards;
+  }
+  [data-glas="liquid"] main .grid > [data-ui="card"]:nth-child(2) { animation-delay: 30ms; }
+  [data-glas="liquid"] main .grid > [data-ui="card"]:nth-child(3) { animation-delay: 60ms; }
+  [data-glas="liquid"] main .grid > [data-ui="card"]:nth-child(4) { animation-delay: 90ms; }
+  [data-glas="liquid"] main .grid > [data-ui="card"]:nth-child(5) { animation-delay: 120ms; }
+  [data-glas="liquid"] main .grid > [data-ui="card"]:nth-child(n+6) { animation-delay: 150ms; }
 
   /* 7. Rückmeldungen fallen federnd herein, der Erfolgshaken springt auf. */
   [data-sonner-toast] {
@@ -112,6 +189,20 @@
   from { background-position: 120% 0; }
   to { background-position: -120% 0; }
 }
+@keyframes bew-auf {
+  from { height: 0; opacity: 0; overflow: hidden; }
+  to { height: var(--radix-collapsible-content-height); opacity: 1; overflow: hidden; }
+}
+@keyframes bew-zu {
+  from { height: var(--radix-collapsible-content-height); opacity: 1; overflow: hidden; }
+  to { height: 0; opacity: 0; overflow: hidden; }
+}
+@keyframes bew-auftauchen {
+  from { opacity: 0; translate: 0 6px; }
+}
+@keyframes bew-plopp {
+  from { opacity: 0; scale: .3; }
+}
 @keyframes bew-haken {
   from { opacity: 0; scale: .4; }
 }
@@ -120,6 +211,11 @@
   [data-ui="button"]:active:not(:disabled),
   :is([data-ui="card"].cursor-pointer, a > [data-ui="card"], button > [data-ui="card"]):active { scale: none; }
   .bew-schimmer { animation: none; background-image: none; }
-  [role="tablist"][data-gleiter]::before { transition: none; }
+  [role="tablist"][data-gleiter]::before, [data-sidebar="content"][data-gleiter]::before { transition: none; }
+  .bew-aufklapp[data-state] { animation: none; }
+  .bew-einreihen { animation: none; }
+  [data-pipeline-karte][data-gezogen] { scale: none; }
+  .bew-plopp, [role="checkbox"] > [data-state="checked"] { animation: none; }
+  [data-glas="liquid"] main .grid > [data-ui="card"] { animation: none; }
   [data-sonner-toast][data-type="success"] [data-icon] { animation: none; }
 }

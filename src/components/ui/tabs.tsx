@@ -2,53 +2,22 @@ import * as React from "react";
 import * as TabsPrimitive from "@radix-ui/react-tabs";
 
 import { cn } from "@/lib/utils";
+import { useGleiter } from "@/hooks/useGleiter";
 
 const Tabs = TabsPrimitive.Root;
 
 /*
  * Die Auswahlfläche gleitet zum gewählten Reiter wie ein Segmentschalter bei
- * Apple (01.11.2026). Hier wird nur gemessen; Fläche und Feder stehen in
- * `styles/bewegung.css`. Leisten mit Unterstrich (bg-transparent) bleiben, wie
- * sie sind.
+ * Apple (01.11.2026, hooks/useGleiter.ts). Leisten mit Unterstrich
+ * (bg-transparent) bleiben, wie sie sind.
  */
-function useGleiter(liste: React.RefObject<HTMLDivElement>, aktiv: boolean) {
-  React.useLayoutEffect(() => {
-    const el = liste.current;
-    if (!el || !aktiv || typeof ResizeObserver === "undefined") return;
-    const setzen = () => {
-      const tab = el.querySelector<HTMLElement>('[role="tab"][data-state="active"]');
-      const l = el.getBoundingClientRect();
-      const t = tab?.getBoundingClientRect();
-      if (!t || t.width === 0) {
-        el.removeAttribute("data-gleiter");
-        return;
-      }
-      el.style.setProperty("--tab-x", `${t.left - l.left + el.scrollLeft - el.clientLeft}px`);
-      el.style.setProperty("--tab-y", `${t.top - l.top + el.scrollTop - el.clientTop}px`);
-      el.style.setProperty("--tab-w", `${t.width}px`);
-      el.style.setProperty("--tab-h", `${t.height}px`);
-      if (!el.hasAttribute("data-gleiter")) el.style.setProperty("--tab-r", getComputedStyle(tab!).borderRadius);
-      el.setAttribute("data-gleiter", "");
-    };
-    setzen();
-    const mo = new MutationObserver(setzen);
-    mo.observe(el, { subtree: true, childList: true, attributes: true, attributeFilter: ["data-state"] });
-    const ro = new ResizeObserver(setzen);
-    ro.observe(el);
-    return () => {
-      mo.disconnect();
-      ro.disconnect();
-    };
-  }, [liste, aktiv]);
-}
-
 const TabsList = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.List>,
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
 >(({ className, ...props }, ref) => {
   const liste = React.useRef<HTMLDivElement>(null);
   React.useImperativeHandle(ref, () => liste.current as HTMLDivElement);
-  useGleiter(liste, !/\bbg-transparent\b/.test(className ?? ""));
+  useGleiter(liste, !/\bbg-transparent\b/.test(className ?? ""), '[role="tab"][data-state="active"]', ["data-state"]);
   return (
     <TabsPrimitive.List
       ref={liste}

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { ListenPlatzhalter } from "@/components/ui/listen-platzhalter";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation, Trans } from "react-i18next";
 import { DashboardLayout } from "@/components/DashboardLayout";
@@ -6,7 +7,6 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   User, Mail, Phone, MapPin, Calendar,
-  Loader2,
   CheckSquare, AlertCircle, ArrowRight,
   ShieldCheck, Home, FileSignature, Landmark, Briefcase, FolderOpen, CheckCircle2, Clock, Upload,
   ChevronDown,
@@ -143,9 +143,7 @@ export default function KundeStammdaten() {
   if (loading) {
     return (
       <DashboardLayout>
-        <div className="flex items-center justify-center h-64">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-        </div>
+        <ListenPlatzhalter anzahl={5} />
       </DashboardLayout>
     );
   }

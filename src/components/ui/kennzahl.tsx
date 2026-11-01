@@ -28,6 +28,7 @@
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
+import { HochZahl } from "@/components/ui/hochzahl";
 
 /** Neutral heisst: die Zahl ist weder gut noch schlecht, nur eine Zahl. */
 export type KennzahlTon = "neutral" | "gut" | "warn";
@@ -83,7 +84,7 @@ export function Kennzahl({
           wertClassName,
         )}
       >
-        {wert}
+        <HochZahl wert={wert} />
       </span>
       {zusatz != null && zusatz !== "" && (
         <span

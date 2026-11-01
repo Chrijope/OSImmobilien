@@ -1,4 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from "react";
+import { zurueckFedern } from "@/lib/bewegung";
 import { SaisonEi } from "@/components/saison/Saisonfiguren";
 import { useLiveVersion } from "@/hooks/useLiveData";
 import { useCacheReady } from "@/hooks/useCacheReady";
@@ -392,11 +393,15 @@ function KundeCard({ kunde, stufe, investmentId, zusatzBereit, datenstand, einbl
     <div
       onClick={onClick}
       draggable={!isArchived}
+      data-pipeline-karte=""
       onDragStart={(e) => {
         e.stopPropagation();
+        // Am alten Platz bleibt eine abgesenkte Karte stehen (styles/bewegung.css).
+        e.currentTarget.setAttribute("data-gezogen", "");
         onDragStartCard?.(e);
       }}
-      className={`border rounded-lg p-3 space-y-1.5 hover:shadow-md transition-shadow cursor-pointer ${
+      onDragEnd={(e) => e.currentTarget.removeAttribute("data-gezogen")}
+      className={`bew-einreihen border rounded-lg p-3 space-y-1.5 hover:shadow-md transition-shadow cursor-pointer ${
         isArchived ? "bg-muted/50 border-dashed opacity-70" : "bg-card"
       } ${borderClass}`}
     >
@@ -809,6 +814,8 @@ export default function Pipeline() {
     }));
 
   // ── Drag & Drop: Karten zwischen Stufen verschieben (mit Bestätigung) ──
+  // Die gegriffene Karte, damit ein abgelehnter Zug sie zurückfedern lassen kann.
+  const gezogeneKarte = useRef<HTMLElement | null>(null);
   const [dragEntry, setDragEntry] = useState<{ kundeId: string; kundeName: string; investmentId?: string; from: PipelineStufe } | null>(null);
   const [dragOverStufe, setDragOverStufe] = useState<string | null>(null);
   type MoveDialogState = {
@@ -838,7 +845,7 @@ export default function Pipeline() {
     setDragOverStufe(null);
     if (dragEntry.from === toKey) { setDragEntry(null); return; }
     // Virtuelle Bestandskunden-Spalte ist kein echter Stufen-Zielwert
-    if (toKey === "bestandskunden") { setDragEntry(null); toast({ title: "Verschieben nicht möglich", description: "Bestandskunden ist eine virtuelle Ansicht — bitte über den Verkaufsprozess in diese Spalte gelangen.", variant: "destructive" }); return; }
+    if (toKey === "bestandskunden") { setDragEntry(null); zurueckFedern(gezogeneKarte.current); toast({ title: "Verschieben nicht möglich", description: "Bestandskunden ist eine virtuelle Ansicht — bitte über den Verkaufsprozess in diese Spalte gelangen.", variant: "destructive" }); return; }
     // Auf "Abrechnung"/"Abgeschlossen" und heraus nur Admin, Inhaber, Backoffice. Die Kachel
     // kann aus der virtuellen Spalte "Bestandskunden" kommen, deshalb zaehlt
     // die echte Stufe des Investments beziehungsweise des Kontakts.
@@ -850,6 +857,7 @@ export default function Pipeline() {
     const nurAbschluss = ABSCHLUSS_NUR_ROLLEN.includes(user.role) && !abschlussRolleDarfStufe(user.role, toKey);
     if (nurAbschluss || !darfAbschlussStufeWechseln(user.role, echteVon, toKey)) {
       setDragEntry(null);
+      zurueckFedern(gezogeneKarte.current);
       toast({ title: "Verschieben nicht möglich", description: ABSCHLUSS_HINWEIS, variant: "destructive" });
       return;
     }
@@ -1502,6 +1510,7 @@ export default function Pipeline() {
                     key={stufe.key}
                     data-pruefung="pipeline-spalte"
                     data-stufe={stufe.key}
+                    data-ziel={isDropTarget ? "" : undefined}
                     className={`relative w-56 flex-shrink-0 flex flex-col min-h-0 rounded-xl border border-border/60 bg-card p-2 shadow-sm transition-colors [&:not(:last-child)]:rounded-tr-none ${isBlurred ? "select-none pointer-events-none" : ""} ${isDropTarget ? "ring-2 ring-primary bg-primary/5" : ""}`}
                     onDragOver={(e) => {
                       if (!dragEntry || isBlurred) return;
@@ -1579,6 +1588,7 @@ export default function Pipeline() {
                           onClick={() => !isBlurred && navigate(entry.investmentId ? `/kunden/${entry.kunde.id}?investment=${entry.investmentId}` : `/kunden/${entry.kunde.id}`)}
                           onDragStartCard={(e) => {
                             if (isBlurred) { e.preventDefault(); return; }
+                            gezogeneKarte.current = e.currentTarget as HTMLElement;
                             try { e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", entry.entryKey); } catch {}
                             setDragEntry({
                               kundeId: entry.kunde.id,
