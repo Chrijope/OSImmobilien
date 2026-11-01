@@ -71,6 +71,8 @@ import "./styles/design-glas.css";
 */
 import "./styles/design-liquid.css";
 import "./styles/design-studio.css";
+// Bewegung wie bei Apple: Kurven, Drücken, Federn (01.11.2026).
+import "./styles/bewegung.css";
 import "./i18n";
 import { runLocalStorageMigration } from "./lib/localStorageMigration";
 import { wendeDesignAn } from "./lib/designSchalter";

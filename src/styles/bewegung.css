@@ -1,0 +1,116 @@
+/*
+ * Bewegung wie bei Apple (Christian, 01.11.2026). Baut auf der Federkurve
+ * `--feder` aus index.css auf (A3, 26.10.2026).
+ *
+ * Grundsätze: Es bewegen sich nur Lage, Größe und Deckkraft. Schließen ist
+ * schneller als Öffnen. Kein Kippen, keine mitwandernden Zahlen
+ * (Entscheidung 23.09.2026). Mit „Bewegung reduzieren“ bleibt höchstens
+ * ein kurzes Einblenden. Nur Bildschirm, Exporte und Druck bleiben ruhig.
+ */
+
+/* 1. Grundlage: drei Kurven, drei Dauern. */
+:root {
+  --bew-standard: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --bew-aus: cubic-bezier(0.4, 0, 1, 1);
+  --bew-kurz: 160ms;
+  --bew-mittel: 280ms;
+  --bew-lang: 420ms;
+}
+
+@media screen {
+  /* 2. Menüs, Auswahllisten, Tooltips wachsen aus der Stelle, an der sie
+        hängen. Radix setzt den Ursprung am Rahmen um den Inhalt. */
+  [data-radix-popper-content-wrapper] > * {
+    transform-origin: var(--radix-popper-transform-origin);
+  }
+  /* Schließen schneller als Öffnen, ohne Überschwingen. */
+  [data-feder][data-state="closed"] {
+    animation-duration: var(--bew-kurz);
+    animation-timing-function: var(--bew-aus);
+  }
+
+  /* 3. Drücken: Knöpfe und klickbare Kästchen geben minimal nach. `scale`
+        statt `transform`, damit Knöpfe mit eigener Verschiebung nicht springen. */
+  [data-ui="button"],
+  :is([data-ui="card"].cursor-pointer, a > [data-ui="card"], button > [data-ui="card"]) {
+    transition-property: color, background-color, border-color, box-shadow, opacity, scale;
+    transition-duration: var(--bew-kurz);
+    transition-timing-function: var(--bew-standard);
+  }
+  [data-ui="button"]:active:not(:disabled) { scale: .97; }
+  :is([data-ui="card"].cursor-pointer, a > [data-ui="card"], button > [data-ui="card"]):active { scale: .99; }
+
+  /* Schalter rasten federnd ein. */
+  [role="switch"] > span {
+    transition-duration: var(--feder-dauer);
+    transition-timing-function: var(--feder);
+  }
+
+  /* 4. Reiter: eine Fläche gleitet zum gewählten Reiter (Maße aus
+        ui/tabs.tsx). Sie trägt das Aussehen, das bisher der gewählte Reiter
+        selbst hatte; der Reiter wird dafür durchsichtig. */
+  [role="tablist"][data-gleiter]::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--tab-w);
+    height: var(--tab-h);
+    translate: var(--tab-x) var(--tab-y);
+    border-radius: var(--tab-r, 10px);
+    background: hsl(var(--card));
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .06);
+    pointer-events: none;
+    transition-property: translate, width, height;
+    transition-duration: var(--feder-dauer);
+    transition-timing-function: var(--feder);
+  }
+  [role="tablist"][data-gleiter] [role="tab"] { position: relative; z-index: 1; }
+  [role="tablist"][data-gleiter] [role="tab"][data-state="active"] {
+    background-color: transparent !important;
+    box-shadow: none !important;
+  }
+  [data-glas="liquid"] [role="tablist"][data-gleiter]::before {
+    background: hsl(var(--lg-glas) / .95);
+    box-shadow: inset 0 1px 0 hsl(0 0% 100% / .9), 0 0 0 .5px var(--lg-haarlinie), 0 3px 8px -3px hsl(160 50% 14% / .25);
+  }
+  [data-glas="liquid"].dark [role="tablist"][data-gleiter]::before {
+    background: hsl(158 45% 19% / .95);
+    box-shadow: inset 0 1px 0 hsl(0 0% 100% / .14), 0 3px 10px -3px hsl(0 0% 0% / .6);
+  }
+  /* Heller Studio-Modus: grüner Rahmen wie zuvor am gewählten Reiter (31.10.2026). */
+  [data-crm-design="studio"][data-glas="liquid"]:not(.dark) [role="tablist"][data-gleiter]::before {
+    box-shadow: 0 0 0 1px hsl(var(--primary) / .45), 0 3px 8px -3px hsl(160 50% 14% / .3);
+  }
+
+  /* 6. Platzhalter schimmern wie in Apples Listen, statt zu pulsieren. */
+  .bew-schimmer {
+    background-image: linear-gradient(100deg, transparent 30%, hsl(var(--card) / .7) 50%, transparent 70%);
+    background-size: 220% 100%;
+    animation: bew-schimmer 1.6s var(--bew-standard) infinite;
+  }
+
+  /* 7. Rückmeldungen fallen federnd herein, der Erfolgshaken springt auf. */
+  [data-sonner-toast] {
+    transition-timing-function: var(--feder);
+  }
+  [data-sonner-toast][data-type="success"] [data-icon] {
+    animation: bew-haken var(--feder-dauer) var(--feder) 120ms both;
+  }
+}
+
+@keyframes bew-schimmer {
+  from { background-position: 120% 0; }
+  to { background-position: -120% 0; }
+}
+@keyframes bew-haken {
+  from { opacity: 0; scale: .4; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-ui="button"]:active:not(:disabled),
+  :is([data-ui="card"].cursor-pointer, a > [data-ui="card"], button > [data-ui="card"]):active { scale: none; }
+  .bew-schimmer { animation: none; background-image: none; }
+  [role="tablist"][data-gleiter]::before { transition: none; }
+  [data-sonner-toast][data-type="success"] [data-icon] { animation: none; }
+}

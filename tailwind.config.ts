@@ -144,6 +144,10 @@ export default {
         "os-lg": "22px",
         "os-pill": "999px",
       },
+      // Übergänge ohne eigene Kurve laufen mit der Apple-Kurve (styles/bewegung.css).
+      transitionTimingFunction: {
+        DEFAULT: "var(--bew-standard)",
+      },
       keyframes: {
         "accordion-down": {
           from: { height: "0" },
