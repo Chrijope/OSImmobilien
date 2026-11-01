@@ -1,3 +1,4 @@
+import type React from "react";
 /*
  * Kleine Bewegungen per Web Animations (01.11.2026).
  *
@@ -31,4 +32,31 @@ export function zurueckFedern(el: HTMLElement | null): void {
     [{ translate: "0 0" }, { translate: "-8px 0" }, { translate: "6px 0" }, { translate: "-3px 0" }, { translate: "0 0" }],
     { duration: 420, easing: "cubic-bezier(0.25, 0.1, 0.25, 1)" },
   );
+}
+
+/**
+ * Beim Greifen hebt sich die Karte: Das Ziehbild ist eine Kopie mit großem
+ * Schatten und leicht vergrößert, statt der flachen Kopie des Browsers.
+ */
+export function angehobenesZiehbild(e: React.DragEvent<HTMLElement>): void {
+  const karte = e.currentTarget;
+  if (!e.dataTransfer || typeof e.dataTransfer.setDragImage !== "function") return;
+  const r = karte.getBoundingClientRect();
+  const kopie = karte.cloneNode(true) as HTMLElement;
+  kopie.removeAttribute("data-gezogen");
+  Object.assign(kopie.style, {
+    position: "fixed",
+    top: "-1000px",
+    left: "-1000px",
+    width: `${r.width}px`,
+    pointerEvents: "none",
+    background: "hsl(var(--card))",
+    borderRadius: "12px",
+    boxShadow: "0 18px 40px -12px rgba(18, 54, 42, .45), 0 4px 10px -4px rgba(18, 54, 42, .25)",
+    scale: "1.03",
+  });
+  document.body.appendChild(kopie);
+  e.dataTransfer.setDragImage(kopie, e.clientX - r.left, e.clientY - r.top);
+  // Der Browser fotografiert das Bild sofort; danach wird die Kopie nicht mehr gebraucht.
+  window.setTimeout(() => kopie.remove(), 0);
 }

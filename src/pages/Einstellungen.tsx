@@ -755,9 +755,10 @@ const Einstellungen = () => {
         setDialogVariant("simple");
       }
       setShowOnboardingDialog(true);
-      return;
+      return false;
     }
-    void handleSave();
+    // Das Ergebnis geht an den Knopf: Bei Erfolg zeigt er kurz den Haken.
+    return handleSave();
   };
 
   // Wenn der User das Popup mit "Buchungslink noch hinterlegen" geschlossen
@@ -773,7 +774,7 @@ const Einstellungen = () => {
     setDismissedForBuchungslink(false);
   }, [dismissedForBuchungslink, buchungslink, profilUnvollstaendig, onboardingComplete]);
 
-  const handleSave = async () => {
+  const handleSave = async (): Promise<boolean> => {
     // Stelle sicher, dass im Gewerbedaten-Tab gerade getippte (noch nicht ge-blurr-te)
     // Werte vor dem Speichern in den parent-State propagiert werden.
     let settingsToSave = settings;
@@ -811,7 +812,7 @@ const Einstellungen = () => {
       if (fehlerLive.length > 0) {
         toast.error(`Bitte fülle alle Pflichtfelder aus: ${fehlerLive.join(", ")}`);
         scrollToFirstError();
-        return;
+        return false;
       }
     }
 
@@ -842,7 +843,7 @@ const Einstellungen = () => {
         if (profileError) {
           console.error("Profil-Stammdaten konnten nicht gespeichert werden:", profileError);
           toast.error("Profil konnte nicht gespeichert werden: " + profileError.message);
-          return;
+          return false;
         }
       }
       // Geburtsdatum zusätzlich lokal cachen – bleibt erhalten, falls die DB-Antwort
@@ -869,7 +870,7 @@ const Einstellungen = () => {
 
     // Force persist settings to DB immediately
     const settingsSaved = await saveSettings(settingsToSave);
-    if (!settingsSaved) return;
+    if (!settingsSaved) return false;
 
     toast.success("Einstellungen gespeichert");
 
@@ -911,10 +912,11 @@ const Einstellungen = () => {
           window.dispatchEvent(new CustomEvent("onboarding-complete"));
           toast.success("🎉 Willkommen! Wir wünschen dir viel Freude bei der Nutzung des CRM von OS Immobilien!", { duration: 5000 });
           navigate("/", { replace: true });
-          return;
+          return true;
         }
       }
     }
+    return true;
   };
 
   /*
@@ -2562,7 +2564,7 @@ export function ActiveSessionsSection() {
   );
 }
 
-function SaveButton({ onClick, disabled, disabledReason, highlight, containerRef }: { onClick?: () => void; disabled?: boolean; disabledReason?: string; highlight?: boolean; containerRef?: React.RefObject<HTMLDivElement> }) {
+function SaveButton({ onClick, disabled, disabledReason, highlight, containerRef }: { onClick?: () => boolean | Promise<boolean>; disabled?: boolean; disabledReason?: string; highlight?: boolean; containerRef?: React.RefObject<HTMLDivElement> }) {
   return (
     <div ref={containerRef} className="flex flex-col items-end pt-4 gap-2 scroll-mt-24">
       {disabled && disabledReason && (
@@ -2579,7 +2581,8 @@ function SaveButton({ onClick, disabled, disabledReason, highlight, containerRef
             ? "animate-pulse ring-4 ring-primary/40 ring-offset-2 scale-110 shadow-lg shadow-primary/50"
             : ""
         }`}
-        onClick={onClick}
+        haken
+        onClick={() => Promise.resolve(onClick?.() ?? false)}
         disabled={disabled}
         title={disabled ? disabledReason : undefined}
       >

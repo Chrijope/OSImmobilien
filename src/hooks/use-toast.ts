@@ -1,4 +1,5 @@
 import * as React from "react";
+import { meldeSpeicherErgebnis } from "@/lib/speicherSignal";
 import { toast as sonner, type ExternalToast } from "sonner";
 
 /*
@@ -44,7 +45,10 @@ function optionen(p: ToastEingabe, id?: string | number): ExternalToast {
 
 function zeige(p: ToastEingabe, id?: string | number): string | number {
   const titel = p.title ?? "";
-  return p.variant === "destructive" ? sonner.error(titel, optionen(p, id)) : sonner(titel, optionen(p, id));
+  if (p.variant === "destructive") return sonner.error(titel, optionen(p, id));
+  // Eine normale Rückmeldung nach dem Klick zählt für den Speichern-Knopf als Erfolg.
+  meldeSpeicherErgebnis("ok");
+  return sonner(titel, optionen(p, id));
 }
 
 function toast(p: ToastEingabe) {

@@ -16,6 +16,7 @@ import { type InboxTermin } from "@/lib/inboxTermine";
 import { erledigeAufgabe, getAufgaben, getMeineAufgaben, oeffneAufgabe } from "@/lib/aufgabenStore";
 import { useToast } from "@/hooks/use-toast";
 import { wegGleiten } from "@/lib/bewegung";
+import { useWeichNachruecken } from "@/hooks/useWeichNachruecken";
 import { useUser } from "@/contexts/UserContext";
 import { markInboxTaskDone, unmarkInboxTaskDone, getDoneInboxIds, isTaskOverdue, toDateString, getTodayDateString } from "@/lib/inboxCountStore";
 import { completeFollowUp, uncompleteFollowUp } from "@/lib/followUpStore";
@@ -237,6 +238,9 @@ const Inbox = () => {
   const [activeFilter, setActiveFilter] = useState("Alle");
   const [viewMode, setViewMode] = useState<"heute" | "woche" | "alle" | "erledigt">("heute");
   const { toast } = useToast();
+  // Neue oder umsortierte Einträge rücken weich an ihren Platz (01.11.2026).
+  const inboxListe = useRef<HTMLDivElement>(null);
+  useWeichNachruecken(inboxListe, '[id^="inbox-"]');
   const navigate = useNavigate();
   /*
    * Liste und Detail nebeneinander ab 768 px (B3, 26.10.2026), wie eine
@@ -653,7 +657,7 @@ const Inbox = () => {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div ref={inboxListe} className="space-y-6">
         <PageHeader
           title={isViewingOther ? `Inbox von ${viewedLabel}` : "Inbox"}
           subtitle={isViewingOther ? "Schreibgeschützte Ansicht – nur Einsicht möglich" : "Deine tagesrelevanten Aufgaben, Meetings & Wochenübersicht"}

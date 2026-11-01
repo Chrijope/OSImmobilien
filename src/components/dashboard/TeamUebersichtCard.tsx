@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { HochZahl } from "@/components/ui/hochzahl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -79,7 +80,7 @@ export function TeamUebersichtCard() {
             {/* Im Vorfuehrmodus bleibt die Beschriftung stehen, nur die Zahl
                 wird weichgezeichnet. Die Karte erklaert sich weiter, die
                 Teamgroesse sieht der Zuschauer aber nicht. */}
-            <div data-ui="kennzahl-wert" className={unscharfKlasse("text-3xl font-bold")}>{teamCount}</div>
+            <div data-ui="kennzahl-wert" className={unscharfKlasse("text-3xl font-bold")}><HochZahl wert={teamCount} /></div>
             <div data-ui="kennzahl-zusatz" className="text-xs text-muted-foreground">
               {isAdmin ? "Untergeschlüsselt (gesamt)" : "Mir untergeschlüsselt"}
             </div>
@@ -93,7 +94,7 @@ export function TeamUebersichtCard() {
               <UserPlus className="h-3.5 w-3.5" />
               Tippgeber
             </div>
-            <div data-ui="kennzahl-wert" className={unscharfKlasse("text-3xl font-bold")}>{tippgeberCount}</div>
+            <div data-ui="kennzahl-wert" className={unscharfKlasse("text-3xl font-bold")}><HochZahl wert={tippgeberCount} /></div>
             <div data-ui="kennzahl-zusatz" className="text-xs text-muted-foreground">
               {isAdmin ? "Insgesamt angelegt" : "Von mir angelegt"}
             </div>

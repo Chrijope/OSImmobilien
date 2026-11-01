@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { HochZahl } from "@/components/ui/hochzahl";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { getMieter } from "@/lib/mieterStore";
@@ -212,7 +213,7 @@ export function HausverwaltungKpiCard() {
           <Card key={kpi.label} className="hover:shadow-md transition-shadow">
             <CardContent data-ui="kennzahl" data-anordnung="kompakt" className="pt-6 text-center">
               <kpi.icon className={`h-6 w-6 mx-auto mb-2 ${kpi.color}`} />
-              <p data-ui="kennzahl-wert" className="text-2xl font-bold">{kpi.value}</p>
+              <p data-ui="kennzahl-wert" className="text-2xl font-bold"><HochZahl wert={kpi.value} /></p>
               <p data-ui="kennzahl-label" className="text-xs text-muted-foreground mt-1">{kpi.label}</p>
             </CardContent>
           </Card>

@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { HochZahl } from "@/components/ui/hochzahl";
 import { Info } from "lucide-react";
 import { getKontakte, type KundeData } from "@/lib/kundenStore";
 import { buildBucketEntries, type KundeBucketEntry } from "@/lib/kontaktPipeline";
@@ -237,7 +238,7 @@ export function KundenCard() {
                     className={unscharfKlasse("text-[26px] sm:text-[34px] font-semibold tracking-tight text-foreground cursor-pointer hover:text-primary transition-colors tabular-nums leading-none")}
                     onClick={() => openList(info.label, group, key as any)}
                   >
-                    {count}
+                    <HochZahl wert={count} />
                   </p>
                   <div className="flex items-center gap-1 mt-2">
                     <span className={`w-1.5 h-1.5 rounded-full ${info.color}`} />

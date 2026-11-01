@@ -1,5 +1,8 @@
 import { Toaster as Sonner, toast } from "sonner";
 import { useOptionalUser } from "@/contexts/UserContext";
+import { richteSpeicherSignalEin } from "@/lib/speicherSignal";
+
+richteSpeicherSignalEin();
 
 type ToasterProps = React.ComponentProps<typeof Sonner>;
 

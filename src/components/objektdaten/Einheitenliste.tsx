@@ -216,8 +216,10 @@ function MietgarantieKarte({ objekt, regel, darfSchreiben }: { objekt: ObjektDat
     try {
       await objektMetaErgaenzen(objekt.id, { mietgarantie: regelNeu });
       toast({ title: regelNeu ? "Mietsubvention gespeichert" : "Mietsubvention entfernt" });
+      return true;
     } catch (e) {
       toast({ title: "Nicht gespeichert", description: e instanceof Error ? e.message : undefined, variant: "destructive" });
+      return false;
     }
   };
   const feld = (label: string, k: keyof typeof leer, modus: "decimal" | "numeric" = "decimal") => (
@@ -248,7 +250,7 @@ function MietgarantieKarte({ objekt, regel, darfSchreiben }: { objekt: ObjektDat
         </div>
         {darfSchreiben && (
           <div className="mt-3 flex gap-2">
-            <Button onClick={() => speichern()}>Speichern</Button>
+            <Button haken onClick={() => speichern()}>Speichern</Button>
             {regel && <Button variant="ghost" onClick={() => speichern(true)}>Keine Subvention</Button>}
           </div>
         )}
@@ -269,8 +271,10 @@ function ErhoehungsKarte({ objekt, regel, darfSchreiben }: { objekt: ObjektData;
     try {
       await objektMetaErgaenzen(objekt.id, { mieterhoehung: { kappungsgrenze: (lesen(kappung) ?? 20) / 100, vergleichsmieteQm: lesen(vergleich) } });
       toast({ title: "Mieterhöhungsplaner gespeichert" });
+      return true;
     } catch (e) {
       toast({ title: "Nicht gespeichert", description: e instanceof Error ? e.message : undefined, variant: "destructive" });
+      return false;
     }
   };
   return (
@@ -283,7 +287,7 @@ function ErhoehungsKarte({ objekt, regel, darfSchreiben }: { objekt: ObjektData;
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:items-end">
           <div><Label>Kappungsgrenze in %</Label><Input disabled={!darfSchreiben} inputMode="decimal" value={kappung} onChange={(e) => setKappung(e.target.value)} /></div>
           <div><Label>Vergleichsmiete €/m²</Label><Input disabled={!darfSchreiben} inputMode="decimal" value={vergleich} placeholder="ohne Angabe nur Kappungsgrenze" onChange={(e) => setVergleich(e.target.value)} /></div>
-          {darfSchreiben && <Button onClick={speichern}>Speichern</Button>}
+          {darfSchreiben && <Button haken onClick={() => speichern()}>Speichern</Button>}
         </div>
       </CardContent>
     </Card>

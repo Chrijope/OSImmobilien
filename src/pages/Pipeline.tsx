@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from "react";
-import { zurueckFedern } from "@/lib/bewegung";
+import { angehobenesZiehbild, zurueckFedern } from "@/lib/bewegung";
 import { SaisonEi } from "@/components/saison/Saisonfiguren";
 import { useLiveVersion } from "@/hooks/useLiveData";
 import { useCacheReady } from "@/hooks/useCacheReady";
@@ -397,6 +397,7 @@ function KundeCard({ kunde, stufe, investmentId, zusatzBereit, datenstand, einbl
       onDragStart={(e) => {
         e.stopPropagation();
         // Am alten Platz bleibt eine abgesenkte Karte stehen (styles/bewegung.css).
+        angehobenesZiehbild(e);
         e.currentTarget.setAttribute("data-gezogen", "");
         onDragStartCard?.(e);
       }}

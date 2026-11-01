@@ -1,11 +1,13 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
+import { Check } from "lucide-react";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
+import { SPEICHER_SIGNAL, type SpeicherErgebnis } from "@/lib/speicherSignal";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-medium ring-offset-background transition-[color,background-color,border-color,box-shadow,opacity,scale] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
@@ -47,12 +49,71 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
+  /**
+   * Haken nach dem Speichern (01.11.2026). Ohne Angabe gilt das für jeden
+   * Knopf mit „speicher…“ in der Beschriftung: Er wartet nach dem Klick auf
+   * die erste Rückmeldung (`lib/speicherSignal.ts`) und zeigt nur bei Erfolg
+   * kurz einen Haken mit „Gespeichert“. `true` heißt: Das Versprechen aus
+   * `onClick` entscheidet, es muss mit `true` enden. `false` schaltet ab.
+   */
+  haken?: boolean;
 }
 
+const WARTEN_MS = 8000;
+const ZEIGEN_MS = 1600;
+
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, haken, onClick, children, ...props }, ref) => {
     const Comp = asChild ? Slot : "button";
-    return <Comp data-ui="button" className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />;
+    const [gespeichert, setGespeichert] = React.useState(false);
+    const zeigen = React.useCallback((knopf: HTMLElement) => {
+      setGespeichert(true);
+      window.setTimeout(() => setGespeichert(false), ZEIGEN_MS);
+      // In Dialogen wartet die Schließ-Animation kurz, damit der Haken zu sehen ist.
+      const huelle = knopf.closest<HTMLElement>('[data-ui="dialog"], [data-ui="sheet"]');
+      if (huelle) {
+        huelle.setAttribute("data-gespeichert", "");
+        window.setTimeout(() => huelle.removeAttribute("data-gespeichert"), ZEIGEN_MS);
+      }
+    }, []);
+    const klick = (e: React.MouseEvent<HTMLButtonElement>) => {
+      if (asChild || haken === false) return onClick?.(e);
+      const knopf = e.currentTarget;
+      if (haken === true) {
+        const ergebnis = onClick?.(e) as unknown;
+        if (ergebnis instanceof Promise) ergebnis.then((ok) => ok === true && zeigen(knopf), () => {});
+        return;
+      }
+      if (!/speicher/i.test(e.currentTarget.textContent ?? "")) return onClick?.(e);
+      // Vor dem Klick lauschen: Manche Abläufe melden sich sofort.
+      let erledigt = false;
+      const ende = () => {
+        erledigt = true;
+        window.removeEventListener(SPEICHER_SIGNAL, hoeren);
+        window.clearTimeout(frist);
+      };
+      const hoeren = (ev: Event) => {
+        if (erledigt) return;
+        const ok = (ev as CustomEvent<SpeicherErgebnis>).detail === "ok";
+        ende();
+        if (ok) zeigen(knopf);
+      };
+      window.addEventListener(SPEICHER_SIGNAL, hoeren);
+      const frist = window.setTimeout(ende, WARTEN_MS);
+      onClick?.(e);
+    };
+    return (
+      <Comp data-ui="button" className={cn(buttonVariants({ variant, size, className }))} ref={ref} onClick={asChild ? onClick : klick} {...props}>
+        {gespeichert ? (
+          <>
+            <Check className="bew-plopp" aria-hidden="true" />
+            <span role="status">Gespeichert</span>
+          </>
+        ) : (
+          children
+        )}
+      </Comp>
+    );
   },
 );
 Button.displayName = "Button";

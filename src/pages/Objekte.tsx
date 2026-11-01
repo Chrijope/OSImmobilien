@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useRef, lazy, Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { SaisonEi } from "@/components/saison/Saisonfiguren";
 import { useLiveVersion } from "@/hooks/useLiveData";
 import { useCacheReady } from "@/hooks/useCacheReady";
@@ -22,7 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Building2, LayoutGrid, List, Plus, Ruler, Euro, TrendingUp, MapPin, ChevronDown, ChevronUp, Loader2, UserPlus, Pencil, Trash2, BedDouble, CalendarDays, Home, Tag, Hammer, Star, Target } from "lucide-react";
+import { Building2, LayoutGrid, List, Plus, Ruler, Euro, TrendingUp, MapPin, ChevronDown, ChevronUp, UserPlus, Pencil, Trash2, BedDouble, CalendarDays, Home, Tag, Hammer, Star, Target } from "lucide-react";
 import { getObjekteImAngebot, type ObjektData, markObjekteSeen, updateWohnung, deleteObjekt, removeReservierung, setObjektSichtStufe } from "@/lib/objekteStore";
 import { objektSichtStufe, SICHT_STUFEN, type ObjektSichtStufe } from "@/lib/objektVorankuendigung";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -800,9 +801,10 @@ export default function Objekte() {
               );
             })()
           ) : (
-            <div className="pt-2 flex items-center gap-2 text-xs text-muted-foreground">
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              Wohneinheiten werden geladen…
+            <div role="status" className="pt-2 space-y-1.5">
+              <span className="sr-only">Wohneinheiten werden geladen…</span>
+              <Skeleton className="h-3 w-2/3" />
+              <Skeleton className="h-3 w-1/2" />
             </div>
           )}
           {/* Wohnungsübersicht – Liste: aufklappbare Tabelle, Grid: nur Anzeige */}
@@ -1264,16 +1266,18 @@ export default function Objekte() {
             </div>
           );
         })() : (
-          <div className="flex items-center gap-2 text-sm bg-muted/50 rounded-lg px-4 py-2 text-muted-foreground">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            Wohneinheiten werden geladen…
+          <div role="status" className="space-y-2 rounded-lg bg-muted/50 px-4 py-3">
+            <span className="sr-only">Wohneinheiten werden geladen…</span>
+            <Skeleton className="h-3.5 w-1/3" />
+            <Skeleton className="h-3.5 w-1/4" />
           </div>
         )}
 
         {viewMode === "karte" ? (
           <Suspense fallback={
-            <Card className="p-8 flex items-center justify-center text-sm text-muted-foreground gap-2">
-              <Loader2 className="h-4 w-4 animate-spin" /> Karte wird geladen…
+            <Card role="status" className="overflow-hidden">
+              <span className="sr-only">Karte wird geladen…</span>
+              <Skeleton className="h-[420px] w-full rounded-none" />
             </Card>
           }>
             <DeutschlandKarte objekte={filtered} mitAdressliste={user.role !== "vertriebspartner"} onSelect={(id) => navigate(zielRouteFuerObjekt(filtered.find((o) => o.id === id) ?? { id }))} />

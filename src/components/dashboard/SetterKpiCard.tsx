@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/card";
+import { HochZahl } from "@/components/ui/hochzahl";
 import { Phone, CalendarCheck, UserCheck, Clock, TrendingUp, Info } from "lucide-react";
 import { getKontakte } from "@/lib/kundenStore";
 import { excludeStatsKontakte } from "@/lib/statsExclusion";
@@ -36,7 +37,7 @@ export function SetterKpiCard() {
                 <div data-ui="kennzahl" data-anordnung="kompakt" className="text-center space-y-1 cursor-help group relative">
                   <Info className="h-3 w-3 text-muted-foreground/50 group-hover:text-primary absolute top-0 right-0 transition-colors" />
                   <kpi.icon className={`h-5 w-5 mx-auto ${kpi.color}`} />
-                  <p data-ui="kennzahl-wert" className="text-2xl font-bold">{kpi.value}</p>
+                  <p data-ui="kennzahl-wert" className="text-2xl font-bold"><HochZahl wert={kpi.value} /></p>
                   <p data-ui="kennzahl-label" className="text-xs text-muted-foreground">{kpi.label}</p>
                 </div>
               </TooltipTrigger>

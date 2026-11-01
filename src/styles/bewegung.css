@@ -88,13 +88,23 @@
     box-shadow: 0 0 0 1px hsl(var(--primary) / .45), 0 3px 8px -3px hsl(160 50% 14% / .3);
   }
 
-  /* 8. Kopfleiste beim Scrollen: Läuft Inhalt darunter, hebt sie sich mit
-        kräftigerem Schatten ab (Kennzeichen aus hooks/useSeitenBewegung.ts). */
+  /* 7. Haken im Speichern-Knopf (ui/button.tsx): Ein Dialog, in dem gerade
+        gespeichert wurde, schließt erst nach einem Moment, damit der Haken
+        zu sehen ist. Radix wartet auf das Ende der Schließ-Animation. */
+  :is([data-ui="dialog"], [data-ui="sheet"])[data-gespeichert][data-state="closed"] {
+    animation-delay: 700ms;
+  }
+
+  /* 8. Kopfleiste beim Scrollen: Läuft Inhalt darunter, wird sie dichter,
+        bekommt eine feine Linie und hebt sich ab (hooks/useSeitenBewegung.ts). */
   [data-glas="liquid"] [data-lg="kopfbereich"] > header {
     transition: box-shadow var(--bew-mittel) var(--bew-standard);
   }
   [data-glas="liquid"] [data-lg="spalte"][data-gescrollt] [data-lg="kopfbereich"] > header {
-    box-shadow: var(--lg-innen), var(--lg-schatten-hoch);
+    /* Dichter (das Glas liest die Deckkraft aus dieser Größe) und mit einer
+       feinen Linie unten, wie die Leisten in Safari und iOS. */
+    --lg-deckkraft-leiste: .98;
+    box-shadow: var(--lg-innen), inset 0 -1px 0 hsl(var(--foreground) / .1), var(--lg-schatten-hoch);
   }
 
   /* 10. Aufklappen mit Höhe (ui/collapsible.tsx). Abgeschnitten wird nur

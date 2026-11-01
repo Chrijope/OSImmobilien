@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { useWeichNachruecken } from "@/hooks/useWeichNachruecken";
 import { SaisonKopfleiste, SaisonMenue } from "@/components/saison/Saisonfiguren";
 import { Bell, Moon, Sun, SunMoon, Settings, MessageSquare, CheckSquare, Calendar, Trophy, GitBranch, Monitor, GraduationCap, ChevronRight, SlidersHorizontal, AtSign, LogOut, ShieldCheck, ShieldOff, Info, User, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -151,6 +152,9 @@ function nameOderErsatz(name: unknown): string {
 }
 
 export function HeaderBar() {
+  // Neue Benachrichtigungen schieben die anderen weich nach unten (01.11.2026).
+  const glockenListe = useRef<HTMLDivElement>(null);
+  useWeichNachruecken(glockenListe, '[id^="glocke-"]');
   const { user, logout, authUser, farbschema, setzeFarbschema } = useUser();
   const navigate = useNavigate();
   const roleConfig = ROLES.find((r) => r.id === user.role);
@@ -770,13 +774,14 @@ export function HeaderBar() {
             </div>
 
             {/* Notification list */}
-            <div className={`flex-1 overflow-y-auto ${showAllNotifications ? "max-h-[70vh]" : "max-h-[50vh]"}`}>
+            <div ref={glockenListe} className={`flex-1 overflow-y-auto ${showAllNotifications ? "max-h-[70vh]" : "max-h-[50vh]"}`}>
               {filtered.length === 0 ? (
                 <div className="p-6 text-center text-sm text-muted-foreground">Keine Benachrichtigungen</div>
               ) : (
                 (showAllNotifications ? filtered : filtered.slice(0, 10)).map((n) => (
                   <div
                     key={n.id}
+                    id={`glocke-${n.id}`}
                     onClick={() => handleNotificationClick(n)}
                     className={`flex items-start gap-3 px-4 py-3 border-b border-border last:border-0 cursor-pointer transition-colors ${
                       !n.read

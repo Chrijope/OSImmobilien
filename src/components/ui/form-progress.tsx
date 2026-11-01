@@ -95,7 +95,7 @@ export function FormProgress({ steps, current, onJump, eyebrow }: FormProgressPr
                 <span className={strich(linksSichtbar, i <= safe)} aria-hidden="true" />
                 <span
                   className={cn(
-                    "mx-1 h-5 w-5 shrink-0 rounded-full flex items-center justify-center text-bildunterschrift font-semibold transition-all",
+                    "mx-1 h-5 w-5 shrink-0 rounded-full flex items-center justify-center text-bildunterschrift font-semibold transition-colors",
                     isDone && "bg-primary text-primary-foreground",
                     isCurrent && "bg-primary text-primary-foreground ring-4 ring-primary/15",
                     !isDone && !isCurrent && "bg-muted text-muted-foreground",

@@ -383,8 +383,9 @@ function PaketBearbeiten({
 
   const speichern = async (neuBeendet: boolean) => {
     setLaeuft(true);
-    await onSpeichern({ paketId: paket.id, bezahltAm: bezahltAm || null, freigeschaltetAm: freigeschaltetAm || null, beendet: neuBeendet, bemerkung });
+    const ok = await onSpeichern({ paketId: paket.id, bezahltAm: bezahltAm || null, freigeschaltetAm: freigeschaltetAm || null, beendet: neuBeendet, bemerkung });
     setLaeuft(false);
+    return ok;
   };
 
   return (
@@ -393,7 +394,7 @@ function PaketBearbeiten({
       <label className="text-sm">Freischaltung im CRM<Input type="date" value={freigeschaltetAm} onChange={(e) => setFreigeschaltetAm(e.target.value)} /></label>
       <label className="text-sm">Bemerkung<Input value={bemerkung} onChange={(e) => setBemerkung(e.target.value)} /></label>
       <div className="flex flex-wrap gap-2 sm:col-span-3">
-        <Button size="sm" disabled={laeuft} onClick={() => void speichern(beendet)}>Speichern</Button>
+        <Button size="sm" haken disabled={laeuft} onClick={() => speichern(beendet)}>Speichern</Button>
         <Button
           size="sm"
           variant="outline"

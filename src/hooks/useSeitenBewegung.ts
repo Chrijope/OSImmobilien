@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
  *  - Seitenwechsel: der Inhalt blendet weich ein und hebt sich um 6px,
  *    Kopfleiste und Seitenleiste bleiben stehen.
  *  - Scrollen: Ab 4px setzt die Spalte `data-gescrollt`; die Kopfleiste wird
- *    dann einen kräftigeren Schatten (`styles/bewegung.css`).
+ *    dann dichter, mit feiner Linie und Schatten (`styles/bewegung.css`).
  * Ohne Web Animations oder mit „Bewegung reduzieren“ wechselt die Seite ohne Einblenden.
  */
 export function useSeitenBewegung(pfad: string) {

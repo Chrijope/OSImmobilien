@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { HochZahl } from "@/components/ui/hochzahl";
 import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { getKontakte } from "@/lib/kundenStore";
@@ -216,7 +217,7 @@ export function PotenzialCard() {
                   className={unscharfKlasse(`text-[26px] sm:text-[34px] tracking-tight tabular-nums leading-none font-semibold ${metricClass}`)}
                   onClick={() => openList("Mögliches Volumen – beteiligte Kunden", groups.volumen)}
                 >
-                  {stats.volumen}<span className="text-xs font-normal text-muted-foreground ml-1.5">EUR</span>
+                  <HochZahl wert={stats.volumen} /><span className="text-xs font-normal text-muted-foreground ml-1.5">EUR</span>
                 </p>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -237,7 +238,7 @@ export function PotenzialCard() {
                   className={unscharfKlasse(`text-[26px] sm:text-[34px] tracking-tight tabular-nums leading-none font-semibold ${metricClass}`)}
                   onClick={() => openList("Offene Vorgänge", groups.kunden)}
                 >
-                  {stats.kunden}
+                  <HochZahl wert={stats.kunden} />
                 </p>
                 <Tooltip>
                   <TooltipTrigger asChild>

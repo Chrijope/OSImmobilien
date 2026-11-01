@@ -169,8 +169,9 @@ export default {
         },
       },
       animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
+        // Wie die Aufklapper (styles/bewegung.css): öffnen 280 ms, schließen 160 ms.
+        "accordion-down": "accordion-down 0.28s var(--bew-standard)",
+        "accordion-up": "accordion-up 0.16s var(--bew-aus)",
         "code-schuetteln": "code-schuetteln 0.4s ease-in-out",
         "caret-blink": "caret-blink 1.2s ease-out infinite",
       },

@@ -333,8 +333,10 @@ function FinanziererAnsicht({ e, neuLaden }: { e: Einreichung; neuLaden: () => v
       await aendereEinreichung(e.id, aenderung);
       toast.success(meldung);
       neuLaden();
+      return true;
     } catch (f: any) {
       toast.error(f?.message || "Speichern fehlgeschlagen.");
+      return false;
     } finally {
       setArbeitet(false);
     }
@@ -404,7 +406,7 @@ function FinanziererAnsicht({ e, neuLaden }: { e: Einreichung; neuLaden: () => v
         <Label className="text-xs">Banken, bei denen angefragt wird (durch Komma getrennt)</Label>
         <div className="flex gap-2">
           <Input className="h-8" disabled={!offen} value={banken} onChange={(ev) => setBanken(ev.target.value)} placeholder="z.B. Sparkasse Berlin, DKB" />
-          <Button size="sm" variant="outline" className="h-8 text-xs" disabled={!offen || arbeitet}
+          <Button size="sm" variant="outline" className="h-8 text-xs" haken disabled={!offen || arbeitet}
             onClick={() => speichern({ banken: banken.split(",").map((b) => b.trim()).filter(Boolean) }, "Banken gespeichert.")}>Speichern</Button>
         </div>
         <p className="text-xs text-muted-foreground">Nur für die Leitung von OS sichtbar, nicht für andere Finanzierer.</p>
