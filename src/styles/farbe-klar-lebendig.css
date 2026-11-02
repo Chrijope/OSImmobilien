@@ -1,0 +1,90 @@
+/*
+ * Farbkonzept „Klar & Lebendig“ (Christian, 02.11.2026), heller Modus.
+ *
+ * Neutral heller Grund ohne Grünschleier, Markengrün kräftig als
+ * Handlungsfarbe, Mint und Gold als lebendige Akzente: gefüllte Auswahl in
+ * Seitenleiste und Reitern, Begrüßung als Banner, farbige Verläufe. Formen,
+ * Abstände und das Orange der Hauptaktion bleiben. Weiße Schrift steht nur
+ * auf #15724F oder dunkler (mindestens 5,6:1, WCAG AA). Alle Farben aus der
+ * Markenpalette (tailwind.config.ts, os.*). Der Dunkelmodus bleibt, wie er war.
+ */
+[data-crm-design="studio"][data-glas="liquid"]:not(.dark) {
+  --background: 150 8% 96.5%;
+  --lg-grund: 150 8% 96%;
+  --card: 0 0% 100%;
+  --lg-glas: 0 0% 100%;
+  --primary: 157 69% 27%;
+  --primary-foreground: 0 0% 100%;
+  --lg-schrift-blau: 157 70% 26%;
+  --ring: 157 69% 38%;
+  --accent: 150 42% 93%;
+  --accent-foreground: 157 70% 22%;
+  --secondary: 150 6% 94%;
+  --muted: 150 6% 94%;
+  --border: 150 6% 87%;
+  --input: 150 6% 81%;
+  --lg-licht: hsl(157 69% 38% / .7);
+  --studio-einlage: hsl(150 8% 94% / .95);
+}
+
+@media screen {
+  [data-crm-design="studio"][data-glas="liquid"]:not(.dark) .lg-grund-wolken {
+    background:
+      radial-gradient(ellipse at 92% 4%, hsl(157 55% 70% / .6), transparent 50%),
+      radial-gradient(ellipse at 6% 96%, hsl(51 95% 60% / .32), transparent 46%),
+      radial-gradient(ellipse at 45% 110%, hsl(196 48% 62% / .12), transparent 42%);
+  }
+
+  /* Gewählter Eintrag in der Seitenleiste gefüllt, wie ein aktiver Knopf. */
+  [data-crm-design="studio"][data-glas="liquid"]:not(.dark) [data-sidebar="content"][data-gleiter]::before {
+    background-image: linear-gradient(135deg, #15724F, #12573F);
+    box-shadow: 0 6px 14px -6px hsl(157 69% 25% / .55), inset 0 1px 0 hsl(0 0% 100% / .25);
+  }
+  [data-crm-design="studio"][data-glas="liquid"]:not(.dark) [data-sidebar="content"][data-gleiter] [data-sidebar].sidebar-aktiv,
+  [data-crm-design="studio"][data-glas="liquid"]:not(.dark) [data-sidebar="content"][data-gleiter] [data-sidebar].sidebar-aktiv:hover { color: #fff; }
+  [data-crm-design="studio"][data-glas="liquid"]:not(.dark) [data-sidebar="content"][data-gleiter] [data-sidebar].sidebar-aktiv svg { color: #fff !important; }
+
+  /* Reiter: gewählter Reiter gefüllt grün mit weißer Schrift. */
+  [data-crm-design="studio"][data-glas="liquid"]:not(.dark) [role="tablist"][data-gleiter]::before {
+    background: linear-gradient(135deg, #15724F, #12573F);
+    box-shadow: 0 4px 10px -4px hsl(157 69% 25% / .5);
+  }
+  [data-crm-design="studio"][data-glas="liquid"]:not(.dark) [role="tablist"][data-gleiter] [role="tab"][data-state="active"] { color: #fff !important; }
+
+  /* Farbiger Verlauf unter Seitentiteln: Grün, Mint, Gold. */
+  [data-crm-design="studio"][data-glas="liquid"]:not(.dark) main h1 + div[aria-hidden] {
+    width: 4.5rem;
+    height: 4px;
+    background: linear-gradient(90deg, #198A5F, #A7D7C5 60%, #CCAC05);
+  }
+
+  /* Kästchen der obersten Ebene: feine mintfarbene Oberkante. Anklickbare
+     behalten beim Überfahren ihren höheren Schatten. */
+  [data-crm-design="studio"][data-glas="liquid"]:not(.dark) main [data-ui="card"]:not([data-ui="card"] [data-ui="card"]) {
+    box-shadow: inset 0 2px 0 hsl(157 55% 72% / .55), var(--lg-innen), var(--lg-schatten);
+  }
+  [data-crm-design="studio"][data-glas="liquid"]:not(.dark) main :is([data-ui="card"].cursor-pointer, a > [data-ui="card"], button > [data-ui="card"]):not([data-ui="card"] [data-ui="card"]):hover {
+    box-shadow: inset 0 2px 0 hsl(157 55% 72% / .7), var(--lg-innen), var(--lg-schatten-hoch);
+  }
+
+  /* Kennzahlen in Markengrün, außer im dunklen Kasten „Heute zu tun“. */
+  [data-crm-design="studio"][data-glas="liquid"]:not(.dark) [data-ui="kennzahl-wert"]:not(section[aria-labelledby="dashboard-heute-title"] *) { color: #15724F; }
+
+  /* Begrüßung als Banner: Markengrün zu Tannengrün, goldener Schimmer. */
+  [data-crm-design="studio"][data-glas="liquid"]:not(.dark) [data-studio="dashboard-begruessung"] {
+    background:
+      radial-gradient(ellipse at 95% 0%, hsl(51 95% 55% / .35), transparent 45%),
+      linear-gradient(120deg, #15724F 0%, #13603F 50%, #12362A 100%);
+    border-radius: 26px;
+    padding: 26px 28px;
+    box-shadow: 0 22px 40px -24px hsl(157 69% 20% / .7), inset 0 1px 0 hsl(0 0% 100% / .2);
+  }
+  [data-crm-design="studio"][data-glas="liquid"]:not(.dark) [data-studio="dashboard-begruessung"] :is(h1, p, span, small) { color: #fff; }
+  [data-crm-design="studio"][data-glas="liquid"]:not(.dark) [data-studio="dashboard-begruessung"] .text-muted-foreground { color: hsl(150 40% 88%) !important; }
+  [data-crm-design="studio"][data-glas="liquid"]:not(.dark) [data-studio="dashboard-begruessung"] > div:last-child {
+    background: hsl(0 0% 100% / .14);
+    border-color: hsl(0 0% 100% / .25);
+    box-shadow: none;
+  }
+  [data-crm-design="studio"][data-glas="liquid"]:not(.dark) [data-studio="dashboard-begruessung"] > div:last-child * { color: #fff !important; }
+}
