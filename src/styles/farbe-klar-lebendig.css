@@ -35,16 +35,16 @@
       radial-gradient(ellipse at 45% 110%, hsl(196 48% 62% / .12), transparent 42%);
   }
 
-  /* Gewählter Eintrag in der Seitenleiste: leicht grün getönt, am rechten
-     Rand am kräftigsten, nach links auslaufend (Christian, 02.11.2026).
+  /* Gewählter Eintrag in der Seitenleiste: leicht grün getönt, am linken
+     Rand am kräftigsten, nach rechts heller auslaufend (Christian, 02.11.2026).
      Größe ausdrücklich voll: Die Grundschicht (bewegung.css) setzt für ihren
      Strich 3px, sonst bliebe vom Verlauf nur ein Streifen übrig. */
   [data-crm-design="studio"][data-glas="liquid"]:not(.dark) [data-sidebar="content"][data-gleiter]::before {
     background-image:
       linear-gradient(hsl(157 69% 27%), hsl(157 69% 27%)),
-      linear-gradient(270deg, hsl(157 60% 40% / .26) 0%, hsl(157 60% 40% / .12) 55%, hsl(157 60% 40% / 0) 100%);
+      linear-gradient(90deg, hsl(157 60% 40% / .26) 0%, hsl(157 60% 40% / .12) 55%, hsl(157 60% 40% / 0) 100%);
     background-size: 3px 60%, 100% 100%;
-    background-position: right center, 0 0;
+    background-position: left center, 0 0;
     background-repeat: no-repeat;
     box-shadow: none;
   }
