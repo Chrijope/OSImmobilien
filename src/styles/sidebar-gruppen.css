@@ -1,118 +1,78 @@
 /*
- * Abschnitte der Seitenleiste (Christian, 04.11.2026): Die Überschrift trägt
- * ein farbiges Symbolfeld passend zum Thema, die Unterpunkte verlieren ihr
- * Symbol und hängen mit Linie und Ästen eingerückt darunter. Die Hauptpunkte
- * ganz oben (Dashboard, Inbox …) sind keine Unterpunkte und behalten ihr
- * Symbol. In der eingeklappten Leiste fehlt `data-nav-gruppe`, dort bleiben
- * die Symbole stehen, sonst wäre nichts mehr zu erkennen.
+ * Seitenleiste nach dem Aufbau des MORE-CRM (04.11.2026). Die Maße sind
+ * aufeinander abgestimmt: Symbolmitte im Abschnittskopf und Leitlinie liegen
+ * 18 px vom Rand, die Texte im festen Block und in den Köpfen auf einer Kante.
+ * Die Stile hängen an .sb-leitlinie und .sb-feste, nicht an der Leiste, weil
+ * das Fenster neben der Bahn im Portal außerhalb der Leiste steht.
  */
-.nav-gruppen-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 26px;
-  height: 26px;
-  border-radius: 8px;
-  background: color-mix(in srgb, currentColor 14%, transparent);
+:root {
+  --sidebar-aktiv-text: 157 69% 24%;
+  --sidebar-aktiv-staerke: .15;
 }
-/* Größe und Schreibweise ausdrücklich: Die Grundschichten setzen Großbuchstaben. */
-[data-nav-gruppe] .nav-gruppen-kopf {
-  justify-content: flex-start;
-  gap: 10px;
-  height: 36px;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: -.005em;
-  text-transform: none;
+.dark {
+  --sidebar-aktiv-text: 158 38% 75%;
+  --sidebar-aktiv-staerke: .22;
 }
-[data-nav-gruppe] .nav-gruppen-titel { flex: 1; text-align: left; }
-[data-nav-gruppe] .nav-gruppen-kopf > svg:last-child { width: 14px; height: 14px; color: hsl(var(--muted-foreground)); }
 
-[data-nav-gruppe] [data-sidebar="menu-button"] > svg:first-child { display: none; }
-[data-nav-gruppe] [data-sidebar="menu-button"] { font-size: 13.5px; }
-[data-nav-gruppe] [data-sidebar="menu-button"]:not(.sidebar-aktiv) { color: hsl(var(--muted-foreground)); }
-[data-nav-gruppe] [data-sidebar="menu-button"]:not(.sidebar-aktiv):hover { color: hsl(var(--foreground)); }
-
-/* Linie links, je Unterpunkt ein runder Ast. Mitte des Symbolfelds: 12 + 13 px. */
-[data-nav-gruppe] [data-sidebar="menu"] { margin-left: 25px; padding-left: 15px; width: auto; }
-[data-nav-gruppe] [data-sidebar="menu-item"]::before {
-  content: "";
-  position: absolute;
-  left: -15px;
-  top: -4px;
-  bottom: 0;
-  border-left: 1.5px solid hsl(var(--foreground) / .2);
-}
-[data-nav-gruppe] [data-sidebar="menu-item"]:first-child::before { top: 0; }
-[data-nav-gruppe] [data-sidebar="menu-item"]:last-child::before { bottom: calc(50% + 4px); }
-[data-nav-gruppe] [data-sidebar="menu-item"]::after {
-  content: "";
-  position: absolute;
-  left: -15px;
-  top: calc(50% - 10px);
-  width: 11px;
-  height: 11px;
-  border-left: 1.5px solid hsl(var(--foreground) / .2);
-  border-bottom: 1.5px solid hsl(var(--foreground) / .2);
-  border-bottom-left-radius: 7px;
-}
-[data-nav-gruppe] [data-sidebar="menu-item"]:has(.sidebar-aktiv)::after { border-color: hsl(var(--primary)); }
-
-/*
- * Eingeklappt: schmale Leiste mit Symbol und Beschriftung, die Unterpunkte
- * klappen rechts auf (AbschnittAufklapper). Sie muss scrollen können, sonst
- * wären die unteren Abschnitte nicht erreichbar.
- */
-[data-collapsible="icon"] [data-sidebar="content"] { overflow-y: auto !important; scrollbar-width: none; }
-[data-collapsible="icon"] [data-sidebar="group"] { padding: 2px 6px; }
-/* Doppelt gezielt: sidebar.tsx setzt eingeklappt eine feste Größe mit !important. */
-.group[data-collapsible="icon"] [data-sidebar="sidebar"] [data-sidebar="menu-button"] {
-  position: relative;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  width: 100% !important;
-  height: auto !important;
-  min-height: 46px;
-  padding: 6px 2px !important;
-  overflow: visible;
-  border-radius: 10px;
-  text-align: center;
-}
-.nav-schiene-titel {
-  display: block;
+html [data-sidebar="group-label"].sb-kopf {
   width: 100%;
-  font-size: 10.5px;
-  font-weight: 500;
-  line-height: 1.15;
-  overflow-wrap: anywhere;
-}
-.nav-schiene-punkt { color: hsl(var(--foreground)); }
-.nav-schiene-punkt:hover { background-color: hsl(var(--muted) / .7); }
-.nav-schiene-punkt:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: -2px; }
-.nav-schiene-zahl {
-  position: absolute;
-  top: 2px;
-  right: calc(50% - 22px);
-  min-width: 16px;
-  height: 16px;
-  padding: 0 4px;
-  border-radius: 999px;
-  background: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-  font-size: 9.5px;
+  height: 34px;
+  gap: 9px;
+  padding-inline: 8px;
+  border-radius: 9px;
+  font-size: .875rem;
   font-weight: 600;
-  line-height: 16px;
-  text-align: center;
+  letter-spacing: 0;
+  text-transform: none;
+  color: hsl(var(--foreground));
 }
-.nav-aufklapper { max-height: min(80vh, 560px); overflow-y: auto; }
-.nav-aufklapper-kopf {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 4px 6px 8px;
-  font-size: 14px;
+
+/* --sb-mitte: halbe Zeilenhöhe, dort treffen Ast und Pfeil die Zeile. */
+.sb-leitlinie { --sb-mitte: 1rem; gap: 0; padding: 2px 0 6px 18px; }
+@media (max-width: 767px) {
+  .sb-leitlinie { --sb-mitte: 20px; }
+}
+.sb-leitlinie [data-zweig] { position: relative; padding-left: 16px; }
+.sb-leitlinie [data-zweig]::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  border-left: 1.5px solid hsl(var(--muted-foreground) / .35);
+  pointer-events: none;
+}
+.sb-leitlinie > :last-child[data-zweig]::before,
+.sb-leitlinie > :last-child > [data-zweig]::before { bottom: auto; height: var(--sb-mitte); }
+.sb-leitlinie [data-zweig="vorher"]::before { border-left-color: hsl(var(--sidebar-aktiv-text)); }
+.sb-leitlinie [data-zweig="aktiv"]::before {
+  bottom: auto;
+  height: var(--sb-mitte);
+  width: 14px;
+  border-left-color: hsl(var(--sidebar-aktiv-text));
+  border-bottom: 1.5px solid hsl(var(--sidebar-aktiv-text));
+  border-bottom-left-radius: 9px;
+}
+.sb-leitlinie [data-zweig="aktiv"]::after {
+  content: "";
+  position: absolute;
+  left: 9px;
+  top: calc(var(--sb-mitte) - 3.6px);
+  width: 6px;
+  height: 6px;
+  border-top: 1.5px solid hsl(var(--sidebar-aktiv-text));
+  border-right: 1.5px solid hsl(var(--sidebar-aktiv-text));
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+
+.sb-feste { gap: 0; margin-bottom: 6px; }
+.sb-feste [data-sidebar="menu-button"] { gap: 11px; }
+:is(.sb-leitlinie, .sb-feste) [data-sidebar="menu-button"]::before { display: none; }
+:is(.sb-leitlinie, .sb-feste) [data-sidebar="menu-button"] { padding-inline: 10px 8px; border-radius: 8px; }
+:is(.sb-leitlinie, .sb-feste) [data-sidebar="menu-button"][data-active="true"] {
+  background-image: none;
+  background-color: hsl(var(--sidebar-primary) / var(--sidebar-aktiv-staerke));
+  color: hsl(var(--sidebar-aktiv-text));
   font-weight: 600;
 }

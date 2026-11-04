@@ -18,7 +18,7 @@ import type { ComponentType, ReactNode } from "react";
 import {
   LayoutDashboard, Inbox, Mail, Calendar, Newspaper, Users, UserPlus,
   GitBranch, Zap, Building2, BarChart3, PieChart,
-  Search, Receipt, Trophy, Calculator, Megaphone, Target, CreditCard,
+  Search, Receipt, Trophy, Calculator, Megaphone, Target, CreditCard, Rocket,
   GraduationCap, BookOpen, BookMarked, Presentation, FolderOpen,
   MessageCircle, Bot, UsersRound, UserCog, Contact, Globe, User, Headset,
   Gift, Key, Wrench, ClipboardList,
@@ -399,13 +399,13 @@ export function navigationsGruppen(ctx: NavKontext): NavGruppe[] {
     { label: "Auswertung", icon: BarChart3, items: auswertungItems, iconTint: "text-apple-indigo" },
     { label: "Tools", icon: Wrench, items: toolsItems, iconTint: "text-apple-purple" },
     {
-      label: "Lead Gen", icon: Target,
+      label: "Lead Gen", icon: Rocket,
       items: leadGenItems.map((item) =>
         item.url === HANDBUCH_SEITE_ROUTE && ctx.handbuchFrei ? { ...item, adminOnly: false, adminBadge: false } : item,
       ),
       iconTint: "text-apple-rose",
     },
-    { label: "Wissen", icon: BookOpen, items: wissenItems, iconTint: "text-apple-sky" },
+    { label: "Wissen", icon: GraduationCap, items: wissenItems, iconTint: "text-apple-sky" },
   ];
   if (ctx.videocallFreigabe) gruppen.push({ label: "Videocall", icon: Video, items: videocallItems, iconTint: "text-apple-teal" });
   gruppen.push(
@@ -503,6 +503,27 @@ export function objektbereichGesperrt(pfad: string, ctx: NavKontext): boolean {
  * Entwürfe kommen aus zwei Quellen: der zentralen Liste in `draftRoutes.ts`
  * und dem Merkmal `draft` am Eintrag. Öffnen dürfen sie Admin und Inhaber.
  */
+/**
+ * Was die Seitenleiste von einer Gruppe zeigt: dieselbe Prüfung für die offene
+ * Leiste und die Bahn, damit dort kein leerer Abschnitt erscheint.
+ */
+export function sichtbareNavPunkte(items: NavItem[], ctx: NavKontext): NavItem[] {
+  return items.filter(
+    (item) => darfNavEintrag(item, ctx) && (!item.children?.length || item.children.some((kind) => darfNavEintrag(kind, ctx))),
+  );
+}
+
+/** Offene Meldungen eines Abschnitts: Zähler plus je ein „Neu“. */
+export function offeneMeldungen(items: Pick<NavItem, "badgeCount" | "newBadge">[]): number {
+  return items.reduce((summe, item) => summe + (item.badgeCount ?? 0) + (item.newBadge ? 1 : 0), 0);
+}
+
+/** Stelle an der Leitlinie: Sie läuft bis zum aktiven Punkt farbig, dort zeigt der Pfeil hin. */
+export function zweigZustand(index: number, aktivIndex: number): "aktiv" | "vorher" | "" {
+  if (index === aktivIndex) return "aktiv";
+  return index < aktivIndex ? "vorher" : "";
+}
+
 export function entwurfGesperrt(item: Pick<NavItem, "url" | "draft">, rolle: string | undefined): boolean {
   if (!item.draft && !isDraftRoute(item.url)) return false;
   const darf =

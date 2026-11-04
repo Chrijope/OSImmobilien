@@ -276,6 +276,9 @@
 
   Seit dem 16.10.2026 ist der aktive Eintrag keine volle Flaeche mehr, sondern
   ein auslaufender Verlauf: `.sidebar-aktiv` in `index.css`.
+
+  Seit dem 04.11.2026 uebergibt `AppSidebar.tsx` `isActive`, das Aussehen steht
+  in `sidebar-gruppen.css`.
 */
 [data-design="neu"] [data-sidebar="sidebar"] {
   border-right: 1px solid hsl(var(--border));

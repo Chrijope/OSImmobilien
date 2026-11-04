@@ -1,16 +1,15 @@
 import { useVideocallFreigabe } from "@/hooks/useVideocallFreigabe";
 import { SaisonLogo } from "@/components/saison/Saisonfiguren";
-import { useState, useEffect, useRef } from "react";
+import { Fragment, useState, useEffect, useRef } from "react";
 import { Popover, PopoverAnchor, PopoverContent } from "@/components/ui/popover";
-import { useGleiter } from "@/hooks/useGleiter";
 import { useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
 import { useUser } from "@/contexts/UserContext";
 import { ChevronDown, Info, Bookmark, BookmarkCheck, Star } from "lucide-react";
 import { handbuchPartnerFreigeschaltet } from "@/lib/handbuch/zugang";
 import {
-  navigationsGruppen, darfNavEintrag, entwurfGesperrt, type NavItem,
+  navigationsGruppen, darfNavEintrag, entwurfGesperrt, sichtbareNavPunkte, offeneMeldungen, zweigZustand,
+  type NavGruppe, type NavItem,
 } from "@/lib/sidebarNavigation";
 import { NavLink } from "@/components/NavLink";
 import logoImg from "@/assets/os-real-estate-logo.png";
@@ -156,222 +155,180 @@ function SidebarInfoTooltip({ itemKey, text }: { itemKey: string; text: string }
 }
 
 
-/**
- * Ein Abschnitt in der eingeklappten Leiste: Symbol und Name, rechts daneben
- * ein Fenster mit den Unterpunkten. Öffnet beim Darüberfahren oder per Klick
- * und Tastatur (dann wandert der Fokus hinein). Eine kurze Verzögerung beim
- * Schließen erlaubt den Weg mit der Maus von der Leiste ins Fenster.
+/*
+ * Aufbau wie im MORE-CRM (04.11.2026): fester Block oben, darunter einklappbare
+ * Abschnitte, Unterpunkte ohne Symbol an einer Leitlinie. Eingeklappt zeigt die
+ * Bahn Symbol und Namen, die Unterpunkte öffnen sich in einem Fenster daneben.
+ * Beide Fassungen zeichnen die Punkte mit derselben NavGroup.
  */
-function AbschnittAufklapper({ label, icon: Icon, iconTint, aktiv, zahl, children }: {
-  label: string;
-  icon?: React.ComponentType<{ className?: string }>;
-  iconTint?: string;
-  aktiv: boolean;
-  zahl: number;
-  children: React.ReactNode;
-}) {
-  const [offen, setOffen] = useState(false);
-  const knopf = useRef<HTMLButtonElement>(null);
-  const perMaus = useRef(false);
-  const schliessen = useRef<number>();
-  useEffect(() => () => window.clearTimeout(schliessen.current), []);
+const ZEICHEN = "inline-grid h-[18px] min-w-[18px] shrink-0 place-items-center rounded-[5px] text-[11px] font-semibold leading-none";
+const ZEICHEN_ZAHL = cn(ZEICHEN, "bg-primary px-1 text-primary-foreground");
 
-  const hin = () => {
-    window.clearTimeout(schliessen.current);
-    perMaus.current = true;
-    setOffen(true);
-  };
-  const weg = () => {
-    schliessen.current = window.setTimeout(() => setOffen(false), 180);
-  };
-
-  return (
-    <Popover open={offen} onOpenChange={setOffen}>
-      <PopoverAnchor asChild>
-        <button
-          ref={knopf}
-          type="button"
-          data-sidebar="menu-button"
-          aria-haspopup="menu"
-          aria-expanded={offen}
-          aria-label={zahl > 0 ? `${label}, ${zahl} neu` : label}
-          className={cn("nav-schiene-punkt", aktiv && "sidebar-aktiv")}
-          onMouseEnter={hin}
-          onMouseLeave={weg}
-          onClick={() => setOffen(true)}
-        >
-          {Icon && <span className={cn("nav-gruppen-icon", iconTint)} aria-hidden="true"><Icon className="h-4 w-4" /></span>}
-          <span className="nav-schiene-titel">{label}</span>
-          {zahl > 0 && <span className="nav-schiene-zahl" aria-hidden="true">{zahl}</span>}
-        </button>
-      </PopoverAnchor>
-      <PopoverContent
-        side="right"
-        align="start"
-        sideOffset={14}
-        className="nav-aufklapper w-64 p-2"
-        onMouseEnter={hin}
-        onMouseLeave={weg}
-        onClickCapture={(e) => {
-          if ((e.target as HTMLElement).closest("a")) setOffen(false);
-        }}
-        onOpenAutoFocus={(e) => {
-          if (perMaus.current) e.preventDefault();
-          perMaus.current = false;
-        }}
-        onCloseAutoFocus={(e) => e.preventDefault()}
-        onInteractOutside={(e) => {
-          if (knopf.current?.contains(e.target as Node)) e.preventDefault();
-        }}
-      >
-        <div className="nav-aufklapper-kopf">
-          {Icon && <span className={cn("nav-gruppen-icon", iconTint)} aria-hidden="true"><Icon className="h-4 w-4" /></span>}
-          <span>{label}</span>
-        </div>
-        <div data-nav-gruppe="">{children}</div>
-      </PopoverContent>
-    </Popover>
-  );
+/** Der Zustand gilt für die Sitzung. Gesperrter Speicher darf nichts stören. */
+function gemerkterAbschnitt(label: string): boolean | null {
+  try {
+    const wert = sessionStorage.getItem(`sidebar-abschnitt:${label}`);
+    return wert === null ? null : wert === "1";
+  } catch {
+    return null;
+  }
+}
+function merkeAbschnitt(label: string, offen: boolean) {
+  try {
+    sessionStorage.setItem(`sidebar-abschnitt:${label}`, offen ? "1" : "0");
+  } catch {
+    // Dann bleibt der Abschnitt nur bis zum Neuladen so.
+  }
 }
 
-function NavGroup({
-  label, items, collapsed, defaultOpen, userRole, customPermissions, onboardingLocked, iconTint,
-  showBookmarks, isFavorite, toggleFavorite, gruppenIcon: GruppenIcon,
-}: {
-  gruppenIcon?: React.ComponentType<{ className?: string }>;
-  label: string; items: NavItem[]; collapsed: boolean; defaultOpen?: boolean; userRole?: string; customPermissions?: string[]; onboardingLocked?: boolean; iconTint?: string;
-  showBookmarks?: boolean; isFavorite?: (url: string) => boolean; toggleFavorite?: (url: string) => void;
-}) {
+type NavOrt = { pathname: string; search: string };
+
+function urlAktiv(url: string, ort: NavOrt) {
+  const [path, query] = url.split("?");
+  // In der CRM-Vorschau liegen die Seiten unter /vorschau/crm.
+  const pfad = ort.pathname.replace(/^\/vorschau\/crm(?=\/|$)/, "") || "/";
+  if (path === "/vertriebsakademie" && pfad.startsWith(path + "/")) return true;
+  if (pfad !== path) return false;
+  const cur = new URLSearchParams(ort.search);
+  if (!query) {
+    // Plain route: only active when no overriding query like ?modus=academy
+    return !cur.has("modus");
+  }
+  const expected = new URLSearchParams(query);
+  for (const [k, v] of expected) {
+    if (cur.get(k) !== v) return false;
+  }
+  return true;
+}
+
+/** Aktiv ist ein Punkt auch dann, wenn einer seiner Unterpunkte aktiv ist. */
+const punktAktiv = (item: NavItem, ort: NavOrt) =>
+  urlAktiv(item.url, ort) || (item.children ?? []).some((kind) => urlAktiv(kind.url, ort));
+
+const entwurf = (item: NavItem) => item.draft || isDraftRoute(item.url);
+
+function punktGeklickt(url: string) {
+  // News wird nicht hier als gelesen gemerkt. Das geschieht auf der News-Seite
+  // selbst, denn nur sie weiss, was tatsaechlich angezeigt wurde.
+  if (url === "/unterlagen") markSeen(SEEN_KEYS.unterlagen);
+  if (url === "/vp-bewertungen") markSeen(SEEN_KEYS.vpBewertungen);
+}
+
+function useNavKontext(userRole?: string, customPermissions?: string[]) {
   // Wer ist angemeldet? Nur fuer persoenliche Ausnahmen wie den
   // Investmentrechner noetig, der einzelnen Personen offensteht.
   const { authUser } = useUser();
-  const identitaet = { email: authUser?.email, userId: authUser?.id };
   // Dieselbe Pruefung nutzt die globale Suche, siehe `sidebarNavigation.ts`.
   // Leere Rolle bleibt leer: Der Admin-Riegel soll dann greifen wie vor der
   // Umstellung; die Routenfreigabe faellt in darfNavEintrag selbst auf "admin" zurueck.
-  const navKontext = { rolle: userRole ?? "", customPermissions, identitaet };
+  return { rolle: userRole ?? "", customPermissions, identitaet: { email: authUser?.email, userId: authUser?.id } };
+}
 
-  // Filter items by role permission + adminOnly
-  const filteredItems = items.filter(item => darfNavEintrag(item, navKontext));
+interface GruppenAngaben {
+  userRole?: string;
+  customPermissions?: string[];
+  onboardingLocked?: boolean;
+  showBookmarks?: boolean;
+  isFavorite?: (url: string) => boolean;
+  toggleFavorite?: (url: string) => void;
+}
+
+function NavGroup({
+  label, items, defaultOpen, iconTint, gruppenIcon: GruppenIcon, ohneKopf,
+  userRole, customPermissions, onboardingLocked, showBookmarks, isFavorite, toggleFavorite,
+}: GruppenAngaben & {
+  label: string;
+  items: NavItem[];
+  defaultOpen?: boolean;
+  iconTint?: string;
+  gruppenIcon?: React.ComponentType<{ className?: string }>;
+  /** Nur die Punkte, ohne Kopf: das Fenster neben der Bahn. */
+  ohneKopf?: boolean;
+}) {
+  const navKontext = useNavKontext(userRole, customPermissions);
+  const location = useLocation();
+  const [offen, setOffen] = useState(() => gemerkterAbschnitt(label) ?? defaultOpen ?? true);
+
+  const filteredItems = sichtbareNavPunkte(items, navKontext);
   if (filteredItems.length === 0) return null;
 
-  const location = useLocation();
-  // Aussehen in index.css (.sidebar-aktiv): Verlauf statt voller Pille.
-  const activeClasses = "sidebar-aktiv";
-  const isItemActive = (url: string) => {
-    const [path, query] = url.split("?");
-    // In der CRM-Vorschau liegen die Seiten unter /vorschau/crm.
-    const pfad = location.pathname.replace(/^\/vorschau\/crm(?=\/|$)/, "") || "/";
-    if (path === "/vertriebsakademie" && pfad.startsWith(path + "/")) return true;
-    if (pfad !== path) return false;
-    const cur = new URLSearchParams(location.search);
-    if (!query) {
-      // Plain route: only active when no overriding query like ?modus=academy
-      return !cur.has("modus");
-    }
-    const expected = new URLSearchParams(query);
-    for (const [k, v] of expected) {
-      if (cur.get(k) !== v) return false;
-    }
-    return true;
-  };
+  const isItemActive = (url: string) => urlAktiv(url, location);
+  // Eine Gruppe mit Symbol zeigt ihre Punkte an der Leitlinie ohne eigene Symbole.
+  const mitLinie = !!GruppenIcon;
+  const aktivIndex = filteredItems.findIndex((item) => punktAktiv(item, location));
 
-  // `kompakt`: in der eingeklappten Leiste, Symbol mit Beschriftung darunter.
-  const renderItem = (item: NavItem, kompakt: boolean = collapsed) => {
-    const schienenTitel = kompakt ? <span className="nav-schiene-titel">{item.title}</span> : null;
+  const renderItem = (item: NavItem, index: number) => {
+    const zweig = mitLinie ? { "data-zweig": zweigZustand(index, aktivIndex) } : {};
     // If onboarding not complete, disable all items except /einstellungen
-    const isSettingsItem = item.url === "/einstellungen";
-    const isLocked = onboardingLocked && !isSettingsItem;
+    const isLocked = onboardingLocked && item.url !== "/einstellungen";
     const active = isItemActive(item.url);
-    // Apple-style icon tint – nur wenn nicht aktiv (aktiv = Primaergruen aus .sidebar-aktiv).
-    const tintClass = !active && iconTint ? iconTint : "";
+    // Apple-style icon tint – nur wenn nicht aktiv.
+    const symbol = !mitLinie && <item.icon className={cn("h-4 w-4 shrink-0", !active && iconTint)} />;
 
     if (isLocked) {
       return (
-        <SidebarMenuItem key={item.title}>
-          <SidebarMenuButton disabled className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm opacity-30 cursor-not-allowed pointer-events-none">
-            <item.icon className={cn("h-4 w-4 shrink-0", tintClass)} />
-            {schienenTitel}
-            {!kompakt && <span className="flex-1">{item.title}</span>}
+        <SidebarMenuItem key={item.title} {...zweig}>
+          <SidebarMenuButton disabled className="text-sm opacity-30 cursor-not-allowed pointer-events-none">
+            {symbol}
+            <span className="flex-1 truncate">{item.title}</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
       );
     }
 
     // Single Source of Truth: zentrale DRAFT_ROUTES + manuelles draft-Flag
-    const isDraft = item.draft || isDraftRoute(item.url);
-
-    if (isDraft) {
+    if (entwurf(item)) {
       // Wer einen Entwurf oeffnen darf, steht in `entwurfGesperrt`.
-      const canAccess = !entwurfGesperrt(item, userRole);
-      if (canAccess) {
+      if (!entwurfGesperrt(item, userRole)) {
         return (
-          <SidebarMenuItem key={item.title}>
-            <SidebarMenuButton asChild>
-              <NavLink to={item.url} end
-                data-tour-id={item.url}
-                className={cn(
-                  "flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-sidebar-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                  isItemActive(item.url) && activeClasses,
-                )}
-              >
-                <item.icon className={cn("h-4 w-4 shrink-0", tintClass)} />
-            {schienenTitel}
-                {!kompakt && (
-                  <>
-                    <span className="flex-1">{item.title}</span>
-                    {/* „E“ für Entwurf: platzsparend, der volle Name steht im Hinweis. */}
-                    <Badge title="Entwurf" aria-label="Entwurf" className="ml-auto shrink-0 text-bildunterschrift leading-none px-1 py-0.5 h-3.5 bg-orange-500/15 text-orange-500 border border-orange-500/30 hover:bg-orange-500/20 font-semibold rounded">
-                      E
-                    </Badge>
-                  </>
-                )}
+          <SidebarMenuItem key={item.title} {...zweig}>
+            <SidebarMenuButton asChild isActive={active}>
+              <NavLink to={item.url} end data-tour-id={item.url} className="text-sm text-sidebar-foreground transition-colors">
+                {symbol}
+                <span className="flex-1 truncate">{item.title}</span>
+                <span className="ml-auto flex shrink-0 items-center justify-end gap-1">
+                  <span title="Entwurf" aria-label="Entwurf" className={cn(ZEICHEN, "w-[18px] border border-orange-500/30 bg-orange-500/15 text-orange-500")}>E</span>
+                </span>
               </NavLink>
             </SidebarMenuButton>
           </SidebarMenuItem>
         );
       }
       return (
-        <SidebarMenuItem key={item.title}>
-          <SidebarMenuButton disabled className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm opacity-40 cursor-not-allowed">
-            <item.icon className={cn("h-4 w-4 shrink-0", tintClass)} />
-            {schienenTitel}
-            {!kompakt && (
-              <>
-                <span className="flex-1">{item.title}</span>
-                <Badge className="ml-auto shrink-0 text-bildunterschrift leading-none px-1 py-0.5 h-3.5 bg-muted text-muted-foreground border border-border hover:bg-muted font-semibold uppercase tracking-wide rounded">
-                  Bald verfügbar
-                </Badge>
-              </>
-            )}
+        <SidebarMenuItem key={item.title} {...zweig}>
+          <SidebarMenuButton disabled className="text-sm opacity-40 cursor-not-allowed">
+            {symbol}
+            <span className="flex-1 truncate">{item.title}</span>
+            <span className="ml-auto flex shrink-0 items-center justify-end gap-1">
+              <span title="Entwurf, bald verfügbar" aria-label="Entwurf, bald verfügbar" className={cn(ZEICHEN, "w-[18px] border border-border bg-muted text-muted-foreground")}>E</span>
+            </span>
           </SidebarMenuButton>
         </SidebarMenuItem>
       );
     }
 
     if (item.children && item.children.length > 0) {
-      const visibleChildren = item.children.filter(child => darfNavEintrag(child, navKontext));
-      if (visibleChildren.length === 0) return null;
-      const anyChildActive = visibleChildren.some(c => isItemActive(c.url));
+      const visibleChildren = item.children.filter((child) => darfNavEintrag(child, navKontext));
+      const anyChildActive = visibleChildren.some((c) => isItemActive(c.url));
       return (
         <Collapsible key={item.title} defaultOpen={anyChildActive}>
-          <SidebarMenuItem>
+          <SidebarMenuItem {...zweig}>
             <CollapsibleTrigger asChild>
-              <SidebarMenuButton className={cn("w-full justify-between", kompakt && anyChildActive && activeClasses)}>
-                <span className="flex items-center gap-2">
-                  <item.icon className={cn("h-4 w-4", tintClass)} />
-                  {!kompakt && <span>{item.title}</span>}
+              <SidebarMenuButton className="w-full justify-between">
+                <span className="flex min-w-0 items-center gap-2">
+                  {symbol}
+                  <span className="truncate">{item.title}</span>
                 </span>
-                {!kompakt && <ChevronDown className="h-3 w-3 transition-transform group-data-[state=open]:rotate-180" />}
+                <ChevronDown className="h-3 w-3 transition-transform group-data-[state=open]:rotate-180" />
               </SidebarMenuButton>
             </CollapsibleTrigger>
             <CollapsibleContent>
               <SidebarMenuSub>
-                {visibleChildren.map(child => (
+                {visibleChildren.map((child) => (
                   <SidebarMenuSubItem key={child.title}>
-                    <SidebarMenuSubButton asChild isActive={isItemActive(child.url)} className={cn(isItemActive(child.url) && activeClasses)}>
+                    <SidebarMenuSubButton asChild isActive={isItemActive(child.url)} className={cn(isItemActive(child.url) && "sidebar-aktiv")}>
                       <NavLink to={child.url} end className="flex items-center gap-2">
-                        <child.icon className={cn("h-4 w-4 shrink-0", !isItemActive(child.url) && iconTint)} />
+                        {!mitLinie && <child.icon className={cn("h-4 w-4 shrink-0", !isItemActive(child.url) && iconTint)} />}
                         <span>{child.title}</span>
                       </NavLink>
                     </SidebarMenuSubButton>
@@ -384,181 +341,263 @@ function NavGroup({
       );
     }
 
-    if (item.hasSubmenu) {
-      return (
-        <Collapsible key={item.title}>
-          <SidebarMenuItem>
-            <CollapsibleTrigger asChild>
-              <SidebarMenuButton className="w-full justify-between">
-                <span className="flex items-center gap-2">
-                  <item.icon className={cn("h-4 w-4", tintClass)} />
-                  {!kompakt && <span>{item.title}</span>}
-                </span>
-                {!kompakt && <ChevronDown className="h-3 w-3 transition-transform group-data-[state=open]:rotate-180" />}
-              </SidebarMenuButton>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <SidebarMenuSub>
-                <SidebarMenuSubItem>
-                  <SidebarMenuSubButton asChild>
-                    <NavLink to={item.url} end><span>Übersicht</span></NavLink>
-                  </SidebarMenuSubButton>
-                </SidebarMenuSubItem>
-              </SidebarMenuSub>
-            </CollapsibleContent>
-          </SidebarMenuItem>
-        </Collapsible>
-      );
-    }
-
-
-
-    const navLink = (
-      <NavLink to={item.url} end
-        data-tour-id={item.url}
-        // Oeffentliche Seiten (etwa „Partner werden“) im neuen Tab, das CRM bleibt offen.
-        {...(item.neuerTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-        onClick={() => {
-          // News wird nicht mehr hier als gelesen gemerkt. Das geschieht auf
-          // der News-Seite selbst, denn nur sie weiss, was tatsaechlich
-          // angezeigt wurde, und sie erwischt auch den Weg ueber einen
-          // Verweis, die Adresszeile oder ein Neuladen.
-          if (item.url === "/unterlagen") markSeen(SEEN_KEYS.unterlagen);
-          if (item.url === "/vp-bewertungen") markSeen(SEEN_KEYS.vpBewertungen);
-        }}
-        className={cn(
-          "group/navitem flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-sidebar-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-          isItemActive(item.url) && activeClasses,
-        )}
-      >
-        <item.icon className={cn("h-4 w-4 shrink-0", tintClass)} />
-            {schienenTitel}
-        {kompakt && (item.badgeCount ?? 0) > 0 && <span className="nav-schiene-zahl">{item.badgeCount}</span>}
-        {!kompakt && (
-          <>
+    const zahl = item.badgeCount ?? 0;
+    const merkbar = showBookmarks && isFavorite && toggleFavorite;
+    return (
+      <SidebarMenuItem key={item.title} {...zweig}>
+        <SidebarMenuButton asChild isActive={active}>
+          <NavLink to={item.url} end
+            data-tour-id={item.url}
+            // Oeffentliche Seiten (etwa „Partner werden“) im neuen Tab, das CRM bleibt offen.
+            {...(item.neuerTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+            onClick={() => punktGeklickt(item.url)}
+            className="group/navitem text-sm text-sidebar-foreground transition-colors"
+          >
+            {symbol}
             <span className="flex-1 truncate">{item.title}</span>
-            {item.tooltip && (
-              <SidebarInfoTooltip itemKey={item.url} text={item.tooltip} />
-            )}
-            {item.badgeCount != null && item.badgeCount > 0 && (
-              <Badge variant="secondary" className="ml-auto shrink-0 text-bildunterschrift px-1.5 py-0 h-5 bg-primary text-primary-foreground">
-                {item.badgeCount}
-              </Badge>
-            )}
-            {item.newBadge && (
-              <Badge className="text-bildunterschrift px-1.5 py-0 h-4 bg-emerald-500 text-white border-0 hover:bg-emerald-500 uppercase tracking-wide">
-                Neu
-              </Badge>
-            )}
-            {item.adminBadge && (
-              <Badge
-                variant="outline"
-                title="Admin"
-                aria-label="Admin"
-                className="ml-auto shrink-0 text-bildunterschrift px-1.5 py-0 h-4 border-primary/40 bg-primary/10 text-primary"
-              >
-                A
-              </Badge>
-            )}
-            {item.trailing}
-            {showBookmarks && isFavorite && toggleFavorite && (
-              <span
-                role="button"
-                tabIndex={0}
-                aria-label={isFavorite(item.url) ? "Aus Favoriten entfernen" : "Zu Favoriten hinzufügen"}
-                onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  toggleFavorite(item.url);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    toggleFavorite(item.url);
-                  }
-                }}
-                className={cn(
-                  "ml-1 shrink-0 items-center justify-center rounded p-0.5",
-                  // Nicht gemerkt: unsichtbar ohne Platz, sonst stünden die
-                  // Zahlen nicht bündig am rechten Rand.
-                  isFavorite(item.url)
-                    ? "inline-flex text-amber-500 hover:text-amber-600"
-                    : "hidden group-hover/navitem:inline-flex text-muted-foreground hover:text-foreground",
+            {(item.tooltip || merkbar) && (
+              <span className="flex shrink-0 items-center md:w-0 md:overflow-hidden md:opacity-0 md:transition-opacity md:focus-within:w-auto md:focus-within:opacity-100 md:group-hover/navitem:w-auto md:group-hover/navitem:opacity-100">
+                {item.tooltip && <SidebarInfoTooltip itemKey={item.url} text={item.tooltip} />}
+                {merkbar && (
+                  <span
+                    role="button"
+                    tabIndex={0}
+                    aria-label={isFavorite(item.url) ? "Aus Favoriten entfernen" : "Zu Favoriten hinzufügen"}
+                    onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      toggleFavorite(item.url);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleFavorite(item.url);
+                      }
+                    }}
+                    className={cn(
+                      "inline-flex shrink-0 items-center justify-center rounded p-0.5",
+                      isFavorite(item.url) ? "text-amber-500 hover:text-amber-600" : "text-muted-foreground hover:text-foreground",
+                    )}
+                  >
+                    {isFavorite(item.url) ? <BookmarkCheck className="h-3.5 w-3.5" /> : <Bookmark className="h-3.5 w-3.5" />}
+                  </span>
                 )}
-              >
-                {isFavorite(item.url) ? <BookmarkCheck className="h-3.5 w-3.5" /> : <Bookmark className="h-3.5 w-3.5" />}
               </span>
             )}
-          </>
-        )}
-      </NavLink>
-    );
-
-    return (
-      <SidebarMenuItem key={item.title}>
-        <SidebarMenuButton asChild tooltip={item.tooltip}>{navLink}</SidebarMenuButton>
+            {(zahl > 0 || item.newBadge || item.adminBadge || item.trailing) && (
+              <span className="ml-auto flex shrink-0 items-center justify-end gap-1">
+                {zahl > 0 && <span className={ZEICHEN_ZAHL}>{zahl}</span>}
+                {item.newBadge && <span className={cn(ZEICHEN, "bg-emerald-500 px-1 text-white")}>Neu</span>}
+                {item.adminBadge && (
+                  <span title="Admin" aria-label="Admin" className={cn(ZEICHEN, "w-[18px] border border-primary/40 bg-primary/10 text-primary")}>A</span>
+                )}
+                {item.trailing}
+              </span>
+            )}
+          </NavLink>
+        </SidebarMenuButton>
       </SidebarMenuItem>
     );
   };
 
-  if (!label) {
+  const punkte = (
+    <SidebarMenu className={mitLinie ? "sb-leitlinie" : "sb-feste"}>{filteredItems.map(renderItem)}</SidebarMenu>
+  );
+
+  if (!label || ohneKopf) {
     return (
-      <SidebarGroup>
-        <SidebarGroupContent>
-          <SidebarMenu>{filteredItems.map((item) => renderItem(item))}</SidebarMenu>
-        </SidebarGroupContent>
+      <SidebarGroup className="p-0">
+        <SidebarGroupContent>{punkte}</SidebarGroupContent>
       </SidebarGroup>
     );
   }
 
-  // Eingeklappt: Der Abschnitt steht mit Symbol und Name in der Leiste, seine
-  // Unterpunkte klappen rechts daneben auf (Christian, 04.11.2026).
-  if (collapsed) {
-    return (
-      <SidebarGroup>
-        <AbschnittAufklapper
-          label={label}
-          icon={GruppenIcon}
-          iconTint={iconTint}
-          aktiv={filteredItems.some((item) => isItemActive(item.url))}
-          zahl={filteredItems.reduce((summe, item) => summe + (item.badgeCount ?? 0), 0)}
-        >
-          <SidebarMenu>{filteredItems.map((item) => renderItem(item, false))}</SidebarMenu>
-        </AbschnittAufklapper>
-      </SidebarGroup>
-    );
-  }
-
+  const summe = offeneMeldungen(filteredItems);
   return (
-    <Collapsible defaultOpen={defaultOpen ?? true}>
-      <SidebarGroup data-nav-gruppe={collapsed ? undefined : ""}>
-        <CollapsibleTrigger asChild>
-          <SidebarGroupLabel className="nav-gruppen-kopf h-9 gap-2.5 text-sm font-semibold text-foreground px-3 cursor-pointer flex items-center justify-start hover:text-foreground/80 transition-colors [&[data-state=open]>svg:last-child]:rotate-180">
-            {!collapsed && GruppenIcon && (
-              <span className={cn("nav-gruppen-icon", iconTint)} aria-hidden="true"><GruppenIcon className="h-4 w-4" /></span>
+    <Collapsible
+      open={offen}
+      onOpenChange={(wert) => {
+        setOffen(wert);
+        merkeAbschnitt(label, wert);
+      }}
+    >
+      <SidebarGroup className="p-0">
+        <SidebarGroupLabel asChild className="sb-kopf cursor-pointer transition-colors hover:bg-sidebar-accent">
+          <CollapsibleTrigger>
+            {GruppenIcon && (
+              <span className={cn("grid h-5 w-5 shrink-0 place-items-center", iconTint)} aria-hidden="true"><GruppenIcon className="h-4 w-4" /></span>
             )}
-            {!collapsed && <span className="nav-gruppen-titel">{label}</span>}
-            {!collapsed && <ChevronDown className="h-3 w-3 transition-transform" />}
-          </SidebarGroupLabel>
-        </CollapsibleTrigger>
+            <span className="flex-1 truncate text-left">{label}</span>
+            {!offen && summe > 0 && <span className={ZEICHEN_ZAHL} aria-label={`${summe} offen`}>{summe}</span>}
+            <ChevronDown className={cn("h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform", offen && "rotate-180")} />
+          </CollapsibleTrigger>
+        </SidebarGroupLabel>
         <CollapsibleContent>
-          <SidebarGroupContent>
-            <SidebarMenu>{filteredItems.map((item) => renderItem(item))}</SidebarMenu>
-          </SidebarGroupContent>
+          <SidebarGroupContent>{punkte}</SidebarGroupContent>
         </CollapsibleContent>
       </SidebarGroup>
     </Collapsible>
   );
 }
 
+const BAHN_PUNKT = "relative flex w-full flex-col items-center gap-1 rounded-lg px-0.5 py-1.5 text-center text-[11px] leading-tight text-sidebar-foreground outline-none transition-colors hover:bg-sidebar-accent focus-visible:ring-2 focus-visible:ring-sidebar-ring";
+const BAHN_MELDUNG = "absolute right-3 top-1 h-2 w-2 rounded-full bg-primary";
+
+/** Die eingeklappte Leiste, nur auf dem Schreibtisch. */
+function Bahn({ gruppen, ...gruppenProps }: GruppenAngaben & { gruppen: NavGruppe[] }) {
+  const { userRole, customPermissions, onboardingLocked } = gruppenProps;
+  const navKontext = useNavKontext(userRole, customPermissions);
+  const location = useLocation();
+  // Immer nur ein Fenster: das Label des offenen Abschnitts.
+  const [offen, setOffen] = useState<string | null>(null);
+  const schliessen = useRef<number>();
+  // Abschnitt und Knopf, von denen die Tastatur kam: Dorthin kehrt der Fokus
+  // zurück. Mit Abschnitt, denn ein schließendes Fenster verschwindet erst
+  // nach seiner Animation und darf das nächste nicht stören.
+  const ausloeser = useRef<{ label: string; knopf: HTMLButtonElement } | null>(null);
+
+  useEffect(() => () => window.clearTimeout(schliessen.current), []);
+  useEffect(() => setOffen(null), [location.pathname, location.search]);
+
+  const hin = (label: string) => {
+    window.clearTimeout(schliessen.current);
+    setOffen(label);
+  };
+  // Die Verzögerung erlaubt den Weg mit der Maus von der Bahn ins Fenster.
+  const weg = () => {
+    schliessen.current = window.setTimeout(() => setOffen(null), 180);
+  };
+
+  const festerPunkt = (item: NavItem, iconTint: string) => {
+    const aktiv = urlAktiv(item.url, location);
+    const inhalt = (
+      <>
+        <item.icon className={cn("h-4 w-4 shrink-0", !aktiv && iconTint)} aria-hidden="true" />
+        <span>{item.title}</span>
+        {offeneMeldungen([item]) > 0 && <span className={BAHN_MELDUNG} aria-label="Neue Meldungen" />}
+      </>
+    );
+    const gesperrt = (onboardingLocked && item.url !== "/einstellungen") || (entwurf(item) && entwurfGesperrt(item, userRole));
+    if (gesperrt) {
+      return <span key={item.title} aria-disabled="true" className={cn(BAHN_PUNKT, "cursor-not-allowed opacity-40 hover:bg-transparent")}>{inhalt}</span>;
+    }
+    return (
+      <NavLink key={item.title} to={item.url} end
+        data-tour-id={item.url}
+        {...(item.neuerTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+        onClick={() => punktGeklickt(item.url)}
+        className={cn(BAHN_PUNKT, aktiv && "bg-sidebar-accent font-semibold")}
+      >
+        {inhalt}
+      </NavLink>
+    );
+  };
+
+  const abschnitt = ({ label, icon: Icon, items, iconTint }: NavGruppe) => {
+    const punkte = sichtbareNavPunkte(items, navKontext);
+    if (punkte.length === 0) return null;
+    const aktiv = punkte.some((item) => punktAktiv(item, location));
+    const summe = offeneMeldungen(punkte);
+    const istOffen = offen === label;
+    const symbol = Icon && <span className={cn("grid h-5 w-5 shrink-0 place-items-center", iconTint)} aria-hidden="true"><Icon className="h-4 w-4" /></span>;
+    return (
+      <Popover key={label} open={istOffen} onOpenChange={(wert) => setOffen(wert ? label : null)}>
+        <PopoverAnchor asChild>
+          <button
+            type="button"
+            aria-haspopup="dialog"
+            aria-expanded={istOffen}
+            aria-label={summe > 0 ? `${label}, ${summe} offen` : label}
+            className={cn(BAHN_PUNKT, (aktiv || istOffen) && "bg-sidebar-accent font-semibold")}
+            onMouseEnter={() => hin(label)}
+            onMouseLeave={weg}
+            onClick={() => hin(label)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " " || e.key === "ArrowRight") {
+                e.preventDefault();
+                ausloeser.current = { label, knopf: e.currentTarget };
+                hin(label);
+              }
+            }}
+          >
+            {symbol}
+            <span>{label}</span>
+            {summe > 0 && <span className={BAHN_MELDUNG} />}
+          </button>
+        </PopoverAnchor>
+        <PopoverContent
+          side="right"
+          align="start"
+          sideOffset={6}
+          collisionPadding={8}
+          className="max-h-[calc(100vh-1rem)] w-[17rem] overflow-y-auto rounded-xl p-2"
+          onMouseEnter={() => hin(label)}
+          onMouseLeave={weg}
+          // Nur nach der Tastatur wandert der Fokus ins Fenster.
+          onOpenAutoFocus={(e) => {
+            e.preventDefault();
+            // Von Hand: Radix überspringt Verweise und träfe das erste Info-Symbol.
+            if (ausloeser.current?.label === label) (e.currentTarget as HTMLElement).querySelector("a")?.focus();
+          }}
+          onCloseAutoFocus={(e) => {
+            e.preventDefault();
+            if (ausloeser.current?.label !== label) return;
+            ausloeser.current.knopf.focus();
+            ausloeser.current = null;
+          }}
+          // Klicks auf die Bahn regelt die Bahn selbst, sonst flackert das Fenster.
+          onInteractOutside={(e) => {
+            if ((e.target as HTMLElement).closest?.("[data-bahn]")) e.preventDefault();
+          }}
+        >
+          <div className="flex items-center gap-2 px-2 pb-2 pt-1 text-sm font-semibold">
+            {symbol}
+            <span>{label}</span>
+          </div>
+          <NavGroup label={label} items={items} iconTint={iconTint} gruppenIcon={Icon} ohneKopf {...gruppenProps} />
+        </PopoverContent>
+      </Popover>
+    );
+  };
+
+  return (
+    <nav aria-label="Abschnitte" data-bahn="" className="flex h-full flex-col gap-0.5 overflow-y-auto overflow-x-hidden px-1 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      {gruppen.map((gruppe, index) =>
+        gruppe.icon ? abschnitt(gruppe) : (
+          <Fragment key={gruppe.label || "haupt"}>
+            {sichtbareNavPunkte(gruppe.items, navKontext).map((item) => festerPunkt(item, gruppe.iconTint))}
+            {index < gruppen.length - 1 && <div role="separator" className="mx-2 my-1 h-px shrink-0 bg-sidebar-border" />}
+          </Fragment>
+        ),
+      )}
+    </nav>
+  );
+}
+
+/** Inhalt der Leiste, für alle Rollen gleich. */
+function LeistenInhalt({ gruppen, collapsed, ...gruppenProps }: GruppenAngaben & { gruppen: NavGruppe[]; collapsed: boolean }) {
+  if (collapsed) {
+    return (
+      <SidebarContent className="flex-1 gap-0 p-0">
+        <Bahn gruppen={gruppen} {...gruppenProps} />
+      </SidebarContent>
+    );
+  }
+  return (
+    <SidebarContent className="px-2 py-2 flex-1 gap-1">
+      {gruppen.map((gruppe) => (
+        <NavGroup key={gruppe.label || "haupt"} label={gruppe.label} gruppenIcon={gruppe.icon} items={gruppe.items} defaultOpen={gruppe.defaultOpen} iconTint={gruppe.iconTint} {...gruppenProps} />
+      ))}
+    </SidebarContent>
+  );
+}
+
 export function AppSidebar() {
-  // Die Markierung des aktiven Eintrags gleitet beim Seitenwechsel mit (01.11.2026).
-  const inhalt = useRef<HTMLDivElement>(null);
-  useGleiter(inhalt, true, ".sidebar-aktiv", ["class"]);
   const { state, isMobile } = useSidebar();
-  const collapsed = state === "collapsed";
+  // Das Handy zeigt immer die offene Fassung.
+  const collapsed = state === "collapsed" && !isMobile;
   const { user, authUser } = useUser();
   // Videocall: admin/inhaber plus einzeln freigeschaltete Nutzer.
   const { darf: videocallFreigabe } = useVideocallFreigabe();
@@ -934,11 +973,11 @@ export function AppSidebar() {
               <img src={iconImg} alt="OS Real Estate GmbH" className="h-8 w-8 object-contain" />
             )}
          </div>
-        <SidebarContent ref={inhalt} className="px-2 py-2 flex-1">
-          <NavGroup label="" items={gruppen[0].items.map(item =>
-            item.title === "Chat" ? { ...item, badgeCount: unreadChats } : item
-          )} collapsed={collapsed} userRole={user.role} iconTint={gruppen[0].iconTint} />
-        </SidebarContent>
+        <LeistenInhalt
+          collapsed={collapsed}
+          userRole={user.role}
+          gruppen={[{ ...gruppen[0], items: gruppen[0].items.map(item => item.title === "Chat" ? { ...item, badgeCount: unreadChats } : item) }]}
+        />
         <SidebarRoleSelector />
       </Sidebar>
     );
@@ -958,9 +997,7 @@ export function AppSidebar() {
             <img src={iconImg} alt="OS Real Estate GmbH" className="h-8 w-8 object-contain" />
           )}
         </div>
-        <SidebarContent ref={inhalt} className="px-2 py-2 flex-1">
-          <NavGroup label="" items={gruppen[0].items} collapsed={collapsed} userRole={user.role} iconTint={gruppen[0].iconTint} />
-        </SidebarContent>
+        <LeistenInhalt collapsed={collapsed} userRole={user.role} gruppen={[gruppen[0]]} />
         <SidebarRoleSelector />
       </Sidebar>
     );
@@ -991,7 +1028,6 @@ export function AppSidebar() {
         userId: authUser?.id,
       });
     });
-  const showFavoritesBlock = !isMobile && !collapsed && favoriteItems.length > 0;
 
   // Tableiste am Handy (B1): aus genau den Einträgen, die diese Leiste zeigt.
   const tabNavKontext = { rolle: user.role ?? "", customPermissions, identitaet: { email: authUser?.email, userId: authUser?.id } };
@@ -1015,14 +1051,18 @@ export function AppSidebar() {
             <img src={iconImg} alt="OS Real Estate GmbH" className="h-8 w-8 object-contain" />
           )}
        </div>
-      <SidebarContent ref={inhalt} className="px-2 py-2 flex-1">
-        {showFavoritesBlock && (
-          <NavGroup label="Favoriten" gruppenIcon={Star} items={favoriteItems} collapsed={collapsed} userRole={user.role} customPermissions={customPermissions} onboardingLocked={locked} iconTint="text-amber-500" showBookmarks={!isMobile && !collapsed} isFavorite={isFavorite} toggleFavorite={toggleFavorite} />
-        )}
-        {gruppenMitZaehler.map((gruppe) => (
-          <NavGroup key={gruppe.label || "haupt"} label={gruppe.label} gruppenIcon={gruppe.icon} items={gruppe.items} collapsed={collapsed} defaultOpen={gruppe.defaultOpen} userRole={user.role} customPermissions={customPermissions} onboardingLocked={locked} iconTint={gruppe.iconTint} showBookmarks={!isMobile && !collapsed} isFavorite={isFavorite} toggleFavorite={toggleFavorite} />
-        ))}
-      </SidebarContent>
+      <LeistenInhalt
+        collapsed={collapsed}
+        gruppen={favoriteItems.length > 0 && !isMobile
+          ? [{ label: "Favoriten", icon: Star, items: favoriteItems, iconTint: "text-amber-500" }, ...gruppenMitZaehler]
+          : gruppenMitZaehler}
+        userRole={user.role}
+        customPermissions={customPermissions}
+        onboardingLocked={locked}
+        showBookmarks={!isMobile}
+        isFavorite={isFavorite}
+        toggleFavorite={toggleFavorite}
+      />
       <SidebarRoleSelector />
     </Sidebar>
     </>
