@@ -1,6 +1,6 @@
 import "@/styles/crm-vergleich.css";
 import { useEffect, useState } from "react";
-import { Link, Route, Routes, useLocation } from "react-router-dom";
+import { Link, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { UserContext, useUser } from "@/contexts/UserContext";
 import { ALLE_CACHE_TABELLEN, cacheGet, cacheSet, isTableLoaded, resetCache } from "@/lib/dataCache";
 import { beispielkundeZeilen, BEISPIEL_KONTAKT_ID } from "@/lib/beispielkunde";
@@ -29,6 +29,7 @@ import { heuteAlsString } from "@/lib/faelligkeit";
 export default function VorschauCrm() {
   const echt = useUser();
   const location = useLocation();
+  const navigate = useNavigate();
   const [bereit, setBereit] = useState(false);
   const [studio, setStudio] = useState(document.documentElement.dataset.crmDesign === "studio");
   useEffect(() => {
@@ -108,7 +109,15 @@ export default function VorschauCrm() {
   };
   const wert = {...echt, authUser:{id:"studio-user"} as NonNullable<typeof echt.authUser>, isLoggedIn:true,loading:false,user:{...echt.user,name:"Christian · Vorschau",role:"admin" as const}};
   const basis = "/vorschau/crm";
-  return <UserContext.Provider value={wert}><div className="studio-vorschau">
+  // Menüpunkte, die es in der Vorschau gibt, bleiben in ihr.
+  const inVorschauBleiben = (e: React.MouseEvent) => {
+    const url = (e.target as HTMLElement).closest("a[data-tour-id]")?.getAttribute("data-tour-id");
+    if (url && ["/", "/inbox", "/email", "/kalender", "/objekte"].includes(url)) {
+      e.preventDefault();
+      navigate(url === "/" ? basis : basis + url);
+    }
+  };
+  return <UserContext.Provider value={wert}><div className="studio-vorschau" onClickCapture={inVorschauBleiben}>
     <div className="studio-vergleich">
       <span><strong>Original-CRM · Designvergleich</strong><small>Erfundene Daten · Speichern gesperrt · Weitere Menüs führen zum regulären Login</small></span>
       <nav aria-label="Ansichten im Designvergleich">

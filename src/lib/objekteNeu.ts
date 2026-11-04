@@ -28,7 +28,7 @@
  *      sieben Tage zaehlen ab diesem Datum statt ab dem ersten Sehen, fuer
  *      alle Nutzer gleich, und auch fuer Objekte, die schon vor der
  *      Neu-Regel im CRM lagen.
- *   2. CRM wie bisher: vom Import angelegt, hoechstens 30 Tage her, und fuer
+ *   2. CRM wie bisher: vom Import angelegt, hoechstens 14 Tage her, und fuer
  *      diesen Nutzer hoechstens sieben Tage nach dem ersten Sehen.
  *
  * Endet Weg 1, endet „Neu“, ausser Weg 2 greift noch.
@@ -56,7 +56,17 @@ const TAG_MS = 24 * 60 * 60 * 1000;
  * startet, hat keines der Objekte gesehen. Ohne diese Grenze stuende fuer ihn
  * alles der letzten Monate als neu da.
  */
-export const NEU_HOECHSTENS_TAGE_NACH_ANLAGE = 30;
+export const NEU_HOECHSTENS_TAGE_NACH_ANLAGE = 14;
+
+/**
+ * Zählt ein Objekt für die Zahl in der Seitenleiste noch als neu? Dieselbe
+ * Grenze wie oben (Christian, 04.11.2026): Wer die Objekte-Seite nicht öffnet,
+ * behielte die Zahl sonst für immer.
+ */
+export function innerhalbNeuFrist(angelegtAm: string, jetzt: number): boolean {
+  const ms = Date.parse(angelegtAm);
+  return Number.isFinite(ms) && jetzt - ms <= NEU_HOECHSTENS_TAGE_NACH_ANLAGE * 24 * 60 * 60 * 1000;
+}
 
 /** Wie lange das Kennzeichen nach dem ersten Sehen stehen bleibt. */
 export const NEU_TAGE_NACH_ERSTEM_SEHEN = 7;
@@ -70,7 +80,7 @@ export const NEU_TAGE_AB_INVESTAGON_DATUM = NEU_TAGE_NACH_ERSTEM_SEHEN;
 
 /**
  * Nach so vielen Tagen fliegt ein Eintrag aus der Merkliste. Etwas mehr als
- * die 30 Tage oben: Ein aelterer Eintrag kann kein Objekt mehr betreffen, das
+ * die 14 Tage oben: Ein aelterer Eintrag kann kein Objekt mehr betreffen, das
  * noch neu sein koennte. So bleibt die Liste klein.
  */
 export const ERST_GESEHEN_AUFRAEUMEN_NACH_TAGEN = 40;
@@ -126,7 +136,7 @@ function neuInInvestagonSeit(objekt: NeuPruefbar, jetzt: number): number | null 
 
 /**
  * Kann das Objekt fuer irgendeinen Nutzer neu sein? Das haengt nur am
- * Anlegen: Schluessel vorhanden, lesbar, hoechstens 30 Tage her.
+ * Anlegen: Schluessel vorhanden, lesbar, hoechstens 14 Tage her.
  */
 function kommtInFrage(angelegtAm: number | null, jetzt: number): angelegtAm is number {
   if (angelegtAm === null) return false;

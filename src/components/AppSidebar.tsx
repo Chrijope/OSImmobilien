@@ -1,12 +1,13 @@
 import { useVideocallFreigabe } from "@/hooks/useVideocallFreigabe";
 import { SaisonLogo } from "@/components/saison/Saisonfiguren";
 import { useState, useEffect, useRef } from "react";
+import { Popover, PopoverAnchor, PopoverContent } from "@/components/ui/popover";
 import { useGleiter } from "@/hooks/useGleiter";
 import { useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { useUser } from "@/contexts/UserContext";
-import { ChevronDown, Info, Bookmark, BookmarkCheck } from "lucide-react";
+import { ChevronDown, Info, Bookmark, BookmarkCheck, Star } from "lucide-react";
 import { handbuchPartnerFreigeschaltet } from "@/lib/handbuch/zugang";
 import {
   navigationsGruppen, darfNavEintrag, entwurfGesperrt, type NavItem,
@@ -155,10 +156,89 @@ function SidebarInfoTooltip({ itemKey, text }: { itemKey: string; text: string }
 }
 
 
+/**
+ * Ein Abschnitt in der eingeklappten Leiste: Symbol und Name, rechts daneben
+ * ein Fenster mit den Unterpunkten. Öffnet beim Darüberfahren oder per Klick
+ * und Tastatur (dann wandert der Fokus hinein). Eine kurze Verzögerung beim
+ * Schließen erlaubt den Weg mit der Maus von der Leiste ins Fenster.
+ */
+function AbschnittAufklapper({ label, icon: Icon, iconTint, aktiv, zahl, children }: {
+  label: string;
+  icon?: React.ComponentType<{ className?: string }>;
+  iconTint?: string;
+  aktiv: boolean;
+  zahl: number;
+  children: React.ReactNode;
+}) {
+  const [offen, setOffen] = useState(false);
+  const knopf = useRef<HTMLButtonElement>(null);
+  const perMaus = useRef(false);
+  const schliessen = useRef<number>();
+  useEffect(() => () => window.clearTimeout(schliessen.current), []);
+
+  const hin = () => {
+    window.clearTimeout(schliessen.current);
+    perMaus.current = true;
+    setOffen(true);
+  };
+  const weg = () => {
+    schliessen.current = window.setTimeout(() => setOffen(false), 180);
+  };
+
+  return (
+    <Popover open={offen} onOpenChange={setOffen}>
+      <PopoverAnchor asChild>
+        <button
+          ref={knopf}
+          type="button"
+          data-sidebar="menu-button"
+          aria-haspopup="menu"
+          aria-expanded={offen}
+          aria-label={zahl > 0 ? `${label}, ${zahl} neu` : label}
+          className={cn("nav-schiene-punkt", aktiv && "sidebar-aktiv")}
+          onMouseEnter={hin}
+          onMouseLeave={weg}
+          onClick={() => setOffen(true)}
+        >
+          {Icon && <span className={cn("nav-gruppen-icon", iconTint)} aria-hidden="true"><Icon className="h-4 w-4" /></span>}
+          <span className="nav-schiene-titel">{label}</span>
+          {zahl > 0 && <span className="nav-schiene-zahl" aria-hidden="true">{zahl}</span>}
+        </button>
+      </PopoverAnchor>
+      <PopoverContent
+        side="right"
+        align="start"
+        sideOffset={14}
+        className="nav-aufklapper w-64 p-2"
+        onMouseEnter={hin}
+        onMouseLeave={weg}
+        onClickCapture={(e) => {
+          if ((e.target as HTMLElement).closest("a")) setOffen(false);
+        }}
+        onOpenAutoFocus={(e) => {
+          if (perMaus.current) e.preventDefault();
+          perMaus.current = false;
+        }}
+        onCloseAutoFocus={(e) => e.preventDefault()}
+        onInteractOutside={(e) => {
+          if (knopf.current?.contains(e.target as Node)) e.preventDefault();
+        }}
+      >
+        <div className="nav-aufklapper-kopf">
+          {Icon && <span className={cn("nav-gruppen-icon", iconTint)} aria-hidden="true"><Icon className="h-4 w-4" /></span>}
+          <span>{label}</span>
+        </div>
+        <div data-nav-gruppe="">{children}</div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 function NavGroup({
   label, items, collapsed, defaultOpen, userRole, customPermissions, onboardingLocked, iconTint,
-  showBookmarks, isFavorite, toggleFavorite,
+  showBookmarks, isFavorite, toggleFavorite, gruppenIcon: GruppenIcon,
 }: {
+  gruppenIcon?: React.ComponentType<{ className?: string }>;
   label: string; items: NavItem[]; collapsed: boolean; defaultOpen?: boolean; userRole?: string; customPermissions?: string[]; onboardingLocked?: boolean; iconTint?: string;
   showBookmarks?: boolean; isFavorite?: (url: string) => boolean; toggleFavorite?: (url: string) => void;
 }) {
@@ -180,8 +260,10 @@ function NavGroup({
   const activeClasses = "sidebar-aktiv";
   const isItemActive = (url: string) => {
     const [path, query] = url.split("?");
-    if (path === "/vertriebsakademie" && location.pathname.startsWith(path + "/")) return true;
-    if (location.pathname !== path) return false;
+    // In der CRM-Vorschau liegen die Seiten unter /vorschau/crm.
+    const pfad = location.pathname.replace(/^\/vorschau\/crm(?=\/|$)/, "") || "/";
+    if (path === "/vertriebsakademie" && pfad.startsWith(path + "/")) return true;
+    if (pfad !== path) return false;
     const cur = new URLSearchParams(location.search);
     if (!query) {
       // Plain route: only active when no overriding query like ?modus=academy
@@ -194,7 +276,9 @@ function NavGroup({
     return true;
   };
 
-  const renderItem = (item: NavItem) => {
+  // `kompakt`: in der eingeklappten Leiste, Symbol mit Beschriftung darunter.
+  const renderItem = (item: NavItem, kompakt: boolean = collapsed) => {
+    const schienenTitel = kompakt ? <span className="nav-schiene-titel">{item.title}</span> : null;
     // If onboarding not complete, disable all items except /einstellungen
     const isSettingsItem = item.url === "/einstellungen";
     const isLocked = onboardingLocked && !isSettingsItem;
@@ -207,7 +291,8 @@ function NavGroup({
         <SidebarMenuItem key={item.title}>
           <SidebarMenuButton disabled className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm opacity-30 cursor-not-allowed pointer-events-none">
             <item.icon className={cn("h-4 w-4 shrink-0", tintClass)} />
-            {!collapsed && <span className="flex-1">{item.title}</span>}
+            {schienenTitel}
+            {!kompakt && <span className="flex-1">{item.title}</span>}
           </SidebarMenuButton>
         </SidebarMenuItem>
       );
@@ -231,11 +316,13 @@ function NavGroup({
                 )}
               >
                 <item.icon className={cn("h-4 w-4 shrink-0", tintClass)} />
-                {!collapsed && (
+            {schienenTitel}
+                {!kompakt && (
                   <>
                     <span className="flex-1">{item.title}</span>
-                    <Badge className="ml-auto shrink-0 text-bildunterschrift leading-none px-1 py-0.5 h-3.5 bg-orange-500/15 text-orange-500 border border-orange-500/30 hover:bg-orange-500/20 font-semibold uppercase tracking-wide rounded">
-                      Entwurf
+                    {/* „E“ für Entwurf: platzsparend, der volle Name steht im Hinweis. */}
+                    <Badge title="Entwurf" aria-label="Entwurf" className="ml-auto shrink-0 text-bildunterschrift leading-none px-1 py-0.5 h-3.5 bg-orange-500/15 text-orange-500 border border-orange-500/30 hover:bg-orange-500/20 font-semibold rounded">
+                      E
                     </Badge>
                   </>
                 )}
@@ -248,7 +335,8 @@ function NavGroup({
         <SidebarMenuItem key={item.title}>
           <SidebarMenuButton disabled className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm opacity-40 cursor-not-allowed">
             <item.icon className={cn("h-4 w-4 shrink-0", tintClass)} />
-            {!collapsed && (
+            {schienenTitel}
+            {!kompakt && (
               <>
                 <span className="flex-1">{item.title}</span>
                 <Badge className="ml-auto shrink-0 text-bildunterschrift leading-none px-1 py-0.5 h-3.5 bg-muted text-muted-foreground border border-border hover:bg-muted font-semibold uppercase tracking-wide rounded">
@@ -269,12 +357,12 @@ function NavGroup({
         <Collapsible key={item.title} defaultOpen={anyChildActive}>
           <SidebarMenuItem>
             <CollapsibleTrigger asChild>
-              <SidebarMenuButton className={cn("w-full justify-between", collapsed && anyChildActive && activeClasses)}>
+              <SidebarMenuButton className={cn("w-full justify-between", kompakt && anyChildActive && activeClasses)}>
                 <span className="flex items-center gap-2">
                   <item.icon className={cn("h-4 w-4", tintClass)} />
-                  {!collapsed && <span>{item.title}</span>}
+                  {!kompakt && <span>{item.title}</span>}
                 </span>
-                {!collapsed && <ChevronDown className="h-3 w-3 transition-transform group-data-[state=open]:rotate-180" />}
+                {!kompakt && <ChevronDown className="h-3 w-3 transition-transform group-data-[state=open]:rotate-180" />}
               </SidebarMenuButton>
             </CollapsibleTrigger>
             <CollapsibleContent>
@@ -304,9 +392,9 @@ function NavGroup({
               <SidebarMenuButton className="w-full justify-between">
                 <span className="flex items-center gap-2">
                   <item.icon className={cn("h-4 w-4", tintClass)} />
-                  {!collapsed && <span>{item.title}</span>}
+                  {!kompakt && <span>{item.title}</span>}
                 </span>
-                {!collapsed && <ChevronDown className="h-3 w-3 transition-transform group-data-[state=open]:rotate-180" />}
+                {!kompakt && <ChevronDown className="h-3 w-3 transition-transform group-data-[state=open]:rotate-180" />}
               </SidebarMenuButton>
             </CollapsibleTrigger>
             <CollapsibleContent>
@@ -344,14 +432,16 @@ function NavGroup({
         )}
       >
         <item.icon className={cn("h-4 w-4 shrink-0", tintClass)} />
-        {!collapsed && (
+            {schienenTitel}
+        {kompakt && (item.badgeCount ?? 0) > 0 && <span className="nav-schiene-zahl">{item.badgeCount}</span>}
+        {!kompakt && (
           <>
             <span className="flex-1 truncate">{item.title}</span>
             {item.tooltip && (
               <SidebarInfoTooltip itemKey={item.url} text={item.tooltip} />
             )}
             {item.badgeCount != null && item.badgeCount > 0 && (
-              <Badge variant="secondary" className="text-bildunterschrift px-1.5 py-0 h-5 bg-primary text-primary-foreground">
+              <Badge variant="secondary" className="ml-auto shrink-0 text-bildunterschrift px-1.5 py-0 h-5 bg-primary text-primary-foreground">
                 {item.badgeCount}
               </Badge>
             )}
@@ -388,10 +478,12 @@ function NavGroup({
                   }
                 }}
                 className={cn(
-                  "ml-1 shrink-0 inline-flex items-center justify-center rounded p-0.5 transition-opacity",
+                  "ml-1 shrink-0 items-center justify-center rounded p-0.5",
+                  // Nicht gemerkt: unsichtbar ohne Platz, sonst stünden die
+                  // Zahlen nicht bündig am rechten Rand.
                   isFavorite(item.url)
-                    ? "opacity-100 text-amber-500 hover:text-amber-600"
-                    : "opacity-0 group-hover/navitem:opacity-100 text-muted-foreground hover:text-foreground",
+                    ? "inline-flex text-amber-500 hover:text-amber-600"
+                    : "hidden group-hover/navitem:inline-flex text-muted-foreground hover:text-foreground",
                 )}
               >
                 {isFavorite(item.url) ? <BookmarkCheck className="h-3.5 w-3.5" /> : <Bookmark className="h-3.5 w-3.5" />}
@@ -413,24 +505,45 @@ function NavGroup({
     return (
       <SidebarGroup>
         <SidebarGroupContent>
-          <SidebarMenu>{filteredItems.map(renderItem)}</SidebarMenu>
+          <SidebarMenu>{filteredItems.map((item) => renderItem(item))}</SidebarMenu>
         </SidebarGroupContent>
+      </SidebarGroup>
+    );
+  }
+
+  // Eingeklappt: Der Abschnitt steht mit Symbol und Name in der Leiste, seine
+  // Unterpunkte klappen rechts daneben auf (Christian, 04.11.2026).
+  if (collapsed) {
+    return (
+      <SidebarGroup>
+        <AbschnittAufklapper
+          label={label}
+          icon={GruppenIcon}
+          iconTint={iconTint}
+          aktiv={filteredItems.some((item) => isItemActive(item.url))}
+          zahl={filteredItems.reduce((summe, item) => summe + (item.badgeCount ?? 0), 0)}
+        >
+          <SidebarMenu>{filteredItems.map((item) => renderItem(item, false))}</SidebarMenu>
+        </AbschnittAufklapper>
       </SidebarGroup>
     );
   }
 
   return (
     <Collapsible defaultOpen={defaultOpen ?? true}>
-      <SidebarGroup>
+      <SidebarGroup data-nav-gruppe={collapsed ? undefined : ""}>
         <CollapsibleTrigger asChild>
-          <SidebarGroupLabel className="text-[12px] font-extrabold tracking-wider uppercase text-foreground px-3 cursor-pointer flex items-center justify-between hover:text-foreground/80 transition-colors">
-            {!collapsed && <span>{label}</span>}
-            {!collapsed && <ChevronDown className="h-3 w-3 transition-transform group-data-[state=open]:rotate-180" />}
+          <SidebarGroupLabel className="nav-gruppen-kopf h-9 gap-2.5 text-sm font-semibold text-foreground px-3 cursor-pointer flex items-center justify-start hover:text-foreground/80 transition-colors [&[data-state=open]>svg:last-child]:rotate-180">
+            {!collapsed && GruppenIcon && (
+              <span className={cn("nav-gruppen-icon", iconTint)} aria-hidden="true"><GruppenIcon className="h-4 w-4" /></span>
+            )}
+            {!collapsed && <span className="nav-gruppen-titel">{label}</span>}
+            {!collapsed && <ChevronDown className="h-3 w-3 transition-transform" />}
           </SidebarGroupLabel>
         </CollapsibleTrigger>
         <CollapsibleContent>
           <SidebarGroupContent>
-            <SidebarMenu>{filteredItems.map(renderItem)}</SidebarMenu>
+            <SidebarMenu>{filteredItems.map((item) => renderItem(item))}</SidebarMenu>
           </SidebarGroupContent>
         </CollapsibleContent>
       </SidebarGroup>
@@ -902,10 +1015,10 @@ export function AppSidebar() {
        </div>
       <SidebarContent ref={inhalt} className="px-2 py-2 flex-1">
         {showFavoritesBlock && (
-          <NavGroup label="★ Favoriten" items={favoriteItems} collapsed={collapsed} userRole={user.role} customPermissions={customPermissions} onboardingLocked={locked} iconTint="text-amber-500" showBookmarks={!isMobile && !collapsed} isFavorite={isFavorite} toggleFavorite={toggleFavorite} />
+          <NavGroup label="Favoriten" gruppenIcon={Star} items={favoriteItems} collapsed={collapsed} userRole={user.role} customPermissions={customPermissions} onboardingLocked={locked} iconTint="text-amber-500" showBookmarks={!isMobile && !collapsed} isFavorite={isFavorite} toggleFavorite={toggleFavorite} />
         )}
         {gruppenMitZaehler.map((gruppe) => (
-          <NavGroup key={gruppe.label || "haupt"} label={gruppe.label} items={gruppe.items} collapsed={collapsed} defaultOpen={gruppe.defaultOpen} userRole={user.role} customPermissions={customPermissions} onboardingLocked={locked} iconTint={gruppe.iconTint} showBookmarks={!isMobile && !collapsed} isFavorite={isFavorite} toggleFavorite={toggleFavorite} />
+          <NavGroup key={gruppe.label || "haupt"} label={gruppe.label} gruppenIcon={gruppe.icon} items={gruppe.items} collapsed={collapsed} defaultOpen={gruppe.defaultOpen} userRole={user.role} customPermissions={customPermissions} onboardingLocked={locked} iconTint={gruppe.iconTint} showBookmarks={!isMobile && !collapsed} isFavorite={isFavorite} toggleFavorite={toggleFavorite} />
         ))}
       </SidebarContent>
       <SidebarRoleSelector />

@@ -275,7 +275,7 @@ export default function Kontakte() {
             <Button size="sm" variant="outline" className="gap-1" onClick={() => ["inhaber", "admin"].includes(user.role) ? setShowPowerdialer(!showPowerdialer) : null} disabled={!["inhaber", "admin"].includes(user.role)}>
               <Phone className="h-4 w-4" /> {showPowerdialer ? "Liste anzeigen" : "Powerdialer"}
               {["inhaber", "admin"].includes(user.role) ? (
-                <Badge variant="outline" className="text-bildunterschrift ml-1 px-1.5 py-0 border-[hsl(var(--warning))] text-[hsl(var(--warning))] bg-[hsl(var(--warning))]/10">Entwurf</Badge>
+                <Badge variant="outline" className="text-bildunterschrift ml-1 px-1.5 py-0 border-[hsl(var(--warning))] text-[hsl(var(--warning))] bg-[hsl(var(--warning))]/10" title="Entwurf" aria-label="Entwurf">E</Badge>
               ) : (
                 <Badge variant="outline" className="text-bildunterschrift ml-1 px-1.5 py-0 border-muted-foreground text-muted-foreground">Bald verfügbar</Badge>
               )}

@@ -4,6 +4,7 @@ import {
   INVESTAGON_ERSTELLT_META_SCHLUESSEL,
   NEU_ANGELEGT_META_SCHLUESSEL,
   investagonErstelltAm,
+  innerhalbNeuFrist,
   istNeuFuerNutzer,
   leseErstGesehen,
   merkeErstesSehen,
@@ -45,26 +46,26 @@ describe("Was als neu angelegt gilt", () => {
   });
 });
 
-describe("Die Grenze von 30 Tagen nach dem Anlegen", () => {
+describe("Die Grenze von 14 Tagen nach dem Anlegen", () => {
   it("heute angelegt und nie gesehen ist neu", () => {
     expect(istNeuFuerNutzer(angelegt("a", vor(0)), {}, JETZT)).toBe(true);
   });
 
-  it("genau 30 Tage her ist noch neu", () => {
-    expect(istNeuFuerNutzer(angelegt("a", vor(30)), {}, JETZT)).toBe(true);
+  it("genau 14 Tage her ist noch neu", () => {
+    expect(istNeuFuerNutzer(angelegt("a", vor(14)), {}, JETZT)).toBe(true);
   });
 
   /*
    * Schutz fuer den Partner, der erst spaeter dazukommt: Er hat nichts davon
    * gesehen und soll trotzdem nicht alles der letzten Monate als neu sehen.
    */
-  it("einen Augenblick mehr als 30 Tage ist nicht mehr neu, auch nie gesehen", () => {
-    expect(istNeuFuerNutzer(angelegt("a", vor(30, 1)), {}, JETZT)).toBe(false);
+  it("einen Augenblick mehr als 14 Tage ist nicht mehr neu, auch nie gesehen", () => {
+    expect(istNeuFuerNutzer(angelegt("a", vor(14, 1)), {}, JETZT)).toBe(false);
     expect(istNeuFuerNutzer(angelegt("a", vor(90)), {}, JETZT)).toBe(false);
   });
 
-  it("die 30 Tage gelten auch, wenn das erste Sehen erst kurz her ist", () => {
-    expect(istNeuFuerNutzer(angelegt("a", vor(31)), { a: vor(1) }, JETZT)).toBe(false);
+  it("die 14 Tage gelten auch, wenn das erste Sehen erst kurz her ist", () => {
+    expect(istNeuFuerNutzer(angelegt("a", vor(15)), { a: vor(1) }, JETZT)).toBe(false);
   });
 
   it("vertraegt eine Rechneruhr, die etwas nachgeht", () => {
@@ -276,5 +277,13 @@ describe("Sortierung mit beiden Wegen", () => {
     const reihenfolge = neueZuerst(objekte, (o) => neuSeit(o, {}, JETZT)).map((o) => o.id);
     // inv9 ist in Investagon abgelaufen und bleibt hinten in alter Reihenfolge.
     expect(reihenfolge).toEqual(["inv1", "crm3", "inv5", "alt", "inv9"]);
+  });
+});
+
+describe("Die Zahl in der Seitenleiste", () => {
+  it("zählt nur bis 14 Tage nach dem Anlegen", () => {
+    expect(innerhalbNeuFrist(vor(14), JETZT)).toBe(true);
+    expect(innerhalbNeuFrist(vor(14, 1), JETZT)).toBe(false);
+    expect(innerhalbNeuFrist("kaputt", JETZT)).toBe(false);
   });
 });

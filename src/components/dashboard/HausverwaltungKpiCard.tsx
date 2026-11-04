@@ -61,7 +61,7 @@ export function HausverwaltungKpiCard() {
               <CardTitle className="text-sm font-semibold flex items-center justify-between">
                 <span className="flex items-center gap-2"><Building2 className="h-4 w-4" /> Hausverwaltung – Überblick</span>
                 <div className="flex items-center gap-2">
-                  <Badge className="bg-orange-100 text-orange-700 border-orange-200 text-bildunterschrift">Entwurf</Badge>
+                  <Badge title="Entwurf" aria-label="Entwurf" className="bg-orange-100 text-orange-700 border-orange-200 text-bildunterschrift">E</Badge>
                   {dringend > 0 && <Badge variant="destructive" className="text-bildunterschrift">{dringend} dringend</Badge>}
                   <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
                 </div>

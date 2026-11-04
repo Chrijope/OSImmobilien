@@ -356,8 +356,8 @@ export default function KalkulationInvestagon() {
         >
           {/* Entwurfs-Badge wie in der Sidebar: Die Seite ist im Aufbau und
               nur für Admin und Inhaber sichtbar, siehe draftRoutes.ts. */}
-          <Badge className="bg-orange-500/15 text-orange-500 border border-orange-500/30 hover:bg-orange-500/20 font-semibold uppercase tracking-wide">
-            Entwurf
+          <Badge title="Entwurf" aria-label="Entwurf" className="bg-orange-500/15 text-orange-500 border border-orange-500/30 hover:bg-orange-500/20 font-semibold">
+            E
           </Badge>
         </PageHeader>
 

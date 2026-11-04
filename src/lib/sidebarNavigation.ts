@@ -357,6 +357,8 @@ export interface NavGruppe {
   label: string;
   items: NavItem[];
   iconTint: string;
+  /** Symbol der Abschnittsüberschrift. */
+  icon?: ComponentType<{ className?: string }>;
   defaultOpen?: boolean;
 }
 
@@ -377,12 +379,12 @@ export function navigationsGruppen(ctx: NavKontext): NavGruppe[] {
   const gruppen: NavGruppe[] = [
     { label: "", items: mainItems, iconTint: "text-apple-blue" },
     {
-      label: "Vertrieb",
+      label: "Vertrieb", icon: TrendingUp,
       items: vertriebItems.filter((item) => item.url !== "/meine-leads" || rolle === "setterin"),
       iconTint: "text-apple-green",
     },
     {
-      label: "Immobilien",
+      label: "Immobilien", icon: Building2,
       // Testfreischaltung „Objekte" für einzelne Vertriebspartner-Konten,
       // siehe `objekteTestFreigabe`. Nur der eine Eintrag, nicht Akquise und
       // Einreichungen.
@@ -391,25 +393,25 @@ export function navigationsGruppen(ctx: NavKontext): NavGruppe[] {
         : immobilienItems,
       iconTint: "text-apple-orange",
     },
-    ...(darfObjektdaten(rolle) ? [{ label: "Objektdaten", items: objektdatenItems, iconTint: "text-apple-brown" }] : []),
+    ...(darfObjektdaten(rolle) ? [{ label: "Objektdaten", icon: Table2, items: objektdatenItems, iconTint: "text-apple-brown" }] : []),
     // Junior-Override und Mentoring sind in Auswertungen (Tab "Mein Team")
     // und Abrechnungen (Differenzumsatz-Spalte) integriert.
-    { label: "Auswertung", items: auswertungItems, iconTint: "text-apple-indigo" },
-    { label: "Tools", items: toolsItems, iconTint: "text-apple-purple" },
+    { label: "Auswertung", icon: BarChart3, items: auswertungItems, iconTint: "text-apple-indigo" },
+    { label: "Tools", icon: Wrench, items: toolsItems, iconTint: "text-apple-purple" },
     {
-      label: "Lead Gen",
+      label: "Lead Gen", icon: Target,
       items: leadGenItems.map((item) =>
         item.url === HANDBUCH_SEITE_ROUTE && ctx.handbuchFrei ? { ...item, adminOnly: false, adminBadge: false } : item,
       ),
       iconTint: "text-apple-rose",
     },
-    { label: "Wissen", items: wissenItems, iconTint: "text-apple-sky" },
+    { label: "Wissen", icon: BookOpen, items: wissenItems, iconTint: "text-apple-sky" },
   ];
-  if (ctx.videocallFreigabe) gruppen.push({ label: "Videocall", items: videocallItems, iconTint: "text-apple-teal" });
+  if (ctx.videocallFreigabe) gruppen.push({ label: "Videocall", icon: Video, items: videocallItems, iconTint: "text-apple-teal" });
   gruppen.push(
-    { label: "Marketing", items: marketingItems, iconTint: "text-apple-pink" },
+    { label: "Marketing", icon: Megaphone, items: marketingItems, iconTint: "text-apple-pink" },
     {
-      label: "Support",
+      label: "Support", icon: Headset,
       items: helpdeskItems.filter(
         (item) => ["inhaber", "admin", "backoffice"].includes(rolle) || item.url !== "/helpdesk" || eigene.includes(item.url),
       ),
@@ -419,10 +421,10 @@ export function navigationsGruppen(ctx: NavKontext): NavGruppe[] {
   // Christian, 18.10.2026: Gruppe „Hausverwaltung“ vorerst ausgeblendet. Seiten,
   // Routen und Rechte bleiben unverändert; zum Einblenden auf true setzen.
   if (HAUSVERWALTUNG_IN_SEITENLEISTE && (["inhaber", "admin", "hausverwaltung"].includes(rolle) || hausverwaltungItems.some((item) => eigene.includes(item.url)))) {
-    gruppen.push({ label: "Hausverwaltung", items: hausverwaltungItems, iconTint: "text-apple-brown", defaultOpen: false });
+    gruppen.push({ label: "Hausverwaltung", icon: Key, items: hausverwaltungItems, iconTint: "text-apple-brown", defaultOpen: false });
   }
   gruppen.push({
-    label: "Team & Admin",
+    label: "Team & Admin", icon: UsersRound,
     items: teamAdminItems.filter(
       (item) => item.title !== "VP-Bewertungen" || ["admin", "inhaber", "vertriebsleiter", "backoffice"].includes(rolle),
     ),

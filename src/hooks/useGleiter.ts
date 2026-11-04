@@ -37,9 +37,12 @@ export function useGleiter(
     mo.observe(el, { subtree: true, childList: true, attributes: true, attributeFilter: merkmale });
     const ro = new ResizeObserver(setzen);
     ro.observe(el);
+    // Aufklapper ändern die Höhe erst im Lauf der Animation.
+    el.addEventListener("animationend", setzen);
     return () => {
       mo.disconnect();
       ro.disconnect();
+      el.removeEventListener("animationend", setzen);
     };
     // Auswahl und Merkmale sind feste Texte je Aufrufer.
     // eslint-disable-next-line react-hooks/exhaustive-deps

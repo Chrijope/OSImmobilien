@@ -75,6 +75,7 @@ import "./styles/design-studio.css";
 import "./styles/bewegung.css";
 // Farbkonzept „Klar & Lebendig“ (02.11.2026), heller Modus.
 import "./styles/farbe-klar-lebendig.css";
+import "./styles/sidebar-gruppen.css";
 import "./i18n";
 import { runLocalStorageMigration } from "./lib/localStorageMigration";
 import { wendeDesignAn } from "./lib/designSchalter";

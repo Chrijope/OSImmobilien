@@ -785,7 +785,7 @@
     border-width: 0;
   }
   /*
-    Eingeklappt ist die Leiste nur 3rem breit. Mit Abstand und Rand bliebe
+    Eingeklappt ist die Leiste schmal. Mit Abstand und Rand bliebe
     fuer die Symbole zu wenig Platz, deshalb faellt dort der Innenabstand
     der Leiste weg, und der Abstand zum Fensterrand wird schmaler.
   */

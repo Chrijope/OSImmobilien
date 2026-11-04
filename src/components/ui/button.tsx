@@ -66,6 +66,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, haken, onClick, children, ...props }, ref) => {
     const Comp = asChild ? Slot : "button";
     const [gespeichert, setGespeichert] = React.useState(false);
+    // Wartet der Knopf gerade auf eine Rückmeldung? Beim Abbau wird aufgeräumt.
+    const warten = React.useRef<(() => void) | null>(null);
+    React.useEffect(() => () => warten.current?.(), []);
     const zeigen = React.useCallback((knopf: HTMLElement) => {
       setGespeichert(true);
       window.setTimeout(() => setGespeichert(false), ZEIGEN_MS);
@@ -86,9 +89,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       }
       if (!/speicher/i.test(e.currentTarget.textContent ?? "")) return onClick?.(e);
       // Vor dem Klick lauschen: Manche Abläufe melden sich sofort.
+      warten.current?.();
       let erledigt = false;
       const ende = () => {
         erledigt = true;
+        warten.current = null;
         window.removeEventListener(SPEICHER_SIGNAL, hoeren);
         window.clearTimeout(frist);
       };
@@ -100,6 +105,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       };
       window.addEventListener(SPEICHER_SIGNAL, hoeren);
       const frist = window.setTimeout(ende, WARTEN_MS);
+      warten.current = ende;
       onClick?.(e);
     };
     return (

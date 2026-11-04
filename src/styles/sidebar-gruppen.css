@@ -1,0 +1,118 @@
+/*
+ * Abschnitte der Seitenleiste (Christian, 04.11.2026): Die Überschrift trägt
+ * ein farbiges Symbolfeld passend zum Thema, die Unterpunkte verlieren ihr
+ * Symbol und hängen mit Linie und Ästen eingerückt darunter. Die Hauptpunkte
+ * ganz oben (Dashboard, Inbox …) sind keine Unterpunkte und behalten ihr
+ * Symbol. In der eingeklappten Leiste fehlt `data-nav-gruppe`, dort bleiben
+ * die Symbole stehen, sonst wäre nichts mehr zu erkennen.
+ */
+.nav-gruppen-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: color-mix(in srgb, currentColor 14%, transparent);
+}
+/* Größe und Schreibweise ausdrücklich: Die Grundschichten setzen Großbuchstaben. */
+[data-nav-gruppe] .nav-gruppen-kopf {
+  justify-content: flex-start;
+  gap: 10px;
+  height: 36px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -.005em;
+  text-transform: none;
+}
+[data-nav-gruppe] .nav-gruppen-titel { flex: 1; text-align: left; }
+[data-nav-gruppe] .nav-gruppen-kopf > svg:last-child { width: 14px; height: 14px; color: hsl(var(--muted-foreground)); }
+
+[data-nav-gruppe] [data-sidebar="menu-button"] > svg:first-child { display: none; }
+[data-nav-gruppe] [data-sidebar="menu-button"] { font-size: 13.5px; }
+[data-nav-gruppe] [data-sidebar="menu-button"]:not(.sidebar-aktiv) { color: hsl(var(--muted-foreground)); }
+[data-nav-gruppe] [data-sidebar="menu-button"]:not(.sidebar-aktiv):hover { color: hsl(var(--foreground)); }
+
+/* Linie links, je Unterpunkt ein runder Ast. Mitte des Symbolfelds: 12 + 13 px. */
+[data-nav-gruppe] [data-sidebar="menu"] { margin-left: 25px; padding-left: 15px; width: auto; }
+[data-nav-gruppe] [data-sidebar="menu-item"]::before {
+  content: "";
+  position: absolute;
+  left: -15px;
+  top: -4px;
+  bottom: 0;
+  border-left: 1.5px solid hsl(var(--foreground) / .2);
+}
+[data-nav-gruppe] [data-sidebar="menu-item"]:first-child::before { top: 0; }
+[data-nav-gruppe] [data-sidebar="menu-item"]:last-child::before { bottom: calc(50% + 4px); }
+[data-nav-gruppe] [data-sidebar="menu-item"]::after {
+  content: "";
+  position: absolute;
+  left: -15px;
+  top: calc(50% - 10px);
+  width: 11px;
+  height: 11px;
+  border-left: 1.5px solid hsl(var(--foreground) / .2);
+  border-bottom: 1.5px solid hsl(var(--foreground) / .2);
+  border-bottom-left-radius: 7px;
+}
+[data-nav-gruppe] [data-sidebar="menu-item"]:has(.sidebar-aktiv)::after { border-color: hsl(var(--primary)); }
+
+/*
+ * Eingeklappt: schmale Leiste mit Symbol und Beschriftung, die Unterpunkte
+ * klappen rechts auf (AbschnittAufklapper). Sie muss scrollen können, sonst
+ * wären die unteren Abschnitte nicht erreichbar.
+ */
+[data-collapsible="icon"] [data-sidebar="content"] { overflow-y: auto !important; scrollbar-width: none; }
+[data-collapsible="icon"] [data-sidebar="group"] { padding: 2px 6px; }
+/* Doppelt gezielt: sidebar.tsx setzt eingeklappt eine feste Größe mit !important. */
+.group[data-collapsible="icon"] [data-sidebar="sidebar"] [data-sidebar="menu-button"] {
+  position: relative;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 46px;
+  padding: 6px 2px !important;
+  overflow: visible;
+  border-radius: 10px;
+  text-align: center;
+}
+.nav-schiene-titel {
+  display: block;
+  width: 100%;
+  font-size: 10.5px;
+  font-weight: 500;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+.nav-schiene-punkt { color: hsl(var(--foreground)); }
+.nav-schiene-punkt:hover { background-color: hsl(var(--muted) / .7); }
+.nav-schiene-punkt:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: -2px; }
+.nav-schiene-zahl {
+  position: absolute;
+  top: 2px;
+  right: calc(50% - 22px);
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  font-size: 9.5px;
+  font-weight: 600;
+  line-height: 16px;
+  text-align: center;
+}
+.nav-aufklapper { max-height: min(80vh, 560px); overflow-y: auto; }
+.nav-aufklapper-kopf {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 6px 8px;
+  font-size: 14px;
+  font-weight: 600;
+}

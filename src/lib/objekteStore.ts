@@ -1,4 +1,5 @@
 import { cacheGet, cacheInsert, cacheUpdate, cacheDelete, cacheFilter, cacheSet, cacheReload, cacheUpsert, SchreibenAbgelehnt } from "./dataCache";
+import { innerhalbNeuFrist } from "./objekteNeu";
 import type { ObjektSichtStufe } from "./objektVorankuendigung";
 import { handAngabenLesen, type HandAngaben } from "../../supabase/functions/_shared/hand-angaben";
 import { konzeptLesen, type ObjektKonzept } from "@/lib/objektKonzept";
@@ -2501,7 +2502,8 @@ export function getNewObjekteCount(): number {
 
   const objekte = getObjekte().filter(o => o.sichtbar && o.status === "freigegeben");
   if (!lastSeen) return 0; // first visit – don't flood
-  return objekte.filter(o => o.erstellt_am > lastSeen).length;
+  const jetzt = Date.now();
+  return objekte.filter(o => o.erstellt_am > lastSeen && innerhalbNeuFrist(o.erstellt_am, jetzt)).length;
 }
 
 export function markObjekteSeen() {
