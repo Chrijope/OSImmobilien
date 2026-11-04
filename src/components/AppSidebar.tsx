@@ -453,9 +453,11 @@ function NavGroup({
             {item.adminBadge && (
               <Badge
                 variant="outline"
-                className="text-bildunterschrift px-1.5 py-0 h-4 border-primary/40 bg-primary/10 text-primary uppercase tracking-wide"
+                title="Admin"
+                aria-label="Admin"
+                className="ml-auto shrink-0 text-bildunterschrift px-1.5 py-0 h-4 border-primary/40 bg-primary/10 text-primary"
               >
-                Admin
+                A
               </Badge>
             )}
             {item.trailing}
