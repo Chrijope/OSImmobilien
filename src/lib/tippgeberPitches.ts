@@ -296,7 +296,7 @@ export const SALES_PROZESS_SCHRITTE = [
   },
   {
     nr: 2,
-    titel: "Beratungsgespräch (online)",
+    titel: "Firmen- und Konzeptvorstellung (online)",
     beschreibung: "Ausführliches Online-Gespräch mit Selbstauskunft. Ziele, Bonität & Strategie werden geklärt.",
     dauer: "60–90 Min",
   },

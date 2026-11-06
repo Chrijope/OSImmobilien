@@ -27,7 +27,7 @@ export default function VorschauNaechsteAktionen() {
     aufgaben: [
       aufgabe({ id: "1", titel: "Kunde nicht erschienen: anrufen und neuen Termin vereinbaren", typ: "anruf", prioritaet: "hoch", faelligAm: tag(-2), uhrzeit: "09:00" }),
       aufgabe({ id: "2", titel: "Nach dem Erstgespräch: Kunden anrufen und Fragen klären", typ: "anruf", prioritaet: "hoch", faelligAm: tag(-1), uhrzeit: "09:00" }),
-      aufgabe({ id: "3", titel: "Beratungsgespräch", typ: "meeting", prioritaet: "hoch", faelligAm: tag(2), uhrzeit: "14:00" }),
+      aufgabe({ id: "3", titel: "Firmen- und Konzeptvorstellung", typ: "meeting", prioritaet: "hoch", faelligAm: tag(2), uhrzeit: "14:00" }),
       aufgabe({ id: "4", titel: "Nicht erreicht: morgen erneut anrufen", prioritaet: "hoch", faelligAm: tag(1), ausloeserSchluessel: "nicht_erreicht:k" }),
       aufgabe({ id: "5", titel: "Unterlagen sortieren", prioritaet: "niedrig" }),
     ],
@@ -42,7 +42,7 @@ export default function VorschauNaechsteAktionen() {
     <div className="kundenprofil mx-auto w-full max-w-5xl p-4 sm:p-8 space-y-3">
       <p className="text-xs text-muted-foreground">Vorschau Kundenprofil, Kachel Nächste Aktionen. Erfundene Einträge.</p>
       <KundenprofilKennzahlen
-        schritt={{ titel: "Beratungsgespräch führen" }}
+        schritt={{ titel: "Firmen- und Konzeptvorstellung führen" }}
         investmentNummer={1}
         letzter={{ artLabel: "Anruf", datum: new Date().toISOString() }}
         onUebersicht={() => {}}

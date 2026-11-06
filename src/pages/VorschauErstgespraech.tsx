@@ -89,7 +89,7 @@ export default function VorschauErstgespraech() {
           investmentId="vorschau-erstgespraech"
           terminSlot={
             <Card className="p-4 text-sm text-muted-foreground border-dashed">
-              Hier sitzt im CRM die Terminkarte („Beratungsgespräch vereinbaren“, nach der Freigabe „Firmen- und Konzeptvorstellung
+              Hier sitzt im CRM die Terminkarte („Firmen- und Konzeptvorstellung vereinbaren“, nach der Freigabe „Firmen- und Konzeptvorstellung
               vereinbaren“) mit Berater, Datum und Uhrzeit.
             </Card>
           }

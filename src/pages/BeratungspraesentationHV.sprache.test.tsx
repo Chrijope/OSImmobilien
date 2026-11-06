@@ -215,7 +215,7 @@ describe("Hero als Glaskarte", () => {
     expect(bilder).toHaveLength(1);
     expect(bilder[0]).toHaveAttribute("alt", "OS Real Estate GmbH");
     // Überschrift der PDF-Präsentation (Folie 1), in Du-Form.
-    expect(hero.textContent).toContain("OS Real Estate · Beratungsgespräch Kapitalanlage-Immobilien");
+    expect(hero.textContent).toContain("OS Real Estate · Firmen- und Konzeptvorstellung Kapitalanlage-Immobilien");
     expect(hero.querySelector("h1")?.textContent).toBe("Ihr Weg zu einem Immobilienvermögen,das für Sie arbeitet.");
     expect(hero.textContent).toContain("Herzlich willkommen, Anna.");
     expect(hero.textContent).toContain("Steuern sparen. Zusatzrente aufbauen. Persönlich begleitet.");

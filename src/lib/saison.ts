@@ -177,7 +177,7 @@ export const TUERCHEN: Tuerchen[] = [
   { art: "einwand", einwand: "Ich warte lieber, bis die Zinsen sinken.", antwort: "Rechne gemeinsam durch, was das Warten kostet: Mieteinnahmen und Steuervorteil fallen in der Zeit weg." },
   { art: "tipp", text: "Frag am Ende eines guten Gesprächs nach einer Empfehlung. Dann ist der Kunde zufrieden und denkt gern an andere." },
   { art: "einwand", einwand: "Ich habe schon eine Immobilie.", antwort: "Frag, wie sie sich entwickelt hat. Oft ist genau das der Einstieg für die zweite." },
-  { art: "tipp", text: "Schau vor dem Beratungsgespräch in die Selbstauskunft. Dann kommst du mit passenden Objekten statt mit allgemeinen Ideen." },
+  { art: "tipp", text: "Schau vor der Firmen- und Konzeptvorstellung in die Selbstauskunft. Dann kommst du mit passenden Objekten statt mit allgemeinen Ideen." },
   { art: "zahl", zahl: "termine" },
   { art: "einwand", einwand: "Das ist mir zu riskant.", antwort: "Sprich die Risiken offen an und zeig, wo Mietausfall und Rücklagen in der Rechnung schon stecken." },
   { art: "tipp", text: "Wen du nicht erreichst, den ruf zu einer anderen Uhrzeit an. Morgens und am frühen Abend klappt es oft besser." },

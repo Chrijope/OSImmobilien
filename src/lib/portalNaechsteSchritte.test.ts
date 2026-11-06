@@ -235,7 +235,7 @@ describe("sammleNaechsteSchritte", () => {
     });
 
     const termine = schritte.filter((s) => s.art === "termin");
-    expect(termine.map((s) => s.titel)).toEqual(["Dein Beratungsgespräch", "Dein Notartermin"]);
+    expect(termine.map((s) => s.titel)).toEqual(["Deine Firmen- und Konzeptvorstellung", "Dein Notartermin"]);
     expect(termine[0].text).toBe("Am 20.09.2026 um 11:00 Uhr.");
     expect(termine[1].text).toBe("Am 01.10.2026 um 14:00 Uhr.");
   });

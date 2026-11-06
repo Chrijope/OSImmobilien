@@ -87,7 +87,7 @@ export default function LeitfadenKaltakquise() {
   return (
     <UnterlagenDetailLayout
       title="Leitfaden Kaltakquise"
-      subtitle="Schritt-für-Schritt zum Beratungstermin – verkaufspsychologisch fundiert"
+      subtitle="Schritt-für-Schritt zur Konzeptvorstellung – verkaufspsychologisch fundiert"
       onDownloadPdf={async () => {
         const m = await import("@/lib/unterlagenPdfContent");
         await m.generateLeitfadenKaltakquisePDF();

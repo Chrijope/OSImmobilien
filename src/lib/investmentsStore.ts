@@ -610,7 +610,7 @@ export async function createInvestment(kontaktId: string, label?: string): Promi
     await updateInvestment(inv.id, { pipelineStufe: "beratungsgespraech", ...(label ? { label } : {}) });
     try {
       const { addAktivitaet } = await import("./aktivitaetenStore");
-      addAktivitaet({ kundeId: kontaktId, art: "notiz", beschreibung: "Bestandskunde aktiviert (Investment → Beratungsgespräch)", von: "System" });
+      addAktivitaet({ kundeId: kontaktId, art: "notiz", beschreibung: "Bestandskunde aktiviert (Investment → Firmen- und Konzeptvorstellung)", von: "System" });
     } catch { /* Vermerk ist Beiwerk */ }
     return { ...inv, pipelineStufe: "beratungsgespraech", ...(label ? { label } : {}) };
   }

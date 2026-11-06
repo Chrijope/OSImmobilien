@@ -80,7 +80,7 @@ function leseMarke(meta: unknown): Merkmarke | null {
  */
 export function baueNotizTitel(raum: Pick<Videoraum, "titel" | "art" | "termin_at" | "created_at">): string {
   const name = raum.titel?.trim()
-    || (raum.art === "objektvorstellung" ? "Objektvorstellung" : "Beratungsgespräch");
+    || (raum.art === "objektvorstellung" ? "Objektvorstellung" : "Firmen- und Konzeptvorstellung");
   const roh = raum.termin_at || raum.created_at;
   const zeitpunkt = roh ? new Date(roh) : null;
   const datum = zeitpunkt && !Number.isNaN(zeitpunkt.getTime())

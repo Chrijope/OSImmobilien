@@ -78,7 +78,7 @@ describe("Beratungsgespräch vereinbaren und Erstgesprächs-Skript", () => {
   it("lassen sich über ihren Kopf auf- und zuklappen", () => {
     expect(profil).toMatch(/open=\{beratungKastenOffen\}\s*onToggle=\{\(e\) => setBeratungKastenOffen\(/);
     expect(profil).toMatch(/open=\{skriptKastenOffen\}\s*onToggle=\{\(e\) => setSkriptKastenOffen\(/);
-    expect(profil).toMatch(/<summary[^>]*>\s*<Calendar[^>]*\/>\s*<h3[^>]*>Beratungsgespräch vereinbaren<\/h3>/);
+    expect(profil).toMatch(/<summary[^>]*>\s*<Calendar[^>]*\/>\s*<h3[^>]*>Firmen- und Konzeptvorstellung vereinbaren<\/h3>/);
     expect(profil).toMatch(/<summary[^>]*>\s*<StickyNote[^>]*\/>\s*<div[^>]*>\s*<h3[^>]*>Erstgesprächs-Skript<\/h3>/);
   });
 

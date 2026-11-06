@@ -5,6 +5,7 @@ import { getUserSetting, setUserSetting } from "./userSettingsCache";
 import { getCurrentUserId } from "./currentUser";
 import { loadAllUsers } from "./loadAllUsers";
 import { supabase } from "@/integrations/supabase/client";
+import { terminNameAnzeige } from "../../supabase/functions/_shared/termin-name.ts";
 
 function resolveCurrentUserName(): string {
   try {
@@ -312,7 +313,7 @@ export function uebertrageInKalender(eintrag: AktivitaetEntry): void {
       merkeUebertragung(eintrag.id);
 
       const verknuepfung = await legeTerminAn({
-        titel: eintrag.beschreibung || "Termin",
+        titel: terminNameAnzeige(eintrag.beschreibung || "Termin"),
         beschreibung: [eintrag.details, eintrag.zoomLink].filter(Boolean).join("\n\n") || undefined,
         start,
         dauerMinuten: dauerInMinuten(eintrag.dauer),

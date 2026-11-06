@@ -41,11 +41,11 @@ export const ANLASS_TEXTE: Record<MailSprache, Record<string, AnlassText>> = {
         'der zeitlich am besten zu dir passt.',
     },
     beratung: {
-      betreff: 'Dein persönlicher Link zum Beratungsgespräch',
-      titel: 'Dein Beratungsgespräch',
-      vorschau: 'Such dir einfach einen Termin für dein Beratungsgespräch aus.',
+      betreff: 'Dein persönlicher Link zur Firmen- und Konzeptvorstellung',
+      titel: 'Deine Firmen- und Konzeptvorstellung',
+      vorschau: 'Such dir einfach einen Termin für deine Firmen- und Konzeptvorstellung aus.',
       absatz:
-        'schön, dass wir gemeinsam den nächsten Schritt gehen. Im Beratungsgespräch ' +
+        'schön, dass wir gemeinsam den nächsten Schritt gehen. In der Firmen- und Konzeptvorstellung ' +
         'stellen wir uns dir noch einmal im Detail vor und klären ausführlich, ' +
         'was in deiner Situation möglich ist. Such dir über den ' +
         'Buchungskalender-Button einfach den Termin aus, der zeitlich am besten ' +
@@ -93,11 +93,11 @@ export const ANLASS_TEXTE: Record<MailSprache, Record<string, AnlassText>> = {
         'Simply use the booking button to choose the time that suits you best.',
     },
     beratung: {
-      betreff: 'Your personal link for a consultation',
-      titel: 'Your consultation',
-      vorschau: 'Simply pick a time for your consultation.',
+      betreff: 'Your personal link for the concept introduction',
+      titel: 'Your concept introduction',
+      vorschau: 'Simply pick a time for your concept introduction.',
       absatz:
-        'Great that we are taking the next step together. In the consultation we ' +
+        'Great that we are taking the next step together. In the concept introduction we ' +
         'introduce ourselves to you in detail once more and discuss thoroughly ' +
         'what is possible in your situation. Simply use the booking button to ' +
         'choose the time that suits you best.',

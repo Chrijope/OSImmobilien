@@ -24,6 +24,7 @@ import {
   ZOOM_URL,
   type CallRunde,
 } from "./weeklyCallZeit";
+import { terminNameAnzeige } from "../../supabase/functions/_shared/termin-name.ts";
 
 /** Was von einer Aktivitaet gebraucht wird. Bewusst schmal gehalten. */
 export interface KalenderAktivitaet {
@@ -196,7 +197,7 @@ export function sammleEigeneTermine({
     const zoomLink = a.zoomLink?.trim() || undefined;
     eintraege.push({
       id: `crm-${a.id}`,
-      titel: a.beschreibung?.trim() || "Termin",
+      titel: terminNameAnzeige(a.beschreibung?.trim() || "Termin"),
       start,
       zeit,
       quelle: "crm",
@@ -322,7 +323,7 @@ export function sammleBuchungsTermine({
 
     eintraege.push({
       id: `buchung-${b.id}`,
-      titel: (b.bezeichnung || "").trim() || "Videocall",
+      titel: terminNameAnzeige((b.bezeichnung || "").trim() || "Videocall"),
       start: b.start_at,
       ende: b.ende_at || undefined,
       zeit,

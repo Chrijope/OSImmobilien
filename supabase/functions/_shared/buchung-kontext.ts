@@ -12,6 +12,7 @@
  * Versandwerkzeug, mit dem sich Mails an Fremde ausloesen liessen.
  */
 
+import { terminNameAnzeige } from './termin-name.ts'
 import { spracheAusMeta, type Sprache } from './kunden-sprache.ts'
 
 // ── Reine Hilfsfunktionen ────────────────────────────────────────────────
@@ -249,7 +250,7 @@ export async function ladeBuchungKontext(
   const beschreibung = String(terminart?.beschreibung || '').trim()
   // Im Kalender des Kunden: ohne gepflegte Terminart englisch "Appointment".
   // Eine gepflegte Bezeichnung ist ein Name aus dem CRM und bleibt.
-  const kalenderTitel = sprache === 'en' && titel === 'Termin' ? 'Appointment' : titel
+  const kalenderTitel = sprache === 'en' && titel === 'Termin' ? 'Appointment' : terminNameAnzeige(titel, sprache === 'en')
 
   // Kalenderdatei ueber die vorhandene Function get-ics, denselben Weg nimmt
   // src/lib/meetingEinladung.ts. Start und Ende gehen als vollstaendiges

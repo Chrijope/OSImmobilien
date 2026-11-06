@@ -58,10 +58,10 @@ describe("Stattgefunden am Beratungsgespräch im Kundenprofil", () => {
   it("nimmt den Termin aus der Liste, obwohl KundeData kein meta traegt", async () => {
     const kunde = dbRowToKunde(t.zeile);
     expect((kunde as { meta?: unknown }).meta).toBeUndefined();
-    expect(festeTermine(kunde).map((x) => x.bezeichnung)).toEqual(["Beratungsgespräch"]);
+    expect(festeTermine(kunde).map((x) => x.bezeichnung)).toEqual(["Firmen- und Konzeptvorstellung"]);
 
     const ok = await festerTerminStattgefunden(
-      { titel: "Beratungsgespräch", datum: "2026-06-24", uhrzeit: "12:30" },
+      { titel: "Firmen- und Konzeptvorstellung", datum: "2026-06-24", uhrzeit: "12:30" },
       { kunde, userName: "Admin", melde: () => {} },
     );
     expect(ok).toBe(true);

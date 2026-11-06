@@ -32,13 +32,15 @@ import { lokalesDatum, NOSHOW_TITEL, schliesseOffeneTermineZumZeitpunkt, setzeNo
 import { addProzessAufgabe } from "./prozessAufgabe";
 import { legeNachfassNachErstgespraechAn, NACHFASS_FEHLER_TEXT, NACHFASS_FEHLER_TITEL } from "./nachfassNachErstgespraech";
 import { legeZusammenfassungAn } from "./nachfassplan";
+import { BERATUNG_NAME, istBeratungsName } from "../../supabase/functions/_shared/termin-name.ts";
 
-export type FesteGespraechsArt = "Erstgespräch" | "Beratungsgespräch";
+export type FesteGespraechsArt = "Erstgespräch" | typeof BERATUNG_NAME;
 
 /** Nur diese beiden festen Termine haben eine No-Show-Kette. */
 export function festeGespraechsArt(titel?: string | null): FesteGespraechsArt | null {
-  const t = (titel || "").trim();
-  return t === "Erstgespräch" || t === "Beratungsgespräch" ? t : null;
+  if ((titel || "").trim() === "Erstgespräch") return "Erstgespräch";
+  // Gespeicherte Titel heißen oft noch „Beratungsgespräch“, siehe termin-name.ts.
+  return istBeratungsName(titel) ? BERATUNG_NAME : null;
 }
 
 export function noShowStufeFuer(art: FesteGespraechsArt): "eg_noshow" | "bg_noshow" {
@@ -50,7 +52,7 @@ export function noShowStufeFuer(art: FesteGespraechsArt): "eg_noshow" | "bg_nosh
  * als Titel im Leitfaden (`nextStepsGuide.ts`), der Test haelt beide gleich.
  */
 export function neuerTerminSchritt(art: FesteGespraechsArt): string {
-  return art === "Erstgespräch" ? "Neuen Erstgesprächstermin vereinbaren" : "Neuen Beratungstermin vereinbaren";
+  return art === "Erstgespräch" ? "Neuen Erstgesprächstermin vereinbaren" : "Neuen Termin für die Konzeptvorstellung vereinbaren";
 }
 
 /**
@@ -317,7 +319,7 @@ export async function festerTerminNichtStattgefunden(t: FesterTerminAngabe, ctx:
   ctx.melde({
     title: "No-Show registriert",
     description: stufeGesetzt
-      ? `Der Lead bleibt bei ${berater} und steht jetzt auf „${art === "Erstgespräch" ? "EG NoShow" : "BG NoShow"}". Nächster Schritt: ${schritt}.`
+      ? `Der Lead bleibt bei ${berater} und steht jetzt auf „${art === "Erstgespräch" ? "EG NoShow" : "KV NoShow"}". Nächster Schritt: ${schritt}.`
       : `Der Lead bleibt bei ${berater}. Nächster Schritt: ${schritt}.`,
   });
   return true;

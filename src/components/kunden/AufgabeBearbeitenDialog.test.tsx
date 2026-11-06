@@ -122,7 +122,7 @@ describe("AufgabeBearbeitenDialog: Termin verschieben", () => {
   it("verschiebt nichts, wenn nur der Titel geändert wird", async () => {
     spione.ladeBuchungZuAktivitaet.mockResolvedValue({ id: "b1", start_at: START_ALT });
     zeige(TERMIN);
-    fireEvent.change(screen.getByPlaceholderText("z.B. Beratungsgespräch"), {
+    fireEvent.change(screen.getByPlaceholderText("z.B. Konzeptvorstellung"), {
       target: { value: "Beratungsgespräch (Teil 2)" },
     });
     speichern();

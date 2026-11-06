@@ -114,7 +114,7 @@ describe("PartnerTermin: Sprache", () => {
     zeige("?lang=en");
     expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent("Appointment with Max");
     expect(screen.getByText("Initial call")).toBeInTheDocument();
-    expect(screen.getByText("Consultation")).toBeInTheDocument();
+    expect(screen.getByText("Concept introduction")).toBeInTheDocument();
     // Feste Dauer seit 29.09.2026, auch wenn die Datenbank 30 schickt.
     expect(screen.getByText("15 to 20 minutes")).toBeInTheDocument();
   });
@@ -154,7 +154,7 @@ describe("Textdateien", () => {
       const t = PARTNER_TERMIN_TEXTE[spr];
       const beispiele = [
         t.eingetragenMitName("Max"), t.zeitpunkt("Tuesday, 2 April 2030", "10:00"), t.titelMitName("Max"),
-        t.iframeTitel("Consultation"), t.objektNummer(2), t.fehlercode("funktionFehlt", "PGRST202, HTTP 404"),
+        t.iframeTitel("Concept introduction"), t.objektNummer(2), t.fehlercode("funktionFehlt", "PGRST202, HTTP 404"),
         ...Object.values(t).filter((w): w is string => typeof w === "string"),
       ];
       for (const text of beispiele) expect(gedankenstrichFrei(text), text).toBe(true);

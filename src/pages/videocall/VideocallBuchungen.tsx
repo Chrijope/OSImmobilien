@@ -71,7 +71,7 @@ const BEGRUESSUNG_VORLAGE =
 
 const ANLASS_TEXT: Record<BuchungAnlass, string> = {
   erstgespraech: "Erstgespräch",
-  beratung: "Beratungsgespräch",
+  beratung: "Konzeptvorstellung",
   objektvorstellung: "Objektvorstellung",
   finanzierungsgespraech: "Finanzierungsgespräch",
   bewerbergespraech: "Bewerbergespräch",
@@ -1211,7 +1211,7 @@ export default function VideocallBuchungen() {
                   <SelectTrigger id="art-anlass" className="mt-1.5"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="erstgespraech">Erstgespräch</SelectItem>
-                    <SelectItem value="beratung">Beratungsgespräch</SelectItem>
+                    <SelectItem value="beratung">Konzeptvorstellung</SelectItem>
                     <SelectItem value="objektvorstellung">Objektvorstellung</SelectItem>
                     <SelectItem value="finanzierungsgespraech">Finanzierungsgespräch</SelectItem>
                     {/* Der Bewerberprozess gehoert allein der Rolle hr. Eine

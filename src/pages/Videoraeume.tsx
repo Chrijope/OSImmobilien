@@ -29,6 +29,7 @@ import {
   listMeineRaeume, erstelleRaum, loescheRaum, raumUrl,
   type Videoraum, type VideoraumArt,
 } from "@/lib/videoraumStore";
+import { terminNameAnzeige } from "../../supabase/functions/_shared/termin-name.ts";
 
 /**
  * Uebersicht der eigenen Videoraeume.
@@ -237,7 +238,7 @@ export default function Videoraeume() {
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="truncate font-medium">
-                    {raum.titel || (raum.art === "objektvorstellung" ? "Objektvorstellung" : "Beratungsgespräch")}
+                    {terminNameAnzeige(raum.titel || "") || (raum.art === "objektvorstellung" ? "Objektvorstellung" : "Firmen- und Konzeptvorstellung")}
                   </span>
                   <Badge variant={raum.status === "beendet" ? "secondary" : "outline"} className="text-bildunterschrift">
                     {raum.status === "beendet" ? "beendet" : raum.status === "laufend" ? "läuft" : "offen"}
@@ -289,7 +290,7 @@ export default function Videoraeume() {
               {/* "Bewerbergespräch" steht hier für den Fall, dass ein Termin
                   von Hand entsteht. Der Regelweg ist die Selbstbuchung des
                   Bewerbers am Ende seines Kennenlernens. */}
-              {([["erstgespraech", "Erstgespräch"], ["beratung", "Beratungsgespräch"], ["objektvorstellung", "Objektvorstellung"], ["bewerbergespraech", "Bewerbergespräch"]] as const).map(([wert, beschriftung]) => (
+              {([["erstgespraech", "Erstgespräch"], ["beratung", "Konzeptvorstellung"], ["objektvorstellung", "Objektvorstellung"], ["bewerbergespraech", "Bewerbergespräch"]] as const).map(([wert, beschriftung]) => (
                 <button
                   key={wert}
                   type="button"
@@ -311,7 +312,7 @@ export default function Videoraeume() {
                 id="raum-titel"
                 value={titel}
                 onChange={(e) => setTitel(e.target.value)}
-                placeholder={art === "objektvorstellung" ? "Objektvorstellung Familie Brandl" : "Beratungsgespräch Familie Brandl"}
+                placeholder={art === "objektvorstellung" ? "Objektvorstellung Familie Brandl" : "Konzeptvorstellung Familie Brandl"}
                 className="mt-1.5"
               />
             </div>

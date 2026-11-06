@@ -35,6 +35,7 @@ import { istVorstellungsAufgabe } from "../../supabase/functions/_shared/handbuc
 import type { FesterTermin } from "./kontaktTermine";
 import { istVideoTermin, zuZeitpunkt } from "./naechsterKontakt";
 import { rvWartetKachelText } from "./rvUnterschriftMahnung";
+import { terminNameAnzeige, terminNameSchluessel } from "../../supabase/functions/_shared/termin-name.ts";
 
 /**
  * "unterschrift" ist kein geplanter Schritt, sondern ein Wartezustand: Das
@@ -255,7 +256,7 @@ export function noShowMetaPatch(kontakt: NoShowQuelle | null | undefined, schlue
  * prüft, dass beide gleich rechnen.
  */
 export function titelTagSchluessel(titel?: string, faelligAm?: string): string {
-  return `${(titel || "").trim().toLowerCase()}|${String(faelligAm || "").slice(0, 10)}`;
+  return `${terminNameSchluessel(titel)}|${String(faelligAm || "").slice(0, 10)}`;
 }
 
 /** Nur HH:MM zählt als gepflegte Uhrzeit. */
@@ -297,7 +298,7 @@ export function baueGeplanteAktionen(
   const liste: GeplanteAktion[] = [];
   const eintrag = (
     teil: Omit<GeplanteAktion, "ueberfaellig">,
-  ) => liste.push({ ...teil, ueberfaellig: !teil.ohneTermin && teil.zeitpunkt <= jetztMs });
+  ) => liste.push({ ...teil, titel: terminNameAnzeige(teil.titel), ueberfaellig: !teil.ohneTermin && teil.zeitpunkt <= jetztMs });
 
   // Die Kopien in der Aktivitätsliste, erreichbar über Titel und Tag. Genau
   // dieser Schlüssel verbindet in `kontaktTermine` und in der Zeitleiste die

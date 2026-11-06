@@ -130,7 +130,7 @@ export const STUFEN_LABELS: Record<string, string> = {
   erstgespraech_geplant: 'Qualifizierungsgespräch',
   eg_noshow: 'QG NoShow',
   beratungsgespraech: 'Firmen- und Konzeptvorstellung',
-  bg_noshow: 'BP NoShow',
+  bg_noshow: 'KV NoShow',
   selbstauskunft: 'Selbstauskunft & Unterlagen',
   objektauswahl: 'Objektvorstellung / Closing',
   // Manuelle Follow-Up-Stufe nach der Objektvorstellung. Gleicher

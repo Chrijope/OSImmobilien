@@ -108,7 +108,7 @@ describe("VideoraumGast: Sprache der Seite", () => {
     expect(screen.getByPlaceholderText("First and last name")).toBeTruthy();
     expect(screen.getByText("Your name")).toBeTruthy();
     expect(screen.getByText("End-to-end encrypted")).toBeTruthy();
-    expect(screen.getByText("Consultation")).toBeTruthy();
+    expect(screen.getByText("Concept introduction")).toBeTruthy();
     // Die Meldung von `holeMedien` ist deutsch und wird für den Gast übersetzt.
     expect(screen.getByText(MEDIEN_MELDUNGEN_EN[ABGELEHNT])).toBeTruthy();
     expect(screen.queryByText(ABGELEHNT)).toBeNull();
@@ -231,7 +231,7 @@ describe("Gespräch: Englisch", () => {
         gegenName="Paula Partner"
         verbindung={null}
         aufBeenden={() => undefined}
-        titel="Consultation"
+        titel="Concept introduction"
         schnellEinstellungen={<span />}
         sprache={sprache}
       />,
@@ -261,7 +261,7 @@ describe("Videoraum: Texte vollständig", () => {
   it("hat die Anlasstexte in beiden Sprachen", () => {
     expect(textdateiLuecken(GAST_TEXTE.de, GAST_TEXTE.en)).toEqual([]);
     expect(gastTexte("bewerbergespraech", "en").gespraechTitel).toBe("Introductory meeting");
-    expect(gastTexte("beratung", "en").gespraechTitel).toBe("Consultation");
+    expect(gastTexte("beratung", "en").gespraechTitel).toBe("Concept introduction");
   });
 
   it("setzt Platzhalter ohne Gedankenstrich ein", () => {

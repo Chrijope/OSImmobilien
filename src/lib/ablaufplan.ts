@@ -73,7 +73,7 @@ export const ABLAUF_STATIONEN: AblaufStation[] = [
     imCrm: [
       "Jeden Anruf protokollieren, auch den erfolglosen: im Kundenprofil über die Schaltfläche „Anruf protokollieren\" oben. Dort wählst du das Ergebnis aus, statt es als freie Notiz zu schreiben. Nur so zählt es das System mit.",
       "Der Lead bleibt in der Liste stehen und wird mit dem Zeitpunkt des nächsten Versuchs gekennzeichnet. Die Wartezeit steigt gestaffelt: nach dem ersten Versuch vier Stunden, danach jeweils der nächste Morgen, ab dem fünften Versuch 48 Stunden, ab dem elften 72 Stunden.",
-      "Solange noch kein Beratungsgespräch stattgefunden hat, bekommt der Interessent nach dem ersten, vierten und zehnten erfolglosen Versuch eine kurze Mail vom zuständigen Partner, auch wenn jemand anderes angerufen hat: zuerst eine persönliche Vorstellung mit Erstgesprächs-Buchungslink, dann eine kurze Erinnerung, zum Schluss die Frage, ob das Thema geschlossen werden soll. Bei allen anderen Versuchen geht keine Mail.",
+      "Solange noch keine Firmen- und Konzeptvorstellung stattgefunden hat, bekommt der Interessent nach dem ersten, vierten und zehnten erfolglosen Versuch eine kurze Mail vom zuständigen Partner, auch wenn jemand anderes angerufen hat: zuerst eine persönliche Vorstellung mit Erstgesprächs-Buchungslink, dann eine kurze Erinnerung, zum Schluss die Frage, ob das Thema geschlossen werden soll. Bei allen anderen Versuchen geht keine Mail.",
       "Kein Lead wird automatisch verloren gegeben. Auf „Verloren\" setzt ihn nur ein Mensch, mit Grund.",
       "Wer ans Telefon geht, gehört sofort auf „Erreicht\" gezogen oder direkt in einen Termin. Diese Stufe setzt das System nicht von selbst.",
     ],
@@ -86,10 +86,10 @@ export const ABLAUF_STATIONEN: AblaufStation[] = [
       "Tag 0. Das Gespräch nach dem Erstgesprächsskript: erst verstehen, dann empfehlen. Ziel, Motiv und finanzieller Rahmen des Kunden werden klar, und wo es nicht passt, sagen wir das offen. Ziel ist der feste Termin für die Firmen- und Konzeptvorstellung, 2 bis 5 Tage später.",
     stufen: ["erstgespraech_geplant"],
     imCrm: [
-      "Im Normalfall ist das Erstgespräch der Anruf selbst. Du führst es mit dem Erstgesprächsskript unter „Stammdaten\", Ziel ist der feste Termin für das Beratungsgespräch.",
+      "Im Normalfall ist das Erstgespräch der Anruf selbst. Du führst es mit dem Erstgesprächsskript unter „Stammdaten\", Ziel ist der feste Termin für die Firmen- und Konzeptvorstellung.",
       "Hat der Lead beim Anruf gerade keine Zeit, protokollierst du den Anruf mit dem Ergebnis „Erstgespräch vereinbart\" und trägst Datum und Uhrzeit ein. Deinen Erstgesprächs-Kalender öffnest du direkt aus demselben Fenster.",
       "Wichtig: Den Termin immer eintragen, auch wenn du ihn über den Kalender gebucht hast. Erst dann steht er im System, der Kunde rückt auf „Erstgespräch geplant\" und die Ampel im Profil zeigt „Termin geplant\".",
-      "Erreichst du den Lead nicht, geht nach dem ersten, vierten und zehnten Versuch automatisch eine Mail im Namen des zuständigen Partners raus, die erste mit dessen Erstgesprächs-Buchungslink. Ab dem Beratungsgespräch werden diese Mails nie verschickt.",
+      "Erreichst du den Lead nicht, geht nach dem ersten, vierten und zehnten Versuch automatisch eine Mail im Namen des zuständigen Partners raus, die erste mit dessen Erstgesprächs-Buchungslink. Ab der Firmen- und Konzeptvorstellung werden diese Mails nie verschickt.",
     ],
   },
   {
@@ -100,10 +100,10 @@ export const ABLAUF_STATIONEN: AblaufStation[] = [
       "Die Beratung mit Zahlen und der Wahl des Konzepts: Zusatzrente oder Steuerersparnis. Am Ende füllt ihr die Selbstauskunft gemeinsam aus. Personalausweis und letzte Gehaltsabrechnung reicht der Kunde bis Tag 7 im Portal nach.",
     stufen: ["beratungsgespraech", "selbstauskunft"],
     imCrm: [
-      "Den Termin trägst du über die Karte „Beratungsgespräch vereinbaren\" ein, und zwar im Reiter des jeweiligen Investments, nicht unter „Stammdaten\". Nur so ist er dem richtigen Vorgang zugeordnet, wenn der Kunde mehrere hat. Der Kunde rückt damit automatisch auf die Stufe Beratungsgespräch.",
+      "Den Termin trägst du über die Karte „Firmen- und Konzeptvorstellung vereinbaren\" ein, und zwar im Reiter des jeweiligen Investments, nicht unter „Stammdaten\". Nur so ist er dem richtigen Vorgang zugeordnet, wenn der Kunde mehrere hat. Der Kunde rückt damit automatisch auf die Stufe Firmen- und Konzeptvorstellung.",
       "Nach dem Termin setzt du das Ergebnis in derselben Karte: Erschienen, No-Show oder Verschoben. Das ist kein Formalismus, daran hängen die nächsten Schritte.",
       "Bei No-Show erscheint oben im Profil ein Banner mit dem versäumten Termin, damit jeder sofort sieht, woran er ist. Er verschwindet von selbst, sobald du einen neuen Termin eingetragen hast.",
-      "Bei No-Show wandert der Kunde auf die Stufe BG NoShow, du bekommst sofort eine Aufgabe und nach 24 und 48 Stunden eine Erinnerung, solange kein neuer Termin steht. Trägst du einen neuen ein, springt er automatisch zurück auf Beratungsgespräch.",
+      "Bei No-Show wandert der Kunde auf die Stufe KV NoShow, du bekommst sofort eine Aufgabe und nach 24 und 48 Stunden eine Erinnerung, solange kein neuer Termin steht. Trägst du einen neuen ein, springt er automatisch zurück auf Firmen- und Konzeptvorstellung.",
       "Sobald die Selbstauskunft zur Unterschrift beim Kunden liegt, rückt er von selbst auf die Stufe Selbstauskunft. Dafür musst du nichts weiter tun.",
       "Personalausweis und letzte Gehaltsabrechnung prüfst du im Investment-Reiter unter „Bonitätsunterlagen\" und gibst sie dort frei. Das macht immer der zuständige Vertriebspartner.",
     ],

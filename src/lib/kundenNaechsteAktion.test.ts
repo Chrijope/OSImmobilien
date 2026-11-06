@@ -211,7 +211,7 @@ describe("baueGeplanteAktionen: Entdopplung und Sprungziele", () => {
       },
       JETZT,
     );
-    expect(liste.map((x) => x.titel)).toEqual(["Beratungsgespräch", "Notartermin"]);
+    expect(liste.map((x) => x.titel)).toEqual(["Firmen- und Konzeptvorstellung", "Notartermin"]);
     expect(liste[0].sprungziel).toEqual({ reiter: "aktivitaeten", ankerId: "aktivitaet-m1" });
     expect(liste[1].sprungziel).toEqual({ reiter: "investments", ankerId: ANKER_FESTER_TERMIN });
   });

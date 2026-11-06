@@ -70,7 +70,7 @@ const NACH_ERSTGESPRAECH = new Set<string>([
  */
 export function setterTerminName(kunde: KundeData): string {
   try {
-    if (NACH_ERSTGESPRAECH.has(getEffectivePipelineStufe(kunde))) return "Beratungsgespräch";
+    if (NACH_ERSTGESPRAECH.has(getEffectivePipelineStufe(kunde))) return "Firmen- und Konzeptvorstellung";
   } catch {
     /* Investment-Store noch nicht bereit: beim alten Namen bleiben. */
   }
@@ -133,7 +133,7 @@ export function festeTermine(kunde: KundeData, investmentId?: string): FesterTer
     {
       datum: meta.beratungsgespraechAm,
       uhrzeit: meta.beratungsgespraechUhrzeit,
-      bezeichnung: "Beratungsgespräch",
+      bezeichnung: "Firmen- und Konzeptvorstellung",
     },
     {
       datum: meta.versicherungTerminDatum,
@@ -170,7 +170,7 @@ export function festeTermine(kunde: KundeData, investmentId?: string): FesterTer
         termine.push({
           datum: im.beratungsgespraechAm,
           uhrzeit: im.beratungsgespraechUhrzeit,
-          bezeichnung: "Beratungsgespräch",
+          bezeichnung: "Firmen- und Konzeptvorstellung",
         });
       }
     }

@@ -5,6 +5,7 @@ import { TEMPLATES, folgtKundensprache } from '../_shared/transactional-email-te
 import { ansprechpartnerErgaenzen } from '../_shared/ansprechpartner.ts'
 import { hrAnsprechpartner, type Ansprechpartner as HrPerson } from '../_shared/hr-ansprechpartner.ts'
 import { bewerberAbsender, istBewerbermail } from '../_shared/bewerber-absender.ts'
+import { mitTerminNameInSprache } from '../_shared/termin-name.ts'
 import { ermittleMailSprache } from '../_shared/mail-sprache-ermitteln.ts'
 import {
   TEAM_ABSENDER,
@@ -665,6 +666,7 @@ Deno.serve(async (req) => {
     }
   }
   templateData = { ...templateData, sprache }
+  templateData = mitTerminNameInSprache(templateData, sprache)
   // Im Versandprotokoll steht, in welcher Sprache die Mail hinausging.
   extraMetadata = { ...(extraMetadata || {}), sprache }
 

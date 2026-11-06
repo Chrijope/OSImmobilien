@@ -19,6 +19,7 @@
  */
 
 import { zuZeitpunkt, istVideoTermin } from "./naechsterKontakt";
+import { terminNameAnzeige, terminNameSchluessel } from "../../supabase/functions/_shared/termin-name.ts";
 
 /** Was von einer Aktivität gebraucht wird. Bewusst schmal gehalten. */
 export interface TerminAktivitaet {
@@ -73,7 +74,7 @@ function tagSchluessel(datum?: string): string {
 }
 
 function paarSchluessel(kundeId?: string, titel?: string, datum?: string): string {
-  return `${kundeId || ""}|${(titel || "").trim().toLowerCase()}|${tagSchluessel(datum)}`;
+  return `${kundeId || ""}|${terminNameSchluessel(titel)}|${tagSchluessel(datum)}`;
 }
 
 /**
@@ -131,7 +132,7 @@ export function sammleInboxTermine({
     treffer.push({
       zeit,
       id: `termin-${a.id}`,
-      titel: a.beschreibung?.trim() || "Termin",
+      titel: terminNameAnzeige(a.beschreibung?.trim() || "Termin"),
       kundeId: a.kundeId,
       kundeName: namenJeKunde?.get(a.kundeId) || "Ohne Kunde",
       faelligAm: a.faelligAm,

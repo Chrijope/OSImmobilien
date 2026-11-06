@@ -47,7 +47,7 @@ const STUFE_ZU_WORT: Record<string, string> = {
   erstgespraech: "Qualifizierungsgespräch",
   eg_noshow: "QG NoShow",
   beratungsgespraech: "Firmen- und Konzeptvorstellung",
-  bg_noshow: "BP NoShow",
+  bg_noshow: "KV NoShow",
   selbstauskunft: "Selbstauskunft & Unterlagen",
   bonitaetsunterlagen: "Bonitätsunterlagen",
   objektauswahl: "Objektvorstellung / Closing",

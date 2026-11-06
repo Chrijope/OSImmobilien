@@ -101,7 +101,7 @@ export async function buildBeratungSkriptPdf(): Promise<{ blob: Blob; dateiname:
 
   /* ── Deckblatt ── */
   addCoverPage(doc, icon, {
-    kennung: "Vertriebsakademie · Kapitel 5 · Beratungsgespräch",
+    kennung: "Vertriebsakademie · Kapitel 5 · Firmen- und Konzeptvorstellung",
     titel: "Sprechskripte zur Firmen- und Konzeptvorstellung",
     untertitel: "Was du in welchem Abschnitt sagst, und warum",
     datum: new Date().toLocaleDateString("de-DE"),

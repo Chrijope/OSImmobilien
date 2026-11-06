@@ -36,6 +36,7 @@
 
 import { INACTIVITY_THRESHOLDS } from "./inactivityThresholds";
 import type { PipelineStufe } from "./kontaktPipeline";
+import { BERATUNG_KURZ, BERATUNG_NAME, terminNameAnzeige } from "../../supabase/functions/_shared/termin-name.ts";
 
 export type AmpelFarbe = "orange" | "red" | null;
 
@@ -95,15 +96,16 @@ export function bewertePipelineKachel(e: AmpelEingabe): AmpelErgebnis {
     const quelle = e.naechsterKontakt && !e.naechsterKontakt.ueberfaellig
       ? e.naechsterKontakt.quelle
       : undefined;
-    // Gebuchte Videocalls heissen beim Namen: "Beratungsgespräch gebucht"
+    // Gebuchte Videocalls heissen beim Namen: "Konzeptvorstellung gebucht"
     // statt "Videomeeting geplant". Erkannt an der Terminbezeichnung, die
     // bei einer Buchung die Terminart traegt. Freitext-Meetings mit langen
     // Beschreibungen fallen durch und behalten den allgemeinen Text.
     const gebuchterName = (() => {
       if (quelle !== "videotermin" && quelle !== "termin") return null;
-      const name = e.naechsterKontakt?.bezeichnung?.trim() || "";
-      const bekannt = ["Beratungsgespräch", "Objektvorstellung", "Finanzierungsgespräch", "Erstgespräch"];
-      const treffer = bekannt.find((b) => name.toLowerCase().startsWith(b.toLowerCase()));
+      const name = terminNameAnzeige(e.naechsterKontakt?.bezeichnung?.trim() || "").toLowerCase();
+      if ([BERATUNG_NAME, BERATUNG_KURZ].some((b) => name.startsWith(b.toLowerCase()))) return `${BERATUNG_KURZ} gebucht`;
+      const bekannt = ["Objektvorstellung", "Finanzierungsgespräch", "Erstgespräch"];
+      const treffer = bekannt.find((b) => name.startsWith(b.toLowerCase()));
       return treffer ? `${treffer} gebucht` : null;
     })();
     const text =

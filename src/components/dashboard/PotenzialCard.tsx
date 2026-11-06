@@ -226,7 +226,7 @@ export function PotenzialCard() {
                     </p>
                   </TooltipTrigger>
                   <TooltipContent side="bottom" className="max-w-xs text-center">
-                    Summe aller Kaufpreise vom Beratungsgespräch bis zur Finanzierung, so
+                    Summe aller Kaufpreise von der Firmen- und Konzeptvorstellung bis zur Finanzierung, so
                     wie sie am jeweiligen Investment hinterlegt sind. Notar und Fälligkeit sind
                     nicht enthalten, die stehen als Umsatz in der Kachel oben.
                   </TooltipContent>
@@ -247,7 +247,7 @@ export function PotenzialCard() {
                     </p>
                   </TooltipTrigger>
                   <TooltipContent side="bottom" className="max-w-xs text-center">
-                    Vom Beratungsgespräch bis zur Finanzierung. Davon haben {stats.vollstaendig}
+                    Von der Firmen- und Konzeptvorstellung bis zur Finanzierung. Davon haben {stats.vollstaendig}
                     {" "}bereits ein zugeordnetes Objekt.
                   </TooltipContent>
                 </Tooltip>

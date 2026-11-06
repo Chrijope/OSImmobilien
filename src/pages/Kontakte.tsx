@@ -397,7 +397,7 @@ export default function Kontakte() {
                     </TooltipTrigger>
                     <TooltipContent side="top" className="max-w-[280px] text-xs leading-relaxed">
                       Blendet Kontakte aus, die aktuell in Wartezeit sind (nach "Nicht erreicht"),
-                      ein zukünftiges Erst-/Beratungsgespräch terminiert haben oder einen offenen
+                      ein zukünftiges Erstgespräch oder eine zukünftige Firmen- und Konzeptvorstellung terminiert haben oder einen offenen
                       Follow-Up in der Zukunft besitzen.
                     </TooltipContent>
                   </Tooltip>

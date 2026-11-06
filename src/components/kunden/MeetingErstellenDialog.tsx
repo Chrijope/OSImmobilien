@@ -86,7 +86,7 @@ export function MeetingErstellenDialog({
   recipientName,
   kontaktId,
 }: Props) {
-  const [topic, setTopic] = useState(defaultTopic || "Beratungsgespräch");
+  const [topic, setTopic] = useState(defaultTopic || "Firmen- und Konzeptvorstellung");
   const [date, setDate] = useState(defaultDate);
   const [time, setTime] = useState(defaultTime);
   const [duration, setDuration] = useState(defaultDuration);
@@ -184,7 +184,7 @@ export function MeetingErstellenDialog({
         <div className="space-y-3">
           <div>
             <Label className="text-xs">Thema *</Label>
-            <Input value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="Beratungsgespräch" />
+            <Input value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="Konzeptvorstellung" />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>

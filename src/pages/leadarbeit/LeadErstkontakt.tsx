@@ -43,7 +43,7 @@ export default function LeadErstkontakt() {
           </div>
           <div className="rounded-lg border bg-muted/30 p-3">
             <div className="font-bold text-primary mb-1">A – Authority</div>
-            <p>Wer entscheidet mit? Partner/Ehepartner gleich mit ins Beratungsgespräch nehmen.</p>
+            <p>Wer entscheidet mit? Partner/Ehepartner gleich mit in die Firmen- und Konzeptvorstellung nehmen.</p>
           </div>
           <div className="rounded-lg border bg-muted/30 p-3">
             <div className="font-bold text-primary mb-1">N – Need</div>
@@ -60,7 +60,7 @@ export default function LeadErstkontakt() {
       <SectionCard title="Erwartungsmanagement: Termin statt Verkauf" icon={<Phone className="h-5 w-5" />}>
         <p>
           Ziel des Erstkontakts ist <strong>nicht der Abschluss</strong>, sondern ein fester Termin für das
-          <strong> Beratungsgespräch</strong> (in der Regel 60–90 Min, online oder vor Ort). Wer im Erstkontakt
+          <strong> Firmen- und Konzeptvorstellung</strong> (in der Regel 60–90 Min, online oder vor Ort). Wer im Erstkontakt
           verkauft, verliert den Lead.
         </p>
         <div className="bg-primary/5 border border-primary/20 rounded p-4 mt-3 text-sm">

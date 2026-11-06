@@ -18,6 +18,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSeitentitel, oeffentlicherTitel } from "@/lib/seitentitel";
 import { texteFuer, useLinkSprache } from "@/lib/seitenSprache";
 import { BUCHUNG_VERWALTEN_TEXTE } from "./buchungVerwaltenTexte";
+import { terminNameAnzeige } from "../../supabase/functions/_shared/termin-name.ts";
 
 /**
  * Der Kunde verwaltet seinen eigenen Termin: ansehen, absagen, verschieben.
@@ -241,7 +242,7 @@ export default function BuchungVerwalten() {
                   {beschriftungDauer(ansicht.dauer_minuten, sprache)}
                 </Zeile>
                 <Zeile icon={<User className="h-3.5 w-3.5" />} beschriftung={t.anliegen}>
-                  {ansicht.bezeichnung || t.terminErsatz}
+                  {ansicht.bezeichnung ? terminNameAnzeige(ansicht.bezeichnung, sprache === "en") : t.terminErsatz}
                 </Zeile>
                 <Zeile icon={<Mail className="h-3.5 w-3.5" />} beschriftung={t.gebuchtAuf}>
                   {ansicht.name} · {ansicht.email}

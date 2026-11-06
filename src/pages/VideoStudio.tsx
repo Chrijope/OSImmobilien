@@ -38,7 +38,7 @@ type Projekt = {
 const VORLAGEN: { name: string; skript: string }[] = [
   {
     name: "Objektvorstellung",
-    skript: "Hallo, ich bin [Name] von OS Immobilien. Heute stelle ich Ihnen eine besondere Kapitalanlage vor: [Objekt] in [Ort]. Die Wohnungen sind ab [Preis] Euro zu haben und bereits vermietet. Die Lage überzeugt mit [Lagevorteil]. Wenn Sie mehr wissen möchten, buchen Sie jetzt Ihr kostenloses Beratungsgespräch.",
+    skript: "Hallo, ich bin [Name] von OS Immobilien. Heute stelle ich Ihnen eine besondere Kapitalanlage vor: [Objekt] in [Ort]. Die Wohnungen sind ab [Preis] Euro zu haben und bereits vermietet. Die Lage überzeugt mit [Lagevorteil]. Wenn Sie mehr wissen möchten, buchen Sie jetzt Ihre kostenlose Firmen- und Konzeptvorstellung.",
   },
   {
     name: "Persönliche Vorstellung",

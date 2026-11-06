@@ -22,6 +22,7 @@ import {
 import { spracheAusAdresse, texteFuer, useLinkSprache } from "@/lib/seitenSprache";
 import { BUCHUNG_PUBLIC_TEXTE, type DankeTexte } from "./buchungPublicTexte";
 import { CookieEinstellungenLink } from "@/components/cookie/CookieEinstellungenLink";
+import { terminNameAnzeige } from "../../supabase/functions/_shared/termin-name.ts";
 
 /**
  * Die öffentliche Buchungsseite. Kein Konto, kein Anruf, nur ein Link.
@@ -194,7 +195,7 @@ export default function BuchungPublic() {
         // saß. Gebucht ist dann der neue Stand, und genau der gehört auf die
         // Bestätigung.
         dauerMinuten: antwort.dauerMinuten ?? terminart?.dauer_minuten ?? 0,
-        bezeichnung: antwort.bezeichnung || terminart?.bezeichnung || t.terminErsatz,
+        bezeichnung: terminNameAnzeige(antwort.bezeichnung || terminart?.bezeichnung || t.terminErsatz, sprache === "en"),
         // Nur zeigen, wenn die Begleitung wirklich gespeichert wurde. Beim
         // Rückfall ohne Begleitung wäre die Zusage auf der Dankeseite falsch.
         begleitungName:
@@ -407,7 +408,7 @@ export default function BuchungPublic() {
             */}
             {terminart?.beschreibung ? (
               <Karte>
-                <KartenTitel>{terminart.bezeichnung}</KartenTitel>
+                <KartenTitel>{terminNameAnzeige(terminart.bezeichnung, sprache === "en")}</KartenTitel>
                 <p className="mb-3 text-[12.5px] text-white/40">
                   {beschriftungDauer(terminart.dauer_minuten, sprache)}
                 </p>
@@ -442,7 +443,7 @@ export default function BuchungPublic() {
                       }`}
                     >
                       <div className="flex items-baseline justify-between gap-4">
-                        <span className="text-[15.5px] font-semibold">{art.bezeichnung}</span>
+                        <span className="text-[15.5px] font-semibold">{terminNameAnzeige(art.bezeichnung, sprache === "en")}</span>
                         <span className="shrink-0 text-[12px] text-white/40">
                           {beschriftungDauer(art.dauer_minuten, sprache)}
                         </span>
@@ -523,7 +524,7 @@ export default function BuchungPublic() {
                       {beschriftungZeitraum(gewaehlteZeit, terminart?.dauer_minuten ?? 0, zeitzone, sprache)}
                     </p>
                     <p className="mt-1 text-[12.5px] text-white/50">
-                      {terminart?.bezeichnung} · {beschriftungDauer(terminart?.dauer_minuten ?? 0, sprache)}
+                      {terminNameAnzeige(terminart?.bezeichnung ?? "", sprache === "en")} · {beschriftungDauer(terminart?.dauer_minuten ?? 0, sprache)}
                     </p>
                   </div>
                 )}

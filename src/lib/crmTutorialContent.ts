@@ -166,7 +166,7 @@ export const CRM_TUTORIAL_CONTENT: Record<string, Omit<CrmTutorialStep, "url">> 
   "/afa-rechner": { titel: "AfA-Rechner", kurz: "Abschreibungs-Rechner.", erklaerung: "Berechne die Abschreibung einer Immobilie inkl. Sonderabschreibungen." },
   "/bonitaetsrechner": { titel: "Bonitätsrechner", kurz: "Bonitäts-Schnellcheck.", erklaerung: "Prüfe die Finanzierbarkeit eines Kunden anhand seiner Kennzahlen." },
   "/immobilien-lexikon": { titel: "Immobilien-Lexikon", kurz: "Fachbegriffe erklärt.", erklaerung: "Nachschlagewerk für alle wichtigen Fachbegriffe rund um Immobilien." },
-  "/praesentation": { titel: "Präsentation", kurz: "Firmen- und Konzeptvorstellungen.", erklaerung: "Die zentrale Präsentation für Beratungsgespräche mit Kunden." },
+  "/praesentation": { titel: "Präsentation", kurz: "Firmen- und Konzeptvorstellungen.", erklaerung: "Die zentrale Präsentation für Firmen- und Konzeptvorstellungen mit Kunden." },
   "/unterlagen": { titel: "Unterlagen", kurz: "Dokumente & Vorlagen.", erklaerung: "Alle Verkaufsunterlagen, Checklisten, E-Mail-Signaturen und Vorlagen zum Download." },
   "/vertriebsakademie": {
     titel: "Vertriebsakademie",
