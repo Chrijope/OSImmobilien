@@ -70,14 +70,20 @@ describe("BuchungVerwalten: Sprache", () => {
     expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent("Hello Max.");
     expect(screen.getByText("Tuesday, 6 August 2030, 09:30 to 10:30")).toBeInTheDocument();
     expect(screen.getByText("1 hour")).toBeInTheDocument();
-    // Die Bezeichnung der Terminart ist gepflegt und bleibt.
-    expect(screen.getByText("Beratungsgespräch")).toBeInTheDocument();
+    // Gespeichert steht der alte Name, sichtbar ist er in der Kundensprache.
+    expect(screen.getByText("Concept introduction")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Cancel appointment/ })).toBeInTheDocument();
     expect(screen.getByText(/This link isn’t connected to the booking calendar/)).toBeInTheDocument();
     expect(netz.aufrufe).toContainEqual({
       name: "kundensprache_zum_link",
       args: { _art: "buchung_verwalten", _token: "abs1" },
     });
+  });
+
+  it("zeigt den alten gespeicherten Namen auf Deutsch unter dem neuen Namen", async () => {
+    zeige();
+    expect(await screen.findByText("Firmen- und Konzeptvorstellung")).toBeInTheDocument();
+    expect(screen.queryByText("Beratungsgespräch")).not.toBeInTheDocument();
   });
 
   it("führt auch das Absagen auf Englisch", async () => {

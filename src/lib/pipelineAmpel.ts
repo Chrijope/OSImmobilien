@@ -102,10 +102,10 @@ export function bewertePipelineKachel(e: AmpelEingabe): AmpelErgebnis {
     // Beschreibungen fallen durch und behalten den allgemeinen Text.
     const gebuchterName = (() => {
       if (quelle !== "videotermin" && quelle !== "termin") return null;
-      const name = terminNameAnzeige(e.naechsterKontakt?.bezeichnung?.trim() || "");
-      if ([BERATUNG_NAME, BERATUNG_KURZ].some((b) => name.startsWith(b))) return `${BERATUNG_KURZ} gebucht`;
+      const name = terminNameAnzeige(e.naechsterKontakt?.bezeichnung?.trim() || "").toLowerCase();
+      if ([BERATUNG_NAME, BERATUNG_KURZ].some((b) => name.startsWith(b.toLowerCase()))) return `${BERATUNG_KURZ} gebucht`;
       const bekannt = ["Objektvorstellung", "Finanzierungsgespräch", "Erstgespräch"];
-      const treffer = bekannt.find((b) => name.toLowerCase().startsWith(b.toLowerCase()));
+      const treffer = bekannt.find((b) => name.startsWith(b.toLowerCase()));
       return treffer ? `${treffer} gebucht` : null;
     })();
     const text =

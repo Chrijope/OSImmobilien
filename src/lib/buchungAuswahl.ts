@@ -24,6 +24,7 @@ import { wochentagVon } from "@/lib/buchungZeitfenster";
 import { datumLangText } from "@/lib/sprachFormat";
 import type { Sprache } from "@/lib/seitenSprache";
 import { BUCHUNG_AUSWAHL_TEXTE, type BuchungAuswahlTexte } from "@/lib/buchungAuswahlTexte";
+import { terminNameSchluessel } from "../../supabase/functions/_shared/termin-name.ts";
 
 const WOCHENTAGE = ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
 const MONATE = [
@@ -307,9 +308,10 @@ export function passendeTerminart<T extends TerminartKurz>(
 ): T | null {
   if (arten.length === 0) return null;
 
-  const bezeichnung = gesucht.bezeichnung?.trim().toLowerCase();
+  // Alter und neuer Terminname sind dieselbe Terminart, siehe termin-name.ts.
+  const bezeichnung = terminNameSchluessel(gesucht.bezeichnung);
   if (bezeichnung) {
-    const treffer = arten.filter((a) => a.bezeichnung.trim().toLowerCase() === bezeichnung);
+    const treffer = arten.filter((a) => terminNameSchluessel(a.bezeichnung) === bezeichnung);
     if (treffer.length === 1) return treffer[0];
   }
 

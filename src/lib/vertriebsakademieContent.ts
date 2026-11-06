@@ -20833,7 +20833,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "Woche 5, Tag 3: die fünf Kernabschnitte frei sprechen können, ohne Bildschirm",
           "Woche 5, Tag 4: drei Einwände aus dem Leitfaden üben, mit den fünf Schritten von anerkennen bis Zustimmung",
           "Woche 5, Tag 5: Rollenspiel mit einem Kollegen, der einen skeptischen Kunden spielt, Pflicht ist der Einwand zum Wertverlust und der Regler auf null",
-          "Woche 6, Tag 1 bis 3: erste Firmen- und Konzeptvorstellung mit einem eigenen Kunden. Ist deine Erlaubnis nach § 34c GewO da, führst du es selbst. Ist sie es noch nicht, führt die Gesellschaft und du sitzt dabei (Kapitel 1). Danach Rückmeldung einholen",
+          "Woche 6, Tag 1 bis 3: erste Firmen- und Konzeptvorstellung mit einem eigenen Kunden. Ist deine Erlaubnis nach § 34c GewO da, führst du das Gespräch selbst. Ist sie es noch nicht, führt die Gesellschaft und du sitzt dabei (Kapitel 1). Danach Rückmeldung einholen",
           "Woche 6, Tag 4: erste Selbstauskunft gemeinsam mit dem Kunden ausfüllen, am Ende der Firmen- und Konzeptvorstellung",
           "Woche 6, Tag 5: Abschlusstest von Kapitel 5, danach das Freitagabend-Review",
           "Durchgehend in allen drei Wochen: täglich drei Ansprachen nach der 3-2-1-Regel, davon mindestens drei neue warme Erstansprachen je Woche"

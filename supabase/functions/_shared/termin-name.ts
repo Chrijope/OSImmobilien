@@ -15,9 +15,21 @@ export const BERATUNG_NAME_EN = "Concept introduction";
 /** Die Schreibweisen aus Migrationen und Altbestand, auch ohne Umlaut. */
 const ALTER_NAME = /Beratungsgespr(?:ä|ae)ch/gi;
 
-/** Für die Anzeige: nennt den alten Namen um, jeder andere Text bleibt. */
+/** Auf Englisch wird jede Fassung übersetzt, der lange Name zuerst. */
+const JEDER_NAME = /Firmen- und Konzeptvorstellung|Konzeptvorstellung|Beratungsgespr(?:ä|ae)ch/gi;
+
+/** Für die Anzeige: nennt den Termin in der Sprache, jeder andere Text bleibt. */
 export function terminNameAnzeige(titel: string, en = false): string {
-  return titel.replace(ALTER_NAME, en ? BERATUNG_NAME_EN : BERATUNG_NAME);
+  return en ? titel.replace(JEDER_NAME, BERATUNG_NAME_EN) : titel.replace(ALTER_NAME, BERATUNG_NAME);
+}
+
+/**
+ * Für den Mailversand: Erst dort steht die Sprache der Mail fest. Partner-Mails
+ * bleiben deutsch, auch wenn der Kunde Englisch spricht.
+ */
+export function mitTerminNameInSprache<T extends Record<string, unknown>>(daten: T, sprache: "de" | "en"): T {
+  const titel = daten.terminTitel;
+  return typeof titel === "string" ? { ...daten, terminTitel: terminNameAnzeige(titel, sprache === "en") } : daten;
 }
 
 /** Exakt dieser Termin, unter altem, neuem oder kurzem Namen. */

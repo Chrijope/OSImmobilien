@@ -117,7 +117,7 @@ export default function BuchungVerwalten() {
       // geraten.
       setTerminart(waehleTerminart(zugang.terminarten, {
         id: daten.terminart_id,
-        bezeichnung: daten.bezeichnung ? terminNameAnzeige(daten.bezeichnung) : daten.bezeichnung,
+        bezeichnung: daten.bezeichnung,
         dauerMinuten: daten.dauer_minuten,
       }));
     })();
@@ -242,7 +242,7 @@ export default function BuchungVerwalten() {
                   {beschriftungDauer(ansicht.dauer_minuten, sprache)}
                 </Zeile>
                 <Zeile icon={<User className="h-3.5 w-3.5" />} beschriftung={t.anliegen}>
-                  {ansicht.bezeichnung || t.terminErsatz}
+                  {ansicht.bezeichnung ? terminNameAnzeige(ansicht.bezeichnung, sprache === "en") : t.terminErsatz}
                 </Zeile>
                 <Zeile icon={<Mail className="h-3.5 w-3.5" />} beschriftung={t.gebuchtAuf}>
                   {ansicht.name} · {ansicht.email}

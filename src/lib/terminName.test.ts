@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
-  BERATUNG_KURZ, BERATUNG_NAME, istBeratungsName, terminNameAnzeige, terminNameSchluessel,
+  BERATUNG_KURZ, BERATUNG_NAME, istBeratungsName, mitTerminNameInSprache, terminNameAnzeige, terminNameSchluessel,
 } from "../../supabase/functions/_shared/termin-name.ts";
+import { waehleTerminart } from "./buchungAuswahl";
 import { festeGespraechsArt } from "./festerTerminErgebnis";
 import { baueGeplanteAktionen, titelTagSchluessel } from "./kundenNaechsteAktion";
 import { sammleInboxTermine } from "./inboxTermine";
@@ -20,7 +21,22 @@ describe("Anzeige des Gesprächsnamens", () => {
   });
 
   it("nennt den Termin in englischen Mails englisch", () => {
-    expect(terminNameAnzeige(ALT, true)).toBe("Concept introduction");
+    for (const titel of [ALT, "Beratungsgespraech", BERATUNG_NAME, BERATUNG_KURZ, "konzeptvorstellung"]) {
+      expect(terminNameAnzeige(titel, true)).toBe("Concept introduction");
+    }
+    expect(terminNameAnzeige("Objektvorstellung", true)).toBe("Objektvorstellung");
+  });
+
+  it("lässt die Kurzform auf Deutsch stehen", () => {
+    expect(terminNameAnzeige(BERATUNG_KURZ)).toBe(BERATUNG_KURZ);
+    expect(terminNameAnzeige(BERATUNG_NAME)).toBe(BERATUNG_NAME);
+  });
+
+  it("übersetzt in der Mail nach deren Sprache, nicht nach der des Kunden", () => {
+    const daten = { terminTitel: ALT, vorname: "Max" };
+    expect(mitTerminNameInSprache(daten, "en").terminTitel).toBe("Concept introduction");
+    expect(mitTerminNameInSprache(daten, "de").terminTitel).toBe(BERATUNG_NAME);
+    expect(mitTerminNameInSprache({ vorname: "Max" }, "en")).toEqual({ vorname: "Max" });
   });
 });
 
@@ -53,6 +69,17 @@ describe("Alte und neue Titel bleiben derselbe Termin", () => {
     expect(liste.map((x) => x.titel)).toEqual([BERATUNG_NAME]);
   });
 
+  it("findet die gespeicherte Terminart zum Verschieben unter jedem Namen", () => {
+    const arten = [
+      { id: "b", bezeichnung: ALT, dauer_minuten: 45 },
+      { id: "o", bezeichnung: "Objektvorstellung", dauer_minuten: 45 },
+    ];
+    for (const bezeichnung of [ALT, BERATUNG_NAME, BERATUNG_KURZ]) {
+      expect(waehleTerminart(arten, { bezeichnung, dauerMinuten: 45 })?.id).toBe("b");
+    }
+    expect(waehleTerminart([{ ...arten[0], bezeichnung: BERATUNG_NAME }, arten[1]], { bezeichnung: ALT })?.id).toBe("b");
+  });
+
   it("legt in der Inbox keinen zweiten Eintrag neben eine Aufgabe mit anderem Namen", () => {
     const termin = { id: "a1", kundeId: "k1", art: "meeting", beschreibung: ALT, faelligAm: "2026-08-10" };
     const aufgabe = { kontaktId: "k1", titel: BERATUNG_KURZ, faelligAm: "2026-08-10" };
@@ -65,7 +92,7 @@ describe("Alte und neue Titel bleiben derselbe Termin", () => {
     } as never)).toEqual([]);
   });
 
-  it.each([ALT, BERATUNG_NAME, BERATUNG_KURZ])("nennt die Kachel bei %s den neuen Namen", (bezeichnung) => {
+  it.each([ALT, BERATUNG_NAME, BERATUNG_KURZ, "firmen- und konzeptvorstellung Brandl", "KONZEPTVORSTELLUNG", "beratungsgespräch"])("nennt die Kachel bei %s den neuen Namen", (bezeichnung) => {
     const r = bewertePipelineKachel({
       stufe: "beratungsgespraech",
       tageSeitAenderung: 1,

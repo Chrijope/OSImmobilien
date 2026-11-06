@@ -195,7 +195,7 @@ export default function BuchungPublic() {
         // saß. Gebucht ist dann der neue Stand, und genau der gehört auf die
         // Bestätigung.
         dauerMinuten: antwort.dauerMinuten ?? terminart?.dauer_minuten ?? 0,
-        bezeichnung: terminNameAnzeige(antwort.bezeichnung || terminart?.bezeichnung || t.terminErsatz),
+        bezeichnung: terminNameAnzeige(antwort.bezeichnung || terminart?.bezeichnung || t.terminErsatz, sprache === "en"),
         // Nur zeigen, wenn die Begleitung wirklich gespeichert wurde. Beim
         // Rückfall ohne Begleitung wäre die Zusage auf der Dankeseite falsch.
         begleitungName:
@@ -408,7 +408,7 @@ export default function BuchungPublic() {
             */}
             {terminart?.beschreibung ? (
               <Karte>
-                <KartenTitel>{terminNameAnzeige(terminart.bezeichnung)}</KartenTitel>
+                <KartenTitel>{terminNameAnzeige(terminart.bezeichnung, sprache === "en")}</KartenTitel>
                 <p className="mb-3 text-[12.5px] text-white/40">
                   {beschriftungDauer(terminart.dauer_minuten, sprache)}
                 </p>
@@ -443,7 +443,7 @@ export default function BuchungPublic() {
                       }`}
                     >
                       <div className="flex items-baseline justify-between gap-4">
-                        <span className="text-[15.5px] font-semibold">{terminNameAnzeige(art.bezeichnung)}</span>
+                        <span className="text-[15.5px] font-semibold">{terminNameAnzeige(art.bezeichnung, sprache === "en")}</span>
                         <span className="shrink-0 text-[12px] text-white/40">
                           {beschriftungDauer(art.dauer_minuten, sprache)}
                         </span>
@@ -524,7 +524,7 @@ export default function BuchungPublic() {
                       {beschriftungZeitraum(gewaehlteZeit, terminart?.dauer_minuten ?? 0, zeitzone, sprache)}
                     </p>
                     <p className="mt-1 text-[12.5px] text-white/50">
-                      {terminNameAnzeige(terminart?.bezeichnung ?? "")} · {beschriftungDauer(terminart?.dauer_minuten ?? 0, sprache)}
+                      {terminNameAnzeige(terminart?.bezeichnung ?? "", sprache === "en")} · {beschriftungDauer(terminart?.dauer_minuten ?? 0, sprache)}
                     </p>
                   </div>
                 )}
