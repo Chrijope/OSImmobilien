@@ -2830,7 +2830,7 @@ export default function KundenDetail() {
     { id: "kontaktdaten_geprueft", label: "Kontaktdaten auf Richtigkeit geprüft (Name, Telefon, E-Mail)", autoCheck: isSetterinRole },
     { id: "daten", label: "Vorname, Nachname (Schreibweise) & E-Mail-Adresse auf Korrektheit geprüft (weitere Kundendaten optional)" },
     { id: "qualifikation", label: "Qualifizierungsfragen ausgefüllt", autoCheck: true },
-    { id: "termin", label: "Beratungsgespräch vereinbaren" },
+    { id: "termin", label: "Firmen- und Konzeptvorstellung vereinbaren" },
   ];
   const [setterNotizen, setSetterNotizen] = useState(kunde?.setterSkriptNotizen || "");
   const [setterTerminGebucht, setSetterTerminGebucht] = useState(kunde?.setterTerminGebucht || false);
@@ -4072,7 +4072,7 @@ export default function KundenDetail() {
     addAktivitaet({
       kundeId: id,
       art: "anruf",
-      beschreibung: `Beratungsgespräch automatisch gebucht am ${setterTerminDatum} um ${setterTerminUhrzeit} (über „Beratungsgespräch vereinbaren"-Karte) → Pipeline-Stufe „Beratungsgespräch"`,
+      beschreibung: `Firmen- und Konzeptvorstellung automatisch gebucht am ${setterTerminDatum} um ${setterTerminUhrzeit} (über „Firmen- und Konzeptvorstellung vereinbaren"-Karte) → Pipeline-Stufe „Firmen- und Konzeptvorstellung"`,
       von: user.name,
     });
     if (activeInvId) {
@@ -4107,15 +4107,15 @@ export default function KundenDetail() {
     if (beraterUser && !isVpManuellQualifizierung) {
       supabase.from("benachrichtigungen").insert({
         benutzer_id: beraterUser.id,
-        titel: `Neues Beratungsgespräch: ${kunde.vorname} ${kunde.nachname}`,
-        nachricht: `${user.name || ""} hat für ${kunde.vorname} ${kunde.nachname} ein Beratungsgespräch am ${setterTerminDatum} um ${setterTerminUhrzeit} Uhr eingebucht.`,
+        titel: `Neues Firmen- und Konzeptvorstellung: ${kunde.vorname} ${kunde.nachname}`,
+        nachricht: `${user.name || ""} hat für ${kunde.vorname} ${kunde.nachname} eine Firmen- und Konzeptvorstellung am ${setterTerminDatum} um ${setterTerminUhrzeit} Uhr eingebucht.`,
         link: `/kunden/${id}`,
       } as any).then(() => {}, () => {});
     }
     setSetterTerminGebucht(true);
     reloadKunde();
     toast({
-      title: "Beratungsgespräch gebucht ✓ – Pipeline auf Beratungsgespräch",
+      title: "Firmen- und Konzeptvorstellung gebucht ✓ – Pipeline auf Firmen- und Konzeptvorstellung",
       description: `${kunde.vorname} ${kunde.nachname} · ${setterTerminDatum} um ${setterTerminUhrzeit}`,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -4326,7 +4326,7 @@ export default function KundenDetail() {
     const beratungsTerminCard = (
       <Card id="beratungs-termin-vereinbaren" className="p-6">
             <div className="w-8 h-1 bg-primary mb-3" />
-            <h3 className="font-bold mb-4">Beratungsgespräch vereinbaren</h3>
+            <h3 className="font-bold mb-4">Firmen- und Konzeptvorstellung vereinbaren</h3>
 
             {/* Vertriebspartner-Liste mit Buchungslinks */}
             <div className="space-y-3 mb-6">
@@ -4375,13 +4375,13 @@ export default function KundenDetail() {
                  * dort waere ein 15-Minuten-Termin schlicht falsch.
                  */
                 const gespraecheMitLink = (u: any) => ([
-                  { schluessel: "beratung", beschriftung: "Beratungsgespräch", url: pickLink(u) },
+                  { schluessel: "beratung", beschriftung: "Konzeptvorstellung", url: pickLink(u) },
                   { schluessel: "objekt", beschriftung: "Objektgespräch", url: (u?.objektlink || "") as string },
                   { schluessel: "finanzierung", beschriftung: "Finanzierungsgespräch", url: (u?.finanzierungslink || "") as string },
                 ].filter((g) => !!g.url));
                 const noLinkHint = isVpManuellQualifizierung
-                  ? "Du hast noch keinen Beratungsgesprächs-Link (60 Minuten) in deinen Einstellungen hinterlegt. Datum und Uhrzeit kannst du unten trotzdem von Hand eintragen."
-                  : "Keine Vertriebspartner mit hinterlegtem Beratungsgesprächs-Link gefunden.";
+                  ? "Du hast noch keinen Konzeptvorstellungs-Link (60 Minuten) in deinen Einstellungen hinterlegt. Datum und Uhrzeit kannst du unten trotzdem von Hand eintragen."
+                  : "Keine Vertriebspartner mit hinterlegtem Konzeptvorstellungs-Link gefunden.";
                 // Wenn der Lead bereits einem VP zugewiesen ist (zustaendig_id gesetzt),
                 // zeigen wir NUR den Buchungslink dieses zuständigen VPs an –
                 // die komplette VP-Auswahlliste ist nur dann sinnvoll, wenn der
@@ -4578,7 +4578,7 @@ export default function KundenDetail() {
               </div>
               {setterTerminGebucht && (
                 <div className="flex items-center gap-2 text-sm text-[hsl(var(--success))]">
-                  <CheckCircle2 className="h-4 w-4" /> Beratungsgespräch mit {setterSelectedBerater || "Vertriebspartner"} am {(() => { const d = new Date(`${setterTerminDatum}T12:00:00`); return isNaN(d.getTime()) ? setterTerminDatum : d.toLocaleDateString("de-DE"); })()} um {setterTerminUhrzeit} vereinbart
+                  <CheckCircle2 className="h-4 w-4" /> Firmen- und Konzeptvorstellung mit {setterSelectedBerater || "Vertriebspartner"} am {(() => { const d = new Date(`${setterTerminDatum}T12:00:00`); return isNaN(d.getTime()) ? setterTerminDatum : d.toLocaleDateString("de-DE"); })()} um {setterTerminUhrzeit} vereinbart
                 </div>
               )}
               {setterTerminGebucht && (
@@ -4638,7 +4638,7 @@ export default function KundenDetail() {
             >
               <summary className="flex items-center gap-2 p-3 cursor-pointer hover:bg-primary/10 list-none">
                 <Calendar className="h-4 w-4 text-primary shrink-0" />
-                <h3 className="font-bold flex-1 text-sm">Beratungsgespräch vereinbaren</h3>
+                <h3 className="font-bold flex-1 text-sm">Firmen- und Konzeptvorstellung vereinbaren</h3>
                 <span className="hidden sm:inline text-xs text-muted-foreground mr-2">Einklappen / Ausklappen</span>
                 <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
               </summary>
@@ -4832,8 +4832,8 @@ export default function KundenDetail() {
                       kundeId: id,
                       art: "anruf",
                       beschreibung: isVpManuellQualifizierung
-                        ? `Erstgespräch (Selbst-Qualifizierung) gebucht am ${setterTerminDatum} um ${setterTerminUhrzeit} → Pipeline-Stufe „Beratungsgespräch" · KI-Zusammenfassung des Skripts erstellt`
-                        : `Erstgespräch gebucht am ${setterTerminDatum} um ${setterTerminUhrzeit} – Lead an ${setterSelectedBerater} übergeben → Pipeline-Stufe „Beratungsgespräch" · KI-Zusammenfassung des Setter-Skripts erstellt`,
+                        ? `Erstgespräch (Selbst-Qualifizierung) gebucht am ${setterTerminDatum} um ${setterTerminUhrzeit} → Pipeline-Stufe „Firmen- und Konzeptvorstellung" · KI-Zusammenfassung des Skripts erstellt`
+                        : `Erstgespräch gebucht am ${setterTerminDatum} um ${setterTerminUhrzeit} – Lead an ${setterSelectedBerater} übergeben → Pipeline-Stufe „Firmen- und Konzeptvorstellung" · KI-Zusammenfassung des Setter-Skripts erstellt`,
                       von: user.name,
                     });
                     // Per-Investment-Persistierung: Termin + „gebucht ✓"-Status
@@ -4882,8 +4882,8 @@ export default function KundenDetail() {
                     if (beraterUser && !isVpManuellQualifizierung) {
                       vpNachrichtOk = await benachrichtigungAnlegen({
                         benutzer_id: beraterUser.id,
-                        titel: `Neues Beratungsgespräch: ${kunde.vorname} ${kunde.nachname}`,
-                        nachricht: `Setter ${user.name || ""} hat für ${kunde.vorname} ${kunde.nachname} ein Beratungsgespräch am ${setterTerminDatum} um ${setterTerminUhrzeit} Uhr eingebucht.`,
+                        titel: `Neues Firmen- und Konzeptvorstellung: ${kunde.vorname} ${kunde.nachname}`,
+                        nachricht: `Setter ${user.name || ""} hat für ${kunde.vorname} ${kunde.nachname} eine Firmen- und Konzeptvorstellung am ${setterTerminDatum} um ${setterTerminUhrzeit} Uhr eingebucht.`,
                         link: `/kunden/${id}`,
                       });
                     }
@@ -4903,7 +4903,7 @@ export default function KundenDetail() {
                     }
 
                     toast({
-                      title: isVpManuellQualifizierung ? "Beratungsgespräch gebucht ✓" : "Beratungsgespräch gebucht & Lead zugewiesen ✓",
+                      title: isVpManuellQualifizierung ? "Firmen- und Konzeptvorstellung gebucht ✓" : "Firmen- und Konzeptvorstellung gebucht & Lead zugewiesen ✓",
                       description: isVpManuellQualifizierung
                         ? `${kunde.vorname} ${kunde.nachname} am ${setterTerminDatum} um ${setterTerminUhrzeit}${aiSummaryOk ? " · KI-Zusammenfassung erstellt" : ""}`
                         : `${kunde.vorname} ${kunde.nachname} → ${setterSelectedBerater} am ${setterTerminDatum} um ${setterTerminUhrzeit}${aiSummaryOk ? " · KI-Zusammenfassung erstellt" : ""}`,
@@ -4926,8 +4926,8 @@ export default function KundenDetail() {
                     zu, deshalb bleibt es bei zwei Beschriftungen.
                   */}
                   {isVpManuellQualifizierung
-                    ? "Beratungsgespräch gebucht & KI-Zusammenfassung erstellen"
-                    : "Beratungsgespräch gebucht, Lead zuweisen & KI-Zusammenfassung erstellen"}
+                    ? "Konzeptvorstellung gebucht & KI-Zusammenfassung erstellen"
+                    : "Konzeptvorstellung gebucht, Lead zuweisen & KI-Zusammenfassung erstellen"}
                 </Button>
                 <Button
                   variant="outline"
@@ -4940,7 +4940,7 @@ export default function KundenDetail() {
                 {kunde.email && <KundenspracheHinweis kontaktId={id} className="mt-2" />}
                 {(!setterSelectedBerater || !setterTerminDatum || !setterTerminUhrzeit) && (
                   <p className="text-xs text-muted-foreground text-center mt-2">
-                    Bitte trage oben bei „Beratungsgespräch vereinbaren" Vertriebspartner, Datum und Uhrzeit ein.
+                    Bitte trage oben bei „Firmen- und Konzeptvorstellung vereinbaren" Vertriebspartner, Datum und Uhrzeit ein.
                   </p>
                 )}
               </>
@@ -4950,7 +4950,7 @@ export default function KundenDetail() {
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="h-4 w-4 text-[hsl(var(--success))]" />
                     <p className="text-sm font-semibold text-[hsl(var(--success))]">
-                      {!isSetterinRole ? "Beratungsgespräch gebucht ✓" : "Erstgespräch gebucht & Lead zugewiesen ✓"}
+                      {!isSetterinRole ? "Firmen- und Konzeptvorstellung gebucht ✓" : "Erstgespräch gebucht & Lead zugewiesen ✓"}
                     </p>
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
@@ -6085,7 +6085,7 @@ export default function KundenDetail() {
                   <Badge variant="destructive" className="text-bildunterschrift">{hist.length}</Badge>
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Dieser Lead ist bereits {hist.length === 1 ? "einmal" : `${hist.length}-mal`} nicht zum Erst- oder Beratungsgespräch erschienen. Bitte beim nächsten Kontakt explizit auf Verbindlichkeit eingehen.
+                  Dieser Lead ist bereits {hist.length === 1 ? "einmal" : `${hist.length}-mal`} nicht zum Erstgespräch oder zur Firmen- und Konzeptvorstellung erschienen. Bitte beim nächsten Kontakt explizit auf Verbindlichkeit eingehen.
                 </p>
                 <div className="mt-2 space-y-1">
                   {hist.map((h, i) => (
@@ -6097,7 +6097,7 @@ export default function KundenDetail() {
                   ))}
                 </div>
                 <p className="text-[11px] text-muted-foreground italic mt-2">
-                  Dieser Hinweis verschwindet automatisch, sobald ein neuer Erst- oder Beratungstermin eingetragen ist.
+                  Dieser Hinweis verschwindet automatisch, sobald ein neuer Termin für das Erstgespräch oder die Konzeptvorstellung eingetragen ist.
                 </p>
               </div>
             </div>
@@ -6182,7 +6182,7 @@ export default function KundenDetail() {
             </div>
             {currentKey === "beratungsgespraech" && (
               <p className="mt-2 text-[11px] text-muted-foreground">
-                Beratungsgespräch terminiert – ein Investment wird automatisch eröffnet, sobald der Vertriebsprozess weiterläuft.
+                Firmen- und Konzeptvorstellung terminiert – ein Investment wird automatisch eröffnet, sobald der Vertriebsprozess weiterläuft.
               </p>
             )}
           </Card>
@@ -12924,7 +12924,7 @@ export default function KundenDetail() {
                 // und loescht den Termin im selben Klick.
                 await mergeKontaktMeta(id!, { beratungsgespraechAm: r.datum, beratungsgespraechUhrzeit: r.uhrzeit });
                 updateKontakt(id!, { pipelineStufe: "beratungsgespraech" } as any);
-                toast({ title: "Beratungsgespräch eingetragen ✓", description: `${r.datum} um ${r.uhrzeit}` });
+                toast({ title: "Firmen- und Konzeptvorstellung eingetragen ✓", description: `${r.datum} um ${r.uhrzeit}` });
                 reloadKunde();
               }
             } catch (e) { console.warn("onProtokollResult handler failed", e); }
@@ -13865,7 +13865,7 @@ export default function KundenDetail() {
               </DialogTitle>
             </DialogHeader>
             <p className="text-xs text-muted-foreground -mt-2">
-              Überblick aus den Skript-Antworten – zur Vorbereitung auf das Beratungsgespräch.
+              Überblick aus den Skript-Antworten – zur Vorbereitung auf die Firmen- und Konzeptvorstellung.
             </p>
             {(() => {
               const skriptStand = leseSetterSkriptStand();

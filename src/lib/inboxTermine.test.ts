@@ -31,7 +31,7 @@ const sammle = (aktivitaeten: TerminAktivitaet[], aufgaben: TerminAufgabe[] = []
 describe("Termine für die Inbox", () => {
   it("nimmt ein Meeting aus den Aktivitäten auf, auch ohne zugehörige Aufgabe", () => {
     const [t] = sammle([basis()]);
-    expect(t.titel).toBe("Beratungsgespräch");
+    expect(t.titel).toBe("Firmen- und Konzeptvorstellung");
     expect(t.kundeName).toBe("Anna Adler");
     expect(t.uhrzeit).toBe("10:00");
     expect(t.id).toBe("termin-a1");

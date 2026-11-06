@@ -195,12 +195,12 @@ describe("Wie der vom Setter gebuchte Termin heisst", () => {
   const bezeichnungen = (k: any) => (kontaktQuellen(k).geplant || []).map((t: any) => t.bezeichnung);
 
   it("heisst Beratungsgespraech, sobald die Stufe dort steht", () => {
-    expect(bezeichnungen(mitStufe("beratungsgespraech"))).toContain("Beratungsgespräch");
+    expect(bezeichnungen(mitStufe("beratungsgespraech"))).toContain("Firmen- und Konzeptvorstellung");
   });
 
   it("heisst auch spaeter im Verlauf Beratungsgespraech", () => {
     for (const stufe of ["bg_noshow", "selbstauskunft", "notar", "abgeschlossen"]) {
-      expect(bezeichnungen(mitStufe(stufe))).toContain("Beratungsgespräch");
+      expect(bezeichnungen(mitStufe(stufe))).toContain("Firmen- und Konzeptvorstellung");
     }
   });
 
@@ -221,7 +221,7 @@ describe("Wie der vom Setter gebuchte Termin heisst", () => {
 
   it("laesst das eigene Beratungsgespraechs-Feld unberuehrt", () => {
     const k = { id: "k1", meta: { beratungsgespraechAm: "2026-08-20" } } as any;
-    expect(bezeichnungen(k)).toEqual(["Beratungsgespräch"]);
+    expect(bezeichnungen(k)).toEqual(["Firmen- und Konzeptvorstellung"]);
   });
 });
 

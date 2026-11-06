@@ -77,7 +77,7 @@ export function rentenluecke(wunschNetto: number, erwarteteRente: number): { mon
 export const OS_TEXTE = {
   hero: {
     // Seit 21.10.2026 die Überschrift der PDF-Präsentation (Folie 1).
-    kicker: "OS Real Estate · Beratungsgespräch Kapitalanlage-Immobilien",
+    kicker: "OS Real Estate · Firmen- und Konzeptvorstellung Kapitalanlage-Immobilien",
     titel: "Ihr Weg zu einem Immobilienvermögen,",
     titelAkzent: "das für Sie arbeitet.",
     willkommen: "Herzlich willkommen",

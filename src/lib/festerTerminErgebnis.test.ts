@@ -186,9 +186,9 @@ describe("Beratungsgespräch: dieselbe Nachfrage wie beim Erstgespräch", () => 
     expect(t.invUpdate).toHaveBeenCalledWith("inv-1", { pipelineStufe: "bg_noshow" });
     // Kein Setter-Feld: Ergebnis und Historie am Kontakt bleiben unberührt.
     expect(patches.some((p) => "terminErgebnis" in p || "noShowHistorie" in p)).toBe(false);
-    expect(t.glocke.mock.calls[0][1].titel).toContain("neuen Beratungstermin vereinbaren");
+    expect(t.glocke.mock.calls[0][1].titel).toContain("neuen Termin für die Konzeptvorstellung vereinbaren");
     expect(t.aufgabe.mock.calls[0][0].titel).toBe("Kunde nicht erschienen: anrufen und neuen Termin vereinbaren");
-    expect(getNextSteps("bg_noshow", false)?.titel).toBe(f.neuerTerminSchritt("Beratungsgespräch"));
+    expect(getNextSteps("bg_noshow", false)?.titel).toBe(f.neuerTerminSchritt("Firmen- und Konzeptvorstellung"));
   });
 
   it("wirft einen weiter gediehenen Vorgang nicht zurück", async () => {
@@ -428,10 +428,10 @@ describe("Rückfrage am Haken eines festen Termins", () => {
 
 describe("Stufenregeln der drei Antworten", () => {
   it("Stattgefunden: nie zurück, EG bleibt bis zum eingebuchten Beratungsgespräch", () => {
-    expect(f.stufeNachStattgefunden("Beratungsgespräch", "erstgespraech_geplant")).toBe("beratungsgespraech");
-    expect(f.stufeNachStattgefunden("Beratungsgespräch", "beratungsgespraech")).toBeNull();
-    expect(f.stufeNachStattgefunden("Beratungsgespräch", "objektauswahl")).toBeNull();
-    expect(f.stufeNachStattgefunden("Beratungsgespräch", "verloren")).toBeNull();
+    expect(f.stufeNachStattgefunden("Firmen- und Konzeptvorstellung", "erstgespraech_geplant")).toBe("beratungsgespraech");
+    expect(f.stufeNachStattgefunden("Firmen- und Konzeptvorstellung", "beratungsgespraech")).toBeNull();
+    expect(f.stufeNachStattgefunden("Firmen- und Konzeptvorstellung", "objektauswahl")).toBeNull();
+    expect(f.stufeNachStattgefunden("Firmen- und Konzeptvorstellung", "verloren")).toBeNull();
     expect(f.stufeNachStattgefunden("Erstgespräch", "eg_noshow")).toBe("erstgespraech_geplant");
     expect(f.stufeNachStattgefunden("Erstgespräch", "erstgespraech_geplant")).toBeNull();
     expect(f.stufeNachStattgefunden(null, "bg_noshow")).toBeNull();
@@ -439,8 +439,8 @@ describe("Stufenregeln der drei Antworten", () => {
 
   it("Verschoben heilt nur die NoShow-Stufe des eigenen Termins", () => {
     expect(f.stufeNachVerschieben("Erstgespräch", "eg_noshow")).toBe("erstgespraech_geplant");
-    expect(f.stufeNachVerschieben("Beratungsgespräch", "bg_noshow")).toBe("beratungsgespraech");
-    expect(f.stufeNachVerschieben("Beratungsgespräch", "eg_noshow")).toBeNull();
+    expect(f.stufeNachVerschieben("Firmen- und Konzeptvorstellung", "bg_noshow")).toBe("beratungsgespraech");
+    expect(f.stufeNachVerschieben("Firmen- und Konzeptvorstellung", "eg_noshow")).toBeNull();
   });
 });
 

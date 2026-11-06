@@ -76,7 +76,7 @@ describe("Vorruecken nach „stattgefunden“", () => {
   it("erkennt den Termin am Titel, andere Termine ruecken nichts", () => {
     expect(terminStufeAusTitel(" besichtigung ")).toBe("besichtigung");
     expect(terminStufeAusTitel("Objektvorstellung")).toBeNull();
-    expect(stufeNachStattgefunden("Beratungsgespräch", "besichtigung")).toBeNull();
+    expect(stufeNachStattgefunden("Firmen- und Konzeptvorstellung", "besichtigung")).toBeNull();
   });
 
   it("trennt die Aufgaben „… vereinbaren“ je Investment", () => {

@@ -140,7 +140,7 @@ export const template = {
     terminDatum: '25.03.2026',
     terminUhrzeit: '15:00',
     terminDauer: 45,
-    terminTitel: 'Beratungsgespräch',
+    terminTitel: 'Firmen- und Konzeptvorstellung',
     zugangUrl: 'https://osimmobilien.netlify.app/raum/abc123',
     berater: {
       name: 'Christian Peetz',

@@ -58,12 +58,12 @@ const GUIDE: Partial<Record<PipelineStufe, NextStepsGuide>> = {
     hinweis: "Der Versicherungsexperte sieht in der Pipeline ausschließlich diese Stufe.",
   },
   neuer_lead: {
-    titel: "Lead qualifizieren & Beratungsgespräch vereinbaren",
+    titel: "Lead qualifizieren & Firmen- und Konzeptvorstellung vereinbaren",
     aktionen: [
       { text: "Lead wurde dir direkt zugewiesen, Kontakt schnellstmöglich aufnehmen (Speed-to-Lead < 5 Min.)" },
-      { text: "Lead mittels Erstgesprächsskript qualifizieren und Beratungsgespräch vereinbaren" },
+      { text: "Lead mittels Erstgesprächsskript qualifizieren und Firmen- und Konzeptvorstellung vereinbaren" },
     ],
-    hinweis: 'Sobald ein Beratungsgespräch gebucht ist, rückt der Kontakt automatisch in „Beratungsgespräch".',
+    hinweis: 'Sobald eine Firmen- und Konzeptvorstellung gebucht ist, rückt der Kontakt automatisch in „Firmen- und Konzeptvorstellung".',
   },
   nicht_erreicht: {
     titel: "Weiter dranbleiben, bis du den Lead erreichst",
@@ -108,7 +108,7 @@ const GUIDE: Partial<Record<PipelineStufe, NextStepsGuide>> = {
       { text: "Nach dem Termin das Ergebnis eintragen: erschienen, verschoben oder No-Show" },
       { text: "Firmen- und Konzeptvorstellung vereinbaren, 2 bis 5 Tage nach dem Gespräch" },
     ],
-    hinweis: 'Die Knöpfe für das Termin-Ergebnis erscheinen erst, wenn der Termin-Zeitpunkt erreicht ist. Sobald das Erstgesprächsskript gespeichert und das Beratungsgespräch eingebucht wurde, springt die Pipeline-Stufe automatisch auf „Beratungsgespräch".',
+    hinweis: 'Die Knöpfe für das Termin-Ergebnis erscheinen erst, wenn der Termin-Zeitpunkt erreicht ist. Sobald das Erstgesprächsskript gespeichert und die Firmen- und Konzeptvorstellung eingebucht wurde, springt die Pipeline-Stufe automatisch auf „Firmen- und Konzeptvorstellung".',
   },
   eg_noshow: {
     titel: "Neuen Termin für das Qualifizierungsgespräch vereinbaren",
@@ -134,15 +134,15 @@ const GUIDE: Partial<Record<PipelineStufe, NextStepsGuide>> = {
     hinweis: 'Sobald die Selbstauskunft beim Kunden ist, rückt der Deal auf „Selbstauskunft & Unterlagen".',
   },
   bg_noshow: {
-    titel: "Neuen Beratungstermin vereinbaren",
+    titel: "Neuen Termin für die Konzeptvorstellung vereinbaren",
     aktionen: [
-      { text: "Kunde anrufen und einen neuen Beratungstermin abstimmen" },
+      { text: "Kunde anrufen und einen neuen Termin für die Konzeptvorstellung abstimmen" },
       { text: "Neuen Termin unter Stammdaten mit Datum und Uhrzeit eintragen" },
       { text: "Verbindlichkeit ansprechen, damit der Termin diesmal steht" },
     ],
     hinweis:
       "Der Lead bleibt bei dir. Das System legt sofort eine Aufgabe in deine Inbox und erinnert nach 24 und " +
-      "nach 48 Stunden erneut, solange kein neuer Beratungstermin eingetragen ist.",
+      "nach 48 Stunden erneut, solange kein neuer Termin für die Konzeptvorstellung eingetragen ist.",
   },
   selbstauskunft: {
     titel: "Selbstauskunft und Unterlagen einholen",

@@ -18,6 +18,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSeitentitel, oeffentlicherTitel } from "@/lib/seitentitel";
 import { texteFuer, useLinkSprache } from "@/lib/seitenSprache";
 import { BUCHUNG_VERWALTEN_TEXTE } from "./buchungVerwaltenTexte";
+import { terminNameAnzeige } from "../../supabase/functions/_shared/termin-name.ts";
 
 /**
  * Der Kunde verwaltet seinen eigenen Termin: ansehen, absagen, verschieben.
@@ -116,7 +117,7 @@ export default function BuchungVerwalten() {
       // geraten.
       setTerminart(waehleTerminart(zugang.terminarten, {
         id: daten.terminart_id,
-        bezeichnung: daten.bezeichnung,
+        bezeichnung: daten.bezeichnung ? terminNameAnzeige(daten.bezeichnung) : daten.bezeichnung,
         dauerMinuten: daten.dauer_minuten,
       }));
     })();

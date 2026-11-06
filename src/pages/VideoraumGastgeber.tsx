@@ -27,6 +27,7 @@ import { kannLautsprecherWaehlen } from "@/lib/videocallGeraete";
 import { ladeVideocallProfilSicher, speichereVideocallProfil } from "@/lib/videocallEinstellungen";
 import { GeraeteSchnellzugriff, type HintergrundBildOption } from "@/components/videoraum/GeraeteSchnellzugriff";
 import { listeHintergrundBilder, hintergrundBildUrl } from "@/lib/videocallHintergrundStore";
+import { terminNameAnzeige } from "../../supabase/functions/_shared/termin-name.ts";
 
 /**
  * Der Videoraum aus Sicht des Gastgebers: Warteliste, Einlass, Gespraech.
@@ -291,7 +292,7 @@ export default function VideoraumGastgeber() {
       // Ohne Geheimnis von aussen das aktuelle holen, sonst faengt der
       // Gastgeber auf einem anderen Kanal an als der Gast.
       signalGeheimnis: geheimnis ?? await holeSignalGeheimnis(raum.id),
-      titel: raum.titel || (raum.art === "objektvorstellung" ? "Objektvorstellung" : "Beratungsgespräch"),
+      titel: terminNameAnzeige(raum.titel || "") || (raum.art === "objektvorstellung" ? "Objektvorstellung" : "Firmen- und Konzeptvorstellung"),
       gegenName: drin[0]?.name ?? wartende[0]?.name ?? "dem Gast",
       // Damit die Gaeste an der Kachel den Namen sehen, nicht "Teilnehmer".
       eigenerName: user.name || raum.gastgeber_snapshot?.name || "Gastgeber",
@@ -538,7 +539,7 @@ export default function VideoraumGastgeber() {
             hintergrundLaedt={gespraech.hintergrundLaedt}
           />
         }
-        titel={raum.titel || (raum.art === "objektvorstellung" ? "Objektvorstellung" : "Beratungsgespräch")}
+        titel={terminNameAnzeige(raum.titel || "") || (raum.art === "objektvorstellung" ? "Objektvorstellung" : "Firmen- und Konzeptvorstellung")}
         seitenSpalte={
           <div className="flex min-h-0 flex-1 flex-col">
             {/*
@@ -666,7 +667,7 @@ export default function VideoraumGastgeber() {
         </Button>
         <div className="min-w-0 flex-1">
           <h1 className="truncate text-lg font-semibold">
-            {raum.titel || (raum.art === "objektvorstellung" ? "Objektvorstellung" : "Beratungsgespräch")}
+            {terminNameAnzeige(raum.titel || "") || (raum.art === "objektvorstellung" ? "Objektvorstellung" : "Firmen- und Konzeptvorstellung")}
           </h1>
           <div aria-hidden className="mt-1.5 h-[3px] w-9 rounded-full bg-primary" />
         </div>

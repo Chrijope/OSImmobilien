@@ -1476,7 +1476,7 @@ export default function BeratungspraesentationWG() {
       >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {[
-            { n: "01", t: "Beratung",                  d: "Beratungsgespräch und Analyse inkl. Wünsche und konkrete Ziele." },
+            { n: "01", t: "Beratung",                  d: "Firmen- und Konzeptvorstellung und Analyse inkl. Wünsche und konkrete Ziele." },
             { n: "02", t: "Machbarkeitsprüfung",       d: "Bonitätscheck und Besichtigung eines Referenzobjekts — Co-Living vor Ort kennenlernen." },
             { n: "03", t: "Business Case",             d: "Wir teilen alle relevanten Zahlen und füllen gemeinsam die Reservierung aus." },
             { n: "04", t: "Investmentchance sichern",  d: "Auswahl der attraktivsten Finanzierungskonditionen und Festlegung des Notartermins." },
@@ -1683,7 +1683,7 @@ export default function BeratungspraesentationWG() {
                   href="mailto:os@os-immobilien.com?subject=WG%20Co-Living%20Beratung%20OS%20Immobilien"
                   className="inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-7 h-12 font-semibold hover:opacity-90 hover-scale transition shadow-lg shadow-primary/30"
                 >
-                  Beratungstermin vereinbaren
+                  Termin vereinbaren
                   <ArrowRight className="h-4 w-4" />
                 </a>
                 <a

@@ -62,7 +62,7 @@ export default function LeitfadenWarmkontakte() {
   return (
     <UnterlagenDetailLayout
       title="Leitfaden Warmkontakte & Empfehlungen"
-      subtitle="Empfohlene Kontakte zu einem Beratungsgespräch führen – ohne Verkaufsdruck"
+      subtitle="Empfohlene Kontakte zu einer Firmen- und Konzeptvorstellung führen – ohne Verkaufsdruck"
       onDownloadPdf={async () => {
         const m = await import("@/lib/unterlagenPdfContent");
         await m.generateLeitfadenWarmkontaktePDF();
@@ -145,7 +145,7 @@ export default function LeitfadenWarmkontakte() {
           />
           <PhaseStep
             num={4}
-            titel="Brücke zum Beratungsgespräch"
+            titel="Brücke zur Firmen- und Konzeptvorstellung"
             text={`„Auf Basis von dem, was du sagst, sehe ich, dass wir dir drei sehr konkrete Lösungsansätze zeigen können. Das machen wir immer in einem 30-minütigen Erstgespräch, in dem ich deine Zahlen kurz aufnehme und 2-3 konkrete Objekte rechne.\n\nDas Erstgespräch ist für dich 100 % kostenfrei und unverbindlich – wie es bei [Empfehlungsgeber] auch war."`}
           />
           <PhaseStep

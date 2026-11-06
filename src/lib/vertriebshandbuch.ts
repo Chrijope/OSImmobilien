@@ -245,7 +245,7 @@ export const VERTRIEBSHANDBUCH: HandbuchAbschnitt[] = [
   },
   {
     id: "gespraeche",
-    titel: "2. Erst- und Beratungsgespräch",
+    titel: "2. Erstgespräch und Konzeptvorstellung",
     kurz: "Skript, Präsentation, Überleitung",
     ziele: [{ label: "Zur Firmen- und Konzeptvorstellung", url: "/praesentation" }, { label: "Zur Vertriebsakademie", url: "/vertriebsakademie" }],
     bloecke: [

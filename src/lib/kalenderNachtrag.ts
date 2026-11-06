@@ -26,6 +26,7 @@
 import { cacheUpdate } from "./dataCache";
 import { legeTerminAn, terminZeitpunkt, dauerInMinuten, verbundenerKalender, terminAbgleichAktiv, ladeKalenderVerbindungen } from "./kalenderSync";
 import { terminGehoertMir, zeitstempelAus, type KalenderAktivitaet } from "./kalenderTermine";
+import { terminNameAnzeige } from "../../supabase/functions/_shared/termin-name.ts";
 
 /** Mehr als das wird in einem Durchgang nicht uebertragen. */
 const HOECHSTENS_JE_DURCHGANG = 15;
@@ -80,7 +81,7 @@ export function waehleNachzutragende({
     treffer.push({
       zeit,
       id: a.id,
-      titel: a.beschreibung?.trim() || "Termin",
+      titel: terminNameAnzeige(a.beschreibung?.trim() || "Termin"),
       beschreibung: [a.details, a.zoomLink].filter(Boolean).join("\n\n") || undefined,
       start,
       dauerMinuten: dauerInMinuten(a.dauer),

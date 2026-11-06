@@ -44,6 +44,7 @@ import {
   istErstgespraech, legeNachfassNachErstgespraechAn, NACHFASS_FEHLER_TEXT, NACHFASS_FEHLER_TITEL,
 } from "./nachfassNachErstgespraech";
 import { gespraechsArt, legeZusammenfassungAn } from "./nachfassplan";
+import { terminNameAnzeige } from "../../supabase/functions/_shared/termin-name.ts";
 
 /** Titel der einen Aufgabe nach einem No-Show, gleich auf allen Wegen. */
 export const NOSHOW_TITEL = "Kunde nicht erschienen: anrufen und neuen Termin vereinbaren";
@@ -272,7 +273,7 @@ export async function ladeErgebnisTermine(
         key: `bu-${b.id}`,
         quelle: "buchung" as const,
         buchung: b,
-        titel: b.bezeichnung || "Videocall",
+        titel: terminNameAnzeige(b.bezeichnung || "Videocall"),
         startAt: new Date(b.start_at),
         gebuchtAm: b.created_at,
         modus: "video" as const,
@@ -308,7 +309,7 @@ export async function ladeErgebnisTermine(
         key: `ak-${a.id}`,
         quelle: "aktivitaet" as const,
         aktivitaet: a,
-        titel: a.beschreibung?.trim() || "Meeting",
+        titel: terminNameAnzeige(a.beschreibung?.trim() || "Meeting"),
         startAt: start,
         gebuchtAm: a.datum,
         modus,

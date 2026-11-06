@@ -131,7 +131,7 @@ export const EXPOSE_PDF_TEXTE_DE: ExposePdfTexte = {
   verwaltungTitel: (name) => `Leistungen der Verwaltung, ${name}`,
   verwaltungStandard: "Leistungen der Mietverwaltung",
   verwaltungOhneLeistungen:
-    "Der genaue Leistungsumfang der Verwaltung steht im Verwaltervertrag. Dein Ansprechpartner geht ihn im Beratungsgespräch mit dir durch.",
+    "Der genaue Leistungsumfang der Verwaltung steht im Verwaltervertrag. Dein Ansprechpartner geht ihn in der Firmen- und Konzeptvorstellung mit dir durch.",
   verwaltungNotiz:
     "Die Mietverwaltung kümmert sich um deine Wohnung und den Mieter. Die Verwaltung der Eigentümergemeinschaft für das ganze Haus steckt im Hausgeld.",
   erledigt: "Erledigt",
@@ -206,7 +206,7 @@ export const EXPOSE_PDF_TEXTE_EN: ExposePdfTexte = {
   verwaltungTitel: (name) => `Management services, ${name}`,
   verwaltungStandard: "Rental management services",
   verwaltungOhneLeistungen:
-    "The exact scope of the management’s services is set out in the management agreement. Your contact will go through it with you in the consultation.",
+    "The exact scope of the management’s services is set out in the management agreement. Your contact will go through it with you in the concept introduction.",
   verwaltungNotiz:
     "The rental management looks after your flat and the tenant. The management of the owners’ association for the whole building is included in the service charge (Hausgeld).",
   erledigt: "Done",

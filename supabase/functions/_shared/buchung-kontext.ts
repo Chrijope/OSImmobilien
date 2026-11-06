@@ -12,6 +12,7 @@
  * Versandwerkzeug, mit dem sich Mails an Fremde ausloesen liessen.
  */
 
+import { terminNameAnzeige } from './termin-name.ts'
 import { spracheAusMeta, type Sprache } from './kunden-sprache.ts'
 
 // ── Reine Hilfsfunktionen ────────────────────────────────────────────────
@@ -245,7 +246,7 @@ export async function ladeBuchungKontext(
   const start = new Date(String(buchung.start_at))
   const ende = new Date(String(buchung.ende_at))
   const gueltigeZeit = !Number.isNaN(start.getTime()) && !Number.isNaN(ende.getTime())
-  const titel = String(buchung.bezeichnung || terminart?.bezeichnung || '').trim() || 'Termin'
+  const titel = terminNameAnzeige(String(buchung.bezeichnung || terminart?.bezeichnung || '').trim() || 'Termin', sprache === 'en')
   const beschreibung = String(terminart?.beschreibung || '').trim()
   // Im Kalender des Kunden: ohne gepflegte Terminart englisch "Appointment".
   // Eine gepflegte Bezeichnung ist ein Name aus dem CRM und bleibt.

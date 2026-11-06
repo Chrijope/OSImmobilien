@@ -130,7 +130,7 @@ export const ALL_COLUMNS: ColumnDef[] = [
   { key: "ort", label: "Ort", render: (k) => <span className="text-sm text-muted-foreground">{tarnFreitext(k.ort, "verborgen") || "–"}</span> },
   { key: "plz", label: "PLZ", render: (k) => <span className="text-sm text-muted-foreground">{tarnFreitext(k.plz, "•••••") || "–"}</span> },
   { key: "geburtstag", label: "Geburtstag", render: (k) => <span className="text-sm text-muted-foreground">{tarnGeburtsdatum(k.geburtstag) || "–"}</span> },
-  { key: "beratungsgespraechAm", label: "Beratungsgespräch am", render: (k) => {
+  { key: "beratungsgespraechAm", label: "Konzeptvorstellung am", render: (k) => {
     const meta = (k as any)?.meta || {};
     let am = meta.beratungsgespraechAm || "";
     let uhr = meta.beratungsgespraechUhrzeit || "";

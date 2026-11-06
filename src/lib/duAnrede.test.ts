@@ -80,7 +80,7 @@ describe("Die Du-Fassung des Videoraums", () => {
     // Ein Bewerber führt kein Beratungsgespräch. Das ist die einzige Stelle,
     // an der die Raumart den Wortlaut noch bestimmt.
     expect(gastTexte("bewerbergespraech").gespraechTitel).toBe("Kennenlerngespräch");
-    expect(gastTexte("beratung").gespraechTitel).toBe("Beratungsgespräch");
+    expect(gastTexte("beratung").gespraechTitel).toBe("Firmen- und Konzeptvorstellung");
     const { gespraechTitel: _b, ...bewerber } = gastTexte("bewerbergespraech");
     const { gespraechTitel: _k, ...kunde } = gastTexte("beratung");
     expect(bewerber).toEqual(kunde);

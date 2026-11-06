@@ -156,7 +156,7 @@ export const PARTNER_TERMIN_TEXTE: ZweiSprachen<PartnerTerminTexte> = {
         beschreibung: "Kurzes Kennenlernen am Telefon: klären, worum es dem Kunden geht und ob ihr zueinander passt.",
       },
       beratung: {
-        bezeichnung: "Beratungsgespräch",
+        bezeichnung: "Firmen- und Konzeptvorstellung",
         beschreibung: "Das ausführliche Gespräch zur Situation des Kunden, seinen Zielen und dem passenden Weg dorthin.",
       },
       objektvorstellung: {
@@ -235,7 +235,7 @@ export const PARTNER_TERMIN_TEXTE: ZweiSprachen<PartnerTerminTexte> = {
         beschreibung: "A short introductory call by phone. You clarify what matters to the customer and whether you’re a good fit.",
       },
       beratung: {
-        bezeichnung: "Consultation",
+        bezeichnung: "Concept introduction",
         beschreibung: "The in-depth conversation about the customer’s situation, goals and the right way to get there.",
       },
       objektvorstellung: {

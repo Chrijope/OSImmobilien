@@ -18,7 +18,7 @@ const KATEGORIE_INFO: Record<string, { label: string; intro: string; stufen: str
   kontakt: {
     label: "Kontakte",
     intro: "Leads & Interessenten im Erstkontakt – vor gezieltem Follow-Up.",
-    stufen: ["Neuer Lead", "Kontaktversuche", "Vermögensaufbau", "Erstgespräch", "Beratungsgespräch"],
+    stufen: ["Neuer Lead", "Kontaktversuche", "Vermögensaufbau", "Erstgespräch", "Konzeptvorstellung"],
     color: "bg-blue-500",
   },
   followup: {

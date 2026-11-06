@@ -205,7 +205,7 @@ export default function VorschauKundenprofilLinks() {
             <table className="w-full text-sm">
               <thead><tr className="text-left text-xs text-muted-foreground"><th>Nr.</th><th>Objekt</th><th>Stufe</th><th>Unterlagen</th><th>Nächster Schritt</th><th></th></tr></thead>
               <tbody>
-                <tr className="border-t"><td className="py-2">Investment 1</td><td>Musterstraße 5, WE 3</td><td><Badge variant="outline">Beratungsgespräch</Badge></td><td>4 von 10</td><td>Selbstauskunft senden</td><td></td></tr>
+                <tr className="border-t"><td className="py-2">Investment 1</td><td>Musterstraße 5, WE 3</td><td><Badge variant="outline">Firmen- und Konzeptvorstellung</Badge></td><td>4 von 10</td><td>Selbstauskunft senden</td><td></td></tr>
                 <tr className="border-t"><td className="py-2">Investment 2</td><td>Noch kein Objekt</td><td><Badge variant="outline">Erstgespräch</Badge></td><td>0 von 10</td><td>Objektauswahl</td><td></td></tr>
               </tbody>
             </table>

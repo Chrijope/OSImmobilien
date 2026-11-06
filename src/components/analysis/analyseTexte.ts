@@ -402,7 +402,7 @@ const de = {
     deinAnteil: (betrag: number) => (betrag > 0 ? `Dein Anteil ${eDe(betrag)} im Monat` : `Überschuss ${eDe(-betrag)} im Monat`),
     kaufnebenkosten: (p: number) => `Kaufnebenkosten ${z(p, "de")} %`,
     nebenkostenVerkaeufer: "Kaufnebenkosten trägt der Verkäufer",
-    knopf: "Beratungsgespräch vereinbaren",
+    knopf: "Firmen- und Konzeptvorstellung vereinbaren",
     knopfText: "Im Gespräch rechnen wir beide Wege mit Deinen echten Zahlen und der passenden Wohnung durch.",
     annahmen: (rente: number, zins: number, tilgung: number, steigerung: number, verkauf: number, jahre: number) =>
       `Musterberechnung, keine Zusage. Ist-Mieten, Kaufpreise und Kosten aus unseren Exposés (Stand 16.10.2026), gerechnet wie dort: Kaufpreis voll finanziert, Kaufnebenkosten aus Eigenkapital (Berlin 8 %, Brandenburg 8,5 %), Zins ${z(zins, "de")} %, Tilgung ${z(tilgung, "de")} %, Miete wie im Mietszenario des Exposés bis 2060, Kosten und Wert +${z(steigerung, "de")} % im Jahr, Abschreibung laut Exposé (höhere Sätze setzen ein anerkanntes Restnutzungsdauergutachten voraus), Steuer mit Deinem Grenzsteuersatz. Kauf im Abstand von drei Jahren, Verkauf mit ${rente} nach mindestens zehn Jahren Haltedauer steuerfrei, abzüglich Restschuld und ${z(verkauf, "de")} % Verkaufskosten. Monatsbetrag ohne Zinsen über ${jahre} Jahre verteilt. Ob weitere Finanzierungen möglich sind, entscheidet die Bank. Keine Steuer- oder Anlageberatung.`,
@@ -796,7 +796,7 @@ const en: AnalyseTexte = {
     deinAnteil: (betrag: number) => (betrag > 0 ? `Your share ${eEn(betrag)} per month` : `Surplus ${eEn(-betrag)} per month`),
     kaufnebenkosten: (p: number) => `Purchase costs ${z(p, "en")}%`,
     nebenkostenVerkaeufer: "Purchase costs paid by the seller",
-    knopf: "Book a consultation",
+    knopf: "Book a concept introduction",
     knopfText: "In the meeting we calculate both paths with your real figures and the right apartment.",
     annahmen: (rente: number, zins: number, tilgung: number, steigerung: number, verkauf: number, jahre: number) =>
       `Sample calculation, no promise. Actual rents, purchase prices and costs from our exposés (as of 16.10.2026), calculated as there: purchase price fully financed, purchase costs from equity (Berlin 8%, Brandenburg 8.5%), interest ${z(zins, "en")}%, repayment ${z(tilgung, "en")}%, rent as in the exposé's rent scenario up to 2060, costs and value +${z(steigerung, "en")}% per year, depreciation as in the exposé (higher rates require a recognised remaining useful life report), tax at your marginal rate. Purchases three years apart, sale at ${rente} after at least ten years of ownership tax free, minus remaining loan and ${z(verkauf, "en")}% selling costs. Monthly amount spread over ${jahre} years without interest. Whether further financing is possible is decided by the bank. No tax or investment advice.`,

@@ -147,7 +147,7 @@ export default function BestandskundenImport() {
                 <Users className="h-5 w-5 mt-0.5 shrink-0 text-primary" />
                 <div>
                   <div className="font-medium text-foreground mb-1">Was ist „Bestandskunden Import"?</div>
-                  Importierte oder manuell angelegte Bestandskontakte, die bereits im Bestand des Vertriebspartners sind, aber noch <strong>kein Investment</strong> haben. Sobald für einen Bestandskontakt ein Investment angelegt wird, wechselt er automatisch in die Pipeline-Stufe <strong>Beratungsgespräch</strong> und erscheint dann unter „Kontakte".
+                  Importierte oder manuell angelegte Bestandskontakte, die bereits im Bestand des Vertriebspartners sind, aber noch <strong>kein Investment</strong> haben. Sobald für einen Bestandskontakt ein Investment angelegt wird, wechselt er automatisch in die Pipeline-Stufe <strong>Firmen- und Konzeptvorstellung</strong> und erscheint dann unter „Kontakte".
                 </div>
               </div>
             </div>

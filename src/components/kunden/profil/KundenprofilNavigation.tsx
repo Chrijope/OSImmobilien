@@ -57,7 +57,7 @@ export function KundenprofilNavigation({ tabs, activeTab, rolle, portalFreigesch
               : t.key === "dokumente"
               ? "Zentrale Dokumentenablage des Kunden – alle Unterlagen an einem Ort, unabhängig vom einzelnen Investment."
               : isInvestmentTab
-              ? "Alle Vorgänge dieses Kunden – Pipelinestufen, Beratungstermin, Selbstauskunft, Bonitätscheck, Objektauswahl und Abwicklung, je Investment."
+              ? "Alle Vorgänge dieses Kunden – Pipelinestufen, Konzeptvorstellung, Selbstauskunft, Bonitätscheck, Objektauswahl und Abwicklung, je Investment."
               : null;
             /*
              * Die Sperre haengt nicht mehr an der Reiterleiste.

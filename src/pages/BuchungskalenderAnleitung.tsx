@@ -32,7 +32,7 @@ export default function BuchungskalenderAnleitung() {
               <p className="text-xs text-muted-foreground">Telefonisches Kennenlernen. Link wird auf deiner persönlichen Landingpage angezeigt, Interessenten buchen sich dort selbst ein.</p>
             </div>
             <div className="rounded-lg border p-4 space-y-1">
-              <div className="flex items-center gap-2 text-primary"><Video className="h-4 w-4" /><span className="font-semibold">Beratungsgespräch · 45 Min</span></div>
+              <div className="flex items-center gap-2 text-primary"><Video className="h-4 w-4" /><span className="font-semibold">Konzeptvorstellung · 45 Min</span></div>
               <p className="text-xs text-muted-foreground">Der ausführliche Termin nach erfolgreichem Erstgespräch. Link wird im Erstgesprächs-Skript (Punkt 18) verlinkt, damit du direkt den nächsten Termin einbuchst.</p>
             </div>
             <div className="rounded-lg border p-4 space-y-1">
@@ -120,7 +120,7 @@ Bitte plane dir etwa 15 bis 20 Minuten Zeit ein und sorge möglichst für eine r
         <Card className="p-6 space-y-4">
           <div className="flex items-center gap-2">
             <Video className="h-5 w-5 text-primary" />
-            <h2 className="text-lg font-bold">Schritt 3: Beratungsgesprächs-Event anlegen (45 Min)</h2>
+            <h2 className="text-lg font-bold">Schritt 3: Konzeptvorstellungs-Event anlegen (45 Min)</h2>
           </div>
           <div className="grid md:grid-cols-2 gap-3 text-sm">
             <div className="rounded-md bg-muted/40 p-3">
@@ -135,7 +135,7 @@ Bitte plane dir etwa 15 bis 20 Minuten Zeit ein und sorge möglichst für eine r
 
           <div>
             <p className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Event-Titel</p>
-            <div className="rounded-md border bg-background p-3 text-sm font-medium">Beratungsgespräch Kapitalanlage-Immobilien</div>
+            <div className="rounded-md border bg-background p-3 text-sm font-medium">Firmen- und Konzeptvorstellung Kapitalanlage-Immobilien</div>
           </div>
 
           <div>
@@ -158,9 +158,9 @@ Was wir im Gespräch konkret machen:
           </div>
 
           <p className="text-xs text-muted-foreground">
-            Diesen Link trägst du in deinen Einstellungen unter „Beratungsgespräch · 45 Minuten · Buchungslink" ein.
+            Diesen Link trägst du in deinen Einstellungen unter „Konzeptvorstellung · 45 Minuten · Buchungslink" ein.
             Er wird automatisch im Kundenprofil im Erstgesprächs-Skript (Punkt 18 „Terminvereinbarung") angezeigt,
-            damit du am Ende des Erstgesprächs direkt einen Beratungstermin einbuchst.
+            damit du am Ende des Erstgesprächs direkt einen Termin für die Konzeptvorstellung einbuchst.
           </p>
         </Card>
 
@@ -259,8 +259,8 @@ Wir vermitteln die Finanzierung nicht selbst, sondern bereiten sie mit dir vor u
           <ol className="text-sm space-y-2 list-decimal pl-5">
             <li>Öffne dein Buchungstool und kopiere die öffentliche Adresse deines jeweiligen Events.</li>
             <li>Gehe in OS Immobilien zu <strong>Einstellungen, Profil, Buchungskalender-Links</strong>.</li>
-            <li>Füge jeden Link in das Feld mit dem passenden Namen ein, von oben nach unten: Erstgespräch, Beratungsgespräch, Objektgespräch, Finanzierungsgespräch.</li>
-            <li>Speichern. Die Setterin sieht ab sofort deinen Erstgesprächs-Link, im Erstgesprächs-Skript erscheint dein Beratungsgesprächs-Link, und im Kundenprofil stehen alle vier unter „Meeting erstellen".</li>
+            <li>Füge jeden Link in das Feld mit dem passenden Namen ein, von oben nach unten: Erstgespräch, Firmen- und Konzeptvorstellung, Objektgespräch, Finanzierungsgespräch.</li>
+            <li>Speichern. Die Setterin sieht ab sofort deinen Erstgesprächs-Link, im Erstgesprächs-Skript erscheint dein Konzeptvorstellungs-Link, und im Kundenprofil stehen alle vier unter „Meeting erstellen".</li>
           </ol>
           <p className="text-xs text-muted-foreground">
             Du musst nicht alle vier ausfüllen. Ein leeres Feld bedeutet schlicht, dass dieses Gespräch nirgends

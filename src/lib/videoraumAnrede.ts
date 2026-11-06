@@ -133,7 +133,7 @@ export const DU_TEXTE: GastTexte = {
   nameFehlt: "Bitte gib deinen Namen ein.",
   zuOft: "Gerade wird dieser Raum sehr oft geöffnet. Versuch es bitte in ein paar Minuten noch einmal.",
   betretenFehlgeschlagen: "Der Raum konnte gerade nicht betreten werden. Lade die Seite bitte neu oder melde dich bei deinem Ansprechpartner.",
-  gespraechTitel: "Beratungsgespräch",
+  gespraechTitel: "Firmen- und Konzeptvorstellung",
 };
 
 /**
@@ -179,7 +179,7 @@ export const EN_TEXTE: GastTexte = {
   nameFehlt: "Please enter your name.",
   zuOft: "This room is being opened very often right now. Please try again in a few minutes.",
   betretenFehlgeschlagen: "The room couldn't be entered just now. Please reload the page or get in touch with your contact.",
-  gespraechTitel: "Consultation",
+  gespraechTitel: "Concept introduction",
 };
 
 const BEWERBER_TEXTE_EN: GastTexte = { ...EN_TEXTE, gespraechTitel: "Introductory meeting" };

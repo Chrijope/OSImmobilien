@@ -1186,7 +1186,7 @@ const Einstellungen = () => {
                       <CalendarCheck className="h-5 w-5 text-primary mt-1 shrink-0" />
                       <div className="flex-1">
                         <Field
-                          label="Beratungsgespräch · 45 Minuten · Buchungslink"
+                          label="Konzeptvorstellung · 45 Minuten · Buchungslink"
                           value={beratungslink}
                           onChange={v => {
                             setBeratungslink(v);
@@ -1223,7 +1223,7 @@ const Einstellungen = () => {
                                   if (v) localStorage.setItem(`osimmo_profile_beratungslink_${authUser.id}`, v);
                                   else localStorage.removeItem(`osimmo_profile_beratungslink_${authUser.id}`);
                                 } catch { /* noop */ }
-                                toast.success("Beratungsgesprächs-Link gespeichert");
+                                toast.success("Konzeptvorstellungs-Link gespeichert");
                               }}
                             >
                               <Save className="h-3.5 w-3.5 mr-1" /> {savingBeratungslink ? "Speichere…" : (savedBeratungslink ? "Aktualisieren" : "Speichern")}
@@ -1233,7 +1233,7 @@ const Einstellungen = () => {
                         <p className="text-xs text-muted-foreground mt-1 flex items-start gap-1">
                           <Info className="h-3 w-3 mt-0.5 shrink-0" />
                           <span>
-                            Dieser Link wird im Kundenprofil im Erstgesprächs-Skript (Punkt 18 „Terminvereinbarung") angezeigt. So kannst du direkt am Ende deines Erstgesprächs gemeinsam mit dem Kunden den 45&#8209;minütigen Beratungstermin einbuchen.
+                            Dieser Link wird im Kundenprofil im Erstgesprächs-Skript (Punkt 18 „Terminvereinbarung") angezeigt. So kannst du direkt am Ende deines Erstgesprächs gemeinsam mit dem Kunden den 45&#8209;minütigen Termin für die Konzeptvorstellung einbuchen.
                           </span>
                         </p>
                       </div>

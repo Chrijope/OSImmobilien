@@ -1,4 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
+import { terminNameAnzeige } from '../_shared/termin-name.ts'
 import { sendeVorlage } from '../_shared/transactional-versand.ts'
 import { automatikSchutz } from '../_shared/automatik-schutz.ts'
 import { baueNachfrageGlocken, nachfrageTage, schreibweisen as tagSchreibweisen } from '../_shared/termin-nachfrage.ts'
@@ -367,7 +368,7 @@ Deno.serve(async (req) => {
         stufeGrenze: stufe.grenzeStunden,
         terminAt,
         stundenBis,
-        titel: String(termin.beschreibung || '').trim() || 'Termin',
+        titel: terminNameAnzeige(String(termin.beschreibung || '').trim() || 'Termin'),
         dauer: dauerInMinuten(termin.dauer),
         zugangUrl: vollstaendigeAdresse(termin.zoom_link, basisAdresse),
         datumDeutsch: `${tag}.${monat}.${jahr}`,

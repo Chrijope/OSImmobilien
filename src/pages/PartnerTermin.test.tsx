@@ -195,7 +195,7 @@ describe("Nur für den Partner, dem der Link gehört", () => {
 
   it("funktioniert mit alten Links, die noch `?intern=1` tragen", async () => {
     zeichne("tok1", "?intern=1&anlass=beratung");
-    expect(await screen.findByTitle("Zeit aussuchen: Beratungsgespräch")).toBeInTheDocument();
+    expect(await screen.findByTitle("Zeit aussuchen: Firmen- und Konzeptvorstellung")).toBeInTheDocument();
     expect(screen.getByText(/Termin mit Max/)).toBeInTheDocument();
   });
 });
@@ -205,7 +205,7 @@ describe("Schritt 1, das Anliegen", () => {
     zeichne();
     await screen.findByText("Worum geht es?");
     expect(screen.getByText("Erstgespräch")).toBeInTheDocument();
-    expect(screen.getByText("Beratungsgespräch")).toBeInTheDocument();
+    expect(screen.getByText("Firmen- und Konzeptvorstellung")).toBeInTheDocument();
   });
 
   it("überspringt den Schritt, wenn es nur einen Kalender gibt", async () => {
@@ -220,9 +220,9 @@ describe("Ein Schritt für Kalender und Bestätigung", () => {
   it("zeigt beides gleichzeitig, ohne Klick dazwischen", async () => {
     zeichne();
     await screen.findByText("Worum geht es?");
-    fireEvent.click(screen.getByText("Beratungsgespräch"));
+    fireEvent.click(screen.getByText("Firmen- und Konzeptvorstellung"));
 
-    await screen.findByTitle("Zeit aussuchen: Beratungsgespräch");
+    await screen.findByTitle("Zeit aussuchen: Firmen- und Konzeptvorstellung");
     expect(screen.getByLabelText("Datum")).toBeInTheDocument();
     expect(screen.getByLabelText("Uhrzeit")).toBeInTheDocument();
     expect(screen.getByText(/Termin bestätigen/)).toBeInTheDocument();
@@ -240,13 +240,13 @@ describe("Ein Schritt für Kalender und Bestätigung", () => {
 describe("Das Anliegen aus der Adresse", () => {
   it("überspringt die Auswahl, wenn der Anlass in der Adresse steht", async () => {
     zeichne("tok1", "?anlass=beratung");
-    await screen.findByTitle("Zeit aussuchen: Beratungsgespräch");
+    await screen.findByTitle("Zeit aussuchen: Firmen- und Konzeptvorstellung");
     expect(screen.queryByText("Worum geht es?")).not.toBeInTheDocument();
   });
 
   it("lässt trotzdem ein anderes Anliegen wählen", async () => {
     zeichne("tok1", "?anlass=beratung");
-    await screen.findByTitle("Zeit aussuchen: Beratungsgespräch");
+    await screen.findByTitle("Zeit aussuchen: Firmen- und Konzeptvorstellung");
     fireEvent.click(screen.getByText(/Anderes Anliegen/));
     await screen.findByText("Worum geht es?");
   });
@@ -261,9 +261,9 @@ describe("Schritt 2, der Kalender des Partners", () => {
   it("bettet genau den Kalender der gewählten Gesprächsart ein", async () => {
     zeichne();
     await screen.findByText("Worum geht es?");
-    fireEvent.click(screen.getByText("Beratungsgespräch"));
+    fireEvent.click(screen.getByText("Firmen- und Konzeptvorstellung"));
 
-    const rahmen = await screen.findByTitle("Zeit aussuchen: Beratungsgespräch");
+    const rahmen = await screen.findByTitle("Zeit aussuchen: Firmen- und Konzeptvorstellung");
     expect(rahmen.getAttribute("src")).toContain("https://calendly.com/hermann/beratung");
   });
 
@@ -349,7 +349,7 @@ describe("Die Bestätigung neben dem Kalender", () => {
 
 /*
   Seit dem 29.09.2026 bekommt jede Gesprächsart ihren eigenen Termin. Vorher
-  überschrieb ein Beratungsgespräch das Erstgespräch am selben Link.
+  überschrieb ein Firmen- und Konzeptvorstellung das Erstgespräch am selben Link.
   „Zeit korrigieren“ gibt es nur für dieselbe Gesprächsart, solange ihr
   Termin nicht vorbei ist.
 */
@@ -377,7 +377,7 @@ describe("Je Gesprächsart ein eigener Termin", () => {
     await screen.findByLabelText("Datum");
     expect(screen.getByLabelText("Datum")).toHaveTextContent("02.04.2030");
     expect(screen.getByText(/Wenn du hier einträgst, änderst du ihn/)).toBeInTheDocument();
-    expect(screen.getByTitle("Zeit aussuchen: Beratungsgespräch")).toBeInTheDocument();
+    expect(screen.getByTitle("Zeit aussuchen: Firmen- und Konzeptvorstellung")).toBeInTheDocument();
   });
 
   it("zeigt ohne Anlass in der Adresse die Auswahl, mit dem schon eingetragenen Termin", async () => {
@@ -464,7 +464,7 @@ describe("Die Kundenkarte", () => {
 
   it("bleibt in Schritt 2 neben dem eingebetteten Kalender stehen", async () => {
     zeichne("tok1", "?anlass=beratung");
-    await screen.findByTitle("Zeit aussuchen: Beratungsgespräch");
+    await screen.findByTitle("Zeit aussuchen: Firmen- und Konzeptvorstellung");
     expect(screen.getByText("Max Muster")).toBeInTheDocument();
     expect(screen.getByText("0170 1234567")).toBeInTheDocument();
   });
@@ -488,12 +488,12 @@ describe("Die Kundenkarte", () => {
 });
 
 /*
-  Christian am 29.09.2026: Erstgespräch „15 bis 20 Minuten“, Beratungsgespräch
+  Christian am 29.09.2026: Erstgespräch „15 bis 20 Minuten“, Firmen- und Konzeptvorstellung
   „45 Minuten“, fest. Vorher standen dort 30 Minuten (Standard) und bei einem
   Partner 15 Minuten (eigene Terminart). Objekt- und Finanzierungsgespräch
   zeigen weiter die Dauer aus der Datenbank.
 */
-describe("Feste Dauer für Erstgespräch und Beratungsgespräch", () => {
+describe("Feste Dauer für Erstgespräch und Firmen- und Konzeptvorstellung", () => {
   const MIT_ALTEN_DAUERN = () => zugang({
     anlaesse: [
       { ...zugang().anlaesse[0], dauerMinuten: 30 },
@@ -564,14 +564,14 @@ describe("Umlaute", () => {
 
   it("zeigt auch Schritt 2 und den eingetragenen Termin ohne Ersatzschreibweise", async () => {
     zeichne("tok1", "?anlass=beratung");
-    const rahmen = await screen.findByTitle("Zeit aussuchen: Beratungsgespräch");
+    const rahmen = await screen.findByTitle("Zeit aussuchen: Firmen- und Konzeptvorstellung");
     expect(rahmen.getAttribute("title")).not.toMatch(ERSATZ);
     expect(document.body.textContent).not.toMatch(ERSATZ);
     setzeDatum("2030-04-02");
     setzeUhrzeit("10:00");
     fireEvent.click(screen.getByText(/Termin bestätigen/));
     await screen.findByText("Termin steht");
-    expect(screen.getByText("Beratungsgespräch")).toBeInTheDocument();
+    expect(screen.getByText("Firmen- und Konzeptvorstellung")).toBeInTheDocument();
     expect(document.body.textContent).not.toMatch(ERSATZ);
   });
 });

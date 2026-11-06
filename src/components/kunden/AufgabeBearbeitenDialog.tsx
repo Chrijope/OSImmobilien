@@ -264,7 +264,7 @@ export function AufgabeBearbeitenDialog({
             <Input
               value={titel}
               onChange={(e) => setTitel(e.target.value)}
-              placeholder={istTermin ? "z.B. Beratungsgespräch" : "z.B. Unterlagen nachfassen"}
+              placeholder={istTermin ? "z.B. Konzeptvorstellung" : "z.B. Unterlagen nachfassen"}
               className="mt-1"
               autoFocus
             />

@@ -74,7 +74,7 @@ export function getNextPlannedActivity(kunde: KundeData): { date: Date; source: 
   const candidates: Array<{ raw: any; source: string }> = [
     { raw: (kunde as any).setterTerminDatum, source: "Erstgespräch-Termin" },
     { raw: meta.setterTerminDatum, source: "Erstgespräch-Termin" },
-    { raw: meta.beratungsgespraechAm, source: "Beratungsgespräch-Termin" },
+    { raw: meta.beratungsgespraechAm, source: "Termin Konzeptvorstellung" },
     { raw: meta.erstgespraechAm, source: "Erstgespräch-Termin" },
     { raw: (kunde as any).verstecktBis, source: "Follow-Up-Datum" },
   ];

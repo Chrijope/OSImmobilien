@@ -74,7 +74,7 @@ const SKRIPT_SCHRITTE = [
   {
     id: "qualifikation",
     titel: "3. Qualifikation – Passt der Interessent?",
-    text: `„Super, das klingt nach einem sehr sinnvollen Ansatz. Damit unser Experte im Beratungsgespräch direkt konkret werden kann, brauche ich noch ein paar kurze Infos von dir:"`,
+    text: `„Super, das klingt nach einem sehr sinnvollen Ansatz. Damit unser Experte in der Firmen- und Konzeptvorstellung direkt konkret werden kann, brauche ich noch ein paar kurze Infos von dir:"`,
     tipp: "Stelle die Fragen natürlich, nicht wie ein Verhör. Paraphrasiere die Antworten zur Bestätigung.",
     fragen: [
       { key: "qualEinkommen", label: "Wie viel Geld verdienst du monatlich?", placeholder: "z.B. 3.000-3.500€" },
@@ -666,7 +666,7 @@ export function SetterSkript({ kunde, onUpdate }: SetterSkriptProps) {
       {/* Termin für Beratungsgespräch & Lead zuweisen */}
       <Card ref={terminRef} className="p-6">
         <div className="w-8 h-1 bg-primary mb-3" />
-        <h3 className="font-bold mb-4">Beratungsgespräch vereinbaren</h3>
+        <h3 className="font-bold mb-4">Firmen- und Konzeptvorstellung vereinbaren</h3>
 
         {/* Vertriebspartner-Liste mit Buchungslinks */}
         <div className="space-y-3 mb-6">
@@ -704,7 +704,7 @@ export function SetterSkript({ kunde, onUpdate }: SetterSkriptProps) {
                     className="h-7 text-xs gap-1 shrink-0"
                     onClick={(e) => { e.stopPropagation(); window.open((u as any).beratungslink, "_blank"); }}
                   >
-                    <ExternalLink className="h-3 w-3" /> Beratungsgespräch
+                    <ExternalLink className="h-3 w-3" /> Konzeptvorstellung
                   </Button>
                 ) : u.buchungslink && (
                   <Button
@@ -858,7 +858,7 @@ export function SetterSkript({ kunde, onUpdate }: SetterSkriptProps) {
         )}
         {allChecklistDone && !canSubmitTermin && (
           <p className="text-xs text-muted-foreground text-center mt-2">
-            Bitte trage oben bei „Termin für Beratungsgespräch" Vertriebspartner, Datum und Uhrzeit ein.
+            Bitte trage oben bei „Termin für Firmen- und Konzeptvorstellung" Vertriebspartner, Datum und Uhrzeit ein.
           </p>
         )}
       </Card>

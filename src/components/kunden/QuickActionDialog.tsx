@@ -38,6 +38,7 @@ import { TERMINE_AKTUALISIERT_EVENT } from "@/lib/terminAnzeige";
 import { istTerminInZukunft, heuteIso, TERMIN_ZUKUNFT_MELDUNG } from "@/lib/kontaktPipeline";
 import { gespraechFandStatt as fandGespraechStatt, naechsterSchrittIstPflicht, wiedervorlageInTagen, wiedervorlageVorschlag, zusammenfassungIstPflicht } from "@/lib/anrufProtokoll";
 import { cacheGetById } from "@/lib/dataCache";
+import { terminNameAnzeige } from "../../../supabase/functions/_shared/termin-name.ts";
 
 export interface AnrufProtokollResult {
   ergebnis: string;
@@ -96,7 +97,7 @@ const ERGEBNIS_TEXT: Record<string, string> = {
   nicht_erreicht: "Nicht erreicht",
   mailbox: "Mailbox",
   erstgespraech_vereinbart: "Erstgespräch vereinbart",
-  beratungsgespraech_vereinbart: "Beratungsgespräch vereinbart",
+  beratungsgespraech_vereinbart: "Firmen- und Konzeptvorstellung vereinbart",
   kein_interesse: "Kein Interesse",
   daten_falsch: "Daten falsch",
 };
@@ -1359,7 +1360,7 @@ export function QuickActionDialog({
                     <SelectContent>
                       {terminarten.map((a) => (
                         <SelectItem key={a.id} value={a.id}>
-                          {a.bezeichnung} · {a.dauer_minuten} Min.
+                          {terminNameAnzeige(a.bezeichnung)} · {a.dauer_minuten} Min.
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -1722,7 +1723,7 @@ export function QuickActionDialog({
                         <SelectContent>
                           {terminarten.map((t) => (
                             <SelectItem key={t.id} value={t.id}>
-                              {t.bezeichnung} · {t.dauer_minuten} Min.
+                              {terminNameAnzeige(t.bezeichnung)} · {t.dauer_minuten} Min.
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -1842,7 +1843,7 @@ export function QuickActionDialog({
               )}
               {ergebnis === "beratungsgespraech_vereinbart" && (
                 <div className="rounded-lg border-2 border-primary/30 bg-primary/5 p-3 space-y-3">
-                  <p className="text-xs font-semibold text-primary">Beratungsgespräch-Termin</p>
+                  <p className="text-xs font-semibold text-primary">Termin Konzeptvorstellung</p>
                   {eigenerBeratungslink && (
                     <Button
                       type="button"
@@ -1892,7 +1893,7 @@ export function QuickActionDialog({
                       className="mt-0.5"
                     />
                     <span>
-                      <strong>Pflicht:</strong> Das Beratungsgespräch wurde über meinen eigenen Buchungskalender gebucht. Der Kunde bekommt die Terminbestätigung samt Meeting-Link automatisch per Mail.
+                      <strong>Pflicht:</strong> Die Firmen- und Konzeptvorstellung wurde über meinen eigenen Buchungskalender gebucht. Der Kunde bekommt die Terminbestätigung samt Meeting-Link automatisch per Mail.
                     </span>
                   </label>
                 </div>

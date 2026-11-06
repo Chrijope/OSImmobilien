@@ -32,7 +32,7 @@ export const FESTE_GESPRAECHSDAUER = {
 /** Die Anlässe, in der Reihenfolge des Kundenwegs. */
 export const BUCHUNG_ANLAESSE = [
   { anlass: "erstgespraech", name: "Erstgespräch", dauer: `${FESTE_GESPRAECHSDAUER.erstgespraech.de}, telefonisch` },
-  { anlass: "beratung", name: "Beratungsgespräch", dauer: FESTE_GESPRAECHSDAUER.beratung.de },
+  { anlass: "beratung", name: "Konzeptvorstellung", dauer: FESTE_GESPRAECHSDAUER.beratung.de },
   { anlass: "objektvorstellung", name: "Objektgespräch", dauer: "60 Minuten" },
   { anlass: "finanzierungsgespraech", name: "Finanzierungsgespräch", dauer: "60 Minuten" },
 ] as const;

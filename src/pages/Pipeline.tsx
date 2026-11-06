@@ -1058,7 +1058,7 @@ export default function Pipeline() {
       updateInvestment(invId, { pipelineStufe: "beratungsgespraech" } as any);
       setInvestmentMetaFields(invId, { beratungsgespraechAm: bgDatum, beratungsgespraechUhrzeit: bgUhrzeit } as any);
       await mergeKontaktMeta(kundeId, { beratungsgespraechAm: bgDatum, beratungsgespraechUhrzeit: bgUhrzeit });
-      toast({ title: "Beratungsgespräch eingetragen ✓", description: `${moveConfirm.kundeName}: ${bgDatum} um ${bgUhrzeit}` });
+      toast({ title: "Firmen- und Konzeptvorstellung eingetragen ✓", description: `${moveConfirm.kundeName}: ${bgDatum} um ${bgUhrzeit}` });
     } catch {
       toast({ title: "Fehler beim Speichern", variant: "destructive" });
     } finally {
@@ -1738,9 +1738,9 @@ export default function Pipeline() {
           {moveConfirm && moveConfirm.step === "bg_scheduled" && (
             <>
               <AlertDialogHeader>
-                <AlertDialogTitle>Beratungsgespräch bereits vereinbart?</AlertDialogTitle>
+                <AlertDialogTitle>Firmen- und Konzeptvorstellung bereits vereinbart?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Wurde für <strong>{moveConfirm.kundeName}</strong> bereits ein konkreter Beratungstermin (Datum und Uhrzeit) über den Buchungskalender vereinbart?
+                  Wurde für <strong>{moveConfirm.kundeName}</strong> bereits ein konkreter Termin für die Konzeptvorstellung (Datum und Uhrzeit) über den Buchungskalender vereinbart?
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter className="flex-col sm:flex-row gap-2">
@@ -1754,7 +1754,7 @@ export default function Pipeline() {
           {moveConfirm && moveConfirm.step === "bg_input" && (
             <>
               <AlertDialogHeader>
-                <AlertDialogTitle>Beratungsgespräch-Termin</AlertDialogTitle>
+                <AlertDialogTitle>Termin Konzeptvorstellung</AlertDialogTitle>
                 <AlertDialogDescription>
                   Termin für <strong>{moveConfirm.kundeName}</strong> eintragen. Wird im zugehörigen Investment gespeichert.
                 </AlertDialogDescription>
