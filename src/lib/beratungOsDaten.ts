@@ -348,7 +348,7 @@ export const OS_TEXTE = {
     wichtig: "Das ist mir am wichtigsten",
     worteKopf: "Ihre Worte",
     worteFrage: "„Warum ist das für Sie der richtige Zeitpunkt?“",
-    worteText: "Der Kunde formuliert seine Gründe selbst. Wir halten sie wörtlich fest; sie stehen später in der Objektpräsentation wieder vorn.",
+    worteText: "Der Kunde formuliert seine Gründe selbst. Wir halten sie wörtlich fest; sie stehen später in der Objektvorstellung wieder vorn.",
     rahmenKopf: "Finanzierungsrahmen, gerechnet",
   },
 
@@ -389,7 +389,7 @@ export const OS_TEXTE = {
       { schluessel: "terminUnterlagen", label: "Unterlagen" },
     ],
     hinweisRecht: "Kein verbindliches Angebot und keine Steuer-, Rechts- oder Finanzierungsberatung. Alle Zahlen sind Musterrechnungen und Szenarien auf Basis der Exposés und der gemeinsamen Beispielrechnung, Stand 21.10.2026; es werden keine Renditen oder Wertsteigerungen zugesagt. Steuerliche Wirkung mit Steuerberatung prüfen. Abbildungen mit dem Hinweis „Visualisierung“ sind unverbindlich. Maßgeblich sind allein die notariellen Verträge.",
-    text: "Dafür brauchen wir Ihre Selbstauskunft. Wir füllen sie jetzt gemeinsam aus, das dauert etwa 15 Minuten. Bis zur Objektpräsentation in einer Woche fehlen dann nur noch Ausweis und letzte Gehaltsabrechnung.",
+    text: "Dafür brauchen wir Ihre Selbstauskunft. Wir füllen sie jetzt gemeinsam aus, das dauert etwa 15 Minuten. Bis zur Objektvorstellung in einer Woche fehlen dann nur noch Ausweis und letzte Gehaltsabrechnung.",
     /** Ohne verbundenen Kunden (Aufruf über Sidebar oder Unterlagen): keine Selbstauskunft. */
     textOhneKunde: "Dann vereinbaren wir Ihre Objektvorstellung. Dort zeigen wir Ihnen die Immobilie, die zu Ihren Kriterien passt, und rechnen sie mit Ihren Zahlen durch.",
     knopf: "Selbstauskunft jetzt gemeinsam ausfüllen",

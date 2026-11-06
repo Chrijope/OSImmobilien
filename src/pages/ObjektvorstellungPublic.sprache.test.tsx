@@ -40,7 +40,7 @@ describe("ObjektvorstellungPublic: Sprache", () => {
   it("nimmt die Sprache vom Server", async () => {
     antwortet({ nichtMehrVerfuegbar: true, sprache: "en", ansprechpartner: { name: "Paula Partner", email: "os@os-immobilien.com" } });
     zeige();
-    expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent("This property presentation is no longer available");
+    expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent("This property introduction is no longer available");
     expect(screen.getByTestId("abgelaufen-ansprechpartner")).toHaveTextContent("Your contact");
   });
 

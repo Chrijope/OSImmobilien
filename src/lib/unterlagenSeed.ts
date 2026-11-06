@@ -120,20 +120,20 @@ export function seedUnterlagen(): UnterlagenAbschnitt[] {
     {
       id: "praesentation",
       name: "Präsentation",
-      beschreibung: "Beratungspräsentation und Verkaufsmaterialien",
+      beschreibung: "Firmen- und Konzeptvorstellung und Verkaufsmaterialien",
       dokumente: [
         // Die aktuelle Fassung steht oben und ist die einzige, die alle sehen.
         {
           id: "p-beratung-hv",
-          name: "Beratungspräsentation OS Immobilien",
+          name: "Firmen- und Konzeptvorstellung OS Immobilien",
           beschreibung: "Der aktuelle Gesprächsablauf mit Fragenblock, drei durchgerechneten Objekten und der Selbstauskunft am Ende",
           aktion: "internal-link",
           interneRoute: "/beratungspraesentation-osimmobilien",
         },
         {
           id: "p-beratung-pdf",
-          name: "Beratungspräsentation als PDF",
-          beschreibung: "Zum Herunterladen und Präsentieren, mit ausfüllbaren Feldern. Im Termin bevorzugt die Webfassung (Beratungspräsentation OS Immobilien) nutzen",
+          name: "Firmen- und Konzeptvorstellung als PDF",
+          beschreibung: "Zum Herunterladen und Präsentieren, mit ausfüllbaren Feldern. Im Termin bevorzugt die Webfassung (Firmen- und Konzeptvorstellung OS Immobilien) nutzen",
           aktion: "external-link",
           url: "/dokumente/beratungspraesentation.pdf",
         },

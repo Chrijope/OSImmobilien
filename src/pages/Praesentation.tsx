@@ -61,7 +61,7 @@ function seedAbschnitte(): Abschnitt[] {
         // gearbeitet wird, und traegt deshalb den schlichten Namen.
         {
           id: "1hv",
-          name: "Beratungspräsentation OS Immobilien",
+          name: "Firmen- und Konzeptvorstellung OS Immobilien",
           url: "/beratungspraesentation-osimmobilien",
           typ: "link",
           action: "internal-link",
@@ -71,7 +71,7 @@ function seedAbschnitte(): Abschnitt[] {
         // Webfassung darueber der bevorzugte Weg, das sagt auch der Name.
         {
           id: "1pdf",
-          name: "Beratungspräsentation als PDF (bevorzugt die Webfassung nutzen)",
+          name: "Firmen- und Konzeptvorstellung als PDF (bevorzugt die Webfassung nutzen)",
           url: "/dokumente/beratungspraesentation.pdf",
           typ: "link",
         },

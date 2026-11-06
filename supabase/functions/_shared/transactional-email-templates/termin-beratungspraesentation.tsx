@@ -24,12 +24,12 @@ interface Props extends TerminFelder {
 }
 
 const DE = {
-  betreff: (datum: string) => (datum ? `Deine Beratungspräsentation am ${datum}` : 'Deine Beratungspräsentation ist bestätigt'),
+  betreff: (datum: string) => (datum ? `Deine Firmen- und Konzeptvorstellung am ${datum}` : 'Deine Firmen- und Konzeptvorstellung ist bestätigt'),
   augenbraue: 'Termin bestätigt',
-  titel: 'Deine Beratungspräsentation',
+  titel: 'Deine Firmen- und Konzeptvorstellung',
   vorschau: (datum: string) => `Dein Termin${datum ? ` am ${datum}` : ''} steht. Es wird nichts unterschrieben.`,
   absatz:
-    'vielen Dank für deine Zeit. Dein Termin für die Beratungspräsentation steht. Wir nehmen uns etwa eine Stunde, gehen deine Ziele gemeinsam durch und zeigen dir, wie ein Immobilieninvestment dazu passen kann.',
+    'vielen Dank für deine Zeit. Dein Termin für die Firmen- und Konzeptvorstellung steht. Wir nehmen uns etwa eine Stunde, gehen deine Ziele gemeinsam durch und zeigen dir, wie ein Immobilieninvestment dazu passen kann.',
   ort: (art: TerminArt) =>
     art === 'video'
       ? 'Wir sprechen per Video. Zum Termin genügt ein Klick auf den Knopf, du brauchst keine zusätzliche Software.'
@@ -62,12 +62,12 @@ const DE = {
 const TEXTE: Zweisprachig<typeof DE> = {
   de: DE,
   en: {
-    betreff: (datum: string) => (datum ? `Your advisory presentation on ${datum}` : 'Your advisory presentation is confirmed'),
+    betreff: (datum: string) => (datum ? `Your concept introduction on ${datum}` : 'Your concept introduction is confirmed'),
     augenbraue: 'Appointment confirmed',
-    titel: 'Your advisory presentation',
+    titel: 'Your concept introduction',
     vorschau: (datum: string) => `Your appointment${datum ? ` on ${datum}` : ''} is confirmed. Nothing will be signed.`,
     absatz:
-      'Thank you for your time. Your appointment for the advisory presentation is confirmed. We will take about an hour to go through your goals together and show you how a property investment can fit them.',
+      'Thank you for your time. Your appointment for the concept introduction is confirmed. We will take about an hour to go through your goals together and show you how a property investment can fit them.',
     ort: (art: TerminArt) =>
       art === 'video'
         ? 'We will meet by video. To join, simply click the button; you do not need any additional software.'
@@ -151,7 +151,7 @@ export const template = {
     const sprache = data?.sprache
     return texteFuer(TEXTE, sprache).betreff(terminAnsicht(data || {}, sprache, { ics: '', google: '' }).datum)
   },
-  displayName: 'Terminbestätigung Beratungspräsentation',
+  displayName: 'Terminbestätigung Firmen- und Konzeptvorstellung',
   sprachen: DE_EN,
   previewData: {
     kundeName: 'Max Mustermann',

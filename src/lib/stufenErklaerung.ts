@@ -48,15 +48,15 @@ export const STUFEN_ERKLAERUNG: Record<string, string> = {
   // Hier stand bis zuletzt „Bonitätsunterlagen", eine Stufe aus der alten
   // Reihenfolge, die heute drei Schritte weiter hinten liegt.
   beratungsgespraech:
-    "Der Lead ist beim Vertriebspartner, die Beratungspräsentation läuft. Sobald die Selbstauskunft beim " +
+    "Der Lead ist beim Vertriebspartner, die Firmen- und Konzeptvorstellung läuft. Sobald die Selbstauskunft beim " +
     "Kunden zur Unterschrift liegt, rückt der Vorgang auf „Selbstauskunft & Unterlagen\".",
-  bg_noshow: "Der Kunde ist zur Beratungspräsentation nicht erschienen. Der Lead bleibt beim Vertriebspartner, ein neuer Termin ist nötig.",
+  bg_noshow: "Der Kunde ist zur Firmen- und Konzeptvorstellung nicht erschienen. Der Lead bleibt beim Vertriebspartner, ein neuer Termin ist nötig.",
   selbstauskunft:
     "Die Selbstauskunft liegt beim Kunden, die Unterschrift steht aus. Dazu lädt er Personalausweis und " +
-    "letzte Gehaltsabrechnung im Portal hoch. Mit der Unterschrift rückt der Vorgang auf „Objektpräsentation / Closing\".",
+    "letzte Gehaltsabrechnung im Portal hoch. Mit der Unterschrift rückt der Vorgang auf „Objektvorstellung / Closing\".",
   // Der alte Text beschrieb hier die Reservierung („RV-PDF erzeugt").
   objektauswahl:
-    "Die Selbstauskunft ist unterschrieben. In der Objektpräsentation (Closing) werden das Objekt mit Exposé und " +
+    "Die Selbstauskunft ist unterschrieben. In der Objektvorstellung (Closing) werden das Objekt mit Exposé und " +
     "Investmentkalkulation und das Finanzierungskonzept besprochen. Sobald eine Reservierungsvereinbarung " +
     "erstellt ist, rückt der Vorgang auf „Reservierung\".",
   // Nur manuell, siehe pipelineStufen.ts: Keine Automatik setzt diese Stufe.
@@ -96,7 +96,7 @@ export const STUFEN_ERKLAERUNG: Record<string, string> = {
   // Geprüft in investmentsStore.createInvestment.
   bestandsimport:
     "Importierte Bestandskunden. Sie bleiben getrennt, bis das erste Investment angelegt wird, " +
-    "dann rücken sie auf „Beratungspräsentation\".",
+    "dann rücken sie auf „Firmen- und Konzeptvorstellung\".",
   archiviert: "Manuell archivierter Kontakt. Bleibt im System, ist aber aus der aktiven Pipeline ausgeblendet.",
   verloren:
     `Status „verloren" oder „inaktiv", etwa nach ${MAX_KONTAKTVERSUCHE} erfolglosen Kontaktversuchen, ` +

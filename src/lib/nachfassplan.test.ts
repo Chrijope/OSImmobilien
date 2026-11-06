@@ -51,6 +51,8 @@ describe("Welches Gespräch", () => {
     expect(gespraechsArt("Telefonisches Erstgespräch")).toBe("erstgespraech");
     expect(gespraechsArt("Beratungsgespräch")).toBe("beratung");
     expect(gespraechsArt("Beratungspräsentation")).toBe("beratung");
+    expect(gespraechsArt("Firmen- und Konzeptvorstellung")).toBe("beratung");
+    expect(gespraechsArt("Konzeptvorstellung Familie Brandl")).toBe("beratung");
     expect(gespraechsArt("Irgendwas", "beratung")).toBe("beratung");
     expect(gespraechsArt("Beratungsgespräch", "objektvorstellung")).toBeNull();
     expect(gespraechsArt("Notartermin")).toBeNull();

@@ -283,8 +283,8 @@ const de = {
     intro: "In fester Reihenfolge, mit einem Ansprechpartner. Nach jedem Schritt entscheidest du, ob es weitergeht.",
     schritte: [
       { titel: "Qualifizierungsgespräch", text: "Deine Ziele und deine Lage.", ergebnis: "Du weißt, ob eine Kapitalanlage zu dir passen kann." },
-      { titel: "Beratungspräsentation", text: "Konzept und Rechnung mit deinen Zahlen.", ergebnis: "Du verstehst Chancen, Kosten und Risiken." },
-      { titel: "Objektpräsentation", text: "Das passende Objekt für dich.", ergebnis: "Exposé, Kalkulation und Unterlagen zum Nachlesen." },
+      { titel: "Firmen- und Konzeptvorstellung", text: "Konzept und Rechnung mit deinen Zahlen.", ergebnis: "Du verstehst Chancen, Kosten und Risiken." },
+      { titel: "Objektvorstellung", text: "Das passende Objekt für dich.", ergebnis: "Exposé, Kalkulation und Unterlagen zum Nachlesen." },
       { titel: "Reservierung", text: "Kostenfrei.", ergebnis: "Du sicherst dir Zeit für die Prüfung." },
       { titel: "Finanzierung", text: "Die Zusage der Bank.", ergebnis: "OS Finanzierung begleitet dich bis zur Entscheidung." },
       { titel: "Besichtigung", text: "Am Notartag oder am Vortag, auch online.", ergebnis: "Du machst dir dein eigenes Bild." },
@@ -582,8 +582,8 @@ const en: MikroseiteOsTexte = {
     intro: "In a fixed order, with one contact. After every step you decide whether to continue.",
     schritte: [
       { titel: "Qualification call", text: "Your goals and your situation.", ergebnis: "You know whether an investment property could suit you." },
-      { titel: "Consultation presentation", text: "Concept and calculation with your figures.", ergebnis: "You understand opportunities, costs and risks." },
-      { titel: "Property presentation", text: "The right property for you.", ergebnis: "Brochure, calculation and documents to read at leisure." },
+      { titel: "Concept introduction", text: "Concept and calculation with your figures.", ergebnis: "You understand opportunities, costs and risks." },
+      { titel: "Property introduction", text: "The right property for you.", ergebnis: "Brochure, calculation and documents to read at leisure." },
       { titel: "Reservation", text: "Free of charge.", ergebnis: "You secure time for your review." },
       { titel: "Financing", text: "The bank’s approval.", ergebnis: "OS Finanzierung supports you until the bank decides." },
       { titel: "Viewing", text: "On the notary day or the day before, online if you prefer.", ergebnis: "You see it for yourself." },

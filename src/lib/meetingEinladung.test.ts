@@ -284,6 +284,7 @@ describe("Vorlage je Anlass (Nachfassplan, 16.10.2026)", () => {
     // Ohne Anlass entscheidet der Titel, etwa beim erneuten Senden.
     expect(meetingVorlage(undefined, "Objektvorstellung Musterstraße")).toBe("einladung-objektvorstellung");
     expect(meetingVorlage(undefined, "Beratungspräsentation")).toBe("termin-beratungspraesentation");
+    expect(meetingVorlage(undefined, "Firmen- und Konzeptvorstellung")).toBe("termin-beratungspraesentation");
     expect(meetingVorlage(undefined, "Notartermin")).toBe("zoom-meeting-einladung");
   });
 

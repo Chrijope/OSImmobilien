@@ -206,7 +206,7 @@ export default function BeratungspraesentationWG() {
           <div className="hidden md:flex items-center gap-2">
             <PraesentationPdfButton
               containerRef={pageRef}
-              title="Beratungspräsentation · Co-Living / WG"
+              title="Firmen- und Konzeptvorstellung · Co-Living / WG"
               subtitle={kundenName ? `Für ${kundenName}` : "OS Immobilien · Investment für Kapitalanleger"}
               filename="OS-Immobilien_Beratungspraesentation_WG.pdf"
               preset="wg"

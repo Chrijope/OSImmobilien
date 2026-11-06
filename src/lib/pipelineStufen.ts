@@ -40,11 +40,11 @@ export const PIPELINE_STUFEN = [
    * Ein Umbenennen der Schluessel haette jede Stufe in Dutzenden Dateien und
    * eine Datenmigration bedeutet.
    */
-  { key: "beratungsgespraech", label: "Beratungspräsentation" },
+  { key: "beratungsgespraech", label: "Firmen- und Konzeptvorstellung" },
   { key: "bg_noshow", label: "BP NoShow" },
   // Gilt, bis Selbstauskunft, Ausweis und letzte Gehaltsabrechnung da sind.
   { key: "selbstauskunft", label: "Selbstauskunft & Unterlagen" },
-  { key: "objektauswahl", label: "Objektpräsentation / Closing" },
+  { key: "objektauswahl", label: "Objektvorstellung / Closing" },
   /*
    * NUR MANUELL: Diese Stufe setzt ausschliesslich ein Partner von Hand,
    * wenn der Kunde nach der Objektvorstellung noch ueberlegt. Keine Automatik
@@ -318,7 +318,7 @@ export function darfVorruecken(aktuell: string | null | undefined, ziel: string)
  * Stufe den Zusatz.
  */
 export function stufenFilterLabel(key: string): string {
-  if (key === "follow_up_objekt") return "Follow-Up (nach Objektpräsentation)";
+  if (key === "follow_up_objekt") return "Follow-Up (nach Objektvorstellung)";
   return PIPELINE_STUFEN.find((s) => s.key === key)?.label ?? key;
 }
 

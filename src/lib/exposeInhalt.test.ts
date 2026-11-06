@@ -159,10 +159,10 @@ describe("Seit dem 23.09.2026", () => {
     const inhalt = baueExposeInhalt({ objekt, wohnung: w, heute });
     expect(inhalt.zeitplan.map((z) => [z.nr, z.titel, z.frist])).toEqual([
       [1, "Qualifizierungsgespräch", ""],
-      [2, "Beratungspräsentation", ""],
+      [2, "Konzeptvorstellung", ""],
       [3, "Selbstauskunft", ""],
       [4, "Unterlagen", "Ausweis, letzte Gehaltsabrechnung"],
-      [5, "Objektpräsentation", ""],
+      [5, "Objektvorstellung", ""],
       [6, "Reservierung", "Kostenfrei, wirksam mit deiner Unterschrift"],
       [7, "Finanzierung", "2 bis 6 Wochen"],
       [8, "Termin Bankgutachter", ""],

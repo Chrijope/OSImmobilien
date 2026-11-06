@@ -36,7 +36,7 @@ const BREITE = SEITE_B - RAND * 2;
 /** Unterste Zeile, die Text belegen darf. Der Markenfuss beginnt bei H minus 20. */
 const UNTERKANTE = SEITE_H - 32;
 
-const TITEL = "Sprechskripte zur Beratungspräsentation";
+const TITEL = "Sprechskripte zur Firmen- und Konzeptvorstellung";
 
 /** Breite der Nummernspalte. Der Text daneben beginnt eingerückt. */
 const NR_SPALTE = 16;
@@ -102,7 +102,7 @@ export async function buildBeratungSkriptPdf(): Promise<{ blob: Blob; dateiname:
   /* ── Deckblatt ── */
   addCoverPage(doc, icon, {
     kennung: "Vertriebsakademie · Kapitel 5 · Beratungsgespräch",
-    titel: "Sprechskripte zur Beratungspräsentation",
+    titel: "Sprechskripte zur Firmen- und Konzeptvorstellung",
     untertitel: "Was du in welchem Abschnitt sagst, und warum",
     datum: new Date().toLocaleDateString("de-DE"),
     fusszeile: "Nur für den internen Gebrauch. Nicht an Kunden weitergeben.",

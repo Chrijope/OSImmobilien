@@ -49,7 +49,7 @@ describe("Erklärungen zu den Pipelinestufen", () => {
     // Finanzierung, Termin Bankgutachter, Besichtigung, Notar.
     expect(STUFEN_ERKLAERUNG.beratungsgespraech).toContain("Selbstauskunft");
     expect(STUFEN_ERKLAERUNG.beratungsgespraech).not.toContain("Bonitätsunterlagen");
-    expect(STUFEN_ERKLAERUNG.selbstauskunft).toContain("Objektpräsentation");
+    expect(STUFEN_ERKLAERUNG.selbstauskunft).toContain("Objektvorstellung");
     expect(STUFEN_ERKLAERUNG.objektauswahl).toContain("Reservierung");
     expect(STUFEN_ERKLAERUNG.reservierung).toContain("Finanzierung");
     expect(STUFEN_ERKLAERUNG.reservierung).not.toContain("Bonitätsunterlagen");

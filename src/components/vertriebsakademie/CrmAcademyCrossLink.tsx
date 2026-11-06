@@ -20,7 +20,7 @@ export function CrmAcademyCrossLink() {
             Die CRM-Academy hat dir gezeigt, wo im System was liegt. In der
             <strong className="text-foreground"> Vertriebsakademie</strong> lernst du,
             wie du den Vertrieb wirklich machst: Skripte für Erstgespräche,
-            Einwandbehandlung, Beratungspräsentationen, Empfehlungssystem
+            Einwandbehandlung, Firmen- und Konzeptvorstellungen, Empfehlungssystem
             und Selbstcontrolling.
           </p>
           <Button asChild className="mt-3 gap-1">

@@ -2061,7 +2061,7 @@ export default function KundenDetail() {
           notifySaEinladungVerschickt(kundeName, id!, vpId);
         }
         toast({ title: "Einladung versendet ✓", description: `${kundeName} erhält eine E-Mail mit dem Link zur Selbstauskunft.` });
-        addAktivitaet({ kundeId: id, art: "email", beschreibung: `Selbstauskunft-Einladung versendet an ${kundeName} (aus Beratungspräsentation)`, von: user.name });
+        addAktivitaet({ kundeId: id, art: "email", beschreibung: `Selbstauskunft-Einladung versendet an ${kundeName} (aus Firmen- und Konzeptvorstellung)`, von: user.name });
         forceUpdate((n: number) => n + 1);
       } catch (err: any) {
         toast({ title: "Fehler", description: err.message || "Einladung konnte nicht gesendet werden.", variant: "destructive" });
@@ -8103,7 +8103,7 @@ export default function KundenDetail() {
         {!hasInvSA && (
             <Card className="p-6 border-primary/30 bg-primary/5">
               <div className="w-8 h-1 bg-primary mb-3" />
-              <h3 className="font-bold mb-2">Beratungspräsentation</h3>
+              <h3 className="font-bold mb-2">Firmen- und Konzeptvorstellung</h3>
               <p className="text-sm text-muted-foreground mb-4">
                 Öffne die interaktive Beratungsseite für den Kunden. Über den CTA am Ende der Präsentation kann auch direkt ein neuer Kontakt angelegt werden.
               </p>
@@ -8123,7 +8123,7 @@ export default function KundenDetail() {
                     window.open(`/beratungspraesentation-osimmobilien?${params.toString()}`, "_blank");
                   }}
                 >
-                  <ExternalLink className="h-4 w-4 mr-1" /> Beratungspräsentation OS Immobilien
+                  <ExternalLink className="h-4 w-4 mr-1" /> Konzeptvorstellung OS Immobilien
                 </Button>
                 <span className="relative inline-flex">
                   <Button
@@ -8131,7 +8131,7 @@ export default function KundenDetail() {
                     variant="outline"
                     onClick={() => window.open("/dokumente/beratungspraesentation.pdf", "_blank")}
                   >
-                    <Download className="h-4 w-4 mr-1" /> Beratungspräsentation als PDF
+                    <Download className="h-4 w-4 mr-1" /> Konzeptvorstellung als PDF
                   </Button>
                   {isNewBadgeActive("beratungspraesentation_pdf") && (
                     <Badge className="absolute -top-2 -right-2 text-bildunterschrift px-1.5 py-0 h-4 bg-emerald-500 text-white border-0 hover:bg-emerald-500 uppercase tracking-wide">Neu</Badge>
@@ -8139,7 +8139,7 @@ export default function KundenDetail() {
                 </span>
               </div>
               <p className="text-xs text-muted-foreground mt-2">
-                Im besten Fall die Beratungspräsentation OS Immobilien (Webfassung) nutzen. Die PDF ist
+                Im besten Fall die Firmen- und Konzeptvorstellung OS Immobilien (Webfassung) nutzen. Die PDF ist
                 zum Herunterladen und Präsentieren gedacht.
               </p>
             </Card>

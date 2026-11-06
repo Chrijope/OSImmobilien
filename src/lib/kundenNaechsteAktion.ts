@@ -230,7 +230,7 @@ export function neuerGespraechsterminNachNoShow(letzter: NoShowEintrag | undefin
   if (grenze === null) return false;
   return (aktionen || []).some((a) =>
     (a.art === "termin" || a.art === "videotermin") &&
-    /erstgespr|beratung/i.test(a.titel) &&
+    /erstgespr|beratung|konzeptvorstellung/i.test(a.titel) &&
     a.zeitpunkt > grenze);
 }
 

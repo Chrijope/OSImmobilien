@@ -46,16 +46,33 @@ const SLA_DAYS: Partial<Record<PipelineStufe, number>> = {
 
 const STUFE_LABEL: Partial<Record<PipelineStufe, string>> = {
   erstgespraech_geplant: "Qualifizierungsgespräch",
-  beratungsgespraech: "Beratungspräsentation",
+  beratungsgespraech: "Firmen- und Konzeptvorstellung",
   selbstauskunft: "Selbstauskunft & Unterlagen",
   bonitaetsunterlagen: "Bonitätsunterlagen",
-  objektauswahl: "Objektpräsentation / Closing",
+  objektauswahl: "Objektvorstellung / Closing",
   follow_up_objekt: "Follow-Up",
   reservierung: "Reservierung",
   finanzierung: "Finanzierung",
   bankgutachter: "Termin Bankgutachter",
   besichtigung: "Besichtigung",
 };
+
+/**
+ * Offene Nudges tragen den Stufennamen im Titel und bleiben gespeichert. Nach
+ * der Umbenennung (November 2026) müssen deshalb auch die alten Namen erkannt
+ * werden, sonst räumt niemand diese Nudges mehr auf.
+ */
+const FRUEHERE_STUFE_LABEL: Partial<Record<PipelineStufe, string>> = {
+  beratungsgespraech: "Beratungspräsentation",
+  objektauswahl: "Objektpräsentation / Closing",
+};
+
+/** Für welche Stufe ein Nudge-Titel steht, mit neuem oder altem Namen. */
+export function stufeAusNudgeTitel(titel: string): PipelineStufe | undefined {
+  const treffer = [...Object.entries(STUFE_LABEL), ...Object.entries(FRUEHERE_STUFE_LABEL)]
+    .find(([, label]) => titel.includes(label!));
+  return treffer?.[0] as PipelineStufe | undefined;
+}
 
 function getSent(): Record<string, string[]> {
   if (isTestAccount()) {
@@ -104,9 +121,9 @@ export function useStagnationInboxNudges(userName?: string, userId?: string) {
         if (hatVereinbartenKontakt(k)) return false;
         // Ableiten, für welche Stufe der Nudge ursprünglich war (aus Titel).
         // Er bleibt, solange eines der Investments dort steht (11.10.2026).
-        const stagesInTitle = Object.entries(STUFE_LABEL).find(([, label]) => t.titel.includes(label!));
-        if (!stagesInTitle) return true;
-        return getInvestmentStufenFuerKunde(k).some((e) => e.stufe === stagesInTitle[0]);
+        const stufeImTitel = stufeAusNudgeTitel(t.titel);
+        if (!stufeImTitel) return true;
+        return getInvestmentStufenFuerKunde(k).some((e) => e.stufe === stufeImTitel);
       });
       if (cleaned.length !== inbox.length) {
         setInboxTasks(cleaned);
@@ -151,7 +168,7 @@ export function useStagnationInboxNudges(userName?: string, userId?: string) {
           const name = `${k.vorname || ""} ${k.nachname || ""}`.trim();
           const titleNeedle = `${NUDGE_MARK} ${label}: ${name}`;
           // Doppelt absichern gegen bestehende offene Nudges dieser Stufe
-          if (inbox.some(t => t.kundeId === k.id && t.titel.includes(NUDGE_MARK) && t.titel.includes(label))) {
+          if (inbox.some(t => t.kundeId === k.id && t.titel.includes(NUDGE_MARK) && stufeAusNudgeTitel(t.titel) === stufe)) {
             markSent(k.id, sentKey);
             continue;
           }

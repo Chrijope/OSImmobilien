@@ -363,24 +363,24 @@ function zeitplan(start: HandbuchAntworten["start"]): [string, string] {
       return [
         tx("Diese Woche", "This week"),
         tx(
-          "Qualifizierungsgespräch und Beratungspräsentation, danach füllst du die Selbstauskunft aus. Rund eine Woche später stellt dir dein Berater in der Objektvorstellung passende Wohnungen vor. Passt eine, reservierst du sie kostenfrei.",
-          "Qualification call and consultation presentation, then you complete the self-disclosure. About a week later your contact presents suitable flats in the property presentation. If one fits, you reserve it free of charge.",
+          "Qualifizierungsgespräch und Firmen- und Konzeptvorstellung, danach füllst du die Selbstauskunft aus. Rund eine Woche später stellt dir dein Berater in der Objektvorstellung passende Wohnungen vor. Passt eine, reservierst du sie kostenfrei.",
+          "Qualification call and concept introduction, then you complete the self-disclosure. About a week later your contact presents suitable flats in the property introduction. If one fits, you reserve it free of charge.",
         ),
       ];
     case "drei_monate":
       return [
         tx("In den nächsten Wochen", "Over the next few weeks"),
         tx(
-          "Qualifizierungsgespräch, Beratungspräsentation und Selbstauskunft, dazu die Unterlagen aus Kapitel 12. Nach Objektvorstellung und Reservierung folgen Finanzierung, Bankgutachter, Besichtigung und Notar. Wie lange das dauert, hängt vor allem an Bank und Unterlagen. Mit drei Monaten bleibt dafür Zeit.",
-          "Qualification call, consultation presentation and self-disclosure, plus the documents from chapter 12. After the property presentation and reservation come financing, the bank's valuer, the viewing and the notary. How long this takes depends mainly on the bank and the documents. Three months leaves time for it.",
+          "Qualifizierungsgespräch, Firmen- und Konzeptvorstellung und Selbstauskunft, dazu die Unterlagen aus Kapitel 12. Nach Objektvorstellung und Reservierung folgen Finanzierung, Bankgutachter, Besichtigung und Notar. Wie lange das dauert, hängt vor allem an Bank und Unterlagen. Mit drei Monaten bleibt dafür Zeit.",
+          "Qualification call, concept introduction and self-disclosure, plus the documents from chapter 12. After the property introduction and reservation come financing, the bank's valuer, the viewing and the notary. How long this takes depends mainly on the bank and the documents. Three months leaves time for it.",
         ),
       ];
     case "spaeter":
       return [
         tx("Bis zu deinem Start", "Until you start"),
         tx(
-          "Lies in Ruhe und sammle schon die Unterlagen aus Kapitel 12. Etwa drei Monate vor deinem Wunschtermin führen wir das Qualifizierungsgespräch und die Beratungspräsentation. Dann bleibt genug Zeit für Selbstauskunft, Objektvorstellung, Bank und Notar.",
-          "Read at your own pace and start collecting the documents from chapter 12. About three months before your preferred date we hold the qualification call and the consultation presentation. That leaves enough time for the self-disclosure, the property presentation, the bank and the notary.",
+          "Lies in Ruhe und sammle schon die Unterlagen aus Kapitel 12. Etwa drei Monate vor deinem Wunschtermin führen wir das Qualifizierungsgespräch und die Firmen- und Konzeptvorstellung. Dann bleibt genug Zeit für Selbstauskunft, Objektvorstellung, Bank und Notar.",
+          "Read at your own pace and start collecting the documents from chapter 12. About three months before your preferred date we hold the qualification call and the concept introduction. That leaves enough time for the self-disclosure, the property introduction, the bank and the notary.",
         ),
       ];
     default:
@@ -929,9 +929,9 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
         typ: "prozess",
         schritte: [
           { symbol: "person", titel: tx("Qualifizierungsgespräch", "Qualification call"), text: tx("Ziele und Rahmen", "Goals and budget") },
-          { symbol: "diagramm", titel: tx("Beratungspräsentation", "Consultation presentation"), text: tx("Konzept und Objekte", "Concept and properties") },
+          { symbol: "diagramm", titel: tx("Konzeptvorstellung", "Concept introduction"), text: tx("Konzept und Objekte", "Concept and properties") },
           { symbol: "stift", titel: tx("Selbstauskunft", "Self-disclosure"), text: tx("Dein genauer Rahmen", "Your exact budget") },
-          { symbol: "haus", titel: tx("Objektvorstellung", "Property presentation"), text: tx("Passende Wohnung, Reservierung kostenfrei", "Suitable flat, free reservation") },
+          { symbol: "haus", titel: tx("Objektvorstellung", "Property introduction"), text: tx("Passende Wohnung, Reservierung kostenfrei", "Suitable flat, free reservation") },
           { symbol: "bank", titel: tx("Finanzierung", "Financing"), text: tx("Bank, Gutachter, Besichtigung", "Bank, valuer, viewing") },
           { symbol: "schluessel", titel: tx("Notar und danach", "Notary and after"), text: tx("Übergabe, Vermietung, Betreuung", "Handover, letting, support") },
         ],
@@ -1063,14 +1063,14 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
             text: tx("Was wir renovieren oder modernisieren, Rücklage, Beschlüsse der Eigentümer und Heizung.", "What we renovate or modernise, the reserve, the owners' resolutions and the heating."),
           },
           { titel: tx("Rechnung", "Calculation"), text: tx("Netto statt brutto: nach allen Kosten, nicht nur Miete durch Kaufpreis.", "Net rather than gross: after all costs, not just rent divided by price.") },
-          { titel: tx("Dein Rahmen", "Your budget"), text: tx("In der Objektvorstellung nur, was zu deinen Kriterien passt und noch frei ist.", "In the property presentation, only what fits your criteria and is still available.") },
+          { titel: tx("Dein Rahmen", "Your budget"), text: tx("In der Objektvorstellung nur, was zu deinen Kriterien passt und noch frei ist.", "In the property introduction, only what fits your criteria and is still available.") },
         ],
       },
       {
         typ: "absatz",
         text: tx(
           "Zu jedem Objekt gibt es Exposé, Rechnung und Unterlagen. In der Objektvorstellung rechnen wir die Wohnung, die zu deinen Kriterien passt, mit deinen Zahlen.",
-          "Every property comes with a listing, a calculation and documents. In the property presentation we calculate the flat that fits your criteria with your own figures.",
+          "Every property comes with a listing, a calculation and documents. In the property introduction we calculate the flat that fits your criteria with your own figures.",
         ),
       },
       { typ: "h2", text: tx("Die Finanzierung übernehmen wir", "We arrange the financing") },
@@ -1790,7 +1790,7 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
           {
             symbol: "diagramm",
             marke: tx("Gespräch 2", "Call 2"),
-            titel: tx("Beratungspräsentation", "Consultation presentation"),
+            titel: tx("Firmen- und Konzeptvorstellung", "Concept introduction"),
             text: tx(
               "Welches Konzept passt zu dir, Steuerersparnis oder Altersvorsorge? Dazu unsere Objekte.",
               "Which concept suits you, tax savings or retirement provision? Plus our properties.",
@@ -1808,7 +1808,7 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
           {
             symbol: "haus",
             marke: tx("rund eine Woche später", "about a week later"),
-            titel: tx("Objektvorstellung", "Property presentation"),
+            titel: tx("Objektvorstellung", "Property introduction"),
             text: tx(
               "Eine Empfehlung, höchstens eine Alternative, gerechnet mit deiner Selbstauskunft, vor und nach Steuer.",
               "One recommendation, at most one alternative, calculated with your self-disclosure, before and after tax.",
@@ -2272,7 +2272,7 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
     ausgang === "passt"
       ? tx(
           "Deine Angaben passen zu unseren Wohnungen. Mit der Selbstauskunft rechnen wir deinen Rahmen genau, und dein Berater kann dir in der Objektvorstellung passende Wohnungen vorstellen.",
-          "Your details fit our flats. With the self-disclosure we calculate your budget precisely, and your contact can present suitable flats in the property presentation.",
+          "Your details fit our flats. With the self-disclosure we calculate your budget precisely, and your contact can present suitable flats in the property introduction.",
         )
       : ausgang === "vielleicht"
         ? tx(
@@ -2339,7 +2339,7 @@ function baue(ang: HandbuchAngaben, sprache: Sprache): Handbuch {
             ),
           },
           {
-            titel: tx("3 Objektvorstellung", "3 Property presentation"),
+            titel: tx("3 Objektvorstellung", "3 Property introduction"),
             text: tx(
               "Dein Berater meldet sich und stellt dir passende Wohnungen aus unserem Bestand vor, gerechnet mit deinen Zahlen.",
               "Your contact gets in touch and presents suitable flats from our portfolio, calculated with your figures.",
