@@ -4107,7 +4107,7 @@ export default function KundenDetail() {
     if (beraterUser && !isVpManuellQualifizierung) {
       supabase.from("benachrichtigungen").insert({
         benutzer_id: beraterUser.id,
-        titel: `Neues Firmen- und Konzeptvorstellung: ${kunde.vorname} ${kunde.nachname}`,
+        titel: `Neue Firmen- und Konzeptvorstellung: ${kunde.vorname} ${kunde.nachname}`,
         nachricht: `${user.name || ""} hat für ${kunde.vorname} ${kunde.nachname} eine Firmen- und Konzeptvorstellung am ${setterTerminDatum} um ${setterTerminUhrzeit} Uhr eingebucht.`,
         link: `/kunden/${id}`,
       } as any).then(() => {}, () => {});
@@ -4882,7 +4882,7 @@ export default function KundenDetail() {
                     if (beraterUser && !isVpManuellQualifizierung) {
                       vpNachrichtOk = await benachrichtigungAnlegen({
                         benutzer_id: beraterUser.id,
-                        titel: `Neues Firmen- und Konzeptvorstellung: ${kunde.vorname} ${kunde.nachname}`,
+                        titel: `Neue Firmen- und Konzeptvorstellung: ${kunde.vorname} ${kunde.nachname}`,
                         nachricht: `Setter ${user.name || ""} hat für ${kunde.vorname} ${kunde.nachname} eine Firmen- und Konzeptvorstellung am ${setterTerminDatum} um ${setterTerminUhrzeit} Uhr eingebucht.`,
                         link: `/kunden/${id}`,
                       });
