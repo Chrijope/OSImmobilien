@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { Bell, FileArchive, Loader2 } from "lucide-react";
+import { Bell, FileArchive, Loader2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import { useUnterlagenZip } from "@/hooks/useUnterlagenZip";
@@ -186,24 +186,30 @@ export function FinanzierungspartnerKarte(p: FinanzierungspartnerKarteProps) {
     starten("objekt", dateien, zipDateiname({ objektTitel: objekt.titel || p.objektTitel, weNr, zusatz: "Objekt" }));
   };
 
-  const zipKnopf = (art: "kunde" | "objekt", text: string, onClick: () => void) => (
-    <Button size="sm" variant="outline" className="text-xs h-8" disabled={!!lauf && lauf.art !== art} onClick={lauf?.art === art ? abbrechen : onClick}>
+  const zipKnopf = (art: "kunde" | "objekt", text: string, onClick: () => void, gross = false) => (
+    <Button size={gross ? "default" : "sm"} variant={gross ? "default" : "outline"} className={gross ? "text-sm" : "text-xs h-8"} disabled={!!lauf && lauf.art !== art} onClick={lauf?.art === art ? abbrechen : onClick}>
       {lauf?.art === art
         ? <><Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />{lauf.fertig} von {lauf.gesamt}, abbrechen</>
         : <><FileArchive className="h-3.5 w-3.5 mr-1.5" />{text}</>}
     </Button>
   );
 
-  const anzeige = p.darfBearbeiten ? partner : partner.filter((u) => gewaehlt.includes(u.id));
+  // Gewaehlte als Liste, weitere ueber das Auswahlfeld (Christian, 30.10.2026).
+  const anzeige = partner.filter((u) => gewaehlt.includes(u.id));
+  const waehlbar = partner.filter((u) => !gewaehlt.includes(u.id));
 
   // Der Finanzierer sieht nur seine Unterlagen, nicht, wer sonst angefragt ist.
   if (user.role === "finanzierungspartner") {
     return (
-      <div className="mb-4 rounded-lg border px-4 py-3 space-y-3" data-finanzierungspartner-karte>
-        <p className="text-sm font-semibold">Unterlagen</p>
+      // Hervorgehoben: Damit faengt der Finanzierer an (Christian, 30.10.2026).
+      <div className="mb-4 rounded-lg border-2 border-primary/40 bg-primary/5 px-4 py-3 space-y-3" data-finanzierungspartner-karte>
+        <div>
+          <p className="text-sm font-semibold">Unterlagen für die Finanzierung</p>
+          <p className="text-xs text-muted-foreground">Kunden- und Objektunterlagen jeweils als ZIP.</p>
+        </div>
         <div className="flex flex-wrap gap-2">
-          {zipKnopf("kunde", "Kundenunterlagen als ZIP", kundenZip)}
-          {zipKnopf("objekt", "Objektunterlagen als ZIP", objektZip)}
+          {zipKnopf("kunde", "Kundenunterlagen als ZIP", kundenZip, true)}
+          {zipKnopf("objekt", "Objektunterlagen als ZIP", objektZip, true)}
         </div>
       </div>
     );
@@ -215,33 +221,47 @@ export function FinanzierungspartnerKarte(p: FinanzierungspartnerKarteProps) {
 
       {partner.length === 0 ? (
         <p className="text-xs text-muted-foreground">Im CRM ist noch niemand mit der Rolle Finanzierungspartner angelegt.</p>
-      ) : anzeige.length === 0 ? (
-        <p className="text-xs text-muted-foreground">Noch kein Finanzierungspartner gewählt.</p>
       ) : (
-        <ul className="space-y-1.5">
-          {anzeige.map((u) => {
-            const meldung = meldungVon(u.id);
-            return (
-              <li key={u.id} className="flex items-start gap-2 text-sm">
-                {p.darfBearbeiten && (
-                  <Checkbox
-                    id={`fp-${p.investmentId}-${u.id}`}
-                    checked={gewaehlt.includes(u.id)}
-                    onCheckedChange={(v) => umschalten(u.id, v === true)}
-                    className="mt-0.5"
-                  />
-                )}
-                <label htmlFor={`fp-${p.investmentId}-${u.id}`} className="flex-1 min-w-0">
-                  <span className="font-medium">{u.name}</span>
-                  {u.email && <span className="text-muted-foreground">, {u.email}</span>}
-                  {meldung && (
-                    <span className="block text-xs text-muted-foreground">benachrichtigt am {zeitpunkt(meldung.am)}</span>
-                  )}
-                </label>
-              </li>
-            );
-          })}
-        </ul>
+        <>
+          {anzeige.length === 0 ? (
+            <p className="text-xs text-muted-foreground">Noch kein Finanzierungspartner gewählt.</p>
+          ) : (
+            <ul className="space-y-1.5" data-pruefung="finanzierer-gewaehlt">
+              {anzeige.map((u) => {
+                const meldung = meldungVon(u.id);
+                return (
+                  <li key={u.id} className="flex items-start gap-2 text-sm">
+                    <span className="flex-1 min-w-0">
+                      <span className="font-medium">{u.name}</span>
+                      {u.email && <span className="text-muted-foreground">, {u.email}</span>}
+                      {meldung && (
+                        <span className="block text-xs text-muted-foreground">benachrichtigt am {zeitpunkt(meldung.am)}</span>
+                      )}
+                    </span>
+                    {p.darfBearbeiten && (
+                      <button type="button" aria-label={`${u.name} entfernen`} className="text-muted-foreground hover:text-foreground" onClick={() => umschalten(u.id, false)}>
+                        <X className="h-4 w-4" />
+                      </button>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+          {p.darfBearbeiten && waehlbar.length > 0 && (
+            // Schluessel je Auswahlstand: Das Feld steht danach wieder auf dem Platzhalter.
+            <Select key={gewaehlt.join(",")} onValueChange={(id) => umschalten(id, true)}>
+              <SelectTrigger className="h-8 text-xs max-w-sm" aria-label="Finanzierer hinzufügen">
+                <SelectValue placeholder="Finanzierer hinzufügen …" />
+              </SelectTrigger>
+              <SelectContent>
+                {waehlbar.map((u) => (
+                  <SelectItem key={u.id} value={u.id} className="text-xs">{u.name}{u.email ? `, ${u.email}` : ""}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        </>
       )}
 
       {p.darfBearbeiten && partner.length > 0 && (
