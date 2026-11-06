@@ -62,12 +62,12 @@ const DE = {
 const TEXTE: Zweisprachig<typeof DE> = {
   de: DE,
   en: {
-    betreff: (datum: string) => (datum ? `Invitation to the property presentation on ${datum}` : 'Invitation to the property presentation'),
+    betreff: (datum: string) => (datum ? `Invitation to the property introduction on ${datum}` : 'Invitation to the property introduction'),
     augenbraue: 'Invitation',
-    titel: 'Your property presentation',
-    vorschau: (datum: string) => `We cordially invite you to the property presentation${datum ? ` on ${datum}` : ''}.`,
+    titel: 'Your property introduction',
+    vorschau: (datum: string) => `We cordially invite you to the property introduction${datum ? ` on ${datum}` : ''}.`,
     absatz: (datum: string) =>
-      `We cordially invite you to the property presentation${datum ? ` on ${datum}` : ''}. We will present the property that suits your goals, with all the figures, and answer your questions.`,
+      `We cordially invite you to the property introduction${datum ? ` on ${datum}` : ''}. We will present the property that suits your goals, with all the figures, and answer your questions.`,
     ort: (art: TerminArt) =>
       art === 'video'
         ? 'We will meet by video; you will find the access link below.'

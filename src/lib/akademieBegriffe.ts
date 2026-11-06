@@ -98,7 +98,7 @@ export const AKADEMIE_BEGRIFFE: readonly AkademieBegriff[] = [
     erklaerung:
       "Eine Abschreibung, die nicht jedes Jahr gleich hoch ist, sondern in Prozent vom jeweiligen Restwert gerechnet wird: am Anfang hoch, dann sinkend. Für Wohngebäude ist sie nach Paragraf 7 Absatz 5a Einkommensteuergesetz nur bei Baubeginn in einem befristeten Zeitfenster möglich.",
     imVerkauf:
-      "Wer in der Beratungspräsentation „5 plus 5 Prozent“ hört, sieht hier zwei verschiedene Dinge: die Sonderabschreibung und diese Form der normalen Abschreibung.",
+      "Wer in der Firmen- und Konzeptvorstellung „5 plus 5 Prozent“ hört, sieht hier zwei verschiedene Dinge: die Sonderabschreibung und diese Form der normalen Abschreibung.",
     mehr: "/vertriebsakademie/glossar-zahlen?vaScrollTo=afa",
   },
   {
@@ -389,7 +389,7 @@ export const AKADEMIE_BEGRIFFE: readonly AkademieBegriff[] = [
     erklaerung:
       "Das Formular, in dem der Kunde der Bank Einkommen, Ausgaben, Vermögen und Verbindlichkeiten offenlegt. Es ist die Grundlage der Kreditentscheidung, und unrichtige Angaben können den Vertrag gefährden.",
     imVerkauf:
-      "Ihr füllt sie am Ende der Beratung gemeinsam aus, sie ist die Basis der Kalkulation für die Objektpräsentation. Und sie ist der erste verbindliche Schritt des Kunden, ein ehrlicher Prüfstein für Interesse.",
+      "Ihr füllt sie am Ende der Beratung gemeinsam aus, sie ist die Basis der Kalkulation für die Objektvorstellung. Und sie ist der erste verbindliche Schritt des Kunden, ein ehrlicher Prüfstein für Interesse.",
   },
   {
     begriff: "Grundschuld",

@@ -319,7 +319,7 @@ export default function VorschauHandbuchErgebnisEntwurf({ a, vorname }: { a: Han
       <Folie id="weiter" ton="hell" kicker="Danach wie bisher" titel="Deine Objekte und [[dein Handbuch]]">
         <p className="mt-6 max-w-3xl text-base leading-relaxed" style={{ color: FARBE.grau }}>
           Darunter folgen wie heute dein Rahmen, unsere Objekte zu deinem Rahmen und das Handbuch mit allen 14 Kapiteln. Beim Bau bekommen Kapitel 6, 7 und 9
-          dieselben Grafiken wie oben, auch im PDF, damit Handbuch, Analysetool, Beratungspräsentation und Exposé gleich rechnen und gleich sprechen.
+          dieselben Grafiken wie oben, auch im PDF, damit Handbuch, Analysetool, Firmen- und Konzeptvorstellung und Exposé gleich rechnen und gleich sprechen.
         </p>
       </Folie>
     </div>

@@ -103,9 +103,9 @@ export const ANLASS_TEXTE: Record<MailSprache, Record<string, AnlassText>> = {
         'choose the time that suits you best.',
     },
     objektvorstellung: {
-      betreff: 'Your personal link for the property presentation',
-      titel: 'Your property presentation',
-      vorschau: 'Simply pick a time for your property presentation.',
+      betreff: 'Your personal link for the property introduction',
+      titel: 'Your property introduction',
+      vorschau: 'Simply pick a time for your property introduction.',
       absatz:
         'The time has come: we will present the property that suits you in detail, ' +
         'with its location, the figures and a personal calculation that we have ' +

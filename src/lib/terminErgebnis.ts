@@ -548,7 +548,7 @@ export async function terminNoShow(t: ErgebnisTermin, ctx: ErgebnisKontext): Pro
   }
   // Gemerkt wird nur ein geplatztes Erst- oder Beratungsgespraech: Die
   // Liste zaehlt das rote No-Show-Banner im Kundenprofil.
-  if ((t.buchung && NOSHOW_STUFE[t.buchung.anlass]) || /erstgespr|beratung/i.test(t.titel)) {
+  if ((t.buchung && NOSHOW_STUFE[t.buchung.anlass]) || /erstgespr|beratung|konzeptvorstellung/i.test(t.titel)) {
     await merkeNoShow(ctx.kundeId, kontakt, datum, uhrzeit);
   }
   if (schonErfasst) {

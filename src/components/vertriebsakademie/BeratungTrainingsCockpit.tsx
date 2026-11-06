@@ -175,7 +175,7 @@ export function BeratungTrainingsCockpit() {
           <iframe
             ref={iframeRef}
             src={PRAESENTATION_URL}
-            title="Beratungspräsentation OS Immobilien"
+            title="Firmen- und Konzeptvorstellung OS Immobilien"
             loading="lazy"
             className="w-full block"
             style={{ height: "720px" }}

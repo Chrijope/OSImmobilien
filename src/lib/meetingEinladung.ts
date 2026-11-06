@@ -30,7 +30,7 @@ export function meetingVorlage(anlass?: string, titel?: string): string {
   if (anlass === "objektvorstellung") return "einladung-objektvorstellung";
   if (anlass) return "zoom-meeting-einladung";
   if (/objektvorstellung/i.test(titel || "")) return "einladung-objektvorstellung";
-  if (/beratungs(gespr|präsent|praesent)/i.test(titel || "")) return "termin-beratungspraesentation";
+  if (/beratungs(gespr|präsent|praesent)|konzeptvorstellung/i.test(titel || "")) return "termin-beratungspraesentation";
   return "zoom-meeting-einladung";
 }
 

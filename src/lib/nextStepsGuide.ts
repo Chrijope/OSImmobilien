@@ -106,7 +106,7 @@ const GUIDE: Partial<Record<PipelineStufe, NextStepsGuide>> = {
       { text: "Erstgesprächsskript und Unterlagen für den Termin vorbereiten" },
       { text: "Im Gespräch das Skript durchgehen und den Bedarf qualifizieren" },
       { text: "Nach dem Termin das Ergebnis eintragen: erschienen, verschoben oder No-Show" },
-      { text: "Beratungspräsentation vereinbaren, 2 bis 5 Tage nach dem Gespräch" },
+      { text: "Firmen- und Konzeptvorstellung vereinbaren, 2 bis 5 Tage nach dem Gespräch" },
     ],
     hinweis: 'Die Knöpfe für das Termin-Ergebnis erscheinen erst, wenn der Termin-Zeitpunkt erreicht ist. Sobald das Erstgesprächsskript gespeichert und das Beratungsgespräch eingebucht wurde, springt die Pipeline-Stufe automatisch auf „Beratungsgespräch".',
   },
@@ -120,12 +120,12 @@ const GUIDE: Partial<Record<PipelineStufe, NextStepsGuide>> = {
     hinweis: "Der No-Show-Hinweis im Kundenprofil verschwindet automatisch, sobald ein neuer Termin für das Qualifizierungsgespräch gebucht ist.",
   },
   beratungsgespraech: {
-    titel: "Beratungspräsentation vorbereiten & durchführen",
+    titel: "Firmen- und Konzeptvorstellung vorbereiten & durchführen",
     aktionen: [
-      { text: "Beratungspräsentation öffnen und auf den Kunden vorbereiten" },
-      { text: "Beratungspräsentation führen, Bedarf & Bonität gemeinsam qualifizieren" },
+      { text: "Firmen- und Konzeptvorstellung öffnen und auf den Kunden vorbereiten" },
+      { text: "Firmen- und Konzeptvorstellung führen, Bedarf & Bonität gemeinsam qualifizieren" },
       { text: "Am Ende zur Selbstauskunft überleiten und sie direkt im Gespräch gemeinsam mit dem Kunden ausfüllen" },
-      { text: "Objektpräsentation / Closing für etwa 7 Tage später vereinbaren" },
+      { text: "Objektvorstellung / Closing für etwa 7 Tage später vereinbaren" },
     ],
     // Geprüft in kontaktPipeline.calculateLogicalPipelineStufe: Sobald die
     // Selbstauskunft beim Kunden liegt und die Unterschrift aussteht, ist die
@@ -161,10 +161,10 @@ const GUIDE: Partial<Record<PipelineStufe, NextStepsGuide>> = {
     hinweis:
       "Der Kunde wird nach 3, 7 und 11 Tagen automatisch per E-Mail erinnert, jeweils mit dir als " +
       "Ansprechpartner. Füllt er sie bis Tag 14 nicht aus, landet eine Aufgabe in deiner Inbox. " +
-      'Sobald der Kunde unterschreibt, springt der Deal automatisch auf „Objektpräsentation / Closing" und du bekommst die Aufgabe, die Objektpräsentation in 7 Tagen zu terminieren.',
+      'Sobald der Kunde unterschreibt, springt der Deal automatisch auf „Objektvorstellung / Closing" und du bekommst die Aufgabe, die Objektvorstellung in 7 Tagen zu terminieren.',
   },
   objektauswahl: {
-    titel: "Objektpräsentation / Closing durchführen",
+    titel: "Objektvorstellung / Closing durchführen",
     aktionen: [
       { text: "Freie Wohnungen im System und in Investagon prüfen und passende Einheiten vorschlagen" },
       { text: "Kunde das Objekt mit Exposé und Investmentkalkulation auf Basis der Selbstauskunft vorstellen" },
@@ -176,7 +176,7 @@ const GUIDE: Partial<Record<PipelineStufe, NextStepsGuide>> = {
     hinweis: "Fehlen zwei Tage vor dem Termin noch Ausweis oder Gehaltsabrechnung, bekommst du eine Aufgabe zum Nachfassen.",
   },
   follow_up_objekt: {
-    titel: "Follow-Up nach der Objektpräsentation",
+    titel: "Follow-Up nach der Objektvorstellung",
     aktionen: [
       { text: "Kunde überlegt noch. Dranbleiben und Follow-Up-Termin vereinbaren" },
       { text: "Offene Fragen zum Objekt klären und fehlende Unterlagen nachreichen" },

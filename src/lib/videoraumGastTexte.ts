@@ -317,7 +317,7 @@ export const VIDEORAUM_GAST_TEXTE: ZweiSprachen<VideoraumGastTexte> = {
         "The room has been closed or the link has expired. Just send your contact a short message and you'll receive a new link.",
       beendetTitel: "The meeting has ended.",
       beendetGrund: "The meeting was ended.",
-      objektvorstellung: "Property presentation",
+      objektvorstellung: "Property introduction",
       mit: "With",
       minuten: "{minuten} minutes",
       heute: "Today, {zeit}",

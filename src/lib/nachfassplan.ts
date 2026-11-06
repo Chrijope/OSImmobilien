@@ -50,12 +50,13 @@ export type GespraechsArt = "erstgespraech" | "beratung";
 
 /**
  * Eine Beratungspräsentation: bei Buchungen zählt der Anlass, sonst der
- * Titel. In der Pipeline heißt die Stufe „Beratungspräsentation“, als
- * Terminart oft noch „Beratungsgespräch“.
+ * Titel. In der Pipeline heißt die Stufe heute „Firmen- und
+ * Konzeptvorstellung“, als Terminart oft noch „Beratungsgespräch“; alte
+ * Titel mit „Beratungspräsentation“ gelten weiter.
  */
 export function istBeratungspraesentation(titel?: string, anlass?: string): boolean {
   if (anlass) return anlass === "beratung";
-  return /beratungs(gespr|präsent|praesent)/i.test(titel || "");
+  return /beratungs(gespr|präsent|praesent)|konzeptvorstellung/i.test(titel || "");
 }
 
 /** Erstgespräch, Beratungspräsentation oder keins von beiden. */
@@ -111,7 +112,7 @@ export async function legeZusammenfassungAn(a: GespraechAnlass): Promise<boolean
   if (Number.isNaN(a.beginn.getTime())) return false;
   const ende = gespraechsEnde(a.beginn, a.dauerMinuten);
   const { tag, uhrzeit } = zusammenfassungFaellig(ende);
-  const gespraech = a.art === "beratung" ? "der Beratungspräsentation" : "dem Erstgespräch";
+  const gespraech = a.art === "beratung" ? "der Firmen- und Konzeptvorstellung" : "dem Erstgespräch";
   if (a.art === "beratung") {
     try {
       await mergeKontaktMeta(a.kontaktId, { [BP_ENDE_META]: ende.toISOString() });
@@ -181,12 +182,12 @@ export function beratungsNachfassTexte(art: BeratungsNachfass, kundeName: string
   return art === "unterlage_fehlt"
     ? {
         titel: UNTERLAGE_FEHLT_TITEL,
-        beschreibung: `Seit der Beratungspräsentation sind 24 Stunden vergangen. Von ${kundeName} fehlt noch: ${offen.join(", ")}. Bitte freundlich erinnern.`,
+        beschreibung: `Seit der Firmen- und Konzeptvorstellung sind 24 Stunden vergangen. Von ${kundeName} fehlt noch: ${offen.join(", ")}. Bitte freundlich erinnern.`,
         typ: "follow_up" as const,
       }
     : {
         titel: KEINE_REAKTION_TITEL,
-        beschreibung: `Seit der Beratungspräsentation sind 48 Stunden vergangen, ${kundeName} hat noch nicht reagiert. Offen: ${offen.join(", ")}. Bitte anrufen.`,
+        beschreibung: `Seit der Firmen- und Konzeptvorstellung sind 48 Stunden vergangen, ${kundeName} hat noch nicht reagiert. Offen: ${offen.join(", ")}. Bitte anrufen.`,
         typ: "anruf" as const,
       };
 }

@@ -264,7 +264,7 @@ export const LIZENZ_PAKETE: LizenzPaket[] = [
       "Einmalige Setup-Investition 5.000 € (Landingpage & Start-Leadpaket)",
       "Umfangreiche Tax Unterlagen und Wissensartikel",
       "Eigene Empfehlungsprogramme",
-      "Erweiterte Beratungs-Präsentation",
+      "Erweiterte Firmen- und Konzeptvorstellung",
       "Höhere Provisionsstaffel",
       "30 Start-Leads inklusive – weitere Leads 1:1 zum marktüblichen Leadpreis",
       "Eigene Lead-Generierung: warme, von uns umfangreich vorqualifizierte Leads werden direkt an dich übergeben – unsere gewonnenen Leads verdienen im Schnitt 4.500 € netto/Monat und mehr",

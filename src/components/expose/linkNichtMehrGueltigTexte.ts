@@ -28,7 +28,7 @@ export const LINK_NICHT_MEHR_GUELTIG_TEXTE: ZweiSprachen<LinkNichtMehrGueltigTex
     laedt: "Wird geladen",
   },
   en: {
-    objektvorstellungTitel: "This property presentation is no longer available",
+    objektvorstellungTitel: "This property introduction is no longer available",
     objektvorstellungSatz: "Your contact will be happy to send you the current property overview.",
     abgelaufenTitel: "This link is no longer valid",
     abgelaufenSatzObjektuebersicht: "The personal link to your property overview has expired. Just get in touch and you’ll receive a new one.",

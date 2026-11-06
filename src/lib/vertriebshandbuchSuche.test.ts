@@ -152,8 +152,8 @@ describe("Sprungknoepfe und Ablaufbild", () => {
     // danach Reservierung, Besichtigung, Termin Bankgutachter, Finanzierung.
     expect(titel).not.toContain("Bonitätsunterlagen");
     expect(titel).not.toContain("Objektauswahl");
-    expect(titel.indexOf("Selbstauskunft und Unterlagen")).toBeLessThan(titel.indexOf("Objektpräsentation / Closing"));
-    expect(titel.indexOf("Objektpräsentation / Closing")).toBeLessThan(titel.indexOf("Reservierung"));
+    expect(titel.indexOf("Selbstauskunft und Unterlagen")).toBeLessThan(titel.indexOf("Objektvorstellung / Closing"));
+    expect(titel.indexOf("Objektvorstellung / Closing")).toBeLessThan(titel.indexOf("Reservierung"));
     expect(titel.indexOf("Reservierung")).toBeLessThan(titel.indexOf("Finanzierung"));
     expect(titel.indexOf("Finanzierung")).toBeLessThan(titel.indexOf("Termin Bankgutachter"));
     expect(titel.indexOf("Termin Bankgutachter")).toBeLessThan(titel.indexOf("Besichtigung"));

@@ -398,7 +398,7 @@ export default function Beratungspraesentation() {
           <div className="hidden md:flex items-center gap-2">
             <PraesentationPdfButton
               containerRef={pageRef}
-              title="Beratungspräsentation · Neubau"
+              title="Firmen- und Konzeptvorstellung · Neubau"
               subtitle={kundenName ? `Für ${kundenName}` : "OS Immobilien · Investment für Kapitalanleger"}
               filename="OS-Immobilien_Beratungspraesentation_Neubau.pdf"
               preset="neubau"

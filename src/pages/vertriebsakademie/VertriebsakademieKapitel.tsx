@@ -100,7 +100,7 @@ function deriveWarumTitel(rendered: string, titel: string): string {
   const istUebergang = /(überleit|übergang|bridge|transition|handover)/.test(combined);
   const istOpener = /(opener|eröffnung|einstieg|begrüß|hallo|guten tag)/.test(combined);
   const istClose = /(close|abschluss|closing|termin(vereinbarung)?|call to action)/.test(combined);
-  const istPitch = /(pitch|präsentation|story|elevator)/.test(combined);
+  const istPitch = /(pitch|präsentation|konzeptvorstellung|objektvorstellung|story|elevator)/.test(combined);
 
   if (hatFrage) return "Warum diese Frage so aufgebaut ist";
   if (istEinwand) return "Warum diese Einwand-Antwort so wirkt";

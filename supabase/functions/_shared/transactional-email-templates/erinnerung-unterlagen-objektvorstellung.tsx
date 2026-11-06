@@ -44,12 +44,12 @@ const DE = {
 const TEXTE: Zweisprachig<typeof DE> = {
   de: DE,
   en: {
-    betreff: (datum: string) => (datum ? `For your property presentation on ${datum}: documents still missing` : 'For your property presentation: documents still missing'),
+    betreff: (datum: string) => (datum ? `For your property introduction on ${datum}: documents still missing` : 'For your property introduction: documents still missing'),
     augenbraue: 'Reminder',
     titel: 'Documents still missing',
     vorschau: 'Please upload the missing documents before the appointment.',
     absatz: (datum: string, uhr: string) =>
-      `Your property presentation is in two days${datum ? `, on ${datum}${uhr ? ` at ${uhr}` : ''}` : ''}. So that we can settle all next steps directly in the appointment, we still need:`,
+      `Your property introduction is in two days${datum ? `, on ${datum}${uhr ? ` at ${uhr}` : ''}` : ''}. So that we can settle all next steps directly in the appointment, we still need:`,
     namen: {
       Personalausweis: 'ID card, front and back',
       'Letzter Gehaltsnachweis': 'Your latest payslip',

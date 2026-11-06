@@ -83,7 +83,7 @@ export const ABLAUF_STATIONEN: AblaufStation[] = [
     titel: "Qualifizierungsgespräch",
     zeit: "ca. 25 bis 30 Min.",
     beschreibung:
-      "Tag 0. Das Gespräch nach dem Erstgesprächsskript: erst verstehen, dann empfehlen. Ziel, Motiv und finanzieller Rahmen des Kunden werden klar, und wo es nicht passt, sagen wir das offen. Ziel ist der feste Termin für die Beratungspräsentation, 2 bis 5 Tage später.",
+      "Tag 0. Das Gespräch nach dem Erstgesprächsskript: erst verstehen, dann empfehlen. Ziel, Motiv und finanzieller Rahmen des Kunden werden klar, und wo es nicht passt, sagen wir das offen. Ziel ist der feste Termin für die Firmen- und Konzeptvorstellung, 2 bis 5 Tage später.",
     stufen: ["erstgespraech_geplant"],
     imCrm: [
       "Im Normalfall ist das Erstgespräch der Anruf selbst. Du führst es mit dem Erstgesprächsskript unter „Stammdaten\", Ziel ist der feste Termin für das Beratungsgespräch.",
@@ -94,7 +94,7 @@ export const ABLAUF_STATIONEN: AblaufStation[] = [
   },
   {
     id: "beratungsgespraech",
-    titel: "Beratungspräsentation",
+    titel: "Firmen- und Konzeptvorstellung",
     zeit: "ca. 1 Std.",
     beschreibung:
       "Die Beratung mit Zahlen und der Wahl des Konzepts: Zusatzrente oder Steuerersparnis. Am Ende füllt ihr die Selbstauskunft gemeinsam aus. Personalausweis und letzte Gehaltsabrechnung reicht der Kunde bis Tag 7 im Portal nach.",
@@ -110,7 +110,7 @@ export const ABLAUF_STATIONEN: AblaufStation[] = [
   },
   {
     id: "objektauswahl",
-    titel: "Objektpräsentation / Closing und Reservierung",
+    titel: "Objektvorstellung / Closing und Reservierung",
     zeit: "ca. 1 Std.",
     beschreibung:
       "Rund 7 Tage nach der Beratung stellst du das passende Objekt vor, mit Exposé und einer Investmentkalkulation auf Basis der Selbstauskunft, und besprichst das Finanzierungskonzept. Hier soll der Kunde kaufen wollen: Er reserviert im selben Termin, mit dem Reservierungsformular ohne Gebühr.",
@@ -118,9 +118,9 @@ export const ABLAUF_STATIONEN: AblaufStation[] = [
     // Objektvorstellung und gehoert fachlich zu dieser Station.
     stufen: ["objektauswahl", "follow_up_objekt", "reservierung"],
     imCrm: [
-      "Mit der unterschriebenen Selbstauskunft rückt der Kunde automatisch auf Objektpräsentation / Closing. Ab hier siehst du die passenden Einheiten im Profil.",
-      "Überlegt der Kunde nach der Objektpräsentation noch, ziehst du ihn in der Pipeline von Hand in die Spalte „Follow-Up\" und legst eine Aufgabe mit Rückruftermin an. Diese Stufe setzt keine Automatik, sie ist ausdrücklich deine Entscheidung.",
-      "Die Reservierung startet erst, wenn Selbstauskunft, Personalausweis und letzte Gehaltsabrechnung vorliegen. Fehlen zwei Tage vor der Objektpräsentation noch Unterlagen, bekommst du eine Aufgabe zum Nachfassen.",
+      "Mit der unterschriebenen Selbstauskunft rückt der Kunde automatisch auf Objektvorstellung / Closing. Ab hier siehst du die passenden Einheiten im Profil.",
+      "Überlegt der Kunde nach der Objektvorstellung noch, ziehst du ihn in der Pipeline von Hand in die Spalte „Follow-Up\" und legst eine Aufgabe mit Rückruftermin an. Diese Stufe setzt keine Automatik, sie ist ausdrücklich deine Entscheidung.",
+      "Die Reservierung startet erst, wenn Selbstauskunft, Personalausweis und letzte Gehaltsabrechnung vorliegen. Fehlen zwei Tage vor der Objektvorstellung noch Unterlagen, bekommst du eine Aufgabe zum Nachfassen.",
       "Die Reservierungsvereinbarung schickst du im Investment-Reiter über die Karte „Reservierung\". Ab dem Versand rückt der Kunde auf Reservierung. Nach der Unterschrift wird die Finanzierung angefragt.",
       "Bleibt die Unterschrift aus, erinnert das System den Kunden nach 2, 5 und 10 Tagen. Nach 14 Tagen bekommst du eine Aufgabe mit hoher Priorität. Der Link läuft dabei nicht ab.",
     ],

@@ -127,7 +127,7 @@ const PIPELINE_STEPS = [
   { key: "beratung", label: "Beratung", icon: User },
   { key: "selbstauskunft", label: "Selbstauskunft", icon: ShieldCheck },
   { key: "unterlagen", label: "Unterlagen", icon: ShieldCheck },
-  { key: "objektvorstellung", label: "Objektpräsentation", icon: Home },
+  { key: "objektvorstellung", label: "Objektvorstellung", icon: Home },
   { key: "reservierung", label: "Reservierung", icon: FileText },
   { key: "finanzierung", label: "Finanzierung", icon: Landmark },
   { key: "bankgutachter", label: "Bankgutachter", icon: Landmark },

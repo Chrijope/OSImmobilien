@@ -173,22 +173,22 @@ function Pflichtmarke({ gefuellt }: { gefuellt: boolean }) {
  *   ruhestandAb, reserve, grenzeStress, sorgen, offeneFragen.
  */
 export const UEBERNAHME_ZIELE: Record<string, string> = {
-  motivWoertlich: "Zitat auf der Seite „Deine Ziele“ der Beratungspräsentation",
-  mitentscheider: "„Dein Rahmen“ in der Beratungspräsentation",
+  motivWoertlich: "Zitat auf der Seite „Deine Ziele“ der Firmen- und Konzeptvorstellung",
+  mitentscheider: "„Dein Rahmen“ in der Firmen- und Konzeptvorstellung",
   beruf: "Berufliche Situation in der Qualifizierung im Kundenprofil und in der Lead-Verwaltung",
-  ziele: "Ziel in der Qualifizierung im Kundenprofil, Pipeline, Lead-Verwaltung und Beratungspräsentation",
-  schwerpunkt: "Konzeptschalter der Beratungspräsentation (Zusatzrente oder Steuerersparnis)",
-  ruhestandAb: "Rentenlücke in der Beratungspräsentation",
-  renteErwartet: "Rentenlücke in der Beratungspräsentation",
-  wunschNetto: "Rentenlücke in der Beratungspräsentation",
-  erfahrung: "Beratungspräsentation, Feld Erfahrung",
-  qualEinkommen: "Qualifizierung im Kundenprofil, Lead-Verwaltung und Einnahmen in der Beratungspräsentation",
-  qualEigenkapital: "Qualifizierung im Kundenprofil, Lead-Verwaltung und Eigenkapital in der Beratungspräsentation",
-  reserve: "„Dein Rahmen“ und „Deine Kriterien“ in der Beratungspräsentation",
-  investitionMonat: "Monatsbeitrag in „Dein Rahmen“ und „Deine Kriterien“ der Beratungspräsentation",
-  grenzeStress: "„Deine Kriterien“ in der Beratungspräsentation",
-  sorgen: "Abschnitt „Sicherheit“ der Beratungspräsentation",
-  offeneFragen: "Seite „Deine Ziele“ der Beratungspräsentation",
+  ziele: "Ziel in der Qualifizierung im Kundenprofil, Pipeline, Lead-Verwaltung und Firmen- und Konzeptvorstellung",
+  schwerpunkt: "Konzeptschalter der Firmen- und Konzeptvorstellung (Zusatzrente oder Steuerersparnis)",
+  ruhestandAb: "Rentenlücke in der Firmen- und Konzeptvorstellung",
+  renteErwartet: "Rentenlücke in der Firmen- und Konzeptvorstellung",
+  wunschNetto: "Rentenlücke in der Firmen- und Konzeptvorstellung",
+  erfahrung: "Firmen- und Konzeptvorstellung, Feld Erfahrung",
+  qualEinkommen: "Qualifizierung im Kundenprofil, Lead-Verwaltung und Einnahmen in der Firmen- und Konzeptvorstellung",
+  qualEigenkapital: "Qualifizierung im Kundenprofil, Lead-Verwaltung und Eigenkapital in der Firmen- und Konzeptvorstellung",
+  reserve: "„Dein Rahmen“ und „Deine Kriterien“ in der Firmen- und Konzeptvorstellung",
+  investitionMonat: "Monatsbeitrag in „Dein Rahmen“ und „Deine Kriterien“ der Firmen- und Konzeptvorstellung",
+  grenzeStress: "„Deine Kriterien“ in der Firmen- und Konzeptvorstellung",
+  sorgen: "Abschnitt „Sicherheit“ der Firmen- und Konzeptvorstellung",
+  offeneFragen: "Seite „Deine Ziele“ der Firmen- und Konzeptvorstellung",
 };
 
 /**
@@ -294,7 +294,7 @@ const SCHRITTE: Schritt[] = [
   // Früher „Anrede klären“. Seit dem 16.10.2026 nur noch ein Hinweis ohne
   // Sprechtext; Nummer und Kennung bleiben, damit gespeicherte Haken passen.
   { id: "anrede", nr: 2, titel: "Hinweis: Wir duzen",
-    tipp: `Wir duzen jeden Kunden vom ersten Satz an, im Skript, in der Beratungspräsentation und in den Mails. Hier ist nichts zu fragen und nichts zu wählen.` },
+    tipp: `Wir duzen jeden Kunden vom ersten Satz an, im Skript, in der Firmen- und Konzeptvorstellung und in den Mails. Hier ist nichts zu fragen und nichts zu wählen.` },
 
   { id: "ziel_gespraech", nr: 3, titel: "Ablauf und Ziel des Gesprächs",
     text: `„Kurz zum Ablauf, damit du weißt, was dich erwartet: Ich möchte heute vor allem verstehen, wo du stehst und was du erreichen möchtest. Dazu stelle ich dir ein paar Fragen. Einige davon sind persönlich, und du entscheidest, was du mir erzählst. Danach sage ich dir kurz, wer wir sind und wie wir arbeiten. Am Ende sagen wir beide ehrlich, ob ein zweites Gespräch Sinn ergibt. Eine konkrete Immobilie schauen wir heute nicht an, und es wird nichts unterschrieben. Ist das für dich ein guter Ablauf?“\n\n„Darf ich mir dabei ein paar Notizen machen? Und gibt es etwas, das du heute auf jeden Fall geklärt haben möchtest?“`,
@@ -303,7 +303,7 @@ const SCHRITTE: Schritt[] = [
   // ── Phase B: Kundenrahmen ──
   { id: "warmup", nr: 4, phase: { kennung: "B", titel: "Kundenrahmen" }, titel: "Motiv: Warum gerade jetzt?",
     text: `„Was hat dich dazu gebracht, dich gerade jetzt mit Immobilien als Kapitalanlage zu beschäftigen?“`,
-    tipp: `Nachfragen statt bewerten: „Was meinst du genau mit …?“ · „Wie kam es dazu?“ Pausen aushalten. Den wichtigsten Satz des Kunden wörtlich notieren. Er erscheint in der Beratungspräsentation als Zitat auf der Seite „Deine Ziele“.`,
+    tipp: `Nachfragen statt bewerten: „Was meinst du genau mit …?“ · „Wie kam es dazu?“ Pausen aushalten. Den wichtigsten Satz des Kunden wörtlich notieren. Er erscheint in der Firmen- und Konzeptvorstellung als Zitat auf der Seite „Deine Ziele“.`,
     fragen: [{ key: "motivWoertlich", label: "Motiv in den Worten des Kunden (wörtlich)", placeholder: "z.B. „Ich merke, dass meine Rente später nicht reicht, und ich möchte jetzt anfangen.“", multiline: true }],
     notiz: true },
 
@@ -330,7 +330,7 @@ const SCHRITTE: Schritt[] = [
   { id: "ziele", nr: 7, phase: { kennung: "C", titel: "Ziele und Ausgangslage" }, titel: "Ziele und Schwerpunkt", marke: "NEU: Schwerpunkt",
     special: "ziele",
     text: `„Was soll eine Immobilie in zehn bis zwanzig Jahren für dich leisten?“\n\n„Und wenn du dich für eines entscheiden müsstest: Geht es dir eher darum, später im Ruhestand ein zusätzliches Einkommen zu haben, oder eher darum, heute weniger Steuern zu zahlen und mehr Netto vom Brutto zu behalten?“\n\n„Warum ist dir genau das gerade jetzt wichtig?“`,
-    tipp: `Bis zu drei Ziele. Der Schwerpunkt ist Pflicht und belegt den Konzeptschalter der Beratungspräsentation vor.`,
+    tipp: `Bis zu drei Ziele. Der Schwerpunkt ist Pflicht und belegt den Konzeptschalter der Firmen- und Konzeptvorstellung vor.`,
     fragen: [{ key: "schwerpunkt", label: "Schwerpunkt", typ: "auswahl", optionen: ["zusatzrente", "steuer", "beides"], werte: SCHWERPUNKT_WERTE, pflicht: true }],
     notiz: true, notizLabel: "Warum gerade jetzt wichtig" },
 
@@ -380,7 +380,7 @@ const SCHRITTE: Schritt[] = [
 
   { id: "schufa", nr: 14, titel: "Sorgen und Schufa",
     text: `„Was sind deine größten Sorgen, wenn du an eine vermietete Immobilie denkst?“\n\n„Und eine letzte Frage, die ich allen stelle: Gab es in der Vergangenheit Schwierigkeiten mit einer Bank oder mit der Schufa? Ich frage nur, damit wir später keine Überraschung erleben.“`,
-    tipp: `Sorgen wörtlich notieren. Die Beratungspräsentation beantwortet sie im Abschnitt „Sicherheit“ gezielt.`,
+    tipp: `Sorgen wörtlich notieren. Die Firmen- und Konzeptvorstellung beantwortet sie im Abschnitt „Sicherheit“ gezielt.`,
     fragen: [
       { key: "sorgen", label: "Größte Sorgen (wörtlich)", placeholder: "z.B. „Was ist, wenn der Mieter nicht zahlt?“", multiline: true },
       { key: "schufa", label: "Schufa auffällig", typ: "auswahl", optionen: ["ja", "nein", "unklar"] },
@@ -416,7 +416,7 @@ const SCHRITTE: Schritt[] = [
     text: `„Auf einer Skala von 1 bis 10: Wie wichtig ist es dir, das Thema in den nächsten Wochen anzugehen?“\n\n„Was müsste passieren, damit es eine 10 wird?“`,
     notiz: true },
 
-  { id: "terminvereinbarung", nr: 20, titel: "Termin für die Beratungspräsentation",
+  { id: "terminvereinbarung", nr: 20, titel: "Termin für die Firmen- und Konzeptvorstellung",
     text: `„Ich brauche zwei bis drei Tage, um dein Konzept mit deinen Zahlen vorzubereiten. Passt dir [Tag 1] um [Uhrzeit] oder [Tag 2] um [Uhrzeit] besser? Wir brauchen etwa eine Stunde, per Video oder bei uns im Büro.“\n\n„[Mitentscheider] sollte idealerweise dabei sein. Passt der Termin auch für [ihn/sie]?“` },
 
   { id: "einladung_check", nr: 21, titel: "Einladung prüfen und Vorbereitung",
@@ -445,7 +445,7 @@ const PHASEN: ReadonlyArray<{ kennung: string; titel: string; schritte: string; 
   { kennung: "C", titel: "Ziele", schritte: "7 bis 9", dauer: "6 Min.", ziel: "Ziele, Rentenlücke, heutige Vorsorge, Schwerpunkt" },
   { kennung: "D", titel: "Finanzieller Rahmen", schritte: "10 bis 14", dauer: "6 Min.", ziel: "Einkommen, Eigenkapital, Reserve, tragbarer Betrag, Sorgen" },
   { kennung: "E", titel: "Wer wir sind", schritte: "15 bis 16", dauer: "3 Min.", ziel: "Unternehmen, Arbeitsweise, Ablauf" },
-  { kennung: "F", titel: "Abschluss", schritte: "17 bis 23", dauer: "5 Min.", ziel: "Zusammenfassung, Einschätzung, Termin Beratungspräsentation" },
+  { kennung: "F", titel: "Abschluss", schritte: "17 bis 23", dauer: "5 Min.", ziel: "Zusammenfassung, Einschätzung, Termin Firmen- und Konzeptvorstellung" },
 ];
 
 /** Reaktionen am Telefon, als Schnellhilfe über dem Skript. */
@@ -1378,7 +1378,7 @@ export const SetterErstgespraechsSkript = forwardRef<SetterErstgespraechsSkriptH
                   {/* Schritt 8: die Lücke, sobald beide Werte da sind */}
                   {s.special === "rentenluecke" && lueckeText(daten.antworten.wunschNetto, daten.antworten.renteErwartet) && (
                     <p className="text-sm rounded-lg bg-primary/5 border border-primary/20 p-3">
-                      Lücke: <strong>{lueckeText(daten.antworten.wunschNetto, daten.antworten.renteErwartet)}</strong> im Monat. Die Beratungspräsentation rechnet daraus den Betrag über 25 Jahre.
+                      Lücke: <strong>{lueckeText(daten.antworten.wunschNetto, daten.antworten.renteErwartet)}</strong> im Monat. Die Firmen- und Konzeptvorstellung rechnet daraus den Betrag über 25 Jahre.
                     </p>
                   )}
 

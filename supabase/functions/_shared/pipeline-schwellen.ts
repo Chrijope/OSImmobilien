@@ -129,10 +129,10 @@ export const STUFEN_LABELS: Record<string, string> = {
   follow_up: 'Follow-Up',
   erstgespraech_geplant: 'Qualifizierungsgespräch',
   eg_noshow: 'QG NoShow',
-  beratungsgespraech: 'Beratungspräsentation',
+  beratungsgespraech: 'Firmen- und Konzeptvorstellung',
   bg_noshow: 'BP NoShow',
   selbstauskunft: 'Selbstauskunft & Unterlagen',
-  objektauswahl: 'Objektpräsentation / Closing',
+  objektauswahl: 'Objektvorstellung / Closing',
   // Manuelle Follow-Up-Stufe nach der Objektvorstellung. Gleicher
   // Anzeigename wie follow_up, das ist gewollt.
   follow_up_objekt: 'Follow-Up',

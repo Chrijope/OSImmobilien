@@ -9,7 +9,7 @@ import VorschauPipeline from "./VorschauPipeline";
 describe("Vorschau Pipeline, neuer Ablauf", () => {
   it("zeigt die neuen Spalten und keine Spalte Bonitätsunterlagen", () => {
     render(<VorschauPipeline />);
-    for (const spalte of ["Finanzierung", "Besichtigung", "Termin Bankgutachter", "Objektpräsentation / Closing", "Kaufpreisfälligkeit"]) {
+    for (const spalte of ["Finanzierung", "Besichtigung", "Termin Bankgutachter", "Objektvorstellung / Closing", "Kaufpreisfälligkeit"]) {
       expect(screen.getAllByText(spalte).length, spalte).toBeGreaterThan(0);
     }
     // Der Altfall steht unter „Reservierung“ und traegt den Hinweis.

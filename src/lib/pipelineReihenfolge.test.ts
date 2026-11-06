@@ -24,12 +24,12 @@ describe("Reihenfolge der Pipelinestufen", () => {
 
   it("traegt die neuen Anzeigenamen, die Schluessel bleiben", () => {
     const name = (key: string) => PIPELINE_STUFEN.find((s) => s.key === key)?.label;
-    expect(name("beratungsgespraech")).toBe("Beratungspräsentation");
+    expect(name("beratungsgespraech")).toBe("Firmen- und Konzeptvorstellung");
     expect(name("bg_noshow")).toBe("BP NoShow");
     expect(name("selbstauskunft")).toBe("Selbstauskunft & Unterlagen");
     expect(name("erstgespraech_geplant")).toBe("Qualifizierungsgespräch");
     expect(name("eg_noshow")).toBe("QG NoShow");
-    expect(name("objektauswahl")).toBe("Objektpräsentation / Closing");
+    expect(name("objektauswahl")).toBe("Objektvorstellung / Closing");
     expect(name("besichtigung")).toBe("Besichtigung");
     expect(name("bankgutachter")).toBe("Termin Bankgutachter");
     expect(name("faelligkeit")).toBe("Kaufpreisfälligkeit");

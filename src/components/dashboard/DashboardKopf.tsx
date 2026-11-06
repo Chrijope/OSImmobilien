@@ -308,8 +308,8 @@ export function DashboardKopf() {
       wert: String(kpis.aktiveLeads),
       erklaerung:
         "Alle nicht archivierten Kontakte in diesen 18 Stufen: Nicht erreicht, Erreicht, Follow-Up, " +
-        "Kontaktversuche, Vermögensaufbau, Erstgespräch geplant, Qualifizierungsgespräch, QG NoShow, Beratungspräsentation, " +
-        "BP NoShow, Selbstauskunft & Unterlagen, Bonitätsunterlagen (alte Stufe), Objektpräsentation / Closing, Follow-Up Objekt, " +
+        "Kontaktversuche, Vermögensaufbau, Erstgespräch geplant, Qualifizierungsgespräch, QG NoShow, Firmen- und Konzeptvorstellung, " +
+        "BP NoShow, Selbstauskunft & Unterlagen, Bonitätsunterlagen (alte Stufe), Objektvorstellung / Closing, Follow-Up Objekt, " +
         "Reservierung, Finanzierung, Termin Bankgutachter, Besichtigung. " +
         "Die offenen Reservierungen sind darin also enthalten. " +
         "Nicht mitgezählt: Neuer Lead und Zugewiesen (die stehen als unbearbeitete Leads darunter), " +
