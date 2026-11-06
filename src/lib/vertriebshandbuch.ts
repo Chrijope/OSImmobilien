@@ -633,7 +633,7 @@ export const VERTRIEBSHANDBUCH: HandbuchAbschnitt[] = [
             ["Qualifizierungsgespräch", "3 Tage", "7 Tage", "14 Tage"],
             ["QG NoShow", "1 Tag", "3 Tage", "7 Tage"],
             ["Firmen- und Konzeptvorstellung", "3 Tage", "7 Tage", "14 Tage"],
-            ["BP NoShow", "1 Tag", "3 Tage", "7 Tage"],
+            ["KV NoShow", "1 Tag", "3 Tage", "7 Tage"],
             ["Selbstauskunft und Unterlagen", "3 Tage", "7 Tage", "14 Tage"],
             ["Objektvorstellung / Closing", "7 Tage", "10 Tage", "14 Tage"],
             ["Follow-Up Objekt", "7 Tage", "10 Tage", "14 Tage"],

@@ -319,7 +319,7 @@ export async function festerTerminNichtStattgefunden(t: FesterTerminAngabe, ctx:
   ctx.melde({
     title: "No-Show registriert",
     description: stufeGesetzt
-      ? `Der Lead bleibt bei ${berater} und steht jetzt auf „${art === "Erstgespräch" ? "EG NoShow" : "BG NoShow"}". Nächster Schritt: ${schritt}.`
+      ? `Der Lead bleibt bei ${berater} und steht jetzt auf „${art === "Erstgespräch" ? "EG NoShow" : "KV NoShow"}". Nächster Schritt: ${schritt}.`
       : `Der Lead bleibt bei ${berater}. Nächster Schritt: ${schritt}.`,
   });
   return true;

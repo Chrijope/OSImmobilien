@@ -9,6 +9,8 @@ import { sammleInboxTermine } from "./inboxTermine";
 import { meetingVorlage } from "./meetingEinladung";
 import { gespraechsArt } from "./nachfassplan";
 import { bewertePipelineKachel } from "./pipelineAmpel";
+import { PIPELINE_STUFEN, stufenFilterLabel } from "./pipelineStufen";
+import { STUFEN_LABELS } from "../../supabase/functions/_shared/pipeline-schwellen.ts";
 
 const ALT = "Beratungsgespräch";
 
@@ -101,5 +103,18 @@ describe("Alte und neue Titel bleiben derselbe Termin", () => {
       jetzt: new Date(2026, 6, 28, 9, 0).getTime(),
     } as never);
     expect(r.text).toBe("Konzeptvorstellung gebucht");
+  });
+});
+
+describe("Kürzel der No-Show-Stufe", () => {
+  it("zeigt KV NoShow, der gespeicherte Schlüssel bleibt bg_noshow", () => {
+    expect(stufenFilterLabel("bg_noshow")).toBe("KV NoShow");
+    expect(STUFEN_LABELS.bg_noshow).toBe("KV NoShow");
+    expect(PIPELINE_STUFEN.some((s) => s.key === "bg_noshow")).toBe(true);
+  });
+
+  it("nennt die alten Kürzel in keiner Stufe mehr", () => {
+    const namen = [...PIPELINE_STUFEN.map((s) => s.label), ...Object.values(STUFEN_LABELS)];
+    expect(namen.filter((n) => /\b(BP|BG) NoShow/.test(n))).toEqual([]);
   });
 });

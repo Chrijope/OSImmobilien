@@ -579,7 +579,7 @@ export async function terminNoShow(t: ErgebnisTermin, ctx: ErgebnisKontext): Pro
   ctx.melde({
     title: "No-Show registriert",
     description: stufeGesetzt
-      ? `Der Kunde steht jetzt auf „${noShowStufe === "eg_noshow" ? "EG NoShow" : "BG NoShow"}", und der Vertriebspartner hat eine Aufgabe zur Neuterminierung in der Inbox.`
+      ? `Der Kunde steht jetzt auf „${noShowStufe === "eg_noshow" ? "EG NoShow" : "KV NoShow"}", und der Vertriebspartner hat eine Aufgabe zur Neuterminierung in der Inbox.`
       : "Der Vertriebspartner hat eine Aufgabe zur Neuterminierung in der Inbox.",
   });
   return true;

@@ -26773,7 +26773,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
           "HH-Netto: Haushaltsnetto, alle Nettoeinkünfte des Haushalts im Monat. Grundlage der Kapitaldienstrechnung.",
           "SA: Selbstauskunft, das Formular, mit dem der Kunde der Bank Einkommen, Ausgaben, Vermögen und Verbindlichkeiten offenlegt.",
           "RV: Reservierungsvereinbarung. Mit ihrem Versand rückt der Vorgang auf Reservierung, nach ihrer Unterschrift wird die Finanzierung angefragt. Sie ist kostenfrei.",
-          "QG und BP: Qualifizierungsgespräch und Firmen- und Konzeptvorstellung. QG NoShow und BP NoShow sind die Nebenstufen für geplatzte Termine.",
+          "QG und KV: Qualifizierungsgespräch und Firmen- und Konzeptvorstellung. QG NoShow und KV NoShow sind die Nebenstufen für geplatzte Termine.",
           "VP: Vertriebspartner, im CRM der für den Kontakt Zuständige. Closer ist ein anderes Wort dafür, wenn eine Setterin den Termin übergibt.",
           "LTV: Loan to Value, deutsch Beleihungsauslauf. Darlehen geteilt durch den Wert der Immobilie.",
           "SEV: Sondereigentumsverwaltung, die Verwaltung der einzelnen Wohnung. Nicht zu verwechseln mit der WEG-Verwaltung des gemeinschaftlichen Eigentums.",
@@ -27968,7 +27968,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
                 },
                 {
                   "label": "Firmen- und Konzeptvorstellung",
-                  "beschreibung": "Auslöser: der Termin wird in der Karte „Firmen- und Konzeptvorstellung vereinbaren“ im Investment-Reiter eingetragen. Danach das Ergebnis setzen. Nebenstufe: BP NoShow, sie heilt sich, sobald ein neuer Termin steht."
+                  "beschreibung": "Auslöser: der Termin wird in der Karte „Firmen- und Konzeptvorstellung vereinbaren“ im Investment-Reiter eingetragen. Danach das Ergebnis setzen. Nebenstufe: KV NoShow, sie heilt sich, sobald ein neuer Termin steht."
                 },
                 {
                   "label": "Selbstauskunft und Unterlagen",
@@ -28028,7 +28028,7 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
               },
               {
                 "label": "Nebenstufen",
-                "wert": "QG NoShow, BP NoShow",
+                "wert": "QG NoShow, KV NoShow",
                 "hinweis": "kein Fortschritt, sie bleiben beim zugehörigen Gespräch",
                 "farbe": "amber"
               },
@@ -28101,14 +28101,14 @@ export const VERTRIEBSAKADEMIE_KAPITEL: AkademieKapitel[] = [
         "ueberschrift": "Pipeline-Stufen im CRM (Reihenfolge auswendig)",
         "intro": "Diese Reihenfolge ist die im Produkt tatsächlich gültige. Sie steht in src/lib/pipelineStufen.ts und wird durch einen Test geschützt.",
         "absaetze": [
-          "Die Pipeline hat 17 Stufen mit eigenem Schritt, dazu zwei Nebenstufen und drei Sonderzustände. Die Reihenfolge lautet: Neuer Lead, Nicht erreicht, Erreicht, Follow-Up, Qualifizierungsgespräch, Firmen- und Konzeptvorstellung, Selbstauskunft und Unterlagen, Objektvorstellung / Closing, Follow-Up nach der Objektvorstellung, Reservierung, Finanzierung, Termin Bankgutachter, Besichtigung, Notar, Kaufpreisfälligkeit, Abrechnung, Abgeschlossen. Die Nebenstufen sind QG NoShow und BP NoShow; sie sind kein Fortschritt, sondern bleiben beim zugehörigen Gespräch stehen. Die Sonderzustände sind Bestandskunden Import, Archiviert und Verloren; sie sind kein laufender Vorgang, und keine Automatik bewegt einen Kontakt aus ihnen heraus.",
+          "Die Pipeline hat 17 Stufen mit eigenem Schritt, dazu zwei Nebenstufen und drei Sonderzustände. Die Reihenfolge lautet: Neuer Lead, Nicht erreicht, Erreicht, Follow-Up, Qualifizierungsgespräch, Firmen- und Konzeptvorstellung, Selbstauskunft und Unterlagen, Objektvorstellung / Closing, Follow-Up nach der Objektvorstellung, Reservierung, Finanzierung, Termin Bankgutachter, Besichtigung, Notar, Kaufpreisfälligkeit, Abrechnung, Abgeschlossen. Die Nebenstufen sind QG NoShow und KV NoShow; sie sind kein Fortschritt, sondern bleiben beim zugehörigen Gespräch stehen. Die Sonderzustände sind Bestandskunden Import, Archiviert und Verloren; sie sind kein laufender Vorgang, und keine Automatik bewegt einen Kontakt aus ihnen heraus.",
           "Der wichtigste Punkt für alle, die schon länger dabei sind: Seit dem 16.10.2026 gilt der neue Ablauf. Die Selbstauskunft füllt ihr am Ende der Firmen- und Konzeptvorstellung gemeinsam aus, Personalausweis und letzte Gehaltsabrechnung liegen bis zur Objektvorstellung vor, und die Reservierung fällt im selben Termin, kostenfrei. Danach folgt die Finanzierung, sobald sie angefragt ist, dann Termin Bankgutachter und Besichtigung, jeweils mit Stattgefunden weitergeschaltet. Besichtigt wird am Notartag oder am Vortag, alternativ online. Die frühere Stufe Bonitätsunterlagen hinter der Reservierung ist ausgeblendet und steht nur noch für alte Vorgänge im System.",
           "Zwei Stufen tragen denselben Namen und liegen an verschiedenen Stellen. Das frühe Follow-Up ist die Wiedervorlage nach dem ersten Kontakt. Das späte Follow-Up ist die Stufe für Kunden, die nach der Objektvorstellung noch überlegen; in Auswahllisten heißt es zur Unterscheidung „Follow-Up“ mit dem Zusatz nach der Objektvorstellung. Diese späte Stufe setzt ausschließlich ein Mensch. Keine Automatik darf einen Kontakt dorthin bewegen, und ein dort von Hand abgelegter Kontakt darf von einer Automatik nur nach vorn überholt werden, etwa auf Reservierung, nie zurückgezogen.",
           "Zur Empfehlungsprovision, weil die Frage hier regelmäßig auftaucht: Der Anspruch entsteht nach § 4 Absatz 3 des Vertriebspartnervertrags, sobald der Kaufvertrag notariell beurkundet ist UND die Gesellschaft die auf diesen Abschluss entfallende Provision erhalten hat. Der Provisionseingang liegt regelmäßig bei Kaufpreisfälligkeit. Der Notartermin allein begründet also noch keinen Anspruch, und ausgezahlt wird 14 Tage nach Rechnungsstellung. Im Empfehlungsportal wird eine Empfehlung ab der Stufe Fälligkeit als abgeschlossen angezeigt."
         ],
         "bullets": [
           "Reihenfolge: Neuer Lead, Nicht erreicht, Erreicht, Follow-Up, Qualifizierungsgespräch, Firmen- und Konzeptvorstellung, Selbstauskunft und Unterlagen, Objektvorstellung / Closing, Follow-Up nach der Objektvorstellung, Reservierung, Finanzierung, Termin Bankgutachter, Besichtigung, Notar, Kaufpreisfälligkeit, Abrechnung, Abgeschlossen.",
-          "Nebenstufen: QG NoShow und BP NoShow. Sie sind kein Fortschritt und bleiben beim zugehörigen Gespräch. BP NoShow heilt sich selbst, sobald wieder ein Termin für die Konzeptvorstellung in der Zukunft steht.",
+          "Nebenstufen: QG NoShow und KV NoShow. Sie sind kein Fortschritt und bleiben beim zugehörigen Gespräch. KV NoShow heilt sich selbst, sobald wieder ein Termin für die Konzeptvorstellung in der Zukunft steht.",
           "Sonderzustände: Bestandskunden Import, Archiviert, Verloren. Kein laufender Vorgang, keine Automatik fasst sie an.",
           "Auslöser Qualifizierungsgespräch: Die Setterin klickt „Erstgespräch gebucht und Lead an Vertriebspartner zuweisen“, oder der Anruf wird mit dem Ergebnis „Erstgespräch vereinbart“ samt Termin protokolliert.",
           "Setterin heißt hier die Rolle im CRM, nicht eine Stelle im Haus. OS Immobilien arbeitet derzeit ohne eigene Setter, die Rolle übernimmt in der Regel der Vertriebspartner selbst. Er klickt dann denselben Knopf. Wer sich eine eigene Setterin leistet, findet die Rechnung dazu in Kapitel 16.",

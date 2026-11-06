@@ -103,7 +103,7 @@ export const ABLAUF_STATIONEN: AblaufStation[] = [
       "Den Termin trägst du über die Karte „Firmen- und Konzeptvorstellung vereinbaren\" ein, und zwar im Reiter des jeweiligen Investments, nicht unter „Stammdaten\". Nur so ist er dem richtigen Vorgang zugeordnet, wenn der Kunde mehrere hat. Der Kunde rückt damit automatisch auf die Stufe Firmen- und Konzeptvorstellung.",
       "Nach dem Termin setzt du das Ergebnis in derselben Karte: Erschienen, No-Show oder Verschoben. Das ist kein Formalismus, daran hängen die nächsten Schritte.",
       "Bei No-Show erscheint oben im Profil ein Banner mit dem versäumten Termin, damit jeder sofort sieht, woran er ist. Er verschwindet von selbst, sobald du einen neuen Termin eingetragen hast.",
-      "Bei No-Show wandert der Kunde auf die Stufe BG NoShow, du bekommst sofort eine Aufgabe und nach 24 und 48 Stunden eine Erinnerung, solange kein neuer Termin steht. Trägst du einen neuen ein, springt er automatisch zurück auf Firmen- und Konzeptvorstellung.",
+      "Bei No-Show wandert der Kunde auf die Stufe KV NoShow, du bekommst sofort eine Aufgabe und nach 24 und 48 Stunden eine Erinnerung, solange kein neuer Termin steht. Trägst du einen neuen ein, springt er automatisch zurück auf Firmen- und Konzeptvorstellung.",
       "Sobald die Selbstauskunft zur Unterschrift beim Kunden liegt, rückt er von selbst auf die Stufe Selbstauskunft. Dafür musst du nichts weiter tun.",
       "Personalausweis und letzte Gehaltsabrechnung prüfst du im Investment-Reiter unter „Bonitätsunterlagen\" und gibst sie dort frei. Das macht immer der zuständige Vertriebspartner.",
     ],

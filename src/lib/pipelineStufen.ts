@@ -41,7 +41,7 @@ export const PIPELINE_STUFEN = [
    * eine Datenmigration bedeutet.
    */
   { key: "beratungsgespraech", label: "Firmen- und Konzeptvorstellung" },
-  { key: "bg_noshow", label: "BP NoShow" },
+  { key: "bg_noshow", label: "KV NoShow" },
   // Gilt, bis Selbstauskunft, Ausweis und letzte Gehaltsabrechnung da sind.
   { key: "selbstauskunft", label: "Selbstauskunft & Unterlagen" },
   { key: "objektauswahl", label: "Objektvorstellung / Closing" },

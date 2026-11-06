@@ -665,7 +665,8 @@ Deno.serve(async (req) => {
       templateData = { ...templateData, kundeAnrede: ermittelt.anrede }
     }
   }
-  templateData = mitTerminNameInSprache({ ...templateData, sprache }, sprache)
+  templateData = { ...templateData, sprache }
+  templateData = mitTerminNameInSprache(templateData, sprache)
   // Im Versandprotokoll steht, in welcher Sprache die Mail hinausging.
   extraMetadata = { ...(extraMetadata || {}), sprache }
 
