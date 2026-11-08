@@ -1,4 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
+// Die Eingaben dazu sind seit dem 08.11.2026 ausgeblendet (ausgeblendeteFelder.ts); die Tests laufen wieder, sobald sie gezeigt werden.
+import { UNWIRKSAME_FELDER_ZEIGEN } from "@/lib/investmentrechner/ausgeblendeteFelder";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { berechneInvestment, standardEingabe, type InvestmentEingabe } from "@/lib/investmentrechner/rechenkern";
@@ -75,14 +77,14 @@ function berechnung(eingabe: InvestmentEingabe, sprache: "de" | "en" = "de", dec
 }
 
 describe("Eingabe unter Finanzierung", () => {
-  it("zeigt ohne Schalter nur den Schalter und schaltet ihn ein", () => {
+  it.skipIf(!UNWIRKSAME_FELDER_ZEIGEN)("zeigt ohne Schalter nur den Schalter und schaltet ihn ein", () => {
     const aendere = finanzierung(OHNE);
     expect(screen.queryByRole("combobox", { name: "Programm" })).toBeNull();
     fireEvent.click(screen.getByRole("checkbox", { name: /KfW-Darlehen/ }));
     expect(aendere).toHaveBeenCalledWith({ kfwEnabled: true });
   });
 
-  it("zeigt mit Schalter Programm, Konditionen, Mischzins und Ratensprung", () => {
+  it.skipIf(!UNWIRKSAME_FELDER_ZEIGEN)("zeigt mit Schalter Programm, Konditionen, Mischzins und Ratensprung", () => {
     finanzierung(MIT);
     const programm = screen.getByRole("combobox", { name: "Programm" });
     const vorschlaege = Array.from(programm.querySelectorAll("option")).map((o) => o.textContent);
@@ -94,7 +96,7 @@ describe("Eingabe unter Finanzierung", () => {
     expect(screen.getByTestId("eigenkapital-rest").textContent).toMatch(/20\.250\s€.*Gesamtbedarf 425\.250\s€ minus Darlehen 405\.000\s€/);
   });
 
-  it("warnt bei Überfinanzierung und zu vielen tilgungsfreien Jahren", () => {
+  it.skipIf(!UNWIRKSAME_FELDER_ZEIGEN)("warnt bei Überfinanzierung und zu vielen tilgungsfreien Jahren", () => {
     finanzierung({ ...MIT, kfwLoanAmount: 600000, kfwGracePeriodYears: 8 });
     expect(screen.getByTestId("hinweis-ueberfinanzierung").textContent).toMatch(/Die Darlehen liegen 429\.750\s€ über Kaufpreis und Kaufnebenkosten/);
     expect(screen.getByText(/höchstens 5 betragen\. Gerechnet wird mit 5/)).toBeInTheDocument();
@@ -138,7 +140,7 @@ describe("Berechnung und PDF", () => {
 });
 
 describe("Tilgungszuschuss in Eingabe und Berechnung", () => {
-  it("verlangt das Gutschriftjahr und rechnet ohne es keinen Zuschuss", () => {
+  it.skipIf(!UNWIRKSAME_FELDER_ZEIGEN)("verlangt das Gutschriftjahr und rechnet ohne es keinen Zuschuss", () => {
     finanzierung({ ...MIT, kfwGrantValue: 10, kfwGrantYear: 0 });
     expect(screen.getByText(/erst gerechnet, wenn das Gutschriftjahr aus der Zusage eingetragen ist/)).toBeInTheDocument();
     expect(berechnung({ ...MIT, kfwGrantValue: 10, kfwGrantYear: 0 })).not.toMatch(/Tilgungszuschuss/);
@@ -152,7 +154,7 @@ describe("Tilgungszuschuss in Eingabe und Berechnung", () => {
     expect(text).toContain("Wertzuwachs der Immobilie, Tilgung und KfW-Tilgungszuschuss");
   });
 
-  it("macht eine Kürzung sichtbar, in Eingabe und Berechnung", () => {
+  it.skipIf(!UNWIRKSAME_FELDER_ZEIGEN)("macht eine Kürzung sichtbar, in Eingabe und Berechnung", () => {
     const eingabe = { ...MIT, kfwGrantMode: "euro" as const, kfwGrantValue: 900000, kfwGrantYear: 3 };
     finanzierung(eingabe);
     expect(screen.getByText(/Angerechnet werden nur 150\.000\s€ von 900\.000\s€/)).toBeInTheDocument();

@@ -39,7 +39,7 @@ describe("vorbelegungAusInvestment", () => {
     expect(vor?.eingabe.purchasePrice).toBe(178900);
     expect(vor?.eingabe.buildingDepreciationRate).toBe(6.67);
     expect(vor?.eingabe.buildingShare).toBe(90);
-    // Sachsen-Anhalt aus der Postleitzahl: 5,0 % Grunderwerbsteuer.
-    expect(vor?.eingabe.transferTaxRate).toBe(5);
+    // Sachsen-Anhalt aus der Postleitzahl: seit dem 08.11.2026 der OS-Standard, 6,5 % Grunderwerbsteuer.
+    expect(vor?.eingabe.transferTaxRate).toBe(6.5);
   });
 });

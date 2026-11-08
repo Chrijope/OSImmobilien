@@ -106,4 +106,23 @@ describe("Investmentrechner gegen die Einhauser-PDFs", () => {
     expect(fall(b.A, b.v.annahmen)).toEqual([136.51, 184.38, 232.25]);
     expect(fall(a.B!, a.v.annahmen)).toEqual([175.85, 237.61, 299.36]);
   });
+
+  it("Nachrang 50 % bei WE 13: kaufmännisch gerundet, 12.113 € statt 12.112 € der Referenz", () => {
+    /*
+     * Bekannte Rundungsabweichung (Christian, 08.11.2026): Die Hälfte der
+     * Kaufnebenkosten von 24.225 € ist genau 12.112,50 €. Die Referenz kommt aus
+     * Python, dessen round() eine genaue ,5 auf die gerade Zahl rundet (12.112).
+     * Der Rechner rundet kaufmännisch (12.113), so bleibt es. Dadurch liegen
+     * Rate, Zuzahlung vor Steuer und Steuerersparnis je 1 Cent über dem PDF
+     * (91,85 / 655,28 / 417,67); der Eigenanteil nach Steuer ist gleich.
+     */
+    const { v, B } = rechne([WE08, "08"], [WE13, "13"]);
+    const f = nachrangFall(B!, 0.5, v.annahmen);
+    expect(f.nr).toBe(12113);
+    expect(r2(f.ek)).toBe(12112);
+    expect(r2(f.rate)).toBe(91.86);
+    expect(r2(-f.vor)).toBe(655.29);
+    expect(r2(f.ersparnis)).toBe(417.68);
+    expect(r2(-f.nach)).toBe(237.61);
+  });
 });

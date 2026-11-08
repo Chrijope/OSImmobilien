@@ -339,12 +339,18 @@ export function vorbelegungAusEinheit(
       "Postleitzahl des Objekts",
     );
   } else {
-    fehlt(
-      "Bundesland des Objekts",
-      "Grunderwerbsteuer, Notar und Grundbuch",
-      "Postleitzahl am Objekt pflegen oder das Land im Rechner wählen",
-      "objekt",
-    );
+    /*
+      Seit dem 08.11.2026 (Christian): OS rechnet grundsätzlich mit 8,5 Prozent
+      (6,5 Grunderwerbsteuer, 1,5 Notar, 0,5 Grundbuch). Die Bundeslandauswahl
+      kennt nur noch Berlin und Brandenburg / Potsdam; für alle anderen Objekte
+      und ohne Postleitzahl gilt der Standard, statt nach dem Land zu fragen.
+    */
+    eingabe.transferTaxRate = standardEingabe.transferTaxRate;
+    eingabe.notaryRate = standardEingabe.notaryRate;
+    eingabe.landRegisterRate = standardEingabe.landRegisterRate;
+    const summe = eingabe.transferTaxRate + eingabe.notaryRate + eingabe.landRegisterRate;
+    // Ohne Herkunft „Objekt“: Der Satz steht nicht am Objekt, er ist der Standard des Rechners.
+    uebernommen.push({ feld: "Kaufnebenkosten", wert: prozent(summe, 2), woher: "OS-Standard" });
   }
 
   /*

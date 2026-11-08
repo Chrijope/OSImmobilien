@@ -39,6 +39,22 @@ export const BEISPIEL_EINGABE: InvestmentEingabe = {
   annualValueGrowth: 2,
   garagePrice: 15000,
   monthlyGarageRent: 60,
+  /*
+    OS-Standards seit dem 08.11.2026 (Christian): Kaufnebenkosten 6,5 + 1,5 +
+    0,5 = 8,5 %, keine Möbel, kein Erhaltungsaufwand, keine weiteren nicht
+    umlagefähigen Kosten, Darlehen 100 % des Kaufpreises (vorher ein fester
+    Eurobetrag, der bei einem anderen Kaufpreis als Überfinanzierung stehen blieb),
+    kein Mietausfall. Die Zielmiete von 20 €/m² kommt aus `wirksameAngaben`.
+  */
+  transferTaxRate: standardEingabe.transferTaxRate,
+  notaryRate: standardEingabe.notaryRate,
+  landRegisterRate: standardEingabe.landRegisterRate,
+  furniturePrice: 0,
+  rehabExpense: 0,
+  monthlyOperatingCosts: 0,
+  seniorLoanMode: "percent",
+  seniorLoanValue: 100,
+  vacancyRate: 0,
 };
 
 export function eingabeLaden(): InvestmentEingabe | null {

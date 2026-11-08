@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { BUNDESLAENDER } from "@/lib/grunderwerbsteuer";
 import { GRUNDBUCH_PROZENT, NOTAR_PROZENT } from "@/lib/kaufnebenkosten";
 import { berechneInvestment, standardEingabe } from "./rechenkern";
 import {
@@ -16,9 +15,11 @@ import {
  */
 
 describe("Bundeslandauswahl", () => {
-  it("enthält genau die sechzehn Bundesländer ohne den Eintrag für Unbekanntes", () => {
-    expect(BUNDESLAND_AUSWAHL).toHaveLength(16);
-    expect(BUNDESLAND_AUSWAHL.some((land) => land.value === "andere")).toBe(false);
+  it("enthält seit dem 08.11.2026 nur Berlin und Brandenburg / Potsdam", () => {
+    expect(BUNDESLAND_AUSWAHL.map((land) => [land.value, land.label])).toEqual([
+      ["berlin", "Berlin"],
+      ["brandenburg", "Brandenburg / Potsdam"],
+    ]);
   });
 
   it("startet auf dem Weg über das Bundesland, aber ohne Auswahl", () => {
@@ -26,15 +27,15 @@ describe("Bundeslandauswahl", () => {
     expect(saetzeFuerBundesland(standardKaufnebenkostenauswahl.bundesland)).toBeNull();
   });
 
-  it("nimmt die Grunderwerbsteuer aus der zentralen Tabelle", () => {
-    for (const land of BUNDESLAENDER) {
-      const eintrag = BUNDESLAND_AUSWAHL.find((auswahl) => auswahl.label === land.name);
-      expect(eintrag).toBeDefined();
-      const saetze = saetzeFuerBundesland(eintrag?.value ?? "");
-      expect(saetze?.transferTaxRate).toBe(land.grunderwerbsteuer);
-      expect(saetze?.notaryRate).toBe(NOTAR_PROZENT);
-      expect(saetze?.landRegisterRate).toBe(GRUNDBUCH_PROZENT);
+  it("belegt beide mit den OS-Sätzen vor: 6,5 + 1,5 + 0,5 = 8,5 %, auch Berlin (gesetzlich 6,0 % GrESt)", () => {
+    for (const land of BUNDESLAND_AUSWAHL) {
+      expect(saetzeFuerBundesland(land.value)).toEqual({ transferTaxRate: 6.5, notaryRate: NOTAR_PROZENT, landRegisterRate: GRUNDBUCH_PROZENT });
     }
+    expect(NOTAR_PROZENT + GRUNDBUCH_PROZENT + 6.5).toBe(8.5);
+  });
+
+  it("ein gespeichertes anderes Bundesland setzt keine Sätze mehr", () => {
+    expect(saetzeFuerBundesland("sachsen")).toBeNull();
   });
 
   it("liefert für einen unbekannten Schlüssel keine Sätze", () => {
@@ -44,13 +45,13 @@ describe("Bundeslandauswahl", () => {
   });
 
   it("nennt das gewählte Bundesland beim Namen", () => {
-    expect(bundeslandName("nrw")).toBe("Nordrhein-Westfalen");
+    expect(bundeslandName("brandenburg")).toBe("Brandenburg / Potsdam");
   });
 });
 
 describe("Posten als Prozentsatz und Betrag", () => {
   it("rechnet die Beträge auf den Gesamtkaufpreis", () => {
-    const saetze = saetzeFuerBundesland("nrw");
+    const saetze = saetzeFuerBundesland("berlin");
     expect(saetze).not.toBeNull();
     const posten = kaufnebenkostenposten(saetze!, 300000);
     expect(posten.map((eintrag) => [eintrag.label, eintrag.prozent, eintrag.betrag])).toEqual([
@@ -74,7 +75,7 @@ describe("Posten als Prozentsatz und Betrag", () => {
 
 describe("Zusammenspiel mit dem Rechenkern", () => {
   it("ergibt mit den gesetzten Sätzen dieselben Kaufnebenkosten wie die Posten", () => {
-    const saetze = saetzeFuerBundesland("bayern");
+    const saetze = saetzeFuerBundesland("brandenburg");
     expect(saetze).not.toBeNull();
     const eingabe = {
       ...standardEingabe,

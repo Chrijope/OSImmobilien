@@ -115,6 +115,7 @@ import { EingabeAusfuehrlich, EingabeAusgangslage } from "@/components/investmen
 import { erzeugeBerechnungsansichtPdf } from "@/lib/investmentrechner/berechnungAnsichtPdf";
 import { EinhauserAnalyse, KundenObjektvergleichDokument } from "@/components/investmentrechner/kundenvergleich/KundenObjektvergleichDokument";
 import { ausfuehrlichVorgaben, berechnungAusRechner, type AusfuehrlichAngaben } from "@/lib/investmentrechner/ausfuehrlicheBerechnung";
+import { ohneAusgeblendeteFelder } from "@/lib/investmentrechner/ausgeblendeteFelder";
 import { vergleichDateiname, type VergleichKunde } from "@/lib/investmentrechner/kundenObjektvergleich";
 import { kundeAus } from "@/lib/investmentrechner/kundenObjektvergleichVorbelegung";
 import { getKontaktById } from "@/lib/kundenStore";
@@ -548,7 +549,9 @@ export function InvestmentrechnerInhalt({
   const [bilderVersuch, setBilderVersuch] = useState(0);
   const [fotoStand, setFotoStand] = useState<"still" | "laedt" | "vorbelegt" | "fehlgeschlagen">("still");
 
-  const ergebnisse = useMemo(() => objekte.map((objekt) => berechneInvestment(objekt.eingabe)), [objekte]);
+  // Gerechnet wird ohne die ausgeblendeten Felder (08.11.2026); gespeichert bleibt die Eingabe, wie sie ist.
+  const rechenEingaben = useMemo(() => objekte.map((objekt) => ohneAusgeblendeteFelder(objekt.eingabe)), [objekte]);
+  const ergebnisse = useMemo(() => rechenEingaben.map((eingabe) => berechneInvestment(eingabe)), [rechenEingaben]);
   /*
    * Die Übernahmeliste des automatischen Wegs beim Öffnen (seit dem
    * 28.09.2026). Dieselbe Abgleichslogik und dieselbe Anzeige wie beim
@@ -1477,10 +1480,10 @@ export function InvestmentrechnerInhalt({
     kunde: kundeVorgabe,
   });
   const ausfuehrlichDok = useMemo(() => {
-    const d = berechnungAusRechner(objekte.slice(0, 2).map((o, i) => ({ input: o.eingabe, result: ergebnisse[i], vorgaben: vorgabenFuer(i), foto: o.photos[0] })));
+    const d = berechnungAusRechner(objekte.slice(0, 2).map((o, i) => ({ input: rechenEingaben[i], result: ergebnisse[i], vorgaben: vorgabenFuer(i), foto: o.photos[0] })));
     return d.v.dokument && erstelltVon ? { ...d, v: { ...d.v, dokument: { ...d.v.dokument, erstelltVon } } } : d;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [objekte, ergebnisse, objektVorgabe, kundeVorgabe, eigenerIndex, erstelltVon]);
+  }, [objekte, rechenEingaben, ergebnisse, objektVorgabe, kundeVorgabe, eigenerIndex, erstelltVon]);
   const ausfuehrlichRef = useRef<HTMLDivElement>(null);
 
 

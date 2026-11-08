@@ -85,8 +85,11 @@ function nrAusTitel(titel: string): string {
 
 /**
  * Alle Angaben, die gelten: Eingabe vor Vorgabe vor Rechnerwert. Ohne
- * Zielmiete am Objekt steigt die Miete mit der Mietsteigerung der
- * Kalkulationsbasis bis zum Zieljahr (34 Jahre nach dem Start, wie 2026 bis 2060).
+ * Zielmiete gilt der OS-Standard von 20 €/m² (Christian, 08.11.2026; vorher
+ * aus der Mietsteigerung hochgerechnet), Zieljahr 34 Jahre nach dem Start
+ * (wie 2026 bis 2060). Die Garagenmiete im Zieljahr rechnet ohne eigene
+ * Angabe weiter mit der Mietsteigerung, die seit dem 08.11.2026 ausgeblendet
+ * ist und dann 0 ist (ausgeblendeteFelder.ts), also gleich der Miete im 1. Jahr.
  */
 export function wirksameAngaben(input: InvestmentEingabe, vorgaben: Partial<AusfuehrlichAngaben> = {}): AusfuehrlichAngaben {
   const eigen = input.ausfuehrlich ?? {};
@@ -108,7 +111,7 @@ export function wirksameAngaben(input: InvestmentEingabe, vorgaben: Partial<Ausf
     lage: w("lage") ?? "",
     mieteSubQm,
     subventionMonate: positiv(w("subventionMonate")) || STANDARD_ANNAHMEN.subventionMonate,
-    mieteZielQm: positiv(w("mieteZielQm")) || runde2(mieteSubQm * wachstum),
+    mieteZielQm: positiv(w("mieteZielQm")) || STANDARD_ANNAHMEN.mieteZielQm,
     mieteZielJahr: zielJahr,
     kappung: positiv(w("kappung")) || STANDARD_ANNAHMEN.kappung,
     garagen,
@@ -131,17 +134,30 @@ export function wirksameAngaben(input: InvestmentEingabe, vorgaben: Partial<Ausf
 }
 
 /**
- * Steuersatz: von Hand gesetzt gilt er pauschal; mit Tarif der Satz, den der
- * Rechenkern im 1. Jahr auf den Verlust anwendet (Einkommen des Kunden, mit
- * Soli und Kirchensteuer). Ohne Einkommen pauschal mit dem gesetzten Satz.
+ * Der Steuersatz von Analyse und PDF, genau der, den „Kunde & Einkommen“
+ * anzeigt (Christian, 08.11.2026):
+ * - automatisch (`tariff`): der Grenzsteuersatz aus dem zu versteuernden
+ *   Einkommen nach Tarif 2026, mit Solidaritätszuschlag und Kirchensteuer,
+ *   wenn sie eingeschaltet sind (`marginalTotalTaxRate` des Rechenkerns), auf
+ *   0,01 Prozentpunkte gerundet;
+ * - manuell (`manual`): der eingetragene Satz, als Gesamtsatz mit Soli und
+ *   Kirchensteuer.
+ * Ohne Einkommen gibt es keinen Grenzsteuersatz, dann gilt der eingetragene
+ * Satz (Standard 42 % wie im Exposé).
+ *
+ * Bis zum 08.11.2026 nahm der automatische Weg den Durchschnittssatz, den der
+ * Rechenkern im 1. Jahr auf den Verlust anwendet (bei Einhauser 40,2 %
+ * statt der angezeigten 43,2 %). Angezeigt und gerechnet wichen so voneinander ab.
  */
 export function steuerAus(input: InvestmentEingabe, result: InvestmentErgebnis): Pick<VergleichAnnahmen, "steuer" | "steuerArt"> {
   const pauschal = { steuer: Math.max(0, input.marginalTaxRate) / 100, steuerArt: "pauschal" as const };
   if (input.taxCalculationMode === "manual") return pauschal;
-  const j = result.years.find((y) => y.allocatedTaxableResult < 0);
-  const satz = j ? j.taxEffect / -j.allocatedTaxableResult : 0;
-  return satz > 0.005 && satz < 0.6 ? { steuer: Math.round(satz * 1000) / 1000, steuerArt: "einkommen" } : pauschal;
+  const satz = Math.round(result.marginalTotalTaxRate * 10000) / 10000;
+  return satz > 0 && satz < 0.6 ? { steuer: satz, steuerArt: "einkommen" } : pauschal;
 }
+
+/** Möbel im Kaufpreis, höchstens der Kaufpreis. Sie tragen weder Kaufnebenkosten noch Gebäude-AfA. */
+const moebelAus = (input: InvestmentEingabe) => Math.min(positiv(input.purchasePrice), positiv(input.furniturePrice));
 
 export function einheitAusRechner(input: InvestmentEingabe, a: AusfuehrlichAngaben): VergleichEinheit {
   const garageKp = positiv(input.garagePrice);
@@ -154,6 +170,7 @@ export function einheitAusRechner(input: InvestmentEingabe, a: AusfuehrlichAngab
     kpListe: a.kpListe,
     garagen: a.garagen,
     garageKp,
+    moebel: moebelAus(input),
     garageMiete1: a.garageMiete1,
     garageMieteZiel: a.garageMieteZiel,
     garageIstVon: a.garageIstVon,
@@ -169,13 +186,14 @@ export function einheitAusRechner(input: InvestmentEingabe, a: AusfuehrlichAngab
 }
 
 export function annahmenAusRechner(input: InvestmentEingabe, result: InvestmentErgebnis, a: AusfuehrlichAngaben): VergleichAnnahmen {
-  const kp = positiv(input.purchasePrice);
+  // Satz auf den Kaufpreis ohne Möbel, wie der Rechenkern die Kaufnebenkosten rechnet (sonst 8,1 statt 8,5 %).
+  const basis = positiv(input.purchasePrice) - moebelAus(input);
   return {
     ...STANDARD_ANNAHMEN,
     ...steuerAus(input, result),
     zins: Math.max(0, input.seniorInterestRate) / 100,
     tilgung: Math.max(0, input.seniorRepaymentRate) / 100,
-    knk: kp ? positiv(result.purchaseCosts) / kp : 0,
+    knk: basis > 0 ? positiv(result.purchaseCosts) / basis : 0,
     gebaeudeanteil: Math.max(0, input.buildingShare) / 100,
     wertPa: input.annualValueGrowth / 100,
     kostenPa: input.annualCostGrowth / 100,

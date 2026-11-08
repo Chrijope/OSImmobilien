@@ -61,6 +61,11 @@ export interface VergleichEinheit {
   /** Anzahl Garagen/Stellplätze; nur die erste hat einen Kaufpreis. */
   garagen: number;
   garageKp: number;
+  /**
+   * Möbel im Kaufpreis (seit dem 08.11.2026). Sie sind finanziert, tragen aber
+   * keine Kaufnebenkosten und keine Gebäude-AfA. Fehlt die Angabe, 0.
+   */
+  moebel?: number;
   /** Miete je Garage im 1. Jahr und im Zieljahr. */
   garageMiete1: number;
   garageMieteZiel: number;
@@ -144,10 +149,13 @@ const JAHRE = 40;
 export function rechneEinheit(e: VergleichEinheit, a: VergleichAnnahmen): EinheitErgebnis {
   const kp = e.kpWohnung + e.garageKp;
   const mieteSub = r2(e.mieteSubQm * e.qm);
-  const nk = kp * a.knk;
+  // Kaufnebenkosten und Gebäude-AfA ohne Möbel; das Darlehen deckt den ganzen Kaufpreis.
+  const kpOhneMoebel = kp - Math.min(kp, Math.max(0, e.moebel ?? 0));
+  const nk = kpOhneMoebel * a.knk;
   const darlehen = kp;
   const annuitaet = darlehen * (a.zins + a.tilgung);
-  const afaJahr = kp * (1 + a.knk) * a.gebaeudeanteil * (1 / e.afaJahre);
+  const afaBasis = kpOhneMoebel * (1 + a.knk) * a.gebaeudeanteil;
+  const afaJahr = afaBasis * (1 / e.afaJahre);
   const m0 = mieteSub / e.qm;
   const garage1 = e.garageMiete1 * e.garagen;
   const garageZiel = e.garageMieteZiel * e.garagen;
@@ -194,7 +202,7 @@ export function rechneEinheit(e: VergleichEinheit, a: VergleichAnnahmen): Einhei
   const luecke = mieteSub - e.mieteIst;
   const dreissig = J.slice(0, 30);
   return {
-    einheit: e, kp, nk, darlehen, afaJahr, afaBasis: kp * (1 + a.knk) * a.gebaeudeanteil, mieteSub,
+    einheit: e, kp, nk, darlehen, afaJahr, afaBasis, mieteSub,
     monat: m, jahr,
     hausgeld: { u: e.u, n: e.n, summe: r2(e.u + e.n), r: e.r, voraus: r2(e.u + e.n + e.r), eigentuemer: r2(e.n + e.r) },
     luecke, lueckeQuote: mieteSub > 0 ? luecke / mieteSub : 0,

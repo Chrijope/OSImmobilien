@@ -13,7 +13,7 @@
  * Der Rechenkern bleibt unberührt. Die Auswahl setzt nur die vorhandenen
  * Eingabefelder `transferTaxRate`, `notaryRate` und `landRegisterRate`.
  */
-import { BUNDESLAND_NK, GRUNDBUCH_PROZENT, NOTAR_PROZENT } from "@/lib/kaufnebenkosten";
+import { GRUNDBUCH_PROZENT, NOTAR_PROZENT } from "@/lib/kaufnebenkosten";
 
 /** Welcher der beiden Wege gerade gilt. */
 export type Kaufnebenkostenweg = "bundesland" | "manuell";
@@ -34,13 +34,25 @@ export const standardKaufnebenkostenauswahl: Kaufnebenkostenauswahl = {
   bundesland: "",
 };
 
+/** Grunderwerbsteuer, mit der OS rechnet: zusammen mit Notar und Grundbuch 8,5 Prozent. */
+export const OS_GRUNDERWERBSTEUER_PROZENT = 6.5;
+
 /**
- * Die sechzehn Bundesländer für die Auswahlliste.
+ * Die Bundesländer der Auswahlliste, seit dem 08.11.2026 nur noch Berlin und
+ * Brandenburg / Potsdam (Christian). OS rechnet grundsätzlich mit 8,5 Prozent
+ * Kaufnebenkosten: 6,5 Grunderwerbsteuer, 1,5 Notar, 0,5 Grundbuch. Das gilt
+ * auch für Berlin, obwohl dort gesetzlich 6,0 Prozent Grunderwerbsteuer
+ * anfallen; so hat Christian es vorgegeben. Wer andere Sätze braucht, trägt
+ * sie über „Sätze selbst eintragen“ ein.
  *
- * Der Eintrag „Anderes / unbekannt" aus BUNDESLAND_NK bleibt draußen, denn für
- * unbekannte oder abweichende Sätze gibt es den manuellen Weg.
+ * Die Schlüssel sind die aus BUNDESLAND_NK, damit gespeicherte Auswahlen und
+ * die Postleitzahl-Zuordnung weiter passen. Ein gespeichertes anderes Land
+ * setzt keine Sätze mehr; die zuletzt eingetragenen bleiben stehen.
  */
-export const BUNDESLAND_AUSWAHL = BUNDESLAND_NK.filter((land) => land.value !== "andere");
+export const BUNDESLAND_AUSWAHL: { value: string; label: string; grEstP: number }[] = [
+  { value: "berlin", label: "Berlin", grEstP: OS_GRUNDERWERBSTEUER_PROZENT },
+  { value: "brandenburg", label: "Brandenburg / Potsdam", grEstP: OS_GRUNDERWERBSTEUER_PROZENT },
+];
 
 /** Die drei Sätze, die eine Bundeslandauswahl setzt, in Prozent. */
 export interface Kaufnebenkostensaetze {

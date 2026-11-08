@@ -25,6 +25,8 @@ import { unterlagenAuslesbar, type AuslesbaresFeld } from "@/lib/investmentrechn
 import { feldmarkierung, herkunftText, type Herkunft } from "@/lib/investmentrechner/herkunft";
 import { OBJEKTTYP_VORSCHLAEGE } from "@/lib/investmentrechner/objekttypVorschlaege";
 import { linearerAfaSatz } from "@/lib/afaSaetze";
+import { steuerAus } from "@/lib/investmentrechner/ausfuehrlicheBerechnung";
+import { UNWIRKSAME_FELDER_ZEIGEN } from "@/lib/investmentrechner/ausgeblendeteFelder";
 import { ausgewiesenerKaufpreis, darlehensbetrag, hausgeldAufstellung, mitStellplatz, RUECKLAGE_JE_QM_MONAT } from "@/lib/investmentrechner/rechenkern";
 import { Auswahlfeld, AuswahlOderText, FeldInfo, Feldetikett, Neu, Schalterfeld, Textbereich, Textfeld, Zahlenfeld } from "./Felder";
 import { haushaltMitVorlage, haushaltsrechnung, vermoegenMitVorlage, vermoegensaufstellung } from "@/lib/investmentrechner/bankunterlagen";
@@ -79,6 +81,64 @@ export interface EingabeKundeProps extends EingabeProps {
   kundenbereich?: ReactNode;
   /** Weitere Angaben zum Kunden (Artefakt, ausführliche Berechnung), direkt unter Name, Jahresbrutto und Steuerklasse. */
   zusatzAngaben?: ReactNode;
+}
+
+const STEUERSATZ_SCHNELLWAHL = [42, 37, 32];
+
+/**
+ * Grenzsteuersatz für Analyse und PDF (Christian, 08.11.2026): automatisch aus
+ * dem zu versteuernden Einkommen (Tarif 2026, mit Soli und Kirchensteuer), von
+ * Hand überschreibbar über Schnellwahl oder freies Feld. Angezeigt wird genau
+ * der Satz, mit dem Analyse und PDF rechnen (`steuerAus`). „Automatisch“ ist
+ * der Modus `tariff`, „manuell“ der Modus `manual` mit `marginalTaxRate`.
+ */
+function Grenzsteuersatzfeld({ input, result, aendere }: Pick<EingabeProps, "input" | "result" | "aendere">) {
+  const manuell = input.taxCalculationMode === "manual";
+  const { steuer, steuerArt } = steuerAus(input, result);
+  const mitEinkommen = result.combinedTaxableIncome > 0;
+  const setze = (prozent: number) =>
+    aendere({ taxCalculationMode: "manual", marginalTaxRate: Math.min(60, Math.max(0, Number.isFinite(prozent) ? prozent : 0)) });
+  const zuschlaege = [input.includeSolidaritySurcharge ? "Soli" : "", input.churchTaxRate > 0 ? "Kirchensteuer" : ""].filter(Boolean).join(" und ");
+  const hinweis = manuell
+    ? `Gilt: manuell. Der Satz zählt als Gesamtsatz, Soli und Kirchensteuer sind darin enthalten.${
+        mitEinkommen ? ` Automatisch wären es ${formatProzent(result.marginalTotalTaxRate)}.` : ""
+      }`
+    : steuerArt === "einkommen"
+      ? `Gilt: automatisch, Grenzsteuersatz aus dem zu versteuernden Einkommen nach Tarif 2026${zuschlaege ? `, mit ${zuschlaege}` : ""}.`
+      : `Gilt: automatisch. Noch kein zu versteuerndes Einkommen eingetragen, deshalb ${formatProzent(steuer)} wie im Exposé.`;
+  return (
+    <div data-testid="grenzsteuersatz" data-modus={manuell ? "manuell" : "automatisch"}>
+      <Zahlenfeld
+        label="Grenzsteuersatz für Analyse und PDF"
+        placeholder="z. B. 42"
+        empfohlen
+        value={Math.round(steuer * 10000) / 100}
+        suffix="%"
+        onChange={setze}
+        tooltip="Mit diesem Satz rechnen Analyse und PDF die Steuerersparnis: steuerliches Ergebnis der Wohnung mal Satz. Automatisch ergibt er sich aus dem zu versteuernden Einkommen nach dem Tarif 2026, mit Solidaritätszuschlag und Kirchensteuer, wenn sie eingeschaltet sind. Wer hier tippt oder einen der Knöpfe wählt, setzt ihn von Hand; „Zurück auf automatisch“ holt den Satz aus dem Einkommen zurück."
+        hint={hinweis}
+      />
+      <div className="knk-weg" role="group" aria-label="Grenzsteuersatz wählen">
+        {STEUERSATZ_SCHNELLWAHL.map((prozent) => {
+          const aktiv = manuell && input.marginalTaxRate === prozent;
+          return (
+            <button key={prozent} type="button" className={aktiv ? "active" : ""} aria-pressed={aktiv} onClick={() => setze(prozent)}>
+              {prozent} %
+            </button>
+          );
+        })}
+        <button
+          type="button"
+          className={manuell ? "" : "active"}
+          aria-pressed={!manuell}
+          data-testid="steuersatz-automatisch"
+          onClick={() => aendere({ taxCalculationMode: "tariff" })}
+        >
+          {manuell ? "Zurück auf automatisch" : "Automatisch"}
+        </button>
+      </div>
+    </div>
+  );
 }
 
 export function EingabeKunde({ input, result, setzeZahl, setzeText, aendere, herkunft, kundenbereich, zusatzAngaben }: EingabeKundeProps) {
@@ -187,27 +247,6 @@ export function EingabeKunde({ input, result, setzeZahl, setzeText, aendere, her
           <option value={8}>8 %</option>
           <option value={9}>9 %</option>
         </Auswahlfeld>
-        <Auswahlfeld
-          label="Berechnungsmodus"
-          value={input.taxCalculationMode}
-          onChange={(wert) =>
-            aendere({
-              taxCalculationMode: wert as Steuerberechnungsmodus,
-              /*
-                Vertriebspaket, 16.10.2026: Der feste Satz startet beim
-                Grenzsteuersatz aus dem zu versteuernden Einkommen statt pauschal
-                bei 42 Prozent. Ohne Einkommen bleibt der eingetragene Satz.
-              */
-              ...(wert === "manual" && result.combinedTaxableIncome > 0
-                ? { marginalTaxRate: Math.round(result.marginalTotalTaxRate * 1000) / 10 }
-                : {}),
-            })
-          }
-          tooltip="Aus dem zu versteuernden Einkommen nach § 32a EStG (Tarif 2026): rechnet die Steuer vor und nach dem Kauf nach dem gesetzlichen Tarif, mit Solidaritätszuschlag und Kirchensteuer; der Normalfall. Persönlicher Steuersatz: Du trägst den Grenzsteuersatz selbst ein, etwa 35, 37 oder 42 Prozent, und die Steuerwirkung ist Einkünfte aus Vermietung mal diesem Satz."
-        >
-          <option value="tariff">Aus dem zu versteuernden Einkommen (Tarif 2026)</option>
-          <option value="manual">Persönlicher Steuersatz (manuell)</option>
-        </Auswahlfeld>
       </div>
       <Schalterfeld
         label="Solidaritätszuschlag berücksichtigen"
@@ -215,26 +254,7 @@ export function EingabeKunde({ input, result, setzeZahl, setzeText, aendere, her
         onChange={(wert) => aendere({ includeSolidaritySurcharge: wert })}
         tooltip="5,5 Prozent auf die Einkommensteuer, im Modell mit Freigrenze und Milderungszone. Bei mittleren Einkommen fällt er dadurch oft gar nicht an. Eingeschaltet lassen ist der Normalfall."
       />
-      {input.taxCalculationMode === "manual" && (
-        <Zahlenfeld
-          label="Persönlicher Grenzsteuersatz, gesamt"
-          placeholder="z. B. 42"
-          empfohlen
-          value={input.marginalTaxRate}
-          suffix="%"
-          onChange={(wert) => setzeZahl("marginalTaxRate", Math.min(60, wert))}
-          tooltip="Prozentsatz, mit dem das anteilige Ergebnis der Immobilie besteuert wird. Beim Umschalten steht hier der Grenzsteuersatz aus dem zu versteuernden Einkommen, etwa 35 Prozent bei 60.000 Euro brutto ledig; 42 Prozent gelten erst ab rund 70.000 Euro zu versteuerndem Einkommen. Die Steuerwirkung ist Ergebnis mal Satz, höchstens aber die Steuer, die ohne die Immobilie anfiele: Ohne Steuerlast gibt es keine Erstattung."
-          hint={
-            result.erstattungBegrenzt
-              ? "Ohne Steuerlast vor dem Kauf keine Erstattung: Der Verlust wird hier nicht vollständig mit dem Satz verrechnet. Bitte das zu versteuernde Einkommen eintragen."
-              : `Der Satz gilt als Gesamtsatz, Solidaritätszuschlag und Kirchensteuer also schon eingerechnet; die Schalter dazu wirken hier nicht. ${
-                  result.combinedTaxableIncome > 0
-                    ? `Aus dem zu versteuernden Einkommen nach § 32a EStG ergäben sich ${formatProzent(result.marginalIncomeTaxRate)} Einkommensteuer, mit Soli und Kirchensteuer ${formatProzent(result.marginalTotalTaxRate)}.`
-                    : "Ohne zu versteuerndes Einkommen wird der Grenzsteuersatz sonst nicht berechnet."
-                }`
-          }
-        />
-      )}
+      <Grenzsteuersatzfeld input={input} result={result} aendere={aendere} />
       <Steuerprofil input={input} result={result} compact />
       <div className="info-card">
         <strong>Brutto, Steuerklasse und zu versteuerndes Einkommen sind nicht dasselbe.</strong>
@@ -262,7 +282,7 @@ export interface EingabeObjektProps extends EingabeProps {
 /** Erklärungen zu den drei Sätzen, in beiden Wegen dieselben. */
 const KNK_ERKLAERUNG: Record<string, string> = {
   transferTaxRate:
-    "Der Satz richtet sich nach dem Bundesland des Objekts und liegt je nach Land zwischen 3,5 und 6,5 Prozent. Er wird auf den Kaufpreis der Immobilie gerechnet, also auf den Gesamtkaufpreis ohne Erhaltungsaufwand und ohne Möbel. Er erhöht die Gesamtkosten und fließt anteilig in die Abschreibung des Gebäudes.",
+    "OS rechnet standardmäßig mit 6,5 Prozent (zusammen mit Notar und Grundbuch 8,5 Prozent); gesetzlich liegt der Satz je nach Land zwischen 3,5 und 6,5 Prozent. Er wird auf den Kaufpreis der Immobilie gerechnet, also auf den Gesamtkaufpreis ohne Erhaltungsaufwand und ohne Möbel. Er erhöht die Gesamtkosten und fließt anteilig in die Abschreibung des Gebäudes.",
   notaryRate:
     "Notarkosten für Beurkundung und Abwicklung. Der Rechner setzt als Richtwert 1,5 Prozent des Gesamtkaufpreises ohne Erhaltungsaufwand und Möbel an, weil bei voller Finanzierung die Grundschuld dazukommt. Die genaue Rechnung kommt erst nach dem Notartermin.",
   landRegisterRate:
@@ -477,7 +497,7 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
             empfohlen
             value={knk.bundesland}
             onChange={(wert) => setzeKnk({ ...knk, bundesland: wert })}
-            tooltip="Die Grunderwerbsteuer ist Ländersache und liegt zwischen 3,5 und 6,5 Prozent. Aus der Auswahl werden Grunderwerbsteuer, Notar mit 1,5 Prozent und Grundbuch mit 0,5 Prozent gesetzt. Passt ein Satz im Einzelfall nicht, hilft der Weg mit eigener Eingabe."
+            tooltip="OS rechnet in Berlin und Brandenburg / Potsdam mit 8,5 Prozent Kaufnebenkosten: 6,5 Prozent Grunderwerbsteuer, 1,5 Prozent Notar und 0,5 Prozent Grundbuch (in Berlin gesetzlich 6,0 Prozent Grunderwerbsteuer; OS bleibt bei 8,5 Prozent gesamt). Passt ein Satz im Einzelfall nicht, hilft der Weg mit eigener Eingabe."
           >
             <option value="">Bitte Bundesland wählen</option>
             {BUNDESLAND_AUSWAHL.map((land) => (
@@ -488,7 +508,7 @@ export function EingabeObjekt({ input, result, setzeZahl, setzeText, aendere, kn
           </Auswahlfeld>
           {!knk.bundesland && (
             <p className="knk-hinweis knk-hinweis-warnung">
-              Noch kein Bundesland gewählt. Bis dahin rechnet der Rechner mit den unten stehenden Startwerten.
+              Noch kein Bundesland gewählt. Bis dahin rechnet der Rechner mit den unten stehenden Startwerten (Standard 8,5 %).
             </p>
           )}
           <div className="knk-saetze">
@@ -883,14 +903,23 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
     <div className="input-section">
       <Bereichstitel nummer="04" titel="Finanzierung" untertitel="Wie finanziert wird: Darlehen eintragen, das Eigenkapital ist der Rest" />
       <div className="subheading">Bankdarlehen</div>
+      {/* Analyse und PDF finanzieren immer 100 % des Kaufpreises; die Eingabe ist bis dahin ausgeblendet (08.11.2026). */}
+      {!UNWIRKSAME_FELDER_ZEIGEN && (
+        <p className="knk-hinweis" data-testid="darlehen-100">
+          Bankdarlehen: 100 % des Kaufpreises, {formatEuro(result.seniorLoanAmount)}. Es folgt dem Kaufpreis; die
+          Kaufnebenkosten trägt das Eigenkapital.
+        </p>
+      )}
       <div className="field-grid">
-        <Darlehensbetrag
-          art={input.seniorLoanMode}
-          wert={input.seniorLoanValue}
-          kaufpreis={kaufpreis}
-          onChange={(art, wert) => aendere({ seniorLoanMode: art, seniorLoanValue: wert })}
-          tooltip="Wie viel die Bank finanziert, zum Beispiel 90 Prozent des Kaufpreises. Eintragen lässt es sich in Prozent oder in Euro, das andere Feld rechnet mit. Prozent gelten vom Kaufpreis, beim All-inclusive-Modell vom Kaufpreis samt Kaufnebenkosten."
-        />
+        {UNWIRKSAME_FELDER_ZEIGEN && (
+          <Darlehensbetrag
+            art={input.seniorLoanMode}
+            wert={input.seniorLoanValue}
+            kaufpreis={kaufpreis}
+            onChange={(art, wert) => aendere({ seniorLoanMode: art, seniorLoanValue: wert })}
+            tooltip="Wie viel die Bank finanziert, zum Beispiel 90 Prozent des Kaufpreises. Eintragen lässt es sich in Prozent oder in Euro, das andere Feld rechnet mit. Prozent gelten vom Kaufpreis, beim All-inclusive-Modell vom Kaufpreis samt Kaufnebenkosten."
+          />
+        )}
         <Zahlenfeld
           label="Sollzins p. a."
           placeholder="z. B. 4,0"
@@ -911,26 +940,33 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
           tooltip="Tilgung in Prozent der Darlehenssumme im ersten Jahr. Zins und Tilgung zusammen, geteilt durch 12, ergeben die gleichbleibende Monatsrate. Gerechnet wird wie bei der Bank Monat für Monat: Weil der Zinsanteil mit sinkender Restschuld fällt, steigt der Tilgungsanteil mit jeder Rate."
           hint={quelle("seniorRepaymentRate")} markierung={feldmarkierung(herkunft, "seniorRepaymentRate")}
         />
-        <Zahlenfeld
-          label="Zinsbindung"
-          placeholder="z. B. 10"
-          empfohlen
-          value={input.seniorFixedRateYears}
-          suffix="Jahre"
-          step="1"
-          onChange={(wert) => setzeZahl("seniorFixedRateYears", wert)}
-          tooltip={ZINSBINDUNG_ERKLAERUNG}
-          hint={restschuldHinweis("bank")}
-        />
-        <Tilgungsfelder
-          art={input.seniorRepaymentType}
-          laufzeit={input.seniorTermYears}
-          tilgungsfrei={input.seniorGracePeriodYears}
-          onArt={(art) => aendere({ seniorRepaymentType: art })}
-          onLaufzeit={(jahre) => setzeZahl("seniorTermYears", jahre)}
-          onTilgungsfrei={(jahre) => setzeZahl("seniorGracePeriodYears", jahre)}
-        />
+        {UNWIRKSAME_FELDER_ZEIGEN && (
+          <>
+            <Zahlenfeld
+              label="Zinsbindung"
+              placeholder="z. B. 10"
+              empfohlen
+              value={input.seniorFixedRateYears}
+              suffix="Jahre"
+              step="1"
+              onChange={(wert) => setzeZahl("seniorFixedRateYears", wert)}
+              tooltip={ZINSBINDUNG_ERKLAERUNG}
+              hint={restschuldHinweis("bank")}
+            />
+            <Tilgungsfelder
+              art={input.seniorRepaymentType}
+              laufzeit={input.seniorTermYears}
+              tilgungsfrei={input.seniorGracePeriodYears}
+              onArt={(art) => aendere({ seniorRepaymentType: art })}
+              onLaufzeit={(jahre) => setzeZahl("seniorTermYears", jahre)}
+              onTilgungsfrei={(jahre) => setzeZahl("seniorGracePeriodYears", jahre)}
+            />
+          </>
+        )}
       </div>
+      {/* Nachrang, zweites Bankdarlehen und KfW wirken in Analyse und PDF nicht; der Nachrang steht dort als 0/50/100-%-Tabelle (08.11.2026). */}
+      {UNWIRKSAME_FELDER_ZEIGEN && (
+      <>
       <div className="subheading">Nachrangdarlehen</div>
       <div className="field-grid">
         <Darlehensbetrag
@@ -1157,6 +1193,8 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
             </p>
           )}
         </>
+      )}
+      </>
       )}
       {/*
         Ergebnis der Finanzierung, seit dem 23.10.2026: Das Eigenkapital ist
@@ -1490,6 +1528,9 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
         </div>
       )}
       <div className="field-grid">
+        {/* Mietausfall und Mietsteigerung wirken in Analyse und PDF nicht, die Miete steigt dort bis zur Zielmiete (08.11.2026). */}
+        {UNWIRKSAME_FELDER_ZEIGEN && (
+        <>
         <Zahlenfeld
           label="Leerstand / Mietausfall"
           placeholder="z. B. 2"
@@ -1508,6 +1549,8 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
           onChange={(wert) => setzeZahl("annualRentGrowth", wert)}
           tooltip="Modellannahme, um wie viel Prozent die Miete jedes Jahr steigt. Sie wirkt ab dem zweiten Jahr und wächst mit Zinseszinseffekt. Ein negativer Wert rechnet einen Mietrückgang. Was tatsächlich durchsetzbar ist, hängt von Mietspiegel, Kappungsgrenze und Vertrag ab."
         />
+        </>
+        )}
         <Zahlenfeld
           label="Kostensteigerung p. a."
           placeholder="z. B. 2"
@@ -1537,6 +1580,9 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
           onChange={(wert) => setzeZahl("startYear", wert)}
           tooltip="Erstes Jahr der Prognose, das Jahr, in dem Nutzen und Lasten übergehen. Es beschriftet die Jahre in Tabelle und Diagrammen."
         />
+        {/* Übergang Nutzen und Lasten (dort: „Lastenwechsel nach dem Kauf“) und Betrachtungszeitraum wirken in Analyse und PDF nicht (08.11.2026). */}
+        {UNWIRKSAME_FELDER_ZEIGEN && (
+        <>
         <Auswahlfeld
           label="Übergang Nutzen und Lasten"
           value={input.acquisitionMonth}
@@ -1557,6 +1603,8 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
           onChange={(wert) => setzeZahl("forecastYears", Math.min(30, wert))}
           tooltip="Anzahl der gerechneten Jahre, höchstens dreißig. Im letzten Jahr unterstellt das Modell einen Verkauf zum prognostizierten Wert, deshalb hängt die ausgewiesene Rendite spürbar von dieser Länge ab."
         />
+        </>
+        )}
       </div>
       {/* Seit dem 09.10.2026, nur für das Deckblatt „Vermögensaufbau & Altersvorsorge“. */}
       <div className="field-grid">
@@ -1592,6 +1640,8 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
           tooltip="Modellannahme für die jährliche Geldentwertung. Mit ihr rechnet das Deckblatt „Vermögensaufbau & Altersvorsorge“ das Zusatzeinkommen im Ruhestand in heutige Kaufkraft um. Sonst wirkt sie nirgends."
         />
       </div>
+      {/* Eigene Rechnung mit heutiger Miete und Mietausfall, weicht von Analyse und PDF ab: ausgeblendet (08.11.2026). */}
+      {UNWIRKSAME_FELDER_ZEIGEN && (
       <div className="summary-strip">
         <span>
           <small>Effektive Jahresmiete</small>
@@ -1612,6 +1662,7 @@ export function EingabeErtrag({ input, result, setzeZahl, herkunft }: EingabePro
           <strong>{formatProzent(result.netYield)}</strong>
         </span>
       </div>
+      )}
     </div>
   );
 }
@@ -1632,6 +1683,8 @@ export function EingabeSteuer({ input, result, setzeZahl, aendere, herkunft }: E
           tooltip="Anteil des Kaufpreises ohne Möbel, der auf das Gebäude entfällt. Der Rest ist Grund und Boden und wird nicht abgeschrieben. Maßgeblich sind die Aufteilung im Kaufvertrag oder eine Berechnung nach der Arbeitshilfe des Bundesfinanzministeriums, üblich sind 70 bis 85 Prozent. Die Möbel haben ihre eigene Abschreibung."
           hint={quelle("buildingShare")} markierung={feldmarkierung(herkunft, "buildingShare")}
         />
+        {/* Analyse und PDF rechnen linear, ohne Sonder-AfA: AfA-Methode und § 7b ausgeblendet (08.11.2026). */}
+        {UNWIRKSAME_FELDER_ZEIGEN && (
         <Auswahlfeld
           label="AfA-Methode Gebäude"
           value={input.depreciationMethod}
@@ -1641,8 +1694,9 @@ export function EingabeSteuer({ input, result, setzeZahl, aendere, herkunft }: E
           <option value="linear">Linear</option>
           <option value="declining">Degressiv</option>
         </Auswahlfeld>
+        )}
         <Zahlenfeld
-          label={input.depreciationMethod === "declining" ? "Degressive AfA p. a." : "Lineare AfA p. a."}
+          label={UNWIRKSAME_FELDER_ZEIGEN && input.depreciationMethod === "declining" ? "Degressive AfA p. a." : "Lineare AfA p. a."}
           empfohlen
           value={input.buildingDepreciationRate}
           suffix="%"
@@ -1668,6 +1722,7 @@ export function EingabeSteuer({ input, result, setzeZahl, aendere, herkunft }: E
           }
         />
         )}
+        {UNWIRKSAME_FELDER_ZEIGEN && (
         <Zahlenfeld
           label="Sonder-AfA § 7b p. a."
           placeholder="0"
@@ -1684,7 +1739,8 @@ export function EingabeSteuer({ input, result, setzeZahl, aendere, herkunft }: E
           }
           markierung={feldmarkierung(herkunft, "specialDepreciationRate")}
         />
-        {input.specialDepreciationRate > 0 && (
+        )}
+        {UNWIRKSAME_FELDER_ZEIGEN && input.specialDepreciationRate > 0 && (
           <Zahlenfeld
             label="Dauer Sonder-AfA"
             placeholder="4"

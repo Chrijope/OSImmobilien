@@ -1,6 +1,7 @@
 import type { InvestmentEingabe } from "@/lib/investmentrechner/rechenkern";
 import type { VergleichKunde } from "@/lib/investmentrechner/kundenObjektvergleich";
 import { LEERER_KUNDE, wirksameAngaben, type AusfuehrlichAngaben } from "@/lib/investmentrechner/ausfuehrlicheBerechnung";
+import { ohneAusgeblendeteFelder } from "@/lib/investmentrechner/ausgeblendeteFelder";
 import { Auswahlfeld, AuswahlOderText, Textbereich, Textfeld, Zahlenfeld, type Feldbedarf } from "./Felder";
 
 /*
@@ -23,7 +24,8 @@ interface Props {
 
 export function EingabeAusfuehrlich({ input, aendere, vorgaben, nummer }: Props) {
   const eigen = input.ausfuehrlich ?? {};
-  const a = wirksameAngaben(input, vorgaben);
+  // Dieselben Werte wie in Analyse und PDF, also ohne die ausgeblendeten Felder (etwa die Mietsteigerung).
+  const a = wirksameAngaben(ohneAusgeblendeteFelder(input), vorgaben);
   const setze = <K extends keyof AusfuehrlichAngaben>(k: K, wert: AusfuehrlichAngaben[K] | undefined) => {
     const neu = { ...eigen, [k]: wert };
     if (wert === undefined || wert === "" || wert === 0) delete neu[k];
@@ -84,7 +86,7 @@ export function EingabeAusfuehrlich({ input, aendere, vorgaben, nummer }: Props)
           <option value="20">20 % (Regelfall)</option>
           <option value="15">15 % (Gemeinde mit Verordnung)</option>
         </Auswahlfeld>
-        {zahl("mieteZielQm", "Zielmiete", "€/m²", { sonst: "Ohne Vorgabe aus der Mietsteigerung gerechnet", placeholder: "z. B. 20", empfohlen: true, tooltip: "Die Miete je m², die im Zieljahr erreicht wird. Bis dahin steigt die Miete gleichmäßig. Sie bestimmt Mieteinnahmen, Zuzahlung und Erlös über die Jahre." })}
+        {zahl("mieteZielQm", "Zielmiete", "€/m²", { sonst: "Standard 20 €/m², frei änderbar", placeholder: "z. B. 20", empfohlen: true, tooltip: "Die Miete je m², die im Zieljahr erreicht wird. Bis dahin steigt die Miete gleichmäßig. Sie bestimmt Mieteinnahmen, Zuzahlung und Erlös über die Jahre." })}
         {zahl("mieteZielJahr", "Zielmiete erreicht im Jahr", "", { placeholder: "z. B. 2060", empfohlen: true, tooltip: "Das Jahr, in dem die Zielmiete erreicht ist. Danach bleibt die Miete in der Rechnung gleich." })}
       </div>
 

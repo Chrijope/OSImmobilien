@@ -115,9 +115,10 @@ describe("Vorbelegung aus Objekt und Einheit", () => {
     expect(v.eingabe.propertyType).toBe("Eigentumswohnung");
   });
 
-  it("setzt die Kaufnebenkosten über das Bundesland aus der Postleitzahl", () => {
-    expect(v.knk).toEqual({ weg: "bundesland", bundesland: "bayern" });
-    expect(v.eingabe.transferTaxRate).toBe(3.5);
+  it("rechnet außerhalb von Berlin und Brandenburg mit dem OS-Standard von 8,5 % (seit dem 08.11.2026)", () => {
+    // Augsburg liegt in Bayern; die Auswahl kennt nur noch Berlin und Brandenburg / Potsdam.
+    expect(v.knk).toEqual({ weg: "bundesland", bundesland: "" });
+    expect(v.eingabe.transferTaxRate).toBe(6.5);
     expect(v.eingabe.notaryRate).toBe(1.5);
     expect(v.eingabe.landRegisterRate).toBe(0.5);
     // Makler fällt bei uns nicht beim Käufer an.
@@ -196,7 +197,8 @@ describe("Vorbelegung ohne gepflegte Daten", () => {
     expect(v.eingabe.monthlyOperatingCosts + v.eingabe.housingFeeNonRecoverable).toBe(0);
     expect(v.eingabe.rehabExpense).toBe(0);
     expect(feldnamen(v.luecken)).toEqual([
-      "Kaufpreis", "Wohnfläche", "Zimmer", "Baujahr", "Bundesland des Objekts",
+      // Ohne Bundesland gilt seit dem 08.11.2026 der OS-Standard von 8,5 %, es fehlt also nicht.
+      "Kaufpreis", "Wohnfläche", "Zimmer", "Baujahr",
       "Kaltmiete p. M.", "Nicht umlagefähige Kosten p. M.", "Gebäudeanteil", "Lineare AfA p. a.",
       "Kundenname", "Zu versteuerndes Einkommen",
     ]);
@@ -242,11 +244,16 @@ describe("Am Objekt gepflegter Kaufnebenkostensatz", () => {
     expect(v.eingabe.transferTaxRate + v.eingabe.notaryRate + v.eingabe.landRegisterRate).toBeCloseTo(9.5, 6);
   });
 
-  it("fällt ohne gepflegten Satz weiter auf das Bundesland zurück", () => {
-    // Augsburg, also Bayern: 3,5 Prozent Grunderwerbsteuer plus Notar und Grundbuch.
+  it("fällt ohne gepflegten Satz auf den OS-Standard zurück (Augsburg: 8,5 % statt der bayerischen 5,5 %)", () => {
     const v = vorbelegungAusEinheit(objekt, w, heute);
     expect(v.knk.weg).toBe("bundesland");
-    expect(v.eingabe.transferTaxRate + v.eingabe.notaryRate + v.eingabe.landRegisterRate).toBeCloseTo(5.5, 6);
+    expect(v.eingabe.transferTaxRate + v.eingabe.notaryRate + v.eingabe.landRegisterRate).toBeCloseTo(8.5, 6);
+  });
+
+  it("setzt in Brandenburg die Sätze über die Auswahl", () => {
+    const v = vorbelegungAusEinheit({ ...objekt, plz: "14467", ort: "Potsdam" }, w, heute);
+    expect(v.knk).toEqual({ weg: "bundesland", bundesland: "brandenburg" });
+    expect(v.eingabe.transferTaxRate + v.eingabe.notaryRate + v.eingabe.landRegisterRate).toBeCloseTo(8.5, 6);
   });
 });
 

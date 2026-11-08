@@ -48,3 +48,13 @@ describe("Beispielzahlen beim ersten Öffnen", () => {
     expect(BEISPIEL_EINGABE).toMatchObject({ seniorInterestRate: 5, seniorRepaymentRate: 1, annualValueGrowth: 2 });
   });
 });
+
+describe("Beispielzahlen mit den OS-Standards (08.11.2026)", () => {
+  it("8,5 % Kaufnebenkosten, ohne Möbel, Erhaltungsaufwand und weitere Kosten, Darlehen 100 %", () => {
+    expect(BEISPIEL_EINGABE).toMatchObject({
+      transferTaxRate: 6.5, notaryRate: 1.5, landRegisterRate: 0.5,
+      furniturePrice: 0, rehabExpense: 0, monthlyOperatingCosts: 0,
+      seniorLoanMode: "percent", seniorLoanValue: 100, vacancyRate: 0,
+    });
+  });
+});

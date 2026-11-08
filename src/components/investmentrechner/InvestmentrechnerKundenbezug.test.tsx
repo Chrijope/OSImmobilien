@@ -38,19 +38,19 @@ describe("Kundenbezug im Rechner", () => {
     expect(zuletzt().kundenbezogen).toBe(true);
 
     fireEvent.click(screen.getByRole("button", { name: /Finanzierung/ }));
-    // Seit dem 23.10.2026 ist das Eigenkapital der Rest; geändert wird das Bankdarlehen in Euro.
-    fireEvent.change(screen.getAllByLabelText(/^Betrag in €/)[0], { target: { value: "54321" } });
-    expect(zuletzt().eingabe.seniorLoanValue).toBe(54321);
+    // Der Darlehensbetrag ist seit dem 08.11.2026 ausgeblendet (immer 100 %); geändert wird der Sollzins.
+    fireEvent.change(screen.getAllByLabelText(/^Sollzins p\. a\./)[0], { target: { value: "4.2" } });
+    expect(zuletzt().eingabe.seniorInterestRate).toBe(4.2);
 
     fireEvent.click(screen.getByRole("button", { name: /Kunde & Einkommen/ }));
     fireEvent.click(screen.getByLabelText("Kunden entfernen"));
-    expect(zuletzt().eingabe.seniorLoanValue).toBe(54321);
+    expect(zuletzt().eingabe.seniorInterestRate).toBe(4.2);
     expect(zuletzt().kundenbezogen).toBe(true);
 
     // „Zurücksetzen“ oben rechts, mit Rückfrage im Stil des Projekts.
     fireEvent.click(screen.getByTestId("rechner-zuruecksetzen"));
     fireEvent.click(within(await screen.findByRole("alertdialog")).getByRole("button", { name: "Zurücksetzen" }));
-    await waitFor(() => expect(zuletzt().eingabe.seniorLoanValue).toBe(standardEingabe.seniorLoanValue));
+    await waitFor(() => expect(zuletzt().eingabe.seniorInterestRate).toBe(standardEingabe.seniorInterestRate));
     expect(zuletzt().kundenbezogen).toBe(false);
   });
 });
