@@ -17,7 +17,7 @@
 import { createContext, useContext, type ReactNode } from "react";
 import "./kundenObjektvergleich.css";
 import {
-  NACHRANG_STUFEN, STANDARD_SCHRITTE, empfohlen, haeuseruebergreifend, kriterien, nachrangFall, objektVon, rundeHalbAuf,
+  NACHRANG_STUFEN, STANDARD_SCHRITTE, empfohlen, genauGerechnet, grenzsatz, guenstigerpruefung, haeuseruebergreifend, kriterien, nachrangFall, rechneEinheit, steuerGesamt, objektVon, rundeHalbAuf,
   type EinheitErgebnis, type KundenObjektvergleich, type VergleichAnnahmen, type VergleichObjekt,
 } from "@/lib/investmentrechner/kundenObjektvergleich";
 
@@ -111,7 +111,9 @@ const wpBeide = (k: Kontext) => {
 
 /** „pauschal 42 % wie im Exposé“ oder, aus dem Einkommen gerechnet, „von 38,2 % aus Ihrem Einkommen“. */
 const steuerWie = (an: VergleichAnnahmen, f: Format = DEUTSCH) =>
-  an.steuerArt === "einkommen"
+  genauGerechnet(an)
+    ? f.t(`nach Tarif 2026 aus Ihrem Einkommen (Grenzsteuersatz ${f.pz(grenzsatz(an), 2)})`, `per the 2026 tax scale from your income (marginal rate ${f.pz(grenzsatz(an), 2)})`)
+    : an.steuerArt === "einkommen"
     ? f.t(`${f.pzGanz(an.steuer)}, gerechnet aus Ihrem Einkommen`, `${f.pzGanz(an.steuer)}, based on your income`)
     : f.t(`pauschal ${f.pzGanz(an.steuer)} wie im Exposé`, `a flat ${f.pzGanz(an.steuer)} as in the exposé`);
 
@@ -121,8 +123,52 @@ const punktText = (f: Format, p: string) =>
     ? p.replace(/^Baujahr (\d+)$/, "Built in $1").replace(/^Energieeffizienzklasse (.+)$/, "Energy efficiency class $1").replace(/^Verwaltung (.+)$/, "Managed by $1")
     : p;
 
+/** Wie die Kaufnebenkosten bezahlt werden: Eigenkapital (Standard), Nachrang oder im Bankdarlehen (09.11.2026). */
+const nkArt = (an: VergleichAnnahmen) => an.nkFinanzierung ?? "ek";
+const nkWie = (an: VergleichAnnahmen, f: Format) => {
+  const a = nkArt(an);
+  return a === "nachrang" ? f.t(`über ein Nachrangdarlehen (${f.pz(an.nachrangZins)} Zins, ${f.pz(an.nachrangTilgung)} Tilgung)`, `via a junior loan (${f.pz(an.nachrangZins)} interest, ${f.pz(an.nachrangTilgung)} repayment)`)
+    : a === "darlehen" ? f.t("im Bankdarlehen mitfinanziert", "financed within the bank loan") : f.t("aus Eigenkapital", "from equity");
+};
+/** Kaufnebenkosten des Kunden; 0 € mit Begründung, wenn sie ausgeglichen werden (z. B. Eigenprovision). */
+const nkBetrag = (e: EinheitErgebnis, f: Format) => (e.nk === 0 && e.einheit.nkHinweis ? `${f.eur(0, 0)} (${e.einheit.nkHinweis})` : f.eur(e.nk, 0));
+const nkSatz = (e: EinheitErgebnis, an: VergleichAnnahmen, f: Format) => (e.nk === 0 && e.einheit.nkHinweis ? "" : `, ${f.pz(an.knk)}`);
+/** Sternchen-Regel: endet die AfA vor 30 Jahren, zeigen wir den Verkauf nach AfA-Ende. */
+const verkaufsJahr = (e: EinheitErgebnis) => (e.einheit.afaJahre < 30 ? e.afaEnde : 30);
+
 /** AfA-Dauer: 32 oder 31,25 Jahre. */
 const jahreAfa = (f: Format, j: number) => (Number.isInteger(j) ? String(j) : f.de(j, 2));
+
+/**
+ * Herleitung des Steuersatzes für Seite 2 (Christian, 09.11.2026): Brutto,
+ * Veranlagung, zvE (bei Splitting die Hälfte), Grenzsteuersatz, wirksamer Satz
+ * im 1. Jahr, Einkommensteuer heute, Kindergeld oder Kinderfreibetrag.
+ */
+function steuerHerleitung(k: Kontext, e: EinheitErgebnis): string[] {
+  const an = k.v.annahmen, ku = k.v.kunde;
+  const { eur, pz, t } = k.f;
+  const zvE = an.zvE ?? 0;
+  const hundert = (x: number) => eur(Math.round(x / 100) * 100, 0);
+  const b1 = ku.bruttoJahr || 0, b2 = ku.bruttoPartner || 0;
+  const kl = [ku.steuerklasse, ku.steuerklassePartner].filter(Boolean).join("/");
+  const brutto = !b1 ? "" : an.splitting
+    ? (b2 ? t(`Zusammen rund ${hundert(b1 + b2)} brutto (${hundert(b1)} und ${hundert(b2)}).`, `Together about ${hundert(b1 + b2)} gross (${hundert(b1)} and ${hundert(b2)}).`)
+      : t(`Rund ${hundert(b1)} brutto; Ehepartner ohne eigenes Einkommen angenommen.`, `About ${hundert(b1)} gross; spouse assumed without own income.`))
+    : t(`Rund ${hundert(b1)} brutto im Jahr.`, `About ${hundert(b1)} gross a year.`);
+  const veranlagung = an.splitting
+    ? t(`Ehegattensplitting${kl ? `, Steuerklasse ${kl}` : ""}: Tarif auf die Hälfte von ${eur(zvE, 0)} zvE (${eur(Math.floor(zvE / 2), 0)}).`,
+      `Joint assessment${kl ? `, tax class ${kl}` : ""}: tax scale applied to half of ${eur(zvE, 0)} taxable income (${eur(Math.floor(zvE / 2), 0)}).`)
+    : ku.veranlagungHinweis ? `${ku.veranlagungHinweis}: Tarif auf ${eur(zvE, 0)} zvE.`
+    : t(`Einzelveranlagung${kl ? `, Steuerklasse ${kl}` : ""}: Tarif auf ${eur(zvE, 0)} zvE.`, `Individual assessment${kl ? `, tax class ${kl}` : ""}: tax scale applied to ${eur(zvE, 0)} taxable income.`);
+  const zuschlag = (an.kirchensteuersatz ?? 0) > 0 ? t(" inkl. Soli und Kirchensteuer", " incl. surcharge and church tax") : "";
+  const saetze = t(`Grenzsteuersatz ${pz(grenzsatz(an), 2)}, wirksam im 1. Jahr ${pz(e.satzWirksam, 1)}. Einkommensteuer heute ${eur(steuerGesamt(zvE, an), 0)}${zuschlag}.`,
+    `Marginal rate ${pz(grenzsatz(an), 2)}, effective in year 1 ${pz(e.satzWirksam, 1)}. Income tax today ${eur(steuerGesamt(zvE, an), 0)}${zuschlag}.`);
+  const g = guenstigerpruefung(parseInt(ku.kinder, 10) || 0, an);
+  const kinder = !g ? "" : g.kindergeldBesser
+    ? t(`Kindergeld (${eur(g.kindergeld, 0)} im Jahr) ist günstiger als der Kinderfreibetrag (${eur(g.freibetragErsparnis, 0)} weniger Steuer).`, `Child benefit (${eur(g.kindergeld, 0)} a year) is better than the child allowance (${eur(g.freibetragErsparnis, 0)} less tax).`)
+    : t(`Der Kinderfreibetrag (${eur(g.freibetragErsparnis, 0)} weniger Steuer) ist günstiger als das Kindergeld (${eur(g.kindergeld, 0)}).`, `The child allowance (${eur(g.freibetragErsparnis, 0)} less tax) is better than child benefit (${eur(g.kindergeld, 0)}).`);
+  return [brutto, veranlagung, saetze, kinder].filter(Boolean);
+}
 
 /** „Frau Muster“, ohne Anrede „Anna Muster“; englisch „Ms Muster“. */
 function anredeName(v: KundenObjektvergleich, f: Format = DEUTSCH): string {
@@ -246,7 +292,8 @@ function Ausgangslage({ k, nr }: { k: Kontext; nr: number }) {
   const nkMax = Math.max(...L.map((e) => e.nk));
   const nachW = L.map((e) => e.monat.nach);
   const unbefristet = /unbefristet|permanent/i.test(ku.beschaeftigung);
-  const traegt = ku.kapital >= nkMax;
+  const traegt = nkArt(v.annahmen) !== "ek" || ku.kapital >= nkMax;
+  const ohneNk = A.nk === 0 && !!A.einheit.nkHinweis;
   const keine = (s: string) => (s === "keine" ? t("keine", "none") : s);
   const eck: Array<[ReactNode, ReactNode]> = [
     [t("Beschäftigung", "Employment"), ku.beschaeftigung || t("laut Selbstauskunft", "as per self-disclosure")],
@@ -260,7 +307,12 @@ function Ausgangslage({ k, nr }: { k: Kontext; nr: number }) {
   const hundert = (x: number) => eur(Math.round(x / 100) * 100, 0);
   const monateText = Math.min(...monate) === Math.max(...monate) ? String(Math.min(...monate)) : `${Math.min(...monate)} ${t("bis", "to")} ${Math.max(...monate)}`;
   const leit: Array<[string, string]> = [
-    [t("Nebenkosten aus Ihrem Ersparten.", "Purchase costs from your savings."),
+    ...(nkArt(v.annahmen) !== "ek" ? [[nkArt(v.annahmen) === "nachrang" ? "Nebenkosten über ein Nachrangdarlehen." : "Nebenkosten im Bankdarlehen.",
+      nkArt(v.annahmen) === "nachrang"
+        ? `Die Kaufnebenkosten von rund ${hundert(A.nk)} (Grunderwerbsteuer, Notar und Grundbuch) finanziert ein Nachrangdarlehen mit ${k.f.pz(v.annahmen.nachrangZins)} Zins und ${k.f.pz(v.annahmen.nachrangTilgung)} Tilgung. Ihr Erspartes von ${eur(ku.kapital, 0)} bleibt vollständig als Reserve.`
+        : `Die Kaufnebenkosten von rund ${hundert(A.nk)} (Grunderwerbsteuer, Notar und Grundbuch) schlägt die Bank auf den Kaufpreis auf und finanziert ${eur(A.darlehen, 0)} im Hauptdarlehen. Ihr Erspartes von ${eur(ku.kapital, 0)} bleibt vollständig als Reserve.`] as [string, string]] : []),
+    ...(A.nk === 0 && A.einheit.nkHinweis ? [["Keine Kaufnebenkosten für Sie.", `Grunderwerbsteuer, Notar und Grundbuch werden für Sie ausgeglichen (${A.einheit.nkHinweis}). Ihr Erspartes von ${eur(ku.kapital, 0)} bleibt vollständig als Reserve.`] as [string, string]] : []),
+    ...(nkArt(v.annahmen) === "ek" && !(A.nk === 0 && A.einheit.nkHinweis) ? [[t("Nebenkosten aus Ihrem Ersparten.", "Purchase costs from your savings."),
       (B
         ? t(`Beim Kauf zahlen Sie einmalig rund ${hundert(A.nk)} (Wohnung ${A.einheit.nr}) bzw. ${hundert(B.nk)} (Wohnung ${B.einheit.nr}) für Grunderwerbsteuer, Notar und Grundbuch. `,
           `On purchase you pay a one-off of about ${hundert(A.nk)} (apartment ${A.einheit.nr}) or ${hundert(B.nk)} (apartment ${B.einheit.nr}) for land transfer tax, notary and land registry. `)
@@ -270,15 +322,15 @@ function Ausgangslage({ k, nr }: { k: Kontext; nr: number }) {
       + (Math.min(...ueber) > 0
         ? t(`Danach legen Sie jeden Monat wieder etwas zurück: Von Ihrem Gehalt bleiben nach Miete, Lebenshaltung und Wohnung rund ${hundert(Math.min(...ueber))} übrig. So ist Ihr Erspartes nach etwa ${monateText} Monaten wieder aufgefüllt.`,
           `After that you put money aside again every month: after rent, living costs and the apartment, about ${hundert(Math.min(...ueber))} of your salary remains. Your savings are replenished after about ${monateText} months.`)
-        : "")],
+        : "")] as [string, string]] : []),
     [t("Monatlich spürbar, nicht belastend.", "Noticeable each month, not a burden."),
       (B
         ? t(`Ihr Eigenanteil nach Steuer liegt je nach Wohnung bei rund ${eur(-Math.max(...nachW), 0)} bis ${eur(-Math.min(...nachW), 0)} im Monat.`,
           `Depending on the apartment, your own contribution after tax is about ${eur(-Math.max(...nachW), 0)} to ${eur(-Math.min(...nachW), 0)} a month.`)
         : t(`Ihr Eigenanteil nach Steuer liegt bei rund ${eur(-A.monat.nach, 0)} im Monat.`, `Your own contribution after tax is about ${eur(-A.monat.nach, 0)} a month.`))
       + (frei > 0 ? t(" Das ist ein kleiner Teil dessen, was Ihnen heute frei bleibt.", " That is a small part of what you have left over today.") : "")],
-    [t("Der Steuerhebel.", "The tax lever."), t(`Jeder Euro Verlust aus der Vermietung senkt die Steuer in dieser Rechnung um ${de(v.annahmen.steuer * 100, 0)} Cent. Mit einem Freibetrag beim Finanzamt kommt das jeden Monat mit dem Gehalt (wann genau: Seite ${k.seiteFreibetrag}).`,
-      `Every euro of rental loss lowers the tax in this calculation by ${de(v.annahmen.steuer * 100, 0)} cents. With a tax allowance from the tax office, this arrives every month with your salary (exactly when: page ${k.seiteFreibetrag}).`)],
+    [t("Der Steuerhebel.", "The tax lever."), t(`Jeder Euro Verlust aus der Vermietung senkt die Steuer in dieser Rechnung um ${de(A.satzWirksam * 100, 0)} Cent. Mit einem Freibetrag beim Finanzamt kommt das jeden Monat mit dem Gehalt (wann genau: Seite ${k.seiteFreibetrag}).`,
+      `Every euro of rental loss lowers the tax in this calculation by ${de(A.satzWirksam * 100, 0)} cents. With a tax allowance from the tax office, this arrives every month with your salary (exactly when: page ${k.seiteFreibetrag}).`)],
     ...(ku.jahreBisRente ? [[t("Ihr langer Horizont.", "Your long horizon."), t(`Bei rund ${ku.jahreBisRente} Jahren bis zur Rente zählt nicht nur der günstigste Start, sondern eine Belastung, die über die nächsten 30 Jahre gut passt.`,
       `With about ${ku.jahreBisRente} years to retirement, what counts is not only the cheapest start but a monthly amount that fits well over the next 30 years.`)] as [string, string]] : []),
   ];
@@ -288,7 +340,7 @@ function Ausgangslage({ k, nr }: { k: Kontext; nr: number }) {
     ku.kreditRaten ? t(`zahlen ${eur(ku.kreditRaten, 0)} im Monat für laufende Kredite`, `pay ${eur(ku.kreditRaten, 0)} a month for current loans`) : t("haben keine Kredite", "have no loans"),
   ].filter(Boolean);
   const lead = t(
-    `Sie ${teile.join(", ")}${traegt ? `${ku.kreditRaten ? " und haben" : " und"} ein Guthaben, das die Kaufnebenkosten trägt` : ""}`,
+    `Sie ${teile.join(", ")}${traegt ? `${ku.kreditRaten ? " und haben" : " und"} ${nkArt(v.annahmen) === "ek" && !ohneNk ? "ein Guthaben, das die Kaufnebenkosten trägt" : `ein Guthaben von ${eur(ku.kapital, 0)} als Reserve`}` : ""}`,
     `You ${teile.join(", ")}${traegt ? `${ku.kreditRaten ? " and have" : " and"} savings that cover the purchase costs` : ""}`,
   );
   return (
@@ -297,16 +349,22 @@ function Ausgangslage({ k, nr }: { k: Kontext; nr: number }) {
         ? t(<>Sicheres Einkommen, viel Zeit: <em>der ideale Startpunkt.</em></>, <>Secure income, plenty of time: <em>the ideal starting point.</em></>)
         : t(<>Ihre Zahlen: <em>die Grundlage dieser Rechnung.</em></>, <>Your figures: <em>the basis of this calculation.</em></>)}</h2>
       <p className="lead">
-        {lead ? `${lead}. ` : ""}{t(`Gerechnet wird mit einem Grenzsteuersatz von ${steuer}.`, `The calculation uses a marginal tax rate of ${steuer}.`)}
+        {lead ? `${lead}. ` : ""}{genauGerechnet(v.annahmen)
+          ? t(`Gerechnet wird genau nach Ihrem Einkommensteuertarif 2026${v.annahmen.splitting ? " mit Ehegattensplitting" : ""}: Grenzsteuersatz ${k.f.pz(grenzsatz(v.annahmen), 2)}, im 1. Jahr wirksam ${k.f.pz(A.satzWirksam, 1)}.`,
+            `The calculation follows your 2026 income tax scale${v.annahmen.splitting ? " with joint assessment" : ""}: marginal rate ${k.f.pz(grenzsatz(v.annahmen), 2)}, effective in year 1 ${k.f.pz(A.satzWirksam, 1)}.`)
+          : t(`Gerechnet wird mit einem Grenzsteuersatz von ${steuer}.`, `The calculation uses a marginal tax rate of ${steuer}.`)}
         {ku.jahreBisRente ? t(` Und Sie haben bis zur Rente rund ${ku.jahreBisRente} Jahre Zeit, in der eine Wohnung für Sie arbeiten kann.`, ` And you have about ${ku.jahreBisRente} years until retirement in which an apartment can work for you.`) : ""}
       </p>
       <div className="grid" style={{ gridTemplateColumns: "1fr 1fr 1fr", marginTop: "6mm" }}>
         <div className="tile"><div className="label">{t("Nettoeinkommen", "Net income")}</div><div className="n">{eur(ku.netto, 0)}</div>
           <div className="s">{t("im Monat.", "per month.")}{ku.bruttoJahr ? t(` Rund ${eur(Math.round(ku.bruttoJahr / 1000) * 1000, 0)} brutto im Jahr.`, ` About ${eur(Math.round(ku.bruttoJahr / 1000) * 1000, 0)} gross a year.`) : ""}</div></div>
-        <div className="tile"><div className="label">{t("Gerechneter Grenzsteuersatz", "Marginal tax rate used")}</div><div className="n">{steuer}</div>
+        {genauGerechnet(v.annahmen) ? (
+          <div className="tile"><div className="label">{t("Ihr Steuersatz", "Your tax rate")}</div><div className="n">{k.f.pz(grenzsatz(v.annahmen), 2)}</div>
+            <div className="s">{steuerHerleitung(k, A).join(" ")}</div></div>
+        ) : <div className="tile"><div className="label">{t("Gerechneter Grenzsteuersatz", "Marginal tax rate used")}</div><div className="n">{steuer}</div>
           <div className="s">{[ku.steuerklasse ? t(`Steuerklasse ${ku.steuerklasse}`, `Tax class ${ku.steuerklasse}`) : "", ku.familienstand,
             ku.kinder === "keine" ? t("keine Kinder", "no children") : t(`${ku.kinder} Kind${ku.kinder === "1" ? "" : "er"}`, `${ku.kinder} child${ku.kinder === "1" ? "" : "ren"}`)].filter(Boolean).join(", ")}.
-            {t(" Die tatsächliche Ersparnis hängt vom persönlichen Steuersatz ab.", " The actual saving depends on your personal tax rate.")}</div></div>
+            {t(" Die tatsächliche Ersparnis hängt vom persönlichen Steuersatz ab.", " The actual saving depends on your personal tax rate.")}</div></div>}
         <div className="tile dk"><div className="label">{t("Ihr Kapital", "Your capital")}</div><div className="n">{eur(ku.kapital, 0)}</div>
           <div className="s">{t("Bank- und Sparguthaben laut Selbstauskunft.", "Bank and savings balances as per self-disclosure.")}{ku.kreditRaten ? "" : t(" Keine Kredite, kein Leasing.", " No loans, no leasing.")}</div></div>
       </div>
@@ -319,7 +377,10 @@ function Ausgangslage({ k, nr }: { k: Kontext; nr: number }) {
         </div>
       </div>
       <div className="note" style={{ marginTop: "8mm" }}>
-        {t(<>
+        {genauGerechnet(v.annahmen) ? <>
+          Steuerersparnis genau als Differenz der Einkommensteuer nach Tarif 2026 ohne und mit der Wohnung; das zu versteuernde Einkommen ist vereinfachend über die ganze Laufzeit gleich angesetzt.
+          {A.einheit.kpErklaerung ? ` ${A.einheit.kpErklaerung} ` : " "}Grundlage sind Ihre Angaben und Unterlagen. Bitte den letzten Steuerbescheid oder eine Lohnsteuerbescheinigung nachreichen; dann rechnen wir genau mit Ihren Werten.
+        </> : t(<>
           Steuerersparnis gerechnet mit einem Grenzsteuersatz von {steuer}; die tatsächliche Ersparnis hängt vom persönlichen Steuersatz ab.
           Weitere Anlagen wie Depot oder Versicherungen sind nur eingerechnet, soweit sie in der Selbstauskunft stehen. Bitte den letzten
           Steuerbescheid oder eine Lohnsteuerbescheinigung sowie aktuelle Depot- und Versicherungsstände nachreichen, falls vorhanden; dann rechnen wir genau.
@@ -349,7 +410,7 @@ function Wohnungen({ k, nr }: { k: Kontext; nr: number }) {
       [t("Kaufpreis Wohnung", "Purchase price apartment"), eur(x.kpWohnung, 0) + (x.kpListe > x.kpWohnung ? t(` statt ${eur(x.kpListe, 0)}`, ` instead of ${eur(x.kpListe, 0)}`) : "")],
       ...(x.garagen ? [[x.garagen > 1 ? t("Garage 1 (im Kaufpreis)", "Garage 1 (in the purchase price)") : t("Garage (im Kaufpreis)", "Garage (in the purchase price)"), eur(x.garageKp, 0)] as [string, string]] : []),
       ...(x.garagen > 1 ? [[t(`Garage 2${x.garagen > 2 ? ` bis ${x.garagen}` : ""} (ohne Aufpreis)`, `Garage 2${x.garagen > 2 ? ` to ${x.garagen}` : ""} (no surcharge)`), eur(0, 0)] as [string, string]] : []),
-      [t("Kaufpreis gesamt", "Total purchase price"), eur(e.kp, 0)],
+      [x.kpHinweis ? <>{t("Kaufpreis gesamt", "Total purchase price")}<span className="kl">{x.kpHinweis}</span></> : t("Kaufpreis gesamt", "Total purchase price"), eur(e.kp, 0)],
       [t("Preis je m² Wohnung", "Price per m² apartment"), eur(e.qmPreis)],
       [t("Kaltmiete heute (Mieter)", "Net rent today (tenant)"), `${eur(x.mieteIst)} · ${de(e.mieteIstQm)} €/m²`],
       [e.luecke > 0 ? t("Kaltmiete subventioniert", "Net rent subsidised") : t("Kaltmiete gerechnet", "Net rent used"), `${eur(e.mieteSub)} · ${de(x.mieteSubQm)} €/m²`],
@@ -507,7 +568,7 @@ function VergleichTabelle({ k }: { k: Kontext }) {
         {z(t("Wohnung", "Apartment"), (e) => `${t(`${e.einheit.zimmer} Zimmer`, `${e.einheit.zimmer} rooms`)}, ${de(e.einheit.qm)} m²${e.einheit.garagen ? ` + ${garagenText(e, false, k.f)}` : ""}`, win(A.einheit.qm, bb.einheit.qm, false))}
         {z(g > 1 ? t("Kaufpreis (weitere Garagen ohne Aufpreis)", "Purchase price (further garages at no surcharge)") : t("Kaufpreis", "Purchase price"), (e) => `${eur(e.kp, 0)}${e.einheit.garagen ? t(" inkl. Garage", " incl. garage") : ""}`)}
         {z(t("Preis je m² Wohnung", "Price per m² apartment"), (e) => eur(e.qmPreis), win(A.qmPreis, bb.qmPreis, true))}
-        {z(t(`Kaufnebenkosten (aus Eigenkapital, ${pz(an.knk)})`, `Purchase costs (from equity, ${pz(an.knk)})`), (e) => eur(e.nk, 0), win(A.nk, bb.nk, true))}
+        {z(A.nk === 0 && A.einheit.nkHinweis ? "Kaufnebenkosten für Sie" : t(`Kaufnebenkosten (${({ ek: "aus Eigenkapital", nachrang: "über Nachrangdarlehen", darlehen: "im Bankdarlehen" })[nkArt(an)]}${nkSatz(A, an, k.f)})`, `Purchase costs (from equity, ${pz(an.knk)})`), (e) => nkBetrag(e, k.f), win(A.nk, bb.nk, true))}
         {z(t("Kaltmiete heute (zahlt der Mieter)", "Net rent today (paid by the tenant)"), (e) => `${eur(e.einheit.mieteIst)} (${de(e.mieteIstQm)} €/m²)`)}
         {z(mietLabel, (e) => eur(e.monat.einnahmen))}
         {L.some((e) => e.luecke > 0) && z(t("davon Mietlücke, die der Bauträger zahlt", "of which rent gap paid by the developer"), (e) => `${eur(Math.max(0, e.luecke))} (${pz(Math.max(0, e.lueckeQuote))})`, win(A.lueckeQuote, bb.lueckeQuote, true), "sub")}
@@ -517,15 +578,16 @@ function VergleichTabelle({ k }: { k: Kontext }) {
         {z(t("Erhaltungsrücklage (separat)", "Maintenance reserve (separate)"), (e) => eur(e.hausgeld.r), null, "sub")}
         {z(t("= Vorauszahlung gesamt an die Verwaltung", "= Total advance payment to the management"), (e) => eur(e.hausgeld.voraus))}
         {z(t("Ihr Anteil: nicht umlagefähig + Rücklage", "Your share: non-recoverable + reserve"), (e) => eur(e.hausgeld.eigentuemer), win(A.hausgeld.eigentuemer, bb.hausgeld.eigentuemer, true))}
-        {z(t(`Kreditrate (Zins ${pzGanz(an.zins)} + Tilgung ${pzGanz(an.tilgung)})`, `Loan instalment (interest ${pzGanz(an.zins)} + repayment ${pzGanz(an.tilgung)})`), (e) => eur(e.monat.zins + e.monat.tilgung))}
+        {z(t(`Kreditrate${nkArt(an) === "darlehen" ? ` auf ${eur(A.darlehen, 0)}` : ""} (Zins ${pz(an.zins)} + Tilgung ${pz(an.tilgung)})`, `Loan instalment (interest ${pzGanz(an.zins)} + repayment ${pzGanz(an.tilgung)})`), (e) => eur(e.monat.zins + e.monat.tilgung))}
+        {nkArt(an) === "nachrang" && z(`Rate Nachrangdarlehen auf ${eur(A.nrBetrag, 0)} (Zins ${pz(an.nachrangZins)} + Tilgung ${pz(an.nachrangTilgung)})`, (e) => eur(e.monat.nzins + e.monat.ntilg))}
         {z(t("Abschreibung", "Depreciation") + (A.einheit.afaJahre < 50 ? t(" (mit Gutachten)", " (with expert report)") : ""), (e) => t(`${pz(1 / e.einheit.afaJahre)} p. a.: ${eur(e.jahr.afa, 0)}/J.`, `${pz(1 / e.einheit.afaJahre)} p.a.: ${eur(e.jahr.afa, 0)}/yr`))}
         {z(t("Zuzahlung vor Steuer", "Top-up before tax"), (e) => eur(-e.monat.vor), null, "e1")}
-        {z(t(`Steuerersparnis (${pzGanz(an.steuer)} Grenzsteuersatz)`, `Tax saving (${pzGanz(an.steuer)} marginal tax rate)`), (e) => eur(e.monat.ersparnis), null, "hi")}
+        {z(genauGerechnet(an) ? t(`Steuerersparnis (Tarif 2026, wirksam ${pz(A.satzWirksam, 1)})`, `Tax saving (2026 scale, effective ${pz(A.satzWirksam, 1)})`) : t(`Steuerersparnis (${pzGanz(an.steuer)} Grenzsteuersatz)`, `Tax saving (${pzGanz(an.steuer)} marginal tax rate)`), (e) => eur(e.monat.ersparnis), null, "hi")}
         {z(<>{t("Zuzahlung nach Steuererstattung", "Top-up after tax refund")}<span style={{ display: "block", fontSize: "7.4pt", fontWeight: 300, color: "#B8C2BC", marginTop: ".4mm" }}>{t("Ihr Eigenanteil im Monat", "Your own contribution per month")}</span></>, (e) => eur(-e.monat.nach), null, "e3", "e3")}
         {z(t("Tilgung im Monat (senkt Ihre Restschuld)", "Repayment per month (reduces your remaining debt)"), (e) => eur(e.monat.tilgung), win(A.monat.tilgung, bb.monat.tilgung, false))}
-        {z(t("Verkaufssumme nach 30 Jahren (einmalig)", "Sale price after 30 years (one-off)"), (e) => tsd(e.entw[30].wert), win(A.entw[30].wert, bb.entw[30].wert, false))}
-        {z(t("abzüglich Restschuld des Kredits", "less remaining loan debt"), (e) => `− ${tsd(e.entw[30].rest)}`, null, "sub")}
-        {z(<>{t(`Ihre Auszahlung im Jahr ${auszahlungJahr}`, `Your payout in ${auszahlungJahr}`)}<span className="kl">{t("nach 30 Jahren, einmalig nach Kreditablösung", "after 30 years, one-off after repaying the loan")}</span></>, (e) => tsd(e.entw[30].erloes), null, "payout", "payout")}
+        {z(`Verkaufssumme nach ${verkaufsJahr(A)} Jahren${verkaufsJahr(A) < 30 ? "*" : ""} (einmalig)`, (e) => tsd(e.entw[verkaufsJahr(e)].wert))}
+        {z(t("abzüglich Restschuld des Kredits", "less remaining loan debt"), (e) => `− ${tsd(e.entw[verkaufsJahr(e)].rest)}`, null, "sub")}
+        {z(<>{`Ihre Auszahlung im Jahr ${an.startJahr + verkaufsJahr(A) - 1}`}<span className="kl">{`nach ${verkaufsJahr(A)} Jahren${verkaufsJahr(A) < 30 ? "*" : ""}, einmalig nach Kreditablösung`}</span></>, (e) => tsd(e.entw[verkaufsJahr(e)].erloes), null, "payout", "payout")}
       </tbody>
     </table>
   );
@@ -544,9 +606,11 @@ function VergleichFussnote({ k }: { k: Kontext }) {
   return (
     <p className="small" style={{ marginTop: "1.5mm" }}>
       {aufteilung && <b style={{ fontWeight: 500, color: "var(--navy)" }}>{aufteilung} </b>}
+      {L.map((e) => e.einheit.kpHinweis ? <b key={e.einheit.nr} style={{ fontWeight: 500, color: "var(--navy)" }}>{e.einheit.kpHinweis}. </b> : null)}
       {A.einheit.garagen > 1 && t(`Weitere Garage ohne Aufpreis; Miete ${eur(A.einheit.garageMiete1, 0)} im 1. Jahr vom Bauträger getragen, danach Vermietung. `, `Further garage at no surcharge; rent of ${eur(A.einheit.garageMiete1, 0)} paid by the developer in year 1, then let. `)}
       {t(`Verkaufssumme: angenommener Verkaufspreis bei ${pzGanz(an.wertPa)} Wertentwicklung im Jahr, vor Verkaufskosten. Nach mehr als zehn Jahren Haltedauer ist der Gewinn aus dem Verkauf einer privat vermieteten Wohnung nach § 23 EStG in der Regel steuerfrei (Hinweis, keine Steuerberatung).`,
         `Sale price: assumed selling price at ${pzGanz(an.wertPa)} value growth a year, before selling costs. After a holding period of more than ten years, the gain from selling a privately let apartment is generally tax-free under section 23 of the German Income Tax Act (note, not tax advice).`)}
+      {afaMin < 30 ? ` * Die erhöhte Abschreibung endet nach ${A.afaEnde} Jahren; danach entfällt der größte Teil des Steuervorteils. Empfohlen ist deshalb der Verkauf nach Ende der Abschreibung; gezeigt ist der Verkaufswert in diesem Jahr (${an.startJahr + A.afaEnde - 1}).` : ""}
       {afaMin >= 30
         ? t(` Die Abschreibung läuft${B ? " bei beiden Wohnungen" : ""} ${afaGleich ? `${jahreAfa(k.f, A.einheit.afaJahre)} Jahre` : L.map((e) => jahreAfa(k.f, e.einheit.afaJahre)).join(" bzw. ") + " Jahre"}, also länger als die Betrachtung; ein früher Verkauf ist deshalb nicht nötig.`,
           ` Depreciation runs for ${afaGleich ? `${jahreAfa(k.f, A.einheit.afaJahre)} years` : L.map((e) => jahreAfa(k.f, e.einheit.afaJahre)).join(" and ") + " years"}${B ? " for both apartments" : ""}, longer than the period considered; an early sale is therefore not necessary.`) : ""}
@@ -672,6 +736,7 @@ function Ausgaben({ k, e }: { k: Kontext; e: EinheitErgebnis }) {
   const zeilen: Array<[string, string, number]> = [
     [t("Zins Bankdarlehen", "Interest bank loan"), t(`${pz(an.zins)} auf ${eur(e.darlehen, 0)}`, `${pz(an.zins)} on ${eur(e.darlehen, 0)}`), m.zins],
     [t("Tilgung Bankdarlehen", "Repayment bank loan"), t(`${pz(an.tilgung)} anfänglich`, `${pz(an.tilgung)} initially`), m.tilgung],
+    ...(e.nrBetrag ? [["Rate Nachrangdarlehen", `Zins ${pz(an.nachrangZins)} + Tilgung ${pz(an.nachrangTilgung)} auf ${eur(e.nrBetrag, 0)}`, m.nzins + m.ntilg] as [string, string, number]] : []),
     [t("Hausgeld, nicht umlagefähig", "Service charge, non-recoverable"), wp, m.n],
     [t("Erhaltungsrücklage", "Maintenance reserve"), wp, m.r],
   ];
@@ -689,9 +754,11 @@ function Treppe({ k, e }: { k: Kontext; e: EinheitErgebnis }) {
   return (
     <>
       <div className="tr"><div className="nr">1</div><div className="tx"><b>{t("Das zahlen Sie im Monat, bevor das Finanzamt etwas erstattet", "What you pay each month before any tax refund")}</b>
-        <i>{t(`Ausgaben ${eur(m.ausgaben)} minus Einnahmen ${eur(m.einnahmen)}. Darin stecken ${eur(m.tilgung)} Tilgung, die Ihr Vermögen aufbauen.`, `Expenses ${eur(m.ausgaben)} minus income ${eur(m.einnahmen)}. This includes ${eur(m.tilgung)} of repayment that builds your wealth.`)}</i></div><div className="be">{eur(-m.vor)}</div></div>
+        <i>{t(`Ausgaben ${eur(m.ausgaben)} minus Einnahmen ${eur(m.einnahmen)}. Darin stecken ${eur(m.tilgung + m.ntilg)} Tilgung, die Ihr Vermögen aufbauen.`, `Expenses ${eur(m.ausgaben)} minus income ${eur(m.einnahmen)}. This includes ${eur(m.tilgung)} of repayment that builds your wealth.`)}</i></div><div className="be">{eur(-m.vor)}</div></div>
       <div className="tr s2"><div className="nr">2</div><div className="tx"><b>{t("Das spart Ihnen das Finanzamt im Monat", "Your tax saving per month")}</b>
-        <i>{t(`Zinsen, Abschreibung und Kosten sind höher als die Miete. Dieses Minus senkt Ihr zu versteuerndes Einkommen; ${pzGanz(k.v.annahmen.steuer)} davon bekommen Sie zurück.`, `Interest, depreciation and costs are higher than the rent. This loss lowers your taxable income; you get ${pzGanz(k.v.annahmen.steuer)} of it back.`)}</i></div><div className="be">{"−"} {eur(m.ersparnis)}</div></div>
+        <i>{genauGerechnet(k.v.annahmen)
+          ? t(`Zinsen, Abschreibung und Kosten sind höher als die Miete. Dieses Minus senkt Ihr zu versteuerndes Einkommen; nach Ihrem Tarif bekommen Sie im 1. Jahr ${k.f.pz(e.satzWirksam, 1)} davon zurück.`, `Interest, depreciation and costs are higher than the rent. This loss lowers your taxable income; under your tax scale you get ${k.f.pz(e.satzWirksam, 1)} of it back in year 1.`)
+          : t(`Zinsen, Abschreibung und Kosten sind höher als die Miete. Dieses Minus senkt Ihr zu versteuerndes Einkommen; ${pzGanz(k.v.annahmen.steuer)} davon bekommen Sie zurück.`, `Interest, depreciation and costs are higher than the rent. This loss lowers your taxable income; you get ${pzGanz(k.v.annahmen.steuer)} of it back.`)}</i></div><div className="be">{"−"} {eur(m.ersparnis)}</div></div>
       <div className="tr s3"><div className="nr">3</div><div className="tx"><b>{t("Das zahlen Sie tatsächlich im Monat (mit Steuervorteil)", "What you actually pay each month (with tax benefit)")}</b>
         <i>{t("Schritt 1 minus Schritt 2: Ihr echter Beitrag für die Wohnung, inklusive Tilgung.", "Step 1 minus step 2: your real contribution for the apartment, including repayment.")}</i></div><div className="be">{eur(-m.nach)}</div></div>
       <div className="frei">{freibetragText(k)}</div>
@@ -714,7 +781,7 @@ function subventionText(k: Kontext, e: EinheitErgebnis): ReactNode {
   }
   const gLuecke = x.garagen && x.garageIstVon ? [x.garageMiete1 - (x.garageIstBis || x.garageIstVon), x.garageMiete1 - x.garageIstVon] : [0, 0];
   const lg = [e.luecke + gLuecke[0], e.luecke + gLuecke[1]];
-  const netto = lg.map((l) => l * (1 - an.steuer));
+  const netto = lg.map((l) => l * (1 - e.satzWirksam));
   const spanne = (a: number, b: number) => (Math.abs(a - b) < 0.005 ? eur(a) : `${eur(a)} ${t("bis", "to")} ${eur(b)}`);
   const garageWort = x.garagen > 1 ? t("Garage 1", "garage 1") : t("Garage", "garage");
   const kopf = t(<>Gerechnet ist mit {de(x.mieteSubQm)} €/m², heute zahlt der Mieter {de(e.mieteIstQm)} €/m² ({eur(x.mieteIst)}). </>,
@@ -757,8 +824,9 @@ function Rechnung({ k, e, nr, b }: { k: Kontext; e: EinheitErgebnis; nr: number;
   const ziel = x.mieteZielQm || an.mieteZielQm;
   const an_: Array<[ReactNode, ReactNode]> = [
     [x.garagen > 1 ? t("Kaufpreis inkl. Garage 1, voll finanziert (weitere ohne Aufpreis)", "Purchase price incl. garage 1, fully financed (others at no surcharge)")
-      : x.garagen ? t("Kaufpreis inkl. Garage, voll finanziert", "Purchase price incl. garage, fully financed") : t("Kaufpreis, voll finanziert", "Purchase price, fully financed"), eur(e.kp, 0)],
-    [t(`Kaufnebenkosten aus Eigenkapital (${pz(an.knk)})`, `Purchase costs from equity (${pz(an.knk)})`), eur(e.nk, 0)],
+      : x.garagen ? t("Kaufpreis inkl. Garage, voll finanziert", "Purchase price incl. garage, fully financed") : x.kpHinweis ? <>{t("Kaufpreis, voll finanziert", "Purchase price, fully financed")}<span className="kl">{x.kpHinweis}</span></> : t("Kaufpreis, voll finanziert", "Purchase price, fully financed"), eur(e.kp, 0)],
+    [e.nk === 0 && x.nkHinweis ? "Kaufnebenkosten für Sie" : `Kaufnebenkosten ${nkWie(an, k.f)} (${pz(an.knk)})`, nkBetrag(e, k.f)],
+    ...(nkArt(an) === "darlehen" ? [["Bankdarlehen gesamt (Kaufpreis + Nebenkosten)", eur(e.darlehen, 0)] as [string, string]] : []),
     [t(`AfA: ≈ ${afaPz} % (1/${afaJ})${x.afaJahre < 50 ? `, kürzere tatsächliche Nutzungsdauer ${afaJ} J., Gutachten nötig` : ""}`,
       `Depreciation: ≈ ${afaPz}% (1/${afaJ})${x.afaJahre < 50 ? `, shorter actual useful life of ${afaJ} yrs, expert report required` : ""}`), t(`${eur(j.afa, 0)} / Jahr`, `${eur(j.afa, 0)} / year`)],
     [t(`Bemessungsgrundlage (Gebäudeanteil ${pzGanz(an.gebaeudeanteil)} inkl. Nebenkosten)`, `Depreciation basis (building share ${pzGanz(an.gebaeudeanteil)} incl. purchase costs)`), eur(e.afaBasis, 0)],
@@ -767,7 +835,8 @@ function Rechnung({ k, e, nr, b }: { k: Kontext; e: EinheitErgebnis; nr: number;
     ...(x.garagen ? [[x.garagen > 1 ? t("Garagen im Szenario", "Garages in the scenario") : t("Garage im Szenario", "Garage in the scenario"),
       t(`${x.garagen > 1 ? "je " : ""}${eur(x.garageMiete1, 0)} auf ${eur(x.garageMieteZiel, 0)} im Jahr ${an.mieteZielJahr}`, `${x.garagen > 1 ? "each " : ""}${eur(x.garageMiete1, 0)} rising to ${eur(x.garageMieteZiel, 0)} in ${an.mieteZielJahr}`)] as [string, string]] : []),
   ];
-  const e30 = e.entw[30];
+  const vj = verkaufsJahr(e);
+  const e30 = e.entw[vj];
   const h = e.hausgeld;
   return (
     <Seite nr={nr} kick={k.B ? t(`Ihre persönliche Rechnung · Objekt ${b ? "B" : "A"}`, `Your personal calculation · property ${b ? "B" : "A"}`) : t("Ihre persönliche Rechnung", "Your personal calculation")} fuss={k.fuss} klasse="sh">
@@ -800,7 +869,7 @@ function Rechnung({ k, e, nr, b }: { k: Kontext; e: EinheitErgebnis; nr: number;
       <div className="grid" style={{ gridTemplateColumns: "1fr 1fr", gap: "4mm", marginTop: "4mm" }}>
         <div className="tile"><div className="label">{t("Miete im Jahr 30 · monatlich", "Rent in year 30 · monthly")}</div><div className="n">{eur(e.miete30, 0)}</div>
           <div className="s">{t(`Kaltmiete${x.garagen ? ` inkl. ${garagenText(e, false)}` : ""} im Szenario, im 1. Jahr ${eur(m.einnahmen)}`, `Net rent${x.garagen ? ` incl. ${garagenText(e, false, k.f)}` : ""} in the scenario, ${eur(m.einnahmen)} in year 1`)}</div></div>
-        <div className="tile"><div className="label">{t("Verkaufssumme nach 30 Jahren · einmalig", "Sale price after 30 years · one-off")}</div><div className="n">{tsd(e30.wert)}</div>
+        <div className="tile"><div className="label">{`Verkaufssumme nach ${vj} Jahren${vj < 30 ? "*" : ""} · einmalig`}</div><div className="n">{tsd(e30.wert)}</div>
           <div className="s">{t(<>abzüglich Restschuld {tsd(e30.rest)} = <b>Ihr Erlös nach Kreditablösung {tsd(e30.erloes)}</b>. Nach mehr als zehn Jahren in der Regel steuerfrei (§ 23 EStG).</>,
             <>less remaining debt {tsd(e30.rest)} = <b>your proceeds after repaying the loan {tsd(e30.erloes)}</b>. Generally tax-free after more than ten years (section 23 German Income Tax Act).</>)}</div></div>
       </div>
@@ -821,7 +890,7 @@ function ChartErloes({ A, B, f = DEUTSCH }: { A: EinheitErgebnis; B: EinheitErge
   const X = (j: number) => l + ((W - l - r) * j) / 35;
   const Y = (v: number) => t + (H - t - b) * (1 - v / ymax);
   const linie = (e: EinheitErgebnis, art: "erl" | "zuz", farbe: string, dash?: string) => {
-    const pts: Array<[number, number]> = [[0, art === "erl" ? 0 : e.nk], ...e.reihe.map((p) => [p.jahr, art === "erl" ? p.wert - p.rest : p.zuz] as [number, number])];
+    const pts: Array<[number, number]> = [[0, art === "erl" ? 0 : e.ek], ...e.reihe.map((p) => [p.jahr, art === "erl" ? p.wert - p.rest : p.zuz] as [number, number])];
     return <polyline points={pts.map(([a, v]) => `${X(a).toFixed(1)},${Y(v).toFixed(1)}`).join(" ")} fill="none" stroke={farbe} strokeWidth={art === "erl" ? 1.8 : 1.3} strokeDasharray={dash} />;
   };
   const stufen = Array.from({ length: ymax / 150000 + 1 }, (_, i) => i * 150000);
@@ -894,10 +963,11 @@ function Entwicklung({ k, nr }: { k: Kontext; nr: number }) {
         <tr><th /><th className="r">{t("Verkaufssumme", "Sale price")}</th><th className="r">{t("Restschuld", "Remaining debt")}</th><th className="r">{t("Ihr Erlös", "Your proceeds")}</th><th className="r">{t("Ihre Zuzahlung", "Your top-ups")}</th><th className="r">{t("Ihr Plus", "Your gain")}</th></tr>
         {k.liste.map((e, i) => [
           <tr key={`k${i}`}><td colSpan={6} style={{ fontWeight: 500, paddingTop: "2mm" }}>{B && <span className={`badge${i ? " b" : ""}`}>{i ? "B" : "A"}</span>} {k.haus(e).strasse}, {t("WE", "apt.")} {e.einheit.nr}</td></tr>,
-          ...([25, 30, 35] as const).map((y) => {
+          ...[...new Set([...(e.einheit.afaJahre < 30 ? [10, e.afaEnde] : []), 25, 30, 35])].sort((p, q) => p - q).map((y) => {
             const x = e.entw[y];
+            const stern = e.einheit.afaJahre < 30 && y === e.afaEnde;
             return (
-              <tr key={`${i}-${y}`}><td>{t(`nach ${y} Jahren`, `after ${y} years`)}</td><td className="r">{tsd(x.wert)}</td><td className="r">{Math.round(x.rest) ? `− ${tsd(x.rest)}` : eur(0, 0)}</td>
+              <tr key={`${i}-${y}`} style={stern ? { fontWeight: 500 } : undefined}><td>{`nach ${y} Jahren${stern ? "*" : ""}`}</td><td className="r">{tsd(x.wert)}</td><td className="r">{Math.round(x.rest) ? `− ${tsd(x.rest)}` : eur(0, 0)}</td>
                 <td className="r">{tsd(x.erloes)}</td><td className="r">{tsd(x.zuzahlung)}</td><td className="r" style={{ fontWeight: 500 }}>{tsd(x.plus)}</td></tr>
             );
           }),
@@ -905,7 +975,8 @@ function Entwicklung({ k, nr }: { k: Kontext; nr: number }) {
       </tbody></table>
       <p className="small" style={{ marginTop: "1.5mm" }}>
         {t(`Jahr 1 = ${an.startJahr}.`, `Year 1 = ${an.startJahr}.`)}{k.liste.every((e) => e.entw[35].rest < 1) ? t(` Nach 35 Jahren ist der Kredit${B ? " in beiden Fällen" : ""} getilgt.`, ` After 35 years the loan is repaid${B ? " in both cases" : ""}.`) : ""}
-        {afa < 35 ? t(` Die Abschreibung endet nach Jahr ${afaEnde}; ab Jahr ${afaEnde + 1} entfällt ihre Steuerersparnis, das ist in den Werten berücksichtigt.`, ` Depreciation ends after year ${afaEnde}; from year ${afaEnde + 1} its tax saving no longer applies, which is reflected in the figures.`) : ""}
+        {afa < 30 ? ` * Die erhöhte Abschreibung endet nach Jahr ${afaEnde} (${an.startJahr + afaEnde - 1}). Danach entfällt ihr Steuervorteil und Ihr monatlicher Eigenanteil steigt deutlich. Wir empfehlen deshalb, die Wohnung nach Ende der Abschreibung zu verkaufen; gezeigt ist der Verkaufswert in diesem Jahr. Die Zeilen danach zeigen zum Vergleich das Halten ohne Abschreibung.` : ""}
+        {afa >= 30 && afa < 35 ? t(` Die Abschreibung endet nach Jahr ${afaEnde}; ab Jahr ${afaEnde + 1} entfällt ihre Steuerersparnis, das ist in den Werten berücksichtigt.`, ` Depreciation ends after year ${afaEnde}; from year ${afaEnde + 1} its tax saving no longer applies, which is reflected in the figures.`) : ""}
         {" "}{t(<>Alle Werte ungerundet gerechnet und auf 1.000 € gerundet, Rundungsdifferenzen möglich. Die Zuzahlungen gelten nur, wenn die angesetzten Mieten tatsächlich erzielt werden{A.einheit.garagen ? " (auch die Garage nach Ende der Aufstockung)" : ""}. Werte vor Verkaufskosten; Restschuld vereinfacht mit jährlicher Verrechnung (bei monatlicher Zahlung etwas niedriger).</>,
           <>All values calculated unrounded and rounded to €1,000; rounding differences are possible. The top-ups only apply if the assumed rents are actually achieved{A.einheit.garagen ? " (including the garage after the top-up ends)" : ""}. Values before selling costs; remaining debt simplified with annual settlement (slightly lower with monthly payments).</>)}
       </p>
@@ -1022,13 +1093,16 @@ function Sheet({ k, e, nr }: { k: Kontext; e: EinheitErgebnis; nr: number }) {
   const an = v.annahmen;
   const m = e.monat, x = e.einheit;
   const kpi: Array<[string, string, string]> = [
-    [t("Kaufpreis", "Purchase price"), eur(e.kp), x.garagen ? t(`inkl. Garage ${eur(x.garageKp, 0)}${x.garagen > 1 ? ", weitere gratis" : ""}`, `incl. garage ${eur(x.garageKp, 0)}${x.garagen > 1 ? ", others free" : ""}`) : t("Wohnung", "Apartment")],
+    [t("Kaufpreis", "Purchase price"), eur(e.kp), x.garagen ? t(`inkl. Garage ${eur(x.garageKp, 0)}${x.garagen > 1 ? ", weitere gratis" : ""}`, `incl. garage ${eur(x.garageKp, 0)}${x.garagen > 1 ? ", others free" : ""}`) : x.kpHinweis || t("Wohnung", "Apartment")],
     [t("Wohnfläche", "Living area"), `${de(x.qm)} m²`, [t(`${x.zimmer} Zimmer`, `${x.zimmer} rooms`), x.lage].filter(Boolean).join(" · ")],
-    [t("Darlehen", "Loan"), eur(e.darlehen), t("100 % des Kaufpreises", "100% of the purchase price")],
-    [t("Ihr Eigenkapital", "Your equity"), eur(e.nk), t(`Kaufnebenkosten ${pz(an.knk)}`, `Purchase costs ${pz(an.knk)}`)],
+    [t("Darlehen", "Loan"), eur(e.darlehen + e.nrBetrag), nkArt(an) === "darlehen" ? `Kaufpreis + Nebenkosten ${pz(an.knk)}` : nkArt(an) === "nachrang" ? `Bank ${eur(e.darlehen, 0)} + Nachrang ${eur(e.nrBetrag, 0)}` : t("100 % des Kaufpreises", "100% of the purchase price")],
+    [t("Ihr Eigenkapital", "Your equity"), eur(e.ek), e.nk === 0 && x.nkHinweis ? `Kaufnebenkosten 0 € (${x.nkHinweis})` : nkArt(an) === "ek" ? t(`Kaufnebenkosten ${pz(an.knk)}`, `Purchase costs ${pz(an.knk)}`) : "Nebenkosten mitfinanziert"],
   ];
   const zl = (a: string, i: string, w: number) => <div className="zl" key={a}><span>{a}<i>{i}</i></span><span>{eur(w)}</span></div>;
   const kurz = [
+    nkArt(an) === "darlehen" ? `Kaufpreis und Nebenkosten (${eur(e.nk, 0)}) voll finanziert: ${eur(e.darlehen, 0)} zu ${pz(an.zins)} Zins, ${pz(an.tilgung)} Tilgung.`
+      : nkArt(an) === "nachrang" ? `Kaufpreis voll finanziert: ${pz(an.zins)} Zins, ${pz(an.tilgung)} Tilgung. Nebenkosten ${eur(e.nk, 0)} über ein Nachrangdarlehen (${pz(an.nachrangZins)} Zins, ${pz(an.nachrangTilgung)} Tilgung).` :
+    e.nk === 0 && x.nkHinweis ? `Kaufpreis voll finanziert: ${pz(an.zins)} Zins, ${pz(an.tilgung)} Tilgung. Kaufnebenkosten für Sie 0 € (${x.nkHinweis}).` :
     t(`Kaufpreis voll finanziert: ${pz(an.zins)} Zins, ${pz(an.tilgung)} Tilgung. Nebenkosten ${eur(e.nk, 0)} aus Eigenkapital.`, `Purchase price fully financed: ${pz(an.zins)} interest, ${pz(an.tilgung)} repayment. Purchase costs of ${eur(e.nk, 0)} from equity.`),
     t(`Steuer ${steuerWie(an, k.f)}. Herleitung und Annahmen: Seite ${k.seiteSteuer}.`, `Tax ${steuerWie(an, k.f)}. Derivation and assumptions: page ${k.seiteSteuer}.`),
     e.luecke > 0
@@ -1042,7 +1116,7 @@ function Sheet({ k, e, nr }: { k: Kontext; e: EinheitErgebnis; nr: number }) {
         {!OHNE_LOGO && <LogoBox breite={17} lage={{ right: 0, top: "-8mm" }} />}
         <div className="kick"><b>{String(nr).padStart(2, "0")}</b>{t(`Investmentsheet · Wohnung ${x.nr}`, `Investment sheet · apartment ${x.nr}`)}</div>
         <h2 style={{ fontSize: "22pt" }}>{t(<>Wohnung {x.nr}: <em>Ihre Zahlen im Monat.</em></>, <>Apartment {x.nr}: <em>your figures per month.</em></>)}</h2>
-        <div style={{ fontSize: "9pt", color: "var(--muted)", marginTop: "1.5mm" }}>{t("Für", "For")} {t([v.kunde.anrede, v.kunde.vorname, v.kunde.nachname].filter(Boolean).join(" ") || "Sie", [v.kunde.vorname, v.kunde.nachname].filter(Boolean).join(" ") || "you")} · {k.haus(e).strasse}{k.haus(e).ortZeile ? `, ${k.haus(e).ortZeile}` : ""}</div>
+        <div style={{ fontSize: "9pt", color: "var(--muted)", marginTop: "1.5mm" }}>{t("Für", "For")} {t([v.kunde.anrede.replace(/^Herr$/, "Herrn"), v.kunde.vorname, v.kunde.nachname].filter(Boolean).join(" ") || "Sie", [v.kunde.vorname, v.kunde.nachname].filter(Boolean).join(" ") || "you")} · {k.haus(e).strasse}{k.haus(e).ortZeile ? `, ${k.haus(e).ortZeile}` : ""}</div>
         <div className="grid" style={{ gridTemplateColumns: "repeat(4,1fr)", gap: "3.5mm", marginTop: "5mm" }}>
           {kpi.map(([a, b, c]) => <div className="kt" key={a}><div className="label">{a}</div><div className="n">{b}</div><div className="s">{c}</div></div>)}
         </div>
@@ -1062,7 +1136,7 @@ function Sheet({ k, e, nr }: { k: Kontext; e: EinheitErgebnis; nr: number }) {
         </div>
         <div className="label" style={{ marginTop: "5.5mm" }}>{t("Was Sie im Monat zahlen", "What you pay each month")}</div>
         <div className="st"><div className="nr">1</div><div><b>{t("Das zahlen Sie im Monat, bevor das Finanzamt etwas erstattet", "What you pay each month before any tax refund")}</b><i>{t("Ausgaben minus Einnahmen", "Expenses minus income")}</i></div><div className="be">{eur(-m.vor)}</div></div>
-        <div className="st s2"><div className="nr">2</div><div><b>{t("Das erstattet Ihnen das Finanzamt im Monat", "What the tax office refunds you each month")}</b><i>{t(`Steuerersparnis, ${an.steuerArt === "einkommen" ? "" : "pauschal "}${pzGanz(an.steuer)}`, `Tax saving, ${an.steuerArt === "einkommen" ? "" : "flat "}${pzGanz(an.steuer)}`)}</i></div><div className="be">{"−"} {eur(m.ersparnis)}</div></div>
+        <div className="st s2"><div className="nr">2</div><div><b>{t("Das erstattet Ihnen das Finanzamt im Monat", "What the tax office refunds you each month")}</b><i>{genauGerechnet(an) ? t(`Steuerersparnis nach Tarif 2026, wirksam ${pz(e.satzWirksam, 1)}`, `Tax saving per 2026 scale, effective ${pz(e.satzWirksam, 1)}`) : t(`Steuerersparnis, ${an.steuerArt === "einkommen" ? "" : "pauschal "}${pzGanz(an.steuer)}`, `Tax saving, ${an.steuerArt === "einkommen" ? "" : "flat "}${pzGanz(an.steuer)}`)}</i></div><div className="be">{"−"} {eur(m.ersparnis)}</div></div>
         <div className="st s3"><div className="nr">3</div><div><b>{t("Das zahlen Sie tatsächlich im Monat", "What you actually pay each month")}</b><i>{t("mit Steuervorteil, inklusive Tilgung", "with tax benefit, including repayment")}</i></div><div className="be">{eur(-m.nach)}</div></div>
         <div style={{ fontSize: "8.6pt", color: "var(--muted)", marginTop: "2.5mm" }}>{t(`Gilt, sobald Ihr Freibetrag wirkt (ab 1. Januar nach dem Lastenwechsel), Details Seite ${k.seiteFreibetrag}.`, `Applies once your tax allowance takes effect (from 1 January after the handover), details on page ${k.seiteFreibetrag}.`)}</div>
         <div className="note" style={{ marginTop: "4.5mm", fontSize: "8.6pt", padding: "3mm 4.5mm" }}><div className="label" style={{ marginBottom: "1.5mm" }}>{t("Das Wichtigste in Kürze", "Key points at a glance")}</div>
@@ -1150,10 +1224,15 @@ function SteuerDetail({ k, nr }: { k: Kontext; nr: number }) {
         <table className="t" style={{ marginTop: "2mm", fontSize: "8.6pt" }}><tbody>
           <tr><td>{e.einheit.garagen ? t(`Kaltmiete und ${garagenText(e, false)} im Jahr`, `Net rent and ${garagenText(e, false, k.f)} per year`) : t("Kaltmiete im Jahr", "Net rent per year")}</td><td className="r">+ {eur(j.miete)}</td></tr>
           <tr><td>{t("Schuldzinsen Bankdarlehen", "Interest on bank loan")}</td><td className="r">{"−"} {eur(j.zins)}</td></tr>
+          {j.nzins ? <tr><td>Schuldzinsen Nachrangdarlehen</td><td className="r">{"−"} {eur(j.nzins)}</td></tr> : null}
           <tr><td>{t("Nicht umlagefähiges Hausgeld", "Non-recoverable service charge")}</td><td className="r">{"−"} {eur(j.n)}</td></tr>
           <tr><td>{t(`Abschreibung (AfA 1/${jahreAfa(k.f, e.einheit.afaJahre)} auf ${eur(e.afaBasis, 0)})`, `Depreciation (1/${jahreAfa(k.f, e.einheit.afaJahre)} on ${eur(e.afaBasis, 0)})`)}</td><td className="r">{"−"} {eur(j.afa)}</td></tr>
           <tr className="sum"><td>{t("Ergebnis aus Vermietung im Jahr", "Rental result per year")}</td><td className="r">{eur(j.ergebnis)}</td></tr>
-          <tr><td>{t(`× ${steuer} = Steuerersparnis im Jahr`, `× ${steuer} = tax saving per year`)}</td><td className="r">{eur(j.ersparnis)}</td></tr>
+          {genauGerechnet(an) ? <>
+            <tr><td>{t(`Einkommensteuer ohne Wohnung (zvE ${eur(an.zvE!, 0)})`, `Income tax without the apartment (taxable income ${eur(an.zvE!, 0)})`)}</td><td className="r">{eur(steuerGesamt(an.zvE!, an))}</td></tr>
+            <tr><td>{t(`Einkommensteuer mit Wohnung (zvE ${eur(Math.max(0, an.zvE! + j.ergebnis), 0)})`, `Income tax with the apartment (taxable income ${eur(Math.max(0, an.zvE! + j.ergebnis), 0)})`)}</td><td className="r">{eur(steuerGesamt(an.zvE! + j.ergebnis, an))}</td></tr>
+            <tr><td>{t(`= Steuerersparnis im Jahr (wirksam ${pz(e.satzWirksam, 1)})`, `= tax saving per year (effective ${pz(e.satzWirksam, 1)})`)}</td><td className="r">{eur(j.ersparnis)}</td></tr>
+          </> : <tr><td>{t(`× ${steuer} = Steuerersparnis im Jahr`, `× ${steuer} = tax saving per year`)}</td><td className="r">{eur(j.ersparnis)}</td></tr>}
           <tr className="hi"><td>{t("÷ 12 = Steuerersparnis im Monat", "÷ 12 = tax saving per month")}</td><td className="r">{eur(e.monat.ersparnis)}</td></tr>
         </tbody></table>
       </div>
@@ -1165,6 +1244,9 @@ function SteuerDetail({ k, nr }: { k: Kontext; nr: number }) {
       <><b>Not deductible:</b> repayment (it builds your wealth) and the maintenance reserve (only once the money is used for repairs).</>),
     t(<><b>Abschreibung:</b> ≈ {de(100 / afaJ, 1)} % (1/{afaJText}) auf {pzGanz(an.gebaeudeanteil)} von Kaufpreis und Nebenkosten{afaJ < 50 ? "; setzt ein anerkanntes Gutachten zur Restnutzungsdauer voraus, gesetzlich wären es 2 %" : ""}.</>,
       <><b>Depreciation:</b> ≈ {de(100 / afaJ, 1)}% (1/{afaJText}) on {pzGanz(an.gebaeudeanteil)} of purchase price and purchase costs{afaJ < 50 ? "; requires a recognised expert report on the remaining useful life, the statutory rate would be 2%" : ""}.</>),
+    nkArt(an) === "darlehen" ? <><b>Finanzierung:</b> Bankdarlehen über Kaufpreis und Kaufnebenkosten ({eur(A.darlehen, 0)}), Zins {pz(an.zins)}, Tilgung {pz(an.tilgung)}. Die Zinsen auf das ganze Darlehen sind Werbungskosten. Die Kaufnebenkosten selbst sind nicht sofort absetzbar: Ihr Gebäudeanteil steckt in der AfA-Bemessungsgrundlage, der Anteil für Grund und Boden wird nicht abgeschrieben. Es zählt also nichts doppelt.</>
+      : nkArt(an) === "nachrang" ? <><b>Finanzierung:</b> Bankdarlehen über den Kaufpreis, Zins {pz(an.zins)}, Tilgung {pz(an.tilgung)}. Kaufnebenkosten ({pz(an.knk)}) über ein Nachrangdarlehen, Zins {pz(an.nachrangZins)}, Tilgung {pz(an.nachrangTilgung)}; seine Zinsen sind Werbungskosten. Die Kaufnebenkosten selbst wirken nur über die AfA.</> :
+      A.nk === 0 && A.einheit.nkHinweis ? <><b>Finanzierung:</b> Bankdarlehen über den Kaufpreis, Zins {pz(an.zins)}, Tilgung {pz(an.tilgung)}. Kaufnebenkosten für Sie 0 € ({A.einheit.nkHinweis}); Eigenkapital und Nachrangdarlehen sind nicht nötig.</> :
     t(<><b>Finanzierung:</b> Bankdarlehen über den Kaufpreis, Zins {pz(an.zins)}, Tilgung {pz(an.tilgung)}. Kaufnebenkosten ({pz(an.knk)}: Grunderwerbsteuer, Notar und Grundbuch) aus Eigenkapital.</>,
       <><b>Financing:</b> bank loan for the purchase price, interest {pz(an.zins)}, repayment {pz(an.tilgung)}. Purchase costs ({pz(an.knk)}: land transfer tax, notary and land registry) from equity.</>),
     t(<><b>Miete:</b> gerechnet mit {mieteQm} €/m²; der Mieter zahlt heute {B ? <>{eur(A.einheit.mieteIst)} (Wohnung {A.einheit.nr}) bzw. {eur(B.einheit.mieteIst)} (Wohnung {B.einheit.nr})</> : eur(A.einheit.mieteIst)}.
@@ -1175,8 +1257,10 @@ function SteuerDetail({ k, nr }: { k: Kontext; nr: number }) {
       {L.some((e) => e.luecke > 0) ? ` The developer pays the gap until the next rent increase, for at most ${an.subventionMonate} months.` : ""}
       {A.einheit.garagen ? ` Garage${A.einheit.garagen > 1 ? " 1" : ""} in year 1: ${eur(A.einheit.garageMiete1, 0)}.` : ""}
       {A.einheit.garagen > 1 ? ` Further garage at no surcharge; rent of ${eur(A.einheit.garageMiete1, 0)} paid by the developer in year 1, then let.` : ""}</>),
+    genauGerechnet(an) ? <><b>Steuer:</b> Ersparnis = Einkommensteuer ohne minus mit der Wohnung, Tarif 2026{an.splitting ? " mit Ehegattensplitting" : ""}{(an.kirchensteuersatz ?? 0) > 0 ? ", mit Kirchensteuer" : ""}, Solidaritätszuschlag mit Freigrenze. Grenzsteuersatz heute {pz(grenzsatz(an), 2)}. Das zu versteuernde Einkommen ist über die Laufzeit gleich angesetzt; ein Gewinn in späteren Jahren erhöht die Steuer entsprechend.</> :
     t(<><b>Steuersatz:</b> Steuerersparnis gerechnet mit einem Grenzsteuersatz von {steuer}; die tatsächliche Ersparnis hängt vom persönlichen Steuersatz ab.</>,
       <><b>Tax rate:</b> tax saving calculated with a marginal tax rate of {steuer}; the actual saving depends on your personal tax rate.</>),
+    ...L.filter((e) => e.einheit.kpErklaerung).map((e) => <><b>Kaufpreis:</b> {e.einheit.kpErklaerung}</>),
     t(<>Vereinfachte Rechnung für das 1. volle Jahr; Rundungsdifferenzen möglich.</>, <>Simplified calculation for the first full year; rounding differences are possible.</>),
   ];
   const hausgeldQuelle = k.haeuser
@@ -1185,7 +1269,7 @@ function SteuerDetail({ k, nr }: { k: Kontext; nr: number }) {
   return (
     <Seite nr={nr} kick={t("Steuerersparnis im Detail und Annahmen", "Tax saving in detail and assumptions")} fuss={k.fuss}>
       <h2>{t(<>So entsteht die Steuerersparnis <em>im 1. Jahr.</em></>, <>How the tax saving arises <em>in year 1.</em></>)}</h2>
-      <p className="lead" style={{ fontSize: "9pt" }}>{t(`Zinsen, Abschreibung und nicht umlagefähiges Hausgeld sind zusammen höher als die Miete. Dieses Minus senkt Ihr zu versteuerndes Einkommen; mit ${an.steuerArt === "einkommen" ? "" : "pauschal "}${steuer} gerechnet ergibt sich die Erstattung aus Schritt 2 ${B ? "der Investmentsheets" : "des Investmentsheets"}.`,
+      <p className="lead" style={{ fontSize: "9pt" }}>{t(`Zinsen, Abschreibung und nicht umlagefähiges Hausgeld sind zusammen höher als die Miete. Dieses Minus senkt Ihr zu versteuerndes Einkommen; ${genauGerechnet(an) ? "nach Ihrem Tarif 2026 (Steuer ohne minus mit Wohnung)" : `mit ${an.steuerArt === "einkommen" ? "" : "pauschal "}${steuer}`} gerechnet ergibt sich die Erstattung aus Schritt 2 ${B ? "der Investmentsheets" : "des Investmentsheets"}.`,
         `Interest, depreciation and non-recoverable service charge together are higher than the rent. This loss lowers your taxable income; calculated with ${an.steuerArt === "einkommen" ? "" : "a flat "}${steuer}, this gives the refund in step 2 of the investment sheet${B ? "s" : ""}.`)}</p>
       <div className="grid" style={{ gridTemplateColumns: "1fr 1fr", gap: "8mm", marginTop: "6mm" }}>{tab(A, false)}{B && tab(B, true)}</div>
       <div className="label" style={{ marginTop: "7mm", marginBottom: "2mm" }}>{t("Annahmen und Hinweise", "Assumptions and notes")}</div>
@@ -1194,11 +1278,11 @@ function SteuerDetail({ k, nr }: { k: Kontext; nr: number }) {
         {t(<>
           Beispielrechnung, keine Zusage und kein Angebot. Keine Steuer-, Rechts- oder Finanzierungsberatung; bitte mit Steuerberatung und Bank prüfen.
           Annahmen: Kaufpreis voll finanziert, Sollzins {pz(an.zins)} (angenommen bis zur vollständigen Tilgung; die Zinsbindung ist meist kürzer, danach gilt der dann übliche Zins),
-          anfängliche Tilgung {pz(an.tilgung)}, Kaufnebenkosten aus Eigenkapital, Wertentwicklung {pzGanz(an.wertPa)} und Kostensteigerung {pzGanz(an.kostenPa)} im Jahr,
+          anfängliche Tilgung {pz(an.tilgung)}, Kaufnebenkosten {nkWie(an, k.f)}, Wertentwicklung {pzGanz(an.wertPa)} und Kostensteigerung {pzGanz(an.kostenPa)} im Jahr,
           Miete steigt linear und erreicht den Zielwert im Jahr {an.mieteZielJahr} (Jahr 1 = {an.startJahr}), Betrachtungszeitraum 30 Jahre; Abschreibung {afaJText} Jahre, danach ohne AfA gerechnet.
           Verkaufssumme: angenommener Verkaufspreis vor Verkaufskosten (z. B. Makler, Notar), davon wird die Restschuld abgelöst. Steuerfreiheit des Verkaufsgewinns nach mehr als
-          zehn Jahren (§ 23 EStG) als allgemeiner Hinweis. Steuerersparnis gerechnet mit einem Grenzsteuersatz von {steuer} auf das Ergebnis aus Vermietung, wie in der
-          Musterrechnung der Exposés; die tatsächliche Ersparnis hängt vom persönlichen Steuersatz ab. Ohne Kirchensteuer und ohne Solidaritätszuschlag, Einkommen über die Laufzeit gleich.
+          zehn Jahren (§ 23 EStG) als allgemeiner Hinweis. {genauGerechnet(an) ? <>Steuerersparnis als Differenz der Einkommensteuer nach Tarif 2026 ohne und mit dem Ergebnis aus Vermietung, Einkommen über die Laufzeit gleich.</> : <>Steuerersparnis gerechnet mit einem Grenzsteuersatz von {steuer} auf das Ergebnis aus Vermietung, wie in der
+          Musterrechnung der Exposés; die tatsächliche Ersparnis hängt vom persönlichen Steuersatz ab. Ohne Kirchensteuer und ohne Solidaritätszuschlag, Einkommen über die Laufzeit gleich.</>}
           {afaJ < 50 ? " Die AfA wegen kürzerer tatsächlicher Nutzungsdauer setzt ein Gutachten voraus; ob und in welcher Höhe sie anerkannt wird, entscheidet das Finanzamt." : ""}
           {L.some((e) => e.luecke > 0) || A.einheit.garagen ? " Mietsubvention und Garagenmiete laut Vereinbarungen des Bauträgers; maßgeblich sind die Verträge." : ""}
           {" "}Hausgeld laut {hausgeldQuelle}. Heutige Mieten laut {B ? "Exposés" : "Exposé"} (Stand {k.stand}). Verfügbarkeit der Wohnungen vorbehalten.
@@ -1227,26 +1311,29 @@ function NachrangTabelle({ k, e, b }: { k: Kontext; e: EinheitErgebnis; b: boole
   const { eur, tsd, pz, pzGanz, t } = k.f;
   const an = k.v.annahmen;
   const nz = pz(an.nachrangZins), nt = pz(an.nachrangTilgung);
-  const f = NACHRANG_STUFEN.map((a) => nachrangFall(e, a, an));
-  const z = (lbl: ReactNode, werte: ReactNode[], cls = "") => (
-    <tr className={cls}><td>{lbl}</td>{werte.map((w, i) => <td className="r" key={i}>{w}</td>)}</tr>
+  // Verglichen wird immer von der Eigenkapital-Fassung aus; bei „im Kaufpreis“ kommt diese Variante als dritte Spalte dazu (09.11.2026).
+  const basis = nkArt(an) === "ek" ? e : rechneEinheit(e.einheit, { ...an, nkFinanzierung: "ek" });
+  const f = NACHRANG_STUFEN.map((a) => nachrangFall(basis, a, an));
+  const kp = nkArt(an) === "darlehen" ? e : null;
+  const z = (lbl: ReactNode, werte: ReactNode[], cls = "", dritte: ReactNode = null) => (
+    <tr className={cls}><td>{lbl}</td>{werte.map((w, i) => <td className="r" key={i}>{w}</td>)}{kp && <td className="r">{dritte}</td>}</tr>
   );
   return (
     <div style={{ marginTop: "4mm" }}>
       {k.B && <span className={`badge${b ? " b" : ""}`}>{b ? "B" : "A"}</span>} <b style={{ fontWeight: 500 }}>{t("Wohnung", "Apartment")} {e.einheit.nr}</b>{" "}
-      <span className="small">{t(`Kaufpreis ${eur(e.kp, 0)}${e.einheit.garagen ? " inkl. Garage" : ""}, Bankdarlehen ${eur(e.darlehen, 0)}`, `Purchase price ${eur(e.kp, 0)}${e.einheit.garagen ? " incl. garage" : ""}, bank loan ${eur(e.darlehen, 0)}`)}</span>
+      <span className="small">{t(`Kaufpreis ${eur(e.kp, 0)}${e.einheit.garagen ? " inkl. Garage" : ""}, Bankdarlehen ${eur(basis.darlehen, 0)}${kp ? ` (im Kaufpreis: ${eur(kp.darlehen, 0)})` : ""}`, `Purchase price ${eur(e.kp, 0)}${e.einheit.garagen ? " incl. garage" : ""}, bank loan ${eur(basis.darlehen, 0)}${kp ? ` (within the price: ${eur(kp.darlehen, 0)})` : ""}`)}</span>
       <table className="t nrt" style={{ marginTop: "1.5mm" }}><tbody>
-        <tr><th /><th className="r">{t(<>Aus Erspartem<br />(wie bisher)</>, <>From savings<br />(as before)</>)}</th><th className="r">{t(<>100 % über<br />Nachrang</>, <>100% via<br />junior loan</>)}</th></tr>
-        {z(t(`Kaufnebenkosten gesamt (${pz(an.knk)})`, `Total purchase costs (${pz(an.knk)})`), f.map(() => eur(e.nk, 0)))}
-        {z(t("davon über Nachrangdarlehen", "of which via junior loan"), f.map((x, i) => (i ? eur(x.nr, 0) : eur(0, 0))), "sub")}
-        {z(t("Ihr Eigenkapital aus Erspartem", "Your equity from savings"), f.map((x) => eur(x.ek, 0)))}
-        {z(t(`Rate Bankdarlehen (Zins ${pz(an.zins)} + Tilgung ${pz(an.tilgung)})`, `Bank loan instalment (interest ${pz(an.zins)} + repayment ${pz(an.tilgung)})`), f.map((x) => eur(x.bank)))}
-        {z(t(`Rate Nachrangdarlehen (Zins ${nz} + Tilgung ${nt})`, `Junior loan instalment (interest ${nz} + repayment ${nt})`), f.map((x, i) => (i ? eur(x.rate) : eur(0))))}
-        {z(t("1 · Zuzahlung vor Steuer", "1 · Top-up before tax"), f.map((x) => eur(-x.vor)), "sum")}
-        {z(t(`2 · Das spart Ihnen das Finanzamt (${pzGanz(an.steuer)})`, `2 · Your tax saving (${pzGanz(an.steuer)})`), f.map((x) => eur(x.ersparnis)))}
-        {z(t("3 · Zuzahlung nach Steuer: Ihr Eigenanteil im Monat", "3 · Top-up after tax: your own contribution per month"), f.map((x) => eur(-x.nach)), "dk")}
-        {z(t("Nachrangdarlehen getilgt nach", "Junior loan repaid after"), f.map((x, i) => (i ? t(`rund ${x.jahre} Jahren`, `about ${x.jahre} years`) : t("entfällt", "n/a"))), "sub")}
-        {z(t("Zinsen Nachrang über die Laufzeit, nach Steuer", "Junior loan interest over the term, after tax"), f.map((x, i) => (i ? `${t("rund", "about")} ${tsd(x.zinsenNetto)}` : eur(0, 0))), "sub")}
+        <tr><th /><th className="r">{t(<>Selbst zahlen<br />(aus Erspartem)</>, <>Pay yourself<br />(from savings)</>)}</th><th className="r">{t(<>100 % über<br />Nachrang</>, <>100% via<br />junior loan</>)}</th>{kp && <th className="r">{t(<>Im Kaufpreis<br />(Bankdarlehen)</>, <>Within the price<br />(bank loan)</>)}</th>}</tr>
+        {z(t(`Kaufnebenkosten gesamt${nkSatz(e, an, k.f) ? ` (${pz(an.knk)})` : " für Sie (ausgeglichen)"}`, `Total purchase costs (${pz(an.knk)})`), f.map(() => eur(e.nk, 0)), "", eur(e.nk, 0))}
+        {z(t("davon über Nachrangdarlehen", "of which via junior loan"), f.map((x, i) => (i ? eur(x.nr, 0) : eur(0, 0))), "sub", eur(0, 0))}
+        {z(t("Ihr Eigenkapital aus Erspartem", "Your equity from savings"), f.map((x) => eur(x.ek, 0)), "", eur(0, 0))}
+        {z(t(`Rate Bankdarlehen (Zins ${pz(an.zins)} + Tilgung ${pz(an.tilgung)})`, `Bank loan instalment (interest ${pz(an.zins)} + repayment ${pz(an.tilgung)})`), f.map((x) => eur(x.bank)), "", kp && eur(kp.monat.zins + kp.monat.tilgung))}
+        {z(t(`Rate Nachrangdarlehen (Zins ${nz} + Tilgung ${nt})`, `Junior loan instalment (interest ${nz} + repayment ${nt})`), f.map((x, i) => (i ? eur(x.rate) : eur(0))), "", eur(0))}
+        {z(t("1 · Zuzahlung vor Steuer", "1 · Top-up before tax"), f.map((x) => eur(-x.vor)), "sum", kp && eur(-kp.monat.vor))}
+        {z(genauGerechnet(an) ? t("2 · Das spart Ihnen das Finanzamt (Tarif 2026)", "2 · Your tax saving (2026 scale)") : t(`2 · Das spart Ihnen das Finanzamt (${pzGanz(an.steuer)})`, `2 · Your tax saving (${pzGanz(an.steuer)})`), f.map((x) => eur(x.ersparnis)), "", kp && eur(kp.monat.ersparnis))}
+        {z(t("3 · Zuzahlung nach Steuer: Ihr Eigenanteil im Monat", "3 · Top-up after tax: your own contribution per month"), f.map((x) => eur(-x.nach)), "dk", kp && eur(-kp.monat.nach))}
+        {z(t("Nachrangdarlehen getilgt nach", "Junior loan repaid after"), f.map((x, i) => (i && x.nr ? t(`rund ${x.jahre} Jahren`, `about ${x.jahre} years`) : t("entfällt", "n/a"))), "sub", t("entfällt", "n/a"))}
+        {z(t("Zinsen Nachrang über die Laufzeit, nach Steuer", "Junior loan interest over the term, after tax"), f.map((x, i) => (i && x.nr ? `${t("rund", "about")} ${tsd(x.zinsenNetto)}` : eur(0, 0))), "sub", t("in der Bankrate", "in the bank instalment"))}
       </tbody></table>
     </div>
   );
@@ -1260,13 +1347,17 @@ function Nachrang({ k, nr }: { k: Kontext; nr: number }) {
     <Seite nr={nr} kick={t("Kaufnebenkosten: Erspartes oder Nachrangdarlehen", "Purchase costs: savings or junior loan")} fuss={k.fuss}>
       <h2>{t(<>Weniger Eigenkapital einsetzen: <em>was das im Monat bedeutet.</em></>, <>Using less equity: <em>what it means each month.</em></>)}</h2>
       <p className="lead" style={{ fontSize: "8pt" }}>
-        {t(`Bisher sind die Kaufnebenkosten aus Ihrem Ersparten gerechnet. Alternativ lassen sie sich vollständig über ein Nachrangdarlehen finanzieren, gerechnet mit ${nz} Zins und ${nt} Tilgung. Ihr Erspartes bleibt dann als Reserve, dafür steigt die Monatsbelastung. Die Zinsen des Nachrangdarlehens sind als Werbungskosten angesetzt.`,
+        {nkArt(an) === "nachrang" ? `Diese Rechnung finanziert die Kaufnebenkosten vollständig über ein Nachrangdarlehen mit ${nz} Zins und ${nt} Tilgung (rechte Spalte). Zum Vergleich links: Sie zahlen die Kaufnebenkosten selbst aus Ihrem Ersparten. Die Zinsen des Nachrangdarlehens sind als Werbungskosten angesetzt.`
+          : nkArt(an) === "darlehen" ? `Diese Rechnung schlägt die Kaufnebenkosten auf den Kaufpreis auf; die Bank finanziert sie im Hauptdarlehen (rechte Spalte). Zum Vergleich: selbst zahlen aus Ihrem Ersparten oder vollständig über ein Nachrangdarlehen mit ${nz} Zins und ${nt} Tilgung.`
+          : null}
+        {k.A.nk === 0 && k.A.einheit.nkHinweis ? `Für Sie fallen keine Kaufnebenkosten an (${k.A.einheit.nkHinweis}). Sie müssen also nichts aus Ihrem Ersparten zahlen, und ein Nachrangdarlehen ist nicht nötig; beide Spalten sind deshalb gleich.` : null}
+        {nkArt(an) === "ek" && !(k.A.nk === 0 && k.A.einheit.nkHinweis) && t(`Bisher sind die Kaufnebenkosten aus Ihrem Ersparten gerechnet. Alternativ lassen sie sich vollständig über ein Nachrangdarlehen finanzieren, gerechnet mit ${nz} Zins und ${nt} Tilgung. Ihr Erspartes bleibt dann als Reserve, dafür steigt die Monatsbelastung. Die Zinsen des Nachrangdarlehens sind als Werbungskosten angesetzt.`,
           `So far the purchase costs are paid from your savings. Alternatively, all of them can be financed with a junior (subordinated) loan, calculated at ${nz} interest and ${nt} repayment. Your savings then remain as a reserve, but the monthly burden rises. The interest on the junior loan is treated as a deductible expense.`)}
       </p>
       {k.liste.map((e, i) => <NachrangTabelle key={i} k={k} e={e} b={i > 0} />)}
       <p className="small" style={{ marginTop: "3mm" }}>
-        {t(`Zahlen für den Monat im 1. Jahr, Steuersatz ${steuerWie(an, k.f)} wie in der übrigen Rechnung. Nachrangdarlehen als Annuität mit ${nz} Zins und ${nt} anfänglicher Tilgung, jährlich verrechnet; danach entfällt die Rate. Die Zinsen über die Laufzeit sind nach Steuer angegeben (Zinsen × ${de((1 - an.steuer) * 100, 0)} %). Konditionen beispielhaft, das Angebot des Darlehensgebers steht aus. Keine Steuer- oder Finanzierungsberatung.`,
-          `Figures per month in year 1, tax rate ${steuerWie(an, k.f)} as in the rest of the calculation. Junior loan as an annuity with ${nz} interest and ${nt} initial repayment, settled annually; the instalment ends afterwards. Interest over the term is shown after tax (interest × ${de((1 - an.steuer) * 100, 0)}%). Terms are examples; the lender's offer is pending. No tax or financing advice.`)}
+        {t(`Zahlen für den Monat im 1. Jahr, Steuersatz ${steuerWie(an, k.f)} wie in der übrigen Rechnung. Nachrangdarlehen als Annuität mit ${nz} Zins und ${nt} anfänglicher Tilgung, jährlich verrechnet; danach entfällt die Rate. Die Zinsen über die Laufzeit sind nach Steuer angegeben (Zinsen × ${de((1 - k.A.satzWirksam) * 100, 0)} %). Konditionen beispielhaft, das Angebot des Darlehensgebers steht aus. Keine Steuer- oder Finanzierungsberatung.`,
+          `Figures per month in year 1, tax rate ${steuerWie(an, k.f)} as in the rest of the calculation. Junior loan as an annuity with ${nz} interest and ${nt} initial repayment, settled annually; the instalment ends afterwards. Interest over the term is shown after tax (interest × ${de((1 - k.A.satzWirksam) * 100, 0)}%). Terms are examples; the lender's offer is pending. No tax or financing advice.`)}
       </p>
     </Seite>
   );
@@ -1321,7 +1412,7 @@ function kontextFuer(v: KundenObjektvergleich, A: EinheitErgebnis, B: EinheitErg
   const k: Kontext = {
     v, A, B, liste: B ? [A, B] : [A], seiteFreibetrag: nr("hinweis"), seiteSteuer: nr("steuer"), stand, anrede, f,
     fuss: v.dokument
-      ? f.t(`Ausführliche Investmentberechnung für ${anrede} · Stand ${stand}`, `Detailed investment calculation for ${anrede} · as of ${stand}`)
+      ? f.t(`Ausführliche Investmentberechnung für ${anrede.replace(/^Herr /, "Herrn ")} · Stand ${stand}`, `Detailed investment calculation for ${anrede} · as of ${stand}`)
       : `Persönlicher Objektvergleich für ${anrede} · Stand ${stand}`,
     haeuser: !!B && haeuseruebergreifend(v), haus: (e) => objektVon(v, e === B ? 1 : 0),
   };

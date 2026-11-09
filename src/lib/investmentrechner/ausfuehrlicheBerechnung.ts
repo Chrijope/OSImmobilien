@@ -149,11 +149,17 @@ export function wirksameAngaben(input: InvestmentEingabe, vorgaben: Partial<Ausf
  * Rechenkern im 1. Jahr auf den Verlust anwendet (bei Einhauser 40,2 %
  * statt der angezeigten 43,2 %). Angezeigt und gerechnet wichen so voneinander ab.
  */
-export function steuerAus(input: InvestmentEingabe, result: InvestmentErgebnis): Pick<VergleichAnnahmen, "steuer" | "steuerArt"> {
+export function steuerAus(input: InvestmentEingabe, result: InvestmentErgebnis): Pick<VergleichAnnahmen, "steuer" | "steuerArt" | "zvE" | "splitting" | "kirchensteuersatz" | "mitSoli"> {
   const pauschal = { steuer: Math.max(0, input.marginalTaxRate) / 100, steuerArt: "pauschal" as const };
   if (input.taxCalculationMode === "manual") return pauschal;
   const satz = Math.round(result.marginalTotalTaxRate * 10000) / 10000;
-  return satz > 0 && satz < 0.6 ? { steuer: satz, steuerArt: "einkommen" } : pauschal;
+  if (!(satz > 0 && satz < 0.6)) return pauschal;
+  // Seit dem 09.11.2026 genau: Ersparnis = ESt(zvE) − ESt(zvE + Ergebnis), zvE wie in „Kunde & Einkommen“.
+  const zvE = Math.max(0, positiv(input.taxableIncomeCustomer) + (input.jointAssessment ? positiv(input.taxableIncomeSpouse) : 0));
+  return {
+    steuer: satz, steuerArt: "einkommen", zvE, splitting: !!input.jointAssessment,
+    kirchensteuersatz: Math.max(0, input.churchTaxRate || 0), mitSoli: !!input.includeSolidaritySurcharge,
+  };
 }
 
 /** Möbel im Kaufpreis, höchstens der Kaufpreis. Sie tragen weder Kaufnebenkosten noch Gebäude-AfA. */
@@ -262,6 +268,6 @@ export function berechnungAusRechner(objekte: RechnerObjekt[], heute = new Date(
     dokument: { titel: erstes.input.propertyTitle, adresse: erstes.input.address, typ: erstes.input.propertyType, version: erstes.a.version },
   };
   // Jede Wohnung mit ihren eigenen Zins- und Kostenannahmen; der Steuersatz ist der des Kunden.
-  const ergebnis = (i: number) => rechneEinheit(einheiten[i], i === 0 ? annahmen : { ...annahmenAusRechner(liste[i].input, liste[i].result, liste[i].a), steuer: annahmen.steuer, steuerArt: annahmen.steuerArt });
+  const ergebnis = (i: number) => rechneEinheit(einheiten[i], i === 0 ? annahmen : { ...annahmenAusRechner(liste[i].input, liste[i].result, liste[i].a), ...steuerAus(erstes.input, erstes.result) });
   return { v, A: ergebnis(0), B: liste[1] ? ergebnis(1) : null };
 }

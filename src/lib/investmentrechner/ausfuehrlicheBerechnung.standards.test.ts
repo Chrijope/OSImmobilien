@@ -130,7 +130,7 @@ describe("Grenzsteuersatz: automatisch aus dem Einkommen, von Hand überschreibb
     const input = ohneAusgeblendeteFelder(we13({ taxableIncomeCustomer: 62000, churchTaxRate: 8 }));
     const result = berechneInvestment(input);
     const erwartet = Math.round(grenzsteuersatz(62000, false, 8, true, true) * 10000) / 10000;
-    expect(steuerAus(input, result)).toEqual({ steuer: erwartet, steuerArt: "einkommen" });
+    expect(steuerAus(input, result)).toEqual({ steuer: erwartet, steuerArt: "einkommen", zvE: 62000, splitting: false, kirchensteuersatz: 8, mitSoli: true });
     expect(erwartet).toBeCloseTo(result.marginalTotalTaxRate, 4);
     expect(rechne(input).v.annahmen.steuer).toBe(erwartet);
   });
