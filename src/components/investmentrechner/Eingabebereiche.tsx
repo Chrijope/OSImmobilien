@@ -964,7 +964,7 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
           </>
         )}
       </div>
-      {/* Nachrang, zweites Bankdarlehen und KfW wirken in Analyse und PDF nicht; der Nachrang steht dort als 0/50/100-%-Tabelle (08.11.2026). */}
+      {/* Nachrang, zweites Bankdarlehen und KfW wirken in Analyse und PDF nicht; der Nachrang steht dort als 0/100-%-Tabelle (08.11.2026, ohne 50 % seit 09.11.2026). */}
       {UNWIRKSAME_FELDER_ZEIGEN && (
       <>
       <div className="subheading">Nachrangdarlehen</div>

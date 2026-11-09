@@ -119,7 +119,7 @@ export function EingabeAusfuehrlich({ input, aendere, vorgaben, nummer }: Props)
 
       <div className="subheading">Nebenkosten über Nachrang und Steuerablauf</div>
       <div className="field-grid">
-        {zahl("nachrangZins", "Nachrangdarlehen Zins", "%", { faktor: 100, placeholder: "z. B. 7,1", tooltip: "Zins für ein Nachrangdarlehen über die Kaufnebenkosten. Daraus rechnet die letzte Seite, was es im Monat kostet, die Nebenkosten zur Hälfte oder ganz zu finanzieren." })}
+        {zahl("nachrangZins", "Nachrangdarlehen Zins", "%", { faktor: 100, placeholder: "z. B. 7,1", tooltip: "Zins für ein Nachrangdarlehen über die Kaufnebenkosten. Daraus rechnet die letzte Seite, was es im Monat kostet, die Nebenkosten ganz zu finanzieren." })}
         {zahl("nachrangTilgung", "Nachrangdarlehen Tilgung", "%", { faktor: 100, placeholder: "z. B. 2,0", tooltip: "Anfängliche Tilgung des Nachrangdarlehens. Bestimmt Rate und Laufzeit auf der letzten Seite." })}
         {zahl("lastenwechselMonate", "Lastenwechsel nach dem Kauf", "Monate", { sonst: "In der Regel rund 5 Monate", placeholder: "5", tooltip: "Wie viele Monate nach dem Kauf Nutzen und Lasten übergehen. Steht im Hinweis, ab wann der Steuerfreibetrag wirkt." })}
         {text("version", "Version auf dem Deckblatt", { placeholder: "1", optional: true, tooltip: "Erscheint auf dem Deckblatt. Hochzählen, wenn der Kunde eine geänderte Fassung bekommt." })}

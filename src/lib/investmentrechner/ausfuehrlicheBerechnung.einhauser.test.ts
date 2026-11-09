@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { berechneInvestment, standardEingabe, type InvestmentEingabe } from "./rechenkern";
 import { berechnungAusRechner } from "./ausfuehrlicheBerechnung";
-import { nachrangFall, r2, type EinheitErgebnis } from "./kundenObjektvergleich";
+import { NACHRANG_STUFEN, nachrangFall, r2, type EinheitErgebnis } from "./kundenObjektvergleich";
 import we12we13 from "./__fixtures__/einhauser-we12-we13.json";
 import we08we13 from "./__fixtures__/einhauser-we08-we13.json";
 
@@ -98,31 +98,13 @@ describe("Investmentrechner gegen die Einhauser-PDFs", () => {
     pruefe(B!, we08we13.WE13);
   });
 
-  it("Nachrangseite: Eigenanteil nach Steuer bei 0, 50 und 100 % Nachrang", () => {
-    const fall = (x: EinheitErgebnis, an: Parameters<typeof nachrangFall>[2]) => [0, 0.5, 1].map((a) => r2(-nachrangFall(x, a, an).nach));
+  it("Nachrangseite: Eigenanteil nach Steuer bei 0 und 100 % Nachrang", () => {
+    const fall = (x: EinheitErgebnis, an: Parameters<typeof nachrangFall>[2]) => NACHRANG_STUFEN.map((a) => r2(-nachrangFall(x, a, an).nach));
     const a = rechne([WE12, "12"], [WE13, "13"]);
     const b = rechne([WE08, "08"], [WE13, "13"]);
-    expect(fall(a.A, a.v.annahmen)).toEqual([137.71, 186.24, 234.78]);
-    expect(fall(b.A, b.v.annahmen)).toEqual([136.51, 184.38, 232.25]);
-    expect(fall(a.B!, a.v.annahmen)).toEqual([175.85, 237.61, 299.36]);
-  });
-
-  it("Nachrang 50 % bei WE 13: kaufmännisch gerundet, 12.113 € statt 12.112 € der Referenz", () => {
-    /*
-     * Bekannte Rundungsabweichung (Christian, 08.11.2026): Die Hälfte der
-     * Kaufnebenkosten von 24.225 € ist genau 12.112,50 €. Die Referenz kommt aus
-     * Python, dessen round() eine genaue ,5 auf die gerade Zahl rundet (12.112).
-     * Der Rechner rundet kaufmännisch (12.113), so bleibt es. Dadurch liegen
-     * Rate, Zuzahlung vor Steuer und Steuerersparnis je 1 Cent über dem PDF
-     * (91,85 / 655,28 / 417,67); der Eigenanteil nach Steuer ist gleich.
-     */
-    const { v, B } = rechne([WE08, "08"], [WE13, "13"]);
-    const f = nachrangFall(B!, 0.5, v.annahmen);
-    expect(f.nr).toBe(12113);
-    expect(r2(f.ek)).toBe(12112);
-    expect(r2(f.rate)).toBe(91.86);
-    expect(r2(-f.vor)).toBe(655.29);
-    expect(r2(f.ersparnis)).toBe(417.68);
-    expect(r2(-f.nach)).toBe(237.61);
+    expect(NACHRANG_STUFEN).toEqual([0, 1]);
+    expect(fall(a.A, a.v.annahmen)).toEqual([137.71, 234.78]);
+    expect(fall(b.A, b.v.annahmen)).toEqual([136.51, 232.25]);
+    expect(fall(a.B!, a.v.annahmen)).toEqual([175.85, 299.36]);
   });
 });

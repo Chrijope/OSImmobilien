@@ -233,6 +233,13 @@ export interface NachrangFall {
   zinsenNetto: number;
 }
 
+/**
+ * Die Varianten der Nachrangseite: Kaufnebenkosten selbst bezahlt (0) oder
+ * ganz über das Nachrangdarlehen (1). Die halbe Variante entfällt
+ * grundsätzlich (Christian, 09.11.2026).
+ */
+export const NACHRANG_STUFEN = [0, 1] as const;
+
 /** Monat 1, wenn `anteil` der Kaufnebenkosten über ein Nachrangdarlehen läuft; dessen Zinsen sind absetzbar. */
 export function nachrangFall(e: EinheitErgebnis, anteil: number, a: VergleichAnnahmen): NachrangFall {
   const nr = Math.round(e.nk * anteil);

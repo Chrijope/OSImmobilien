@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  STANDARD_ANNAHMEN, empfohlen, kriterien, nachrangFall, r2, rechneEinheit, vergleichDateiname,
+  NACHRANG_STUFEN, STANDARD_ANNAHMEN, empfohlen, kriterien, nachrangFall, r2, rechneEinheit, vergleichDateiname,
   type KundenObjektvergleich, type VergleichEinheit,
 } from "./kundenObjektvergleich";
 import basis from "./__fixtures__/objektvergleich-basis.json";
@@ -122,7 +122,7 @@ describe("Kaufnebenkosten über Nachrang", () => {
   const an = { ...STANDARD_ANNAHMEN, zins: 0.05, tilgung: 0.01 };
   it("trifft die Zuzahlung nach Steuer der Vorlage", () => {
     const x = rechneEinheit({ ...we12(209000), afaJahre: 31.25 }, an);
-    expect([0, 0.5, 1].map((a) => r2(-nachrangFall(x, a, an).nach))).toEqual([137.71, 186.24, 234.78]);
+    expect(NACHRANG_STUFEN.map((a) => r2(-nachrangFall(x, a, an).nach))).toEqual([137.71, 234.78]);
     expect(nachrangFall(x, 1, an).jahre).toBe(23);
   });
 });

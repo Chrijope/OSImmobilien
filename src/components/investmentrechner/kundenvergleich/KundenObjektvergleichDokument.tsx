@@ -17,7 +17,7 @@
 import { createContext, useContext, type ReactNode } from "react";
 import "./kundenObjektvergleich.css";
 import {
-  STANDARD_SCHRITTE, empfohlen, haeuseruebergreifend, kriterien, nachrangFall, objektVon, rundeHalbAuf,
+  NACHRANG_STUFEN, STANDARD_SCHRITTE, empfohlen, haeuseruebergreifend, kriterien, nachrangFall, objektVon, rundeHalbAuf,
   type EinheitErgebnis, type KundenObjektvergleich, type VergleichAnnahmen, type VergleichObjekt,
 } from "@/lib/investmentrechner/kundenObjektvergleich";
 
@@ -1227,7 +1227,7 @@ function NachrangTabelle({ k, e, b }: { k: Kontext; e: EinheitErgebnis; b: boole
   const { eur, tsd, pz, pzGanz, t } = k.f;
   const an = k.v.annahmen;
   const nz = pz(an.nachrangZins), nt = pz(an.nachrangTilgung);
-  const f = [0, 0.5, 1].map((a) => nachrangFall(e, a, an));
+  const f = NACHRANG_STUFEN.map((a) => nachrangFall(e, a, an));
   const z = (lbl: ReactNode, werte: ReactNode[], cls = "") => (
     <tr className={cls}><td>{lbl}</td>{werte.map((w, i) => <td className="r" key={i}>{w}</td>)}</tr>
   );
@@ -1236,7 +1236,7 @@ function NachrangTabelle({ k, e, b }: { k: Kontext; e: EinheitErgebnis; b: boole
       {k.B && <span className={`badge${b ? " b" : ""}`}>{b ? "B" : "A"}</span>} <b style={{ fontWeight: 500 }}>{t("Wohnung", "Apartment")} {e.einheit.nr}</b>{" "}
       <span className="small">{t(`Kaufpreis ${eur(e.kp, 0)}${e.einheit.garagen ? " inkl. Garage" : ""}, Bankdarlehen ${eur(e.darlehen, 0)}`, `Purchase price ${eur(e.kp, 0)}${e.einheit.garagen ? " incl. garage" : ""}, bank loan ${eur(e.darlehen, 0)}`)}</span>
       <table className="t nrt" style={{ marginTop: "1.5mm" }}><tbody>
-        <tr><th /><th className="r">{t(<>Aus Erspartem<br />(wie bisher)</>, <>From savings<br />(as before)</>)}</th><th className="r">{t(<>50 % über<br />Nachrang</>, <>50% via<br />junior loan</>)}</th><th className="r">{t(<>100 % über<br />Nachrang</>, <>100% via<br />junior loan</>)}</th></tr>
+        <tr><th /><th className="r">{t(<>Aus Erspartem<br />(wie bisher)</>, <>From savings<br />(as before)</>)}</th><th className="r">{t(<>100 % über<br />Nachrang</>, <>100% via<br />junior loan</>)}</th></tr>
         {z(t(`Kaufnebenkosten gesamt (${pz(an.knk)})`, `Total purchase costs (${pz(an.knk)})`), f.map(() => eur(e.nk, 0)))}
         {z(t("davon über Nachrangdarlehen", "of which via junior loan"), f.map((x, i) => (i ? eur(x.nr, 0) : eur(0, 0))), "sub")}
         {z(t("Ihr Eigenkapital aus Erspartem", "Your equity from savings"), f.map((x) => eur(x.ek, 0)))}
@@ -1260,8 +1260,8 @@ function Nachrang({ k, nr }: { k: Kontext; nr: number }) {
     <Seite nr={nr} kick={t("Kaufnebenkosten: Erspartes oder Nachrangdarlehen", "Purchase costs: savings or junior loan")} fuss={k.fuss}>
       <h2>{t(<>Weniger Eigenkapital einsetzen: <em>was das im Monat bedeutet.</em></>, <>Using less equity: <em>what it means each month.</em></>)}</h2>
       <p className="lead" style={{ fontSize: "8pt" }}>
-        {t(`Bisher sind die Kaufnebenkosten aus Ihrem Ersparten gerechnet. Alternativ lassen sie sich zur Hälfte oder ganz über ein Nachrangdarlehen finanzieren, gerechnet mit ${nz} Zins und ${nt} Tilgung. Ihr Erspartes bleibt dann als Reserve, dafür steigt die Monatsbelastung. Die Zinsen des Nachrangdarlehens sind als Werbungskosten angesetzt.`,
-          `So far the purchase costs are paid from your savings. Alternatively, half or all of them can be financed with a junior (subordinated) loan, calculated at ${nz} interest and ${nt} repayment. Your savings then remain as a reserve, but the monthly burden rises. The interest on the junior loan is treated as a deductible expense.`)}
+        {t(`Bisher sind die Kaufnebenkosten aus Ihrem Ersparten gerechnet. Alternativ lassen sie sich vollständig über ein Nachrangdarlehen finanzieren, gerechnet mit ${nz} Zins und ${nt} Tilgung. Ihr Erspartes bleibt dann als Reserve, dafür steigt die Monatsbelastung. Die Zinsen des Nachrangdarlehens sind als Werbungskosten angesetzt.`,
+          `So far the purchase costs are paid from your savings. Alternatively, all of them can be financed with a junior (subordinated) loan, calculated at ${nz} interest and ${nt} repayment. Your savings then remain as a reserve, but the monthly burden rises. The interest on the junior loan is treated as a deductible expense.`)}
       </p>
       {k.liste.map((e, i) => <NachrangTabelle key={i} k={k} e={e} b={i > 0} />)}
       <p className="small" style={{ marginTop: "3mm" }}>
