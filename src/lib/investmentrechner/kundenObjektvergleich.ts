@@ -69,6 +69,9 @@ export interface VergleichAnnahmen {
    * Einhauser-Vorlagen vom Oktober 2026. Jährlich nur, um diese Vorlagen in Tests nachzurechnen.
    */
   verrechnung?: "monatlich" | "jaehrlich";
+  /** Zinsbindung in Jahren laut Angebot: Bankdarlehen und Nachrangdarlehen, für die Restschuld zu ihrem Ende. */
+  zinsbindungJahre?: number;
+  nachrangZinsbindungJahre?: number;
 }
 
 export type Finanzierungsart = "ek" | "nachrang" | "darlehen" | "angebot";
@@ -188,6 +191,8 @@ export interface EinheitErgebnis {
   reihe: Array<{ jahr: number; nach: number; wert: number; rest: number; zuz: number }>;
   nachMin: number;
   nachMax: number;
+  /** Restschuld am Ende der Zinsbindung (Bank bzw. Nachrang), wie im Angebot der Bank; null ohne Zinsbindung. */
+  restZinsbindung: { jahre: number; bank: number; nrJahre: number; nachrang: number } | null;
 }
 
 /** Wert im Jahr `startJahr + j`: linear vom Start bis zum Ziel im Zieljahr, danach konstant. */
@@ -273,6 +278,13 @@ export function jahrMonatlich(rest: number, rate: number, zinssatz: number): { z
     zins += z; tilgung += t; rest = r2(rest - t);
   }
   return { zins, tilgung, rest };
+}
+
+/** Restschuld nach der Zinsbindung aus den Jahreszeilen; ganze Jahre wie im Angebot (10 Jahre = 120 Raten). */
+function restAmEnde(J: Array<{ rest: number; nrRest: number }>, a: VergleichAnnahmen, nrBetrag: number): EinheitErgebnis["restZinsbindung"] {
+  const jahre = Math.round(a.zinsbindungJahre ?? 0), nrJahre = nrBetrag > 0 ? Math.round(a.nachrangZinsbindungJahre ?? 0) : 0;
+  if (jahre < 1 || jahre > J.length) return null;
+  return { jahre, bank: r2(J[jahre - 1].rest), nrJahre, nachrang: nrJahre >= 1 && nrJahre <= J.length ? r2(J[nrJahre - 1].nrRest) : 0 };
 }
 
 export function rechneEinheit(e: VergleichEinheit, a: VergleichAnnahmen): EinheitErgebnis {
@@ -363,6 +375,7 @@ export function rechneEinheit(e: VergleichEinheit, a: VergleichAnnahmen): Einhei
     steuer30: dreissig.reduce((s, x) => s + x.steuereffekt, 0),
     entw,
     reihe: J.slice(0, 35).map((x) => ({ jahr: x.jahr, nach: x.cfNach / 12, wert: wertNach(x.jahr), rest: x.rest + x.nrRest, zuz: zuzahlungBis(x.jahr) })),
+    restZinsbindung: restAmEnde(J, a, nrBetrag),
     nachMin: Math.min(...dreissig.map((x) => x.cfNach)) / 12,
     nachMax: Math.max(...dreissig.map((x) => x.cfNach)) / 12,
   };

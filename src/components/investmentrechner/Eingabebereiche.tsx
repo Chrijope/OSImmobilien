@@ -26,7 +26,7 @@ import { feldmarkierung, herkunftText, type Herkunft } from "@/lib/investmentrec
 import { OBJEKTTYP_VORSCHLAEGE } from "@/lib/investmentrechner/objekttypVorschlaege";
 import { linearerAfaSatz } from "@/lib/afaSaetze";
 import { steuerAus } from "@/lib/investmentrechner/ausfuehrlicheBerechnung";
-import { STANDARD_ANNAHMEN } from "@/lib/investmentrechner/kundenObjektvergleich";
+import { STANDARD_ANNAHMEN, jahrMonatlich, r2 } from "@/lib/investmentrechner/kundenObjektvergleich";
 import { UNWIRKSAME_FELDER_ZEIGEN } from "@/lib/investmentrechner/ausgeblendeteFelder";
 import { ausgewiesenerKaufpreis, darlehensbetrag, hausgeldAufstellung, mitStellplatz, RUECKLAGE_JE_QM_MONAT } from "@/lib/investmentrechner/rechenkern";
 import { Auswahlfeld, AuswahlOderText, FeldInfo, Feldetikett, Neu, Schalterfeld, Textbereich, Textfeld, Zahlenfeld } from "./Felder";
@@ -896,6 +896,14 @@ const positivOderNull = (x: unknown) => (typeof x === "number" && Number.isFinit
  * Nachrangdarlehen; Eigenkapital ist der Rest bis Kaufpreis plus Kaufnebenkosten.
  * Ohne Betrag im Angebot `null`, dann gilt die Finanzierung des Rechenkerns.
  */
+/** Restschuld nach `jahre` Jahren, Monat für Monat wie die Bank (gleiche Rechnung wie Analyse und PDF). */
+export function restschuldNach(betrag: number, zins: number, tilgung: number, jahre: number): number {
+  const rate = r2((betrag * (zins + tilgung)) / 12);
+  let rest = betrag;
+  for (let j = 0; j < jahre && rest > 0.004; j++) rest = jahrMonatlich(rest, rate, zins).rest;
+  return r2(rest);
+}
+
 export function finanzierungLautAngebot(input: InvestmentEingabe, result: InvestmentErgebnis) {
   const ausf = input.ausfuehrlich ?? {};
   const bankAngebot = positivOderNull(ausf.bankBetrag);
@@ -909,8 +917,12 @@ export function finanzierungLautAngebot(input: InvestmentEingabe, result: Invest
   const nachrangTilgung = positivOderNull(ausf.nachrangTilgung) || STANDARD_ANNAHMEN.nachrangTilgung;
   const gesamtbedarf = kaufpreis + positivOderNull(result.purchaseCosts);
   const darlehen = bank + nachrang;
+  const zinsbindung = Math.round(positivOderNull(input.seniorFixedRateYears));
+  const nachrangZinsbindung = Math.round(positivOderNull(input.juniorFixedRateYears));
   return {
-    bank, nachrang, nachrangZins, nachrangTilgung, gesamtbedarf,
+    bank, nachrang, nachrangZins, nachrangTilgung, gesamtbedarf, zinsbindung, nachrangZinsbindung,
+    restBank: restschuldNach(bank, zins, tilgung, zinsbindung),
+    restNachrang: restschuldNach(nachrang, nachrangZins, nachrangTilgung, nachrangZinsbindung),
     eigenkapital: Math.max(0, gesamtbedarf - darlehen),
     ueberfinanzierung: Math.max(0, darlehen - gesamtbedarf),
     mischzins: darlehen > 0 ? (bank * zins + nachrang * nachrangZins) / darlehen : 0,
@@ -1031,6 +1043,19 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
               onChange={(wert) => setzeAngebot("nachrangBetrag", wert)}
               tooltip="Zweites Darlehen aus dem Angebot, das im Rang hinter der Bank steht und den Rest bis Kaufpreis plus Kaufnebenkosten deckt. Seine Zinsen sind Werbungskosten."
             />
+            {angebot && (
+              <Zahlenfeld
+                label="Zinsbindung Bankdarlehen"
+                placeholder="z. B. 10"
+                empfohlen
+                value={input.seniorFixedRateYears}
+                suffix="Jahre"
+                step="1"
+                onChange={(wert) => setzeZahl("seniorFixedRateYears", wert)}
+                tooltip="Sollzinsbindung laut Angebot. Danach steht die Restschuld, die anschließend neu finanziert wird."
+                hint={angebot.zinsbindung > 0 ? `Restschuld nach ${angebot.zinsbindung} Jahren: ${formatEuro(angebot.restBank)}` : undefined}
+              />
+            )}
             {angebot && angebot.nachrang > 0 && (
               <>
                 <Zahlenfeld
@@ -1050,6 +1075,17 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
                   suffix="%"
                   onChange={(wert) => setzeAngebot("nachrangTilgung", wert / 100)}
                   tooltip="Anfängliche Tilgung des Nachrangdarlehens laut Angebot. Zins und Tilgung geteilt durch 12 ergeben die Monatsrate."
+                />
+                <Zahlenfeld
+                  label="Zinsbindung Nachrangdarlehen"
+                  placeholder="z. B. 5"
+                  empfohlen
+                  value={input.juniorFixedRateYears}
+                  suffix="Jahre"
+                  step="1"
+                  onChange={(wert) => setzeZahl("juniorFixedRateYears", wert)}
+                  tooltip="Sollzinsbindung des Nachrangdarlehens laut Angebot."
+                  hint={angebot.nachrangZinsbindung > 0 ? `Restschuld nach ${angebot.nachrangZinsbindung} Jahren: ${formatEuro(angebot.restNachrang)}` : undefined}
                 />
               </>
             )}
@@ -1331,6 +1367,14 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
             <small>Rate p. M.</small>
             <strong data-testid="rate-angebot">{formatEuroCent(angebot.rate)}</strong>
           </span>
+          {angebot.zinsbindung > 0 && (
+            <span>
+              <small>Restschuld nach {angebot.zinsbindung} J.</small>
+              <strong data-testid="restschuld-angebot">
+                {formatEuro(angebot.restBank + (angebot.nachrangZinsbindung === angebot.zinsbindung ? angebot.restNachrang : 0))}
+              </strong>
+            </span>
+          )}
         </div>
       ) : null}
       {!angebot && result.ueberfinanzierung > 0.5 && (

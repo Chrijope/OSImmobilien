@@ -842,6 +842,8 @@ function Rechnung({ k, e, nr, b }: { k: Kontext; e: EinheitErgebnis; nr: number;
     ...(nkArt(an) === "angebot" ? [
       [`Bankdarlehen laut Angebot (${pz(an.zins)} Zins, ${pz(an.tilgung)} Tilgung)`, eur(e.darlehen, 0)] as [string, string],
       ...(e.nrBetrag > 0 ? [[`Nachrangdarlehen laut Angebot (${pz(an.nachrangZins)} Zins, ${pz(an.nachrangTilgung)} Tilgung)`, eur(e.nrBetrag, 0)] as [string, string]] : []),
+      ...(e.restZinsbindung ? [[`Restschuld Bankdarlehen nach ${e.restZinsbindung.jahre} Jahren (Ende Zinsbindung)`, eur(e.restZinsbindung.bank)] as [string, string]] : []),
+      ...(e.restZinsbindung && e.restZinsbindung.nrJahre > 0 ? [[`Restschuld Nachrangdarlehen nach ${e.restZinsbindung.nrJahre} Jahren (Ende Zinsbindung)`, eur(e.restZinsbindung.nachrang)] as [string, string]] : []),
       ["Ihr Eigenkapital", eur(e.ek, 0)] as [string, string],
     ] : []),
     [t(`AfA: ≈ ${afaPz} % (1/${afaJ})${x.afaJahre < 50 ? `, kürzere tatsächliche Nutzungsdauer ${afaJ} J., Gutachten nötig` : ""}`,
@@ -1407,6 +1409,8 @@ function AngebotTabelle({ k, e, b }: { k: Kontext; e: EinheitErgebnis; b: boolea
         {z(`Nachrangdarlehen (${pz(an.nachrangZins)} Zins, ${pz(an.nachrangTilgung)} Tilgung)`, f.map((x) => eur(x.nrBetrag, 0)))}
         {z("Benötigtes Eigenkapital", f.map((x) => eur(x.ek, 0)))}
         {z("Kreditrate pro Monat", f.map((x) => eur(rate(x))))}
+        {e.restZinsbindung && z(`Restschuld Bankdarlehen nach ${e.restZinsbindung.jahre} Jahren`, f.map((x) => eur(x.restZinsbindung?.bank ?? 0)), "sub")}
+        {e.restZinsbindung && e.restZinsbindung.nrJahre > 0 && z(`Restschuld Nachrangdarlehen nach ${e.restZinsbindung.nrJahre} Jahren`, f.map((x) => (x.nrBetrag > 0 ? eur(x.restZinsbindung?.nachrang ?? 0) : "–")), "sub")}
         {z("Hausgeldanteil und Rücklage", f.map((x) => eur(x.monat.n + x.monat.r)), "sub")}
         {z("Kaltmiete inkl. Mietzuschuss", f.map((x) => eur(x.monat.einnahmen)), "sub")}
         {z("1 · Zuzahlung vor Steuer", f.map((x) => eur(-x.monat.vor)), "sum")}

@@ -69,4 +69,9 @@ describe("Restschuld wie die Bank (monatlich verrechnet)", () => {
     expect(e.monat.zins + e.monat.tilgung).toBeCloseTo(1283.25, 2);
     expect(r2(e.entw[10].rest)).toBe(215850.62);
   });
+  it("Restschuld am Ende der Zinsbindung für Bank und Nachrang", () => {
+    const e = rechneEinheit(einheit, { ...annahmen, darlehenBetrag: 130050, nachrangBetrag: 26732, zinsbindungJahre: 10, nachrangZinsbindungJahre: 5 });
+    expect(e.restZinsbindung).toEqual({ jahre: 10, bank: 105260.9, nrJahre: 5, nachrang: 23250.53 });
+    expect(rechneEinheit(einheit, annahmen).restZinsbindung).toBeNull();
+  });
 });

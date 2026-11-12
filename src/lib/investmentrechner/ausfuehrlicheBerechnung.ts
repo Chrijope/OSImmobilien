@@ -218,6 +218,8 @@ export function annahmenAusRechner(input: InvestmentEingabe, result: InvestmentE
     nachrangZins: a.nachrangZins,
     nachrangTilgung: a.nachrangTilgung,
     ...(a.bankBetrag > 0 ? { darlehenBetrag: a.bankBetrag } : {}),
+    zinsbindungJahre: Math.max(0, input.seniorFixedRateYears || 0),
+    nachrangZinsbindungJahre: Math.max(0, input.juniorFixedRateYears || 0),
     ...(a.nachrangBetrag > 0 ? { nachrangBetrag: a.nachrangBetrag } : {}),
   };
 }
