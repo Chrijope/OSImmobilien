@@ -57,6 +57,20 @@ export interface VergleichAnnahmen {
   mitSoli?: boolean;
   /** Kaufnebenkosten: aus Eigenkapital, ganz über Nachrang oder im Bankdarlehen (seit 09.11.2026). */
   nkFinanzierung?: "ek" | "nachrang" | "darlehen";
+  /**
+   * Darlehen laut Finanzierungsangebot der Bank (Christian, 12.11.2026, Angebot Baufi24 für Brück WE 1):
+   * Bankdarlehen und Nachrangdarlehen in Euro. Ist eines gesetzt, gilt es statt `nkFinanzierung`;
+   * ein fehlendes Bankdarlehen ist dann der Kaufpreis, der Rest bis Kaufpreis plus Nebenkosten ist Eigenkapital.
+   */
+  darlehenBetrag?: number;
+  nachrangBetrag?: number;
+}
+
+export type Finanzierungsart = "ek" | "nachrang" | "darlehen" | "angebot";
+
+/** Wie finanziert wird: laut Bankangebot, sobald dort ein Betrag steht, sonst nach `nkFinanzierung`. */
+export function finanzierungsart(a: VergleichAnnahmen): Finanzierungsart {
+  return (a.darlehenBetrag ?? 0) > 0 || (a.nachrangBetrag ?? 0) > 0 ? "angebot" : a.nkFinanzierung ?? "ek";
 }
 
 export const STANDARD_ANNAHMEN: VergleichAnnahmen = {
@@ -239,10 +253,11 @@ export function rechneEinheit(e: VergleichEinheit, a: VergleichAnnahmen): Einhei
   // Kaufnebenkosten und Gebäude-AfA ohne Möbel; das Darlehen deckt den ganzen Kaufpreis.
   const kpOhneMoebel = kp - Math.min(kp, Math.max(0, e.moebel ?? 0));
   const nk = kpOhneMoebel * a.knk;
-  const art = a.nkFinanzierung ?? "ek";
-  const darlehen = art === "darlehen" ? kp + nk : kp;
-  const nrBetrag = art === "nachrang" ? nk : 0;
-  const ek = art === "ek" ? nk : 0;
+  const art = finanzierungsart(a);
+  const darlehen = art === "angebot" ? ((a.darlehenBetrag ?? 0) > 0 ? a.darlehenBetrag! : kp) : art === "darlehen" ? kp + nk : kp;
+  const nrBetrag = art === "angebot" ? Math.max(0, a.nachrangBetrag ?? 0) : art === "nachrang" ? nk : 0;
+  // Beim Bankangebot ist Eigenkapital, was Kaufpreis und Nebenkosten nach beiden Darlehen offen lassen.
+  const ek = art === "angebot" ? Math.max(0, kp + nk - darlehen - nrBetrag) : art === "ek" ? nk : 0;
   const nrAnnuitaet = nrBetrag * (a.nachrangZins + a.nachrangTilgung);
   let nrRest = nrBetrag;
   const annuitaet = darlehen * (a.zins + a.tilgung);

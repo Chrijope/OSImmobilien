@@ -17,7 +17,7 @@
 import { createContext, useContext, type ReactNode } from "react";
 import "./kundenObjektvergleich.css";
 import {
-  NACHRANG_STUFEN, STANDARD_SCHRITTE, empfohlen, genauGerechnet, grenzsatz, guenstigerpruefung, haeuseruebergreifend, kriterien, nachrangFall, rechneEinheit, steuerGesamt, objektVon, rundeHalbAuf,
+  NACHRANG_STUFEN, STANDARD_SCHRITTE, empfohlen, finanzierungsart, genauGerechnet, grenzsatz, guenstigerpruefung, haeuseruebergreifend, kriterien, nachrangFall, rechneEinheit, steuerGesamt, objektVon, rundeHalbAuf,
   type EinheitErgebnis, type KundenObjektvergleich, type VergleichAnnahmen, type VergleichObjekt,
 } from "@/lib/investmentrechner/kundenObjektvergleich";
 
@@ -65,7 +65,8 @@ function formatFuer(en: boolean): Format {
     de: zahl,
     eur: eurF,
     tsd: (x) => eurF(Math.round(x / 1000) * 1000, 0),
-    pz: (x, d = 1) => prozent(zahl(x * 100, d)),
+    // Zwei Stellen nur, wenn der Satz sie hat (Bankangebot 4,66 %, 2,15 %); sonst eine wie bisher (12.11.2026).
+    pz: (x, d) => prozent(zahl(x * 100, d ?? (Math.abs(x * 1000 - Math.round(x * 1000)) > 1e-6 ? 2 : 1))),
     pzGanz: (x) => prozent(zahl(x * 100, x * 100 === Math.round(x * 100) ? 0 : 1)),
     t: (deutsch, englisch) => (en ? englisch : deutsch),
     tag: (iso) => (/^\d{4}-\d{2}-\d{2}/.test(iso) ? iso.slice(0, 10).split("-").reverse().join(en ? "/" : ".") : iso),
@@ -124,12 +125,19 @@ const punktText = (f: Format, p: string) =>
     : p;
 
 /** Wie die Kaufnebenkosten bezahlt werden: Eigenkapital (Standard), Nachrang oder im Bankdarlehen (09.11.2026). */
-const nkArt = (an: VergleichAnnahmen) => an.nkFinanzierung ?? "ek";
+// Seit dem 12.11.2026 auch „angebot“: Bank- und Nachrangdarlehen in Euro laut Finanzierungsangebot.
+const nkArt = (an: VergleichAnnahmen) => finanzierungsart(an);
 const nkWie = (an: VergleichAnnahmen, f: Format) => {
   const a = nkArt(an);
+  if (a === "angebot") return f.t("über die Darlehen laut Finanzierungsangebot", "via the loans of the financing offer");
   return a === "nachrang" ? f.t(`über ein Nachrangdarlehen (${f.pz(an.nachrangZins)} Zins, ${f.pz(an.nachrangTilgung)} Tilgung)`, `via a junior loan (${f.pz(an.nachrangZins)} interest, ${f.pz(an.nachrangTilgung)} repayment)`)
     : a === "darlehen" ? f.t("im Bankdarlehen mitfinanziert", "financed within the bank loan") : f.t("aus Eigenkapital", "from equity");
 };
+/** Finanzierung laut Angebot in einem Satz: Bank, Nachrang, Rest aus Eigenkapital. */
+const angebotSatz = (e: EinheitErgebnis, an: VergleichAnnahmen, f: Format) =>
+  `Finanzierung laut Angebot: Bankdarlehen ${f.eur(e.darlehen, 0)} (${f.pz(an.zins)} Zins, ${f.pz(an.tilgung)} Tilgung)` +
+  (e.nrBetrag > 0 ? `, Nachrangdarlehen ${f.eur(e.nrBetrag, 0)} (${f.pz(an.nachrangZins)} Zins, ${f.pz(an.nachrangTilgung)} Tilgung)` : "") +
+  (e.ek > 0.5 ? `, Eigenkapital ${f.eur(e.ek, 0)}.` : ". Kaufpreis und Kaufnebenkosten sind damit voll finanziert.");
 /** Kaufnebenkosten des Kunden; 0 € mit Begründung, wenn sie ausgeglichen werden (z. B. Eigenprovision). */
 const nkBetrag = (e: EinheitErgebnis, f: Format) => (e.nk === 0 && e.einheit.nkHinweis ? `${f.eur(0, 0)} (${e.einheit.nkHinweis})` : f.eur(e.nk, 0));
 const nkSatz = (e: EinheitErgebnis, an: VergleichAnnahmen, f: Format) => (e.nk === 0 && e.einheit.nkHinweis ? "" : `, ${f.pz(an.knk)}`);
@@ -307,7 +315,9 @@ function Ausgangslage({ k, nr }: { k: Kontext; nr: number }) {
   const hundert = (x: number) => eur(Math.round(x / 100) * 100, 0);
   const monateText = Math.min(...monate) === Math.max(...monate) ? String(Math.min(...monate)) : `${Math.min(...monate)} ${t("bis", "to")} ${Math.max(...monate)}`;
   const leit: Array<[string, string]> = [
-    ...(nkArt(v.annahmen) !== "ek" ? [[nkArt(v.annahmen) === "nachrang" ? "Nebenkosten über ein Nachrangdarlehen." : "Nebenkosten im Bankdarlehen.",
+    ...(nkArt(v.annahmen) === "angebot" ? [["Finanzierung laut Bankangebot.",
+      `${angebotSatz(A, v.annahmen, k.f).replace(/^Finanzierung laut Angebot: b/, "B")}${A.ek > 0.5 ? "" : ` Ihr Erspartes von ${eur(ku.kapital, 0)} bleibt vollständig als Reserve.`}`] as [string, string]] : []),
+    ...(nkArt(v.annahmen) !== "ek" && nkArt(v.annahmen) !== "angebot" ? [[nkArt(v.annahmen) === "nachrang" ? "Nebenkosten über ein Nachrangdarlehen." : "Nebenkosten im Bankdarlehen.",
       nkArt(v.annahmen) === "nachrang"
         ? `Die Kaufnebenkosten von rund ${hundert(A.nk)} (Grunderwerbsteuer, Notar und Grundbuch) finanziert ein Nachrangdarlehen mit ${k.f.pz(v.annahmen.nachrangZins)} Zins und ${k.f.pz(v.annahmen.nachrangTilgung)} Tilgung. Ihr Erspartes von ${eur(ku.kapital, 0)} bleibt vollständig als Reserve.`
         : `Die Kaufnebenkosten von rund ${hundert(A.nk)} (Grunderwerbsteuer, Notar und Grundbuch) schlägt die Bank auf den Kaufpreis auf und finanziert ${eur(A.darlehen, 0)} im Hauptdarlehen. Ihr Erspartes von ${eur(ku.kapital, 0)} bleibt vollständig als Reserve.`] as [string, string]] : []),
@@ -568,7 +578,7 @@ function VergleichTabelle({ k }: { k: Kontext }) {
         {z(t("Wohnung", "Apartment"), (e) => `${t(`${e.einheit.zimmer} Zimmer`, `${e.einheit.zimmer} rooms`)}, ${de(e.einheit.qm)} m²${e.einheit.garagen ? ` + ${garagenText(e, false, k.f)}` : ""}`, win(A.einheit.qm, bb.einheit.qm, false))}
         {z(g > 1 ? t("Kaufpreis (weitere Garagen ohne Aufpreis)", "Purchase price (further garages at no surcharge)") : t("Kaufpreis", "Purchase price"), (e) => `${eur(e.kp, 0)}${e.einheit.garagen ? t(" inkl. Garage", " incl. garage") : ""}`)}
         {z(t("Preis je m² Wohnung", "Price per m² apartment"), (e) => eur(e.qmPreis), win(A.qmPreis, bb.qmPreis, true))}
-        {z(A.nk === 0 && A.einheit.nkHinweis ? "Kaufnebenkosten für Sie" : t(`Kaufnebenkosten (${({ ek: "aus Eigenkapital", nachrang: "über Nachrangdarlehen", darlehen: "im Bankdarlehen" })[nkArt(an)]}${nkSatz(A, an, k.f)})`, `Purchase costs (from equity, ${pz(an.knk)})`), (e) => nkBetrag(e, k.f), win(A.nk, bb.nk, true))}
+        {z(A.nk === 0 && A.einheit.nkHinweis ? "Kaufnebenkosten für Sie" : t(`Kaufnebenkosten (${({ ek: "aus Eigenkapital", nachrang: "über Nachrangdarlehen", darlehen: "im Bankdarlehen", angebot: "laut Finanzierungsangebot" })[nkArt(an)]}${nkSatz(A, an, k.f)})`, `Purchase costs (from equity, ${pz(an.knk)})`), (e) => nkBetrag(e, k.f), win(A.nk, bb.nk, true))}
         {z(t("Kaltmiete heute (zahlt der Mieter)", "Net rent today (paid by the tenant)"), (e) => `${eur(e.einheit.mieteIst)} (${de(e.mieteIstQm)} €/m²)`)}
         {z(mietLabel, (e) => eur(e.monat.einnahmen))}
         {L.some((e) => e.luecke > 0) && z(t("davon Mietlücke, die der Bauträger zahlt", "of which rent gap paid by the developer"), (e) => `${eur(Math.max(0, e.luecke))} (${pz(Math.max(0, e.lueckeQuote))})`, win(A.lueckeQuote, bb.lueckeQuote, true), "sub")}
@@ -578,8 +588,8 @@ function VergleichTabelle({ k }: { k: Kontext }) {
         {z(t("Erhaltungsrücklage (separat)", "Maintenance reserve (separate)"), (e) => eur(e.hausgeld.r), null, "sub")}
         {z(t("= Vorauszahlung gesamt an die Verwaltung", "= Total advance payment to the management"), (e) => eur(e.hausgeld.voraus))}
         {z(t("Ihr Anteil: nicht umlagefähig + Rücklage", "Your share: non-recoverable + reserve"), (e) => eur(e.hausgeld.eigentuemer), win(A.hausgeld.eigentuemer, bb.hausgeld.eigentuemer, true))}
-        {z(t(`Kreditrate${nkArt(an) === "darlehen" ? ` auf ${eur(A.darlehen, 0)}` : ""} (Zins ${pz(an.zins)} + Tilgung ${pz(an.tilgung)})`, `Loan instalment (interest ${pzGanz(an.zins)} + repayment ${pzGanz(an.tilgung)})`), (e) => eur(e.monat.zins + e.monat.tilgung))}
-        {nkArt(an) === "nachrang" && z(`Rate Nachrangdarlehen auf ${eur(A.nrBetrag, 0)} (Zins ${pz(an.nachrangZins)} + Tilgung ${pz(an.nachrangTilgung)})`, (e) => eur(e.monat.nzins + e.monat.ntilg))}
+        {z(t(`Kreditrate${nkArt(an) === "darlehen" || nkArt(an) === "angebot" ? ` auf ${eur(A.darlehen, 0)}` : ""} (Zins ${pz(an.zins)} + Tilgung ${pz(an.tilgung)})`, `Loan instalment (interest ${pzGanz(an.zins)} + repayment ${pzGanz(an.tilgung)})`), (e) => eur(e.monat.zins + e.monat.tilgung))}
+        {(nkArt(an) === "nachrang" || (nkArt(an) === "angebot" && A.nrBetrag > 0)) && z(`Rate Nachrangdarlehen auf ${eur(A.nrBetrag, 0)} (Zins ${pz(an.nachrangZins)} + Tilgung ${pz(an.nachrangTilgung)})`, (e) => eur(e.monat.nzins + e.monat.ntilg))}
         {z(t("Abschreibung", "Depreciation") + (A.einheit.afaJahre < 50 ? t(" (mit Gutachten)", " (with expert report)") : ""), (e) => t(`${pz(1 / e.einheit.afaJahre)} p. a.: ${eur(e.jahr.afa, 0)}/J.`, `${pz(1 / e.einheit.afaJahre)} p.a.: ${eur(e.jahr.afa, 0)}/yr`))}
         {z(t("Zuzahlung vor Steuer", "Top-up before tax"), (e) => eur(-e.monat.vor), null, "e1")}
         {z(genauGerechnet(an) ? t(`Steuerersparnis (Tarif 2026, wirksam ${pz(A.satzWirksam, 1)})`, `Tax saving (2026 scale, effective ${pz(A.satzWirksam, 1)})`) : t(`Steuerersparnis (${pzGanz(an.steuer)} Grenzsteuersatz)`, `Tax saving (${pzGanz(an.steuer)} marginal tax rate)`), (e) => eur(e.monat.ersparnis), null, "hi")}
@@ -822,11 +832,18 @@ function Rechnung({ k, e, nr, b }: { k: Kontext; e: EinheitErgebnis; nr: number;
   const afaPz = de(100 / x.afaJahre, 1);
   const afaJ = jahreAfa(k.f, x.afaJahre);
   const ziel = x.mieteZielQm || an.mieteZielQm;
+  const voll = nkArt(an) !== "angebot";
+  const vf = (txt: string) => (voll ? txt : txt.replace(/, (voll finanziert|fully financed)/, ""));
   const an_: Array<[ReactNode, ReactNode]> = [
-    [x.garagen > 1 ? t("Kaufpreis inkl. Garage 1, voll finanziert (weitere ohne Aufpreis)", "Purchase price incl. garage 1, fully financed (others at no surcharge)")
-      : x.garagen ? t("Kaufpreis inkl. Garage, voll finanziert", "Purchase price incl. garage, fully financed") : x.kpHinweis ? <>{t("Kaufpreis, voll finanziert", "Purchase price, fully financed")}<span className="kl">{x.kpHinweis}</span></> : t("Kaufpreis, voll finanziert", "Purchase price, fully financed"), eur(e.kp, 0)],
+    [x.garagen > 1 ? vf(t("Kaufpreis inkl. Garage 1, voll finanziert (weitere ohne Aufpreis)", "Purchase price incl. garage 1, fully financed (others at no surcharge)"))
+      : x.garagen ? vf(t("Kaufpreis inkl. Garage, voll finanziert", "Purchase price incl. garage, fully financed")) : x.kpHinweis ? <>{vf(t("Kaufpreis, voll finanziert", "Purchase price, fully financed"))}<span className="kl">{x.kpHinweis}</span></> : vf(t("Kaufpreis, voll finanziert", "Purchase price, fully financed")), eur(e.kp, 0)],
     [e.nk === 0 && x.nkHinweis ? "Kaufnebenkosten für Sie" : `Kaufnebenkosten ${nkWie(an, k.f)} (${pz(an.knk)})`, nkBetrag(e, k.f)],
     ...(nkArt(an) === "darlehen" ? [["Bankdarlehen gesamt (Kaufpreis + Nebenkosten)", eur(e.darlehen, 0)] as [string, string]] : []),
+    ...(nkArt(an) === "angebot" ? [
+      [`Bankdarlehen laut Angebot (${pz(an.zins)} Zins, ${pz(an.tilgung)} Tilgung)`, eur(e.darlehen, 0)] as [string, string],
+      ...(e.nrBetrag > 0 ? [[`Nachrangdarlehen laut Angebot (${pz(an.nachrangZins)} Zins, ${pz(an.nachrangTilgung)} Tilgung)`, eur(e.nrBetrag, 0)] as [string, string]] : []),
+      ["Ihr Eigenkapital", eur(e.ek, 0)] as [string, string],
+    ] : []),
     [t(`AfA: ≈ ${afaPz} % (1/${afaJ})${x.afaJahre < 50 ? `, kürzere tatsächliche Nutzungsdauer ${afaJ} J., Gutachten nötig` : ""}`,
       `Depreciation: ≈ ${afaPz}% (1/${afaJ})${x.afaJahre < 50 ? `, shorter actual useful life of ${afaJ} yrs, expert report required` : ""}`), t(`${eur(j.afa, 0)} / Jahr`, `${eur(j.afa, 0)} / year`)],
     [t(`Bemessungsgrundlage (Gebäudeanteil ${pzGanz(an.gebaeudeanteil)} inkl. Nebenkosten)`, `Depreciation basis (building share ${pzGanz(an.gebaeudeanteil)} incl. purchase costs)`), eur(e.afaBasis, 0)],
@@ -1095,11 +1112,12 @@ function Sheet({ k, e, nr }: { k: Kontext; e: EinheitErgebnis; nr: number }) {
   const kpi: Array<[string, string, string]> = [
     [t("Kaufpreis", "Purchase price"), eur(e.kp), x.garagen ? t(`inkl. Garage ${eur(x.garageKp, 0)}${x.garagen > 1 ? ", weitere gratis" : ""}`, `incl. garage ${eur(x.garageKp, 0)}${x.garagen > 1 ? ", others free" : ""}`) : x.kpHinweis || t("Wohnung", "Apartment")],
     [t("Wohnfläche", "Living area"), `${de(x.qm)} m²`, [t(`${x.zimmer} Zimmer`, `${x.zimmer} rooms`), x.lage].filter(Boolean).join(" · ")],
-    [t("Darlehen", "Loan"), eur(e.darlehen + e.nrBetrag), nkArt(an) === "darlehen" ? `Kaufpreis + Nebenkosten ${pz(an.knk)}` : nkArt(an) === "nachrang" ? `Bank ${eur(e.darlehen, 0)} + Nachrang ${eur(e.nrBetrag, 0)}` : t("100 % des Kaufpreises", "100% of the purchase price")],
-    [t("Ihr Eigenkapital", "Your equity"), eur(e.ek), e.nk === 0 && x.nkHinweis ? `Kaufnebenkosten 0 € (${x.nkHinweis})` : nkArt(an) === "ek" ? t(`Kaufnebenkosten ${pz(an.knk)}`, `Purchase costs ${pz(an.knk)}`) : "Nebenkosten mitfinanziert"],
+    [t("Darlehen", "Loan"), eur(e.darlehen + e.nrBetrag), nkArt(an) === "angebot" ? (e.nrBetrag > 0 ? `Bank ${eur(e.darlehen, 0)} + Nachrang ${eur(e.nrBetrag, 0)}` : "Bankdarlehen laut Angebot") : nkArt(an) === "darlehen" ? `Kaufpreis + Nebenkosten ${pz(an.knk)}` : nkArt(an) === "nachrang" ? `Bank ${eur(e.darlehen, 0)} + Nachrang ${eur(e.nrBetrag, 0)}` : t("100 % des Kaufpreises", "100% of the purchase price")],
+    [t("Ihr Eigenkapital", "Your equity"), eur(e.ek), e.nk === 0 && x.nkHinweis ? `Kaufnebenkosten 0 € (${x.nkHinweis})` : nkArt(an) === "ek" ? t(`Kaufnebenkosten ${pz(an.knk)}`, `Purchase costs ${pz(an.knk)}`) : nkArt(an) === "angebot" ? (e.ek > 0.5 ? "Rest laut Angebot" : "Kaufpreis und Nebenkosten finanziert") : "Nebenkosten mitfinanziert"],
   ];
   const zl = (a: string, i: string, w: number) => <div className="zl" key={a}><span>{a}<i>{i}</i></span><span>{eur(w)}</span></div>;
   const kurz = [
+    nkArt(an) === "angebot" ? angebotSatz(e, an, k.f) :
     nkArt(an) === "darlehen" ? `Kaufpreis und Nebenkosten (${eur(e.nk, 0)}) voll finanziert: ${eur(e.darlehen, 0)} zu ${pz(an.zins)} Zins, ${pz(an.tilgung)} Tilgung.`
       : nkArt(an) === "nachrang" ? `Kaufpreis voll finanziert: ${pz(an.zins)} Zins, ${pz(an.tilgung)} Tilgung. Nebenkosten ${eur(e.nk, 0)} über ein Nachrangdarlehen (${pz(an.nachrangZins)} Zins, ${pz(an.nachrangTilgung)} Tilgung).` :
     e.nk === 0 && x.nkHinweis ? `Kaufpreis voll finanziert: ${pz(an.zins)} Zins, ${pz(an.tilgung)} Tilgung. Kaufnebenkosten für Sie 0 € (${x.nkHinweis}).` :
@@ -1244,7 +1262,8 @@ function SteuerDetail({ k, nr }: { k: Kontext; nr: number }) {
       <><b>Not deductible:</b> repayment (it builds your wealth) and the maintenance reserve (only once the money is used for repairs).</>),
     t(<><b>Abschreibung:</b> ≈ {de(100 / afaJ, 1)} % (1/{afaJText}) auf {pzGanz(an.gebaeudeanteil)} von Kaufpreis und Nebenkosten{afaJ < 50 ? "; setzt ein anerkanntes Gutachten zur Restnutzungsdauer voraus, gesetzlich wären es 2 %" : ""}.</>,
       <><b>Depreciation:</b> ≈ {de(100 / afaJ, 1)}% (1/{afaJText}) on {pzGanz(an.gebaeudeanteil)} of purchase price and purchase costs{afaJ < 50 ? "; requires a recognised expert report on the remaining useful life, the statutory rate would be 2%" : ""}.</>),
-    nkArt(an) === "darlehen" ? <><b>Finanzierung:</b> Bankdarlehen über Kaufpreis und Kaufnebenkosten ({eur(A.darlehen, 0)}), Zins {pz(an.zins)}, Tilgung {pz(an.tilgung)}. Die Zinsen auf das ganze Darlehen sind Werbungskosten. Die Kaufnebenkosten selbst sind nicht sofort absetzbar: Ihr Gebäudeanteil steckt in der AfA-Bemessungsgrundlage, der Anteil für Grund und Boden wird nicht abgeschrieben. Es zählt also nichts doppelt.</>
+    nkArt(an) === "angebot" ? <><b>Finanzierung laut Angebot:</b> {angebotSatz(A, an, k.f).replace(/^Finanzierung laut Angebot: b/, "B")} Die Zinsen beider Darlehen sind Werbungskosten. Die Kaufnebenkosten selbst wirken nur über die AfA.</>
+      : nkArt(an) === "darlehen" ? <><b>Finanzierung:</b> Bankdarlehen über Kaufpreis und Kaufnebenkosten ({eur(A.darlehen, 0)}), Zins {pz(an.zins)}, Tilgung {pz(an.tilgung)}. Die Zinsen auf das ganze Darlehen sind Werbungskosten. Die Kaufnebenkosten selbst sind nicht sofort absetzbar: Ihr Gebäudeanteil steckt in der AfA-Bemessungsgrundlage, der Anteil für Grund und Boden wird nicht abgeschrieben. Es zählt also nichts doppelt.</>
       : nkArt(an) === "nachrang" ? <><b>Finanzierung:</b> Bankdarlehen über den Kaufpreis, Zins {pz(an.zins)}, Tilgung {pz(an.tilgung)}. Kaufnebenkosten ({pz(an.knk)}) über ein Nachrangdarlehen, Zins {pz(an.nachrangZins)}, Tilgung {pz(an.nachrangTilgung)}; seine Zinsen sind Werbungskosten. Die Kaufnebenkosten selbst wirken nur über die AfA.</> :
       A.nk === 0 && A.einheit.nkHinweis ? <><b>Finanzierung:</b> Bankdarlehen über den Kaufpreis, Zins {pz(an.zins)}, Tilgung {pz(an.tilgung)}. Kaufnebenkosten für Sie 0 € ({A.einheit.nkHinweis}); Eigenkapital und Nachrangdarlehen sind nicht nötig.</> :
     t(<><b>Finanzierung:</b> Bankdarlehen über den Kaufpreis, Zins {pz(an.zins)}, Tilgung {pz(an.tilgung)}. Kaufnebenkosten ({pz(an.knk)}: Grunderwerbsteuer, Notar und Grundbuch) aus Eigenkapital.</>,
@@ -1277,7 +1296,7 @@ function SteuerDetail({ k, nr }: { k: Kontext; nr: number }) {
       <p className="small" style={{ marginTop: "5mm", fontSize: "7pt" }}>
         {t(<>
           Beispielrechnung, keine Zusage und kein Angebot. Keine Steuer-, Rechts- oder Finanzierungsberatung; bitte mit Steuerberatung und Bank prüfen.
-          Annahmen: Kaufpreis voll finanziert, Sollzins {pz(an.zins)} (angenommen bis zur vollständigen Tilgung; die Zinsbindung ist meist kürzer, danach gilt der dann übliche Zins),
+          Annahmen: {nkArt(an) === "angebot" ? <>Darlehen laut Finanzierungsangebot (Bank {eur(A.darlehen, 0)}{A.nrBetrag > 0 ? <>, Nachrang {eur(A.nrBetrag, 0)} zu {pz(an.nachrangZins)} Zins und {pz(an.nachrangTilgung)} Tilgung</> : null}), Sollzins der Bank</> : <>Kaufpreis voll finanziert, Sollzins</>} {pz(an.zins)} (angenommen bis zur vollständigen Tilgung; die Zinsbindung ist meist kürzer, danach gilt der dann übliche Zins),
           anfängliche Tilgung {pz(an.tilgung)}, Kaufnebenkosten {nkWie(an, k.f)}, Wertentwicklung {pzGanz(an.wertPa)} und Kostensteigerung {pzGanz(an.kostenPa)} im Jahr,
           Miete steigt linear und erreicht den Zielwert im Jahr {an.mieteZielJahr} (Jahr 1 = {an.startJahr}), Betrachtungszeitraum 30 Jahre; Abschreibung {afaJText} Jahre, danach ohne AfA gerechnet.
           Verkaufssumme: angenommener Verkaufspreis vor Verkaufskosten (z. B. Makler, Notar), davon wird die Restschuld abgelöst. Steuerfreiheit des Verkaufsgewinns nach mehr als
@@ -1406,7 +1425,9 @@ function kontextFuer(v: KundenObjektvergleich, A: EinheitErgebnis, B: EinheitErg
   // Reihenfolge wie in der Vorlage; bei einer Wohnung ohne Vergleich und Empfehlung, ohne Kundendaten ohne Ausgangslage.
   const seiten = [
     "deckblatt", ...(mitKunde ? ["ausgangslage"] : []), "wohnungen", "vergleich", "rechnungA", ...(B ? ["rechnungB"] : []),
-    "entwicklung", ...(B ? ["empfehlung"] : []), "sheetA", ...(B ? ["sheetB"] : []), "hinweis", "steuer", "nachrang",
+    "entwicklung", ...(B ? ["empfehlung"] : []), "sheetA", ...(B ? ["sheetB"] : []), "hinweis", "steuer",
+    // Beim Bankangebot steht die Finanzierung fest; die Vergleichsseite Erspartes/Nachrang entfällt (12.11.2026).
+    ...(finanzierungsart(v.annahmen) === "angebot" ? [] : ["nachrang"]),
   ];
   const nr = (s: string) => seiten.indexOf(s) + 1;
   const k: Kontext = {
@@ -1438,7 +1459,7 @@ export function KundenObjektvergleichDokument({ v, A, B = null, sprache = "de" }
           {B && <Sheet k={k} e={B} nr={nr("sheetB")} />}
           <Hinweis k={k} nr={nr("hinweis")} />
           <SteuerDetail k={k} nr={nr("steuer")} />
-          <Nachrang k={k} nr={nr("nachrang")} />
+          {nkArt(v.annahmen) !== "angebot" && <Nachrang k={k} nr={nr("nachrang")} />}
         </div>
       </SpracheKontext.Provider>
     </SeitenKontext.Provider>
@@ -1466,7 +1487,7 @@ export function EinhauserAnalyse({ v, A, B = null }: { v: KundenObjektvergleich;
               <div className="grid" style={{ gridTemplateColumns: "repeat(3,1fr)", marginTop: "4mm" }}>
                 <div className="tile or"><div className="label">Steuerersparnis im 1. Jahr</div><div className="n">{eur(e.jahr.ersparnis, 0)}</div><div className="s">{eur(m.ersparnis)} im Monat, Steuersatz {steuerWie(an)}</div></div>
                 <div className="tile"><div className="label">Tilgung im Monat</div><div className="n">{eur(m.tilgung)}</div><div className="s">Darlehen {eur(e.darlehen, 0)}, Zins {pz(an.zins)}, Tilgung {pz(an.tilgung)}</div></div>
-                <div className="tile dk"><div className="label">Eigenanteil nach Steuer</div><div className="n">{eur(-m.nach)}</div><div className="s">Vor Steuer {eur(-m.vor)}. Kaufnebenkosten {eur(e.nk, 0)} aus Eigenkapital.</div></div>
+                <div className="tile dk"><div className="label">Eigenanteil nach Steuer</div><div className="n">{eur(-m.nach)}</div><div className="s">Vor Steuer {eur(-m.vor)}. {nkArt(an) === "ek" ? <>Kaufnebenkosten {eur(e.nk, 0)} aus Eigenkapital.</> : <>Eigenkapital {eur(e.ek, 0)}.</>}</div></div>
               </div>
               <div className="grid" style={{ gridTemplateColumns: "1fr 1fr", gap: "5mm", marginTop: "4mm" }}><Einnahmen k={k} e={e} /><Ausgaben k={k} e={e} /></div>
               <Treppe k={k} e={e} />
@@ -1492,10 +1513,12 @@ export function EinhauserAnalyse({ v, A, B = null }: { v: KundenObjektvergleich;
             }))}
           </tbody></table>
         </section>
-        <section className="kov-karte">
-          <div className="kick">Kaufnebenkosten: Erspartes oder Nachrangdarlehen</div>
-          {k.liste.map((e, i) => <NachrangTabelle key={i} k={k} e={e} b={i > 0} />)}
-        </section>
+        {nkArt(an) !== "angebot" && (
+          <section className="kov-karte">
+            <div className="kick">Kaufnebenkosten: Erspartes oder Nachrangdarlehen</div>
+            {k.liste.map((e, i) => <NachrangTabelle key={i} k={k} e={e} b={i > 0} />)}
+          </section>
+        )}
       </div>
     </SeitenKontext.Provider>
   );

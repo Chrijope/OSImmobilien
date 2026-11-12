@@ -26,6 +26,7 @@ import { feldmarkierung, herkunftText, type Herkunft } from "@/lib/investmentrec
 import { OBJEKTTYP_VORSCHLAEGE } from "@/lib/investmentrechner/objekttypVorschlaege";
 import { linearerAfaSatz } from "@/lib/afaSaetze";
 import { steuerAus } from "@/lib/investmentrechner/ausfuehrlicheBerechnung";
+import { STANDARD_ANNAHMEN } from "@/lib/investmentrechner/kundenObjektvergleich";
 import { UNWIRKSAME_FELDER_ZEIGEN } from "@/lib/investmentrechner/ausgeblendeteFelder";
 import { ausgewiesenerKaufpreis, darlehensbetrag, hausgeldAufstellung, mitStellplatz, RUECKLAGE_JE_QM_MONAT } from "@/lib/investmentrechner/rechenkern";
 import { Auswahlfeld, AuswahlOderText, FeldInfo, Feldetikett, Neu, Schalterfeld, Textbereich, Textfeld, Zahlenfeld } from "./Felder";
@@ -887,6 +888,36 @@ function Tilgungsfelder({
 const ZINSBINDUNG_ERKLAERUNG =
   "Wie lange der Sollzins fest vereinbart ist. Danach rechnet das Modell mit demselben Zins und derselben Rate weiter; in der Jahresübersicht ist das Ende markiert, die Restschuld steht darunter.";
 
+const positivOderNull = (x: unknown) => (typeof x === "number" && Number.isFinite(x) && x > 0 ? x : 0);
+
+/**
+ * Finanzierung laut Bankangebot (12.11.2026), wie sie Analyse und PDF rechnen
+ * (rechneEinheit): Bankdarlehen laut Angebot, sonst der Kaufpreis; dazu das
+ * Nachrangdarlehen; Eigenkapital ist der Rest bis Kaufpreis plus Kaufnebenkosten.
+ * Ohne Betrag im Angebot `null`, dann gilt die Finanzierung des Rechenkerns.
+ */
+export function finanzierungLautAngebot(input: InvestmentEingabe, result: InvestmentErgebnis) {
+  const ausf = input.ausfuehrlich ?? {};
+  const bankAngebot = positivOderNull(ausf.bankBetrag);
+  const nachrang = positivOderNull(ausf.nachrangBetrag);
+  if (!bankAngebot && !nachrang) return null;
+  const kaufpreis = positivOderNull(input.purchasePrice);
+  const bank = bankAngebot || kaufpreis;
+  const zins = Math.max(0, input.seniorInterestRate) / 100;
+  const tilgung = Math.max(0, input.seniorRepaymentRate) / 100;
+  const nachrangZins = positivOderNull(ausf.nachrangZins) || STANDARD_ANNAHMEN.nachrangZins;
+  const nachrangTilgung = positivOderNull(ausf.nachrangTilgung) || STANDARD_ANNAHMEN.nachrangTilgung;
+  const gesamtbedarf = kaufpreis + positivOderNull(result.purchaseCosts);
+  const darlehen = bank + nachrang;
+  return {
+    bank, nachrang, nachrangZins, nachrangTilgung, gesamtbedarf,
+    eigenkapital: Math.max(0, gesamtbedarf - darlehen),
+    ueberfinanzierung: Math.max(0, darlehen - gesamtbedarf),
+    mischzins: darlehen > 0 ? (bank * zins + nachrang * nachrangZins) / darlehen : 0,
+    rate: (bank * (zins + tilgung) + nachrang * (nachrangZins + nachrangTilgung)) / 12,
+  };
+}
+
 export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aendere, herkunft }: EingabeProps) {
   const quelle = quelleFuer(herkunft);
   const kfw = input.kfwEnabled;
@@ -899,15 +930,29 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
     const ende = zinsbindungEnde(art);
     return ende ? `Endet ${ende.kalenderjahr}, Restschuld danach ${formatEuro(ende.restschuld)}` : undefined;
   };
+  // Darlehen laut Finanzierungsangebot (12.11.2026): stehen in `ausfuehrlich`, weil Analyse und PDF sie dort lesen.
+  const ausf = input.ausfuehrlich ?? {};
+  const setzeAngebot = (k: "bankBetrag" | "nachrangBetrag" | "nachrangZins" | "nachrangTilgung", wert: number) => {
+    const neu = { ...ausf, [k]: wert };
+    if (!(wert > 0)) delete neu[k];
+    aendere({ ausfuehrlich: neu });
+  };
+  const angebot = finanzierungLautAngebot(input, result);
   return (
     <div className="input-section">
       <Bereichstitel nummer="04" titel="Finanzierung" untertitel="Wie finanziert wird: Darlehen eintragen, das Eigenkapital ist der Rest" />
       <div className="subheading">Bankdarlehen</div>
-      {/* Analyse und PDF finanzieren immer 100 % des Kaufpreises; die Eingabe ist bis dahin ausgeblendet (08.11.2026). */}
-      {!UNWIRKSAME_FELDER_ZEIGEN && (
+      {/* Analyse und PDF finanzieren 100 % des Kaufpreises, außer es steht ein Bankangebot darunter (08.11. und 12.11.2026). */}
+      {!UNWIRKSAME_FELDER_ZEIGEN && !angebot && (
         <p className="knk-hinweis" data-testid="darlehen-100">
           Bankdarlehen: 100 % des Kaufpreises, {formatEuro(result.seniorLoanAmount)}. Es folgt dem Kaufpreis; die
-          Kaufnebenkosten trägt das Eigenkapital.
+          Kaufnebenkosten trägt das Eigenkapital. Mit einem Bankangebot: Beträge unten bei „Darlehen laut Angebot“ eintragen.
+        </p>
+      )}
+      {!UNWIRKSAME_FELDER_ZEIGEN && angebot && (
+        <p className="knk-hinweis" data-testid="darlehen-angebot">
+          Gerechnet wird mit den Darlehen laut Angebot: Bankdarlehen {formatEuro(angebot.bank)}
+          {angebot.nachrang > 0 ? <>, Nachrangdarlehen {formatEuro(angebot.nachrang)}</> : null}.
         </p>
       )}
       <div className="field-grid">
@@ -964,6 +1009,53 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
           </>
         )}
       </div>
+      {!UNWIRKSAME_FELDER_ZEIGEN && (
+        <>
+          <div className="subheading">Darlehen laut Angebot</div>
+          <div className="field-grid" data-testid="darlehen-laut-angebot">
+            <Zahlenfeld
+              label="Bankdarlehen laut Angebot"
+              placeholder={`leer: ${formatEuro(result.seniorLoanAmount)}`}
+              optional
+              value={positivOderNull(ausf.bankBetrag)}
+              suffix="€"
+              onChange={(wert) => setzeAngebot("bankBetrag", wert)}
+              tooltip="Betrag des Bankdarlehens aus dem Finanzierungsangebot, etwa 90 % des Kaufpreises. Leer: 100 % des Kaufpreises. Zins und Tilgung stehen oben."
+            />
+            <Zahlenfeld
+              label="Nachrangdarlehen laut Angebot"
+              placeholder="z. B. 26.732"
+              optional
+              value={positivOderNull(ausf.nachrangBetrag)}
+              suffix="€"
+              onChange={(wert) => setzeAngebot("nachrangBetrag", wert)}
+              tooltip="Zweites Darlehen aus dem Angebot, das im Rang hinter der Bank steht und den Rest bis Kaufpreis plus Kaufnebenkosten deckt. Seine Zinsen sind Werbungskosten."
+            />
+            {angebot && angebot.nachrang > 0 && (
+              <>
+                <Zahlenfeld
+                  label="Nachrang Sollzins p. a."
+                  placeholder="z. B. 7,59"
+                  empfohlen
+                  value={Math.round(angebot.nachrangZins * 100000) / 1000}
+                  suffix="%"
+                  onChange={(wert) => setzeAngebot("nachrangZins", wert / 100)}
+                  tooltip="Zinssatz des Nachrangdarlehens laut Angebot. Gilt auch für die Nachrangseite im PDF."
+                />
+                <Zahlenfeld
+                  label="Nachrang anfängliche Tilgung p. a."
+                  placeholder="z. B. 2,15"
+                  empfohlen
+                  value={Math.round(angebot.nachrangTilgung * 100000) / 1000}
+                  suffix="%"
+                  onChange={(wert) => setzeAngebot("nachrangTilgung", wert / 100)}
+                  tooltip="Anfängliche Tilgung des Nachrangdarlehens laut Angebot. Zins und Tilgung geteilt durch 12 ergeben die Monatsrate."
+                />
+              </>
+            )}
+          </div>
+        </>
+      )}
       {/* Nachrang, zweites Bankdarlehen und KfW wirken in Analyse und PDF nicht; der Nachrang steht dort als 0/100-%-Tabelle (08.11.2026, ohne 50 % seit 09.11.2026). */}
       {UNWIRKSAME_FELDER_ZEIGEN && (
       <>
@@ -1207,12 +1299,41 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
           Eigenkapital
           <FeldInfo text="Kein Eingabefeld: Das Eigenkapital ergibt sich aus Kaufpreis und Kaufnebenkosten minus alle Darlehen. Wer ein Darlehen erhöht, senkt es Euro für Euro." />
         </span>
-        <strong>{formatEuro(result.eigenkapital)}</strong>
+        <strong>{formatEuro(angebot ? angebot.eigenkapital : result.eigenkapital)}</strong>
         <small>
-          Gesamtbedarf {formatEuro(result.totalInvestment)} minus Darlehen {formatEuro(result.totalDebt)}
+          Gesamtbedarf {formatEuro(angebot ? angebot.gesamtbedarf : result.totalInvestment)} minus Darlehen{" "}
+          {formatEuro(angebot ? angebot.bank + angebot.nachrang : result.totalDebt)}
         </small>
       </div>
-      {result.ueberfinanzierung > 0.5 && (
+      {angebot && angebot.ueberfinanzierung > 0.5 && (
+        <div className="warning-card" data-testid="hinweis-ueberfinanzierung-angebot">
+          <TriangleAlert size={19} />
+          <div>
+            <strong>Überfinanzierung</strong>
+            <p>
+              Bank- und Nachrangdarlehen liegen {formatEuro(angebot.ueberfinanzierung)} über Kaufpreis und
+              Kaufnebenkosten. Bitte die Beträge mit dem Angebot abgleichen.
+            </p>
+          </div>
+        </div>
+      )}
+      {angebot ? (
+        <div className="summary-strip">
+          <span>
+            <small>Gesamtdarlehen</small>
+            <strong>{formatEuro(angebot.bank + angebot.nachrang)}</strong>
+          </span>
+          <span>
+            <small>Mischzins</small>
+            <strong data-testid="mischzins">{formatProzent(angebot.mischzins)}</strong>
+          </span>
+          <span>
+            <small>Rate p. M.</small>
+            <strong data-testid="rate-angebot">{formatEuroCent(angebot.rate)}</strong>
+          </span>
+        </div>
+      ) : null}
+      {!angebot && result.ueberfinanzierung > 0.5 && (
         <div className="warning-card" data-testid="hinweis-ueberfinanzierung">
           <TriangleAlert size={19} />
           <div>
@@ -1225,21 +1346,23 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
           </div>
         </div>
       )}
-      <div className="summary-strip">
-        <span>
-          <small>Gesamtdarlehen</small>
-          <strong>{formatEuro(result.totalDebt)}</strong>
-        </span>
-        <span>
-          <small>Mischzins</small>
-          <strong data-testid="mischzins">{formatProzent(result.mischzins)}</strong>
-        </span>
-        <span>
-          <small>Rate p. M.</small>
-          <strong>{formatEuroCent(result.monthlyDebtService)}</strong>
-        </span>
-      </div>
-      {result.rateSprung && (
+      {!angebot && (
+        <div className="summary-strip">
+          <span>
+            <small>Gesamtdarlehen</small>
+            <strong>{formatEuro(result.totalDebt)}</strong>
+          </span>
+          <span>
+            <small>Mischzins</small>
+            <strong data-testid="mischzins">{formatProzent(result.mischzins)}</strong>
+          </span>
+          <span>
+            <small>Rate p. M.</small>
+            <strong>{formatEuroCent(result.monthlyDebtService)}</strong>
+          </span>
+        </div>
+      )}
+      {!angebot && result.rateSprung && (
         <p className="knk-hinweis">
           Ab Jahr {result.rateSprung.jahr} ({result.rateSprung.kalenderjahr}) steigt die Rate auf{" "}
           {formatEuroCent(result.rateSprung.rateNachher)} im Monat.

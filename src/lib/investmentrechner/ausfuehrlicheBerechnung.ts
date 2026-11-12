@@ -39,6 +39,10 @@ export interface AusfuehrlichAngaben {
   lastenwechselMonate: number;
   nachrangZins: number;
   nachrangTilgung: number;
+  /** Bankdarlehen laut Finanzierungsangebot in €; 0 = Kaufpreis (Standard 100 %). */
+  bankBetrag: number;
+  /** Nachrangdarlehen laut Finanzierungsangebot in €; 0 = keins. Zins und Tilgung: `nachrangZins`, `nachrangTilgung`. */
+  nachrangBetrag: number;
   verwaltung: string;
   vergleichsmieteQm: number;
   vergleichsmieteQuelle: string;
@@ -123,6 +127,8 @@ export function wirksameAngaben(input: InvestmentEingabe, vorgaben: Partial<Ausf
     lastenwechselMonate: positiv(w("lastenwechselMonate")) || STANDARD_ANNAHMEN.lastenwechselMonate,
     nachrangZins: positiv(w("nachrangZins")) || STANDARD_ANNAHMEN.nachrangZins,
     nachrangTilgung: positiv(w("nachrangTilgung")) || STANDARD_ANNAHMEN.nachrangTilgung,
+    bankBetrag: positiv(w("bankBetrag")),
+    nachrangBetrag: positiv(w("nachrangBetrag")),
     verwaltung: w("verwaltung") ?? "",
     vergleichsmieteQm: positiv(w("vergleichsmieteQm")),
     vergleichsmieteQuelle: w("vergleichsmieteQuelle") ?? "",
@@ -211,6 +217,8 @@ export function annahmenAusRechner(input: InvestmentEingabe, result: InvestmentE
     lastenwechselMonate: a.lastenwechselMonate,
     nachrangZins: a.nachrangZins,
     nachrangTilgung: a.nachrangTilgung,
+    ...(a.bankBetrag > 0 ? { darlehenBetrag: a.bankBetrag } : {}),
+    ...(a.nachrangBetrag > 0 ? { nachrangBetrag: a.nachrangBetrag } : {}),
   };
 }
 
