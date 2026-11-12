@@ -316,7 +316,7 @@ function Ausgangslage({ k, nr }: { k: Kontext; nr: number }) {
   const monateText = Math.min(...monate) === Math.max(...monate) ? String(Math.min(...monate)) : `${Math.min(...monate)} ${t("bis", "to")} ${Math.max(...monate)}`;
   const leit: Array<[string, string]> = [
     ...(nkArt(v.annahmen) === "angebot" ? [["Finanzierung laut Bankangebot.",
-      `${angebotSatz(A, v.annahmen, k.f).replace(/^Finanzierung laut Angebot: b/, "B")}${A.ek > 0.5 ? "" : ` Ihr Erspartes von ${eur(ku.kapital, 0)} bleibt vollständig als Reserve.`}`] as [string, string]] : []),
+      `${angebotSatz(A, v.annahmen, k.f).replace(/^Finanzierung laut Angebot: /, "")}${A.ek > 0.5 ? "" : ` Ihr Erspartes von ${eur(ku.kapital, 0)} bleibt vollständig als Reserve.`}`] as [string, string]] : []),
     ...(nkArt(v.annahmen) !== "ek" && nkArt(v.annahmen) !== "angebot" ? [[nkArt(v.annahmen) === "nachrang" ? "Nebenkosten über ein Nachrangdarlehen." : "Nebenkosten im Bankdarlehen.",
       nkArt(v.annahmen) === "nachrang"
         ? `Die Kaufnebenkosten von rund ${hundert(A.nk)} (Grunderwerbsteuer, Notar und Grundbuch) finanziert ein Nachrangdarlehen mit ${k.f.pz(v.annahmen.nachrangZins)} Zins und ${k.f.pz(v.annahmen.nachrangTilgung)} Tilgung. Ihr Erspartes von ${eur(ku.kapital, 0)} bleibt vollständig als Reserve.`
@@ -1262,7 +1262,7 @@ function SteuerDetail({ k, nr }: { k: Kontext; nr: number }) {
       <><b>Not deductible:</b> repayment (it builds your wealth) and the maintenance reserve (only once the money is used for repairs).</>),
     t(<><b>Abschreibung:</b> ≈ {de(100 / afaJ, 1)} % (1/{afaJText}) auf {pzGanz(an.gebaeudeanteil)} von Kaufpreis und Nebenkosten{afaJ < 50 ? "; setzt ein anerkanntes Gutachten zur Restnutzungsdauer voraus, gesetzlich wären es 2 %" : ""}.</>,
       <><b>Depreciation:</b> ≈ {de(100 / afaJ, 1)}% (1/{afaJText}) on {pzGanz(an.gebaeudeanteil)} of purchase price and purchase costs{afaJ < 50 ? "; requires a recognised expert report on the remaining useful life, the statutory rate would be 2%" : ""}.</>),
-    nkArt(an) === "angebot" ? <><b>Finanzierung laut Angebot:</b> {angebotSatz(A, an, k.f).replace(/^Finanzierung laut Angebot: b/, "B")} Die Zinsen beider Darlehen sind Werbungskosten. Die Kaufnebenkosten selbst wirken nur über die AfA.</>
+    nkArt(an) === "angebot" ? <><b>Finanzierung laut Angebot:</b> {angebotSatz(A, an, k.f).replace(/^Finanzierung laut Angebot: /, "")} Die Zinsen beider Darlehen sind Werbungskosten. Die Kaufnebenkosten selbst wirken nur über die AfA.</>
       : nkArt(an) === "darlehen" ? <><b>Finanzierung:</b> Bankdarlehen über Kaufpreis und Kaufnebenkosten ({eur(A.darlehen, 0)}), Zins {pz(an.zins)}, Tilgung {pz(an.tilgung)}. Die Zinsen auf das ganze Darlehen sind Werbungskosten. Die Kaufnebenkosten selbst sind nicht sofort absetzbar: Ihr Gebäudeanteil steckt in der AfA-Bemessungsgrundlage, der Anteil für Grund und Boden wird nicht abgeschrieben. Es zählt also nichts doppelt.</>
       : nkArt(an) === "nachrang" ? <><b>Finanzierung:</b> Bankdarlehen über den Kaufpreis, Zins {pz(an.zins)}, Tilgung {pz(an.tilgung)}. Kaufnebenkosten ({pz(an.knk)}) über ein Nachrangdarlehen, Zins {pz(an.nachrangZins)}, Tilgung {pz(an.nachrangTilgung)}; seine Zinsen sind Werbungskosten. Die Kaufnebenkosten selbst wirken nur über die AfA.</> :
       A.nk === 0 && A.einheit.nkHinweis ? <><b>Finanzierung:</b> Bankdarlehen über den Kaufpreis, Zins {pz(an.zins)}, Tilgung {pz(an.tilgung)}. Kaufnebenkosten für Sie 0 € ({A.einheit.nkHinweis}); Eigenkapital und Nachrangdarlehen sind nicht nötig.</> :
