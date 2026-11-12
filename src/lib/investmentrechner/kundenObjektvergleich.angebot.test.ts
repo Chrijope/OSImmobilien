@@ -37,6 +37,14 @@ describe("Finanzierung laut Bankangebot", () => {
     expect(e.ek).toBeCloseTo(12282.5, 2);
   });
 
+  it("ohne Nachrang (nur Bankdarlehen laut Angebot): Lücke aus Eigenkapital, Zuzahlung wie im Vergleich", () => {
+    const e = rechneEinheit(einheit, { ...annahmen, darlehenBetrag: 130050, nachrangBetrag: 0 });
+    expect(e.nrBetrag).toBe(0);
+    expect(e.ek).toBeCloseTo(26732.5, 2);
+    expect(e.monat.zins + e.monat.tilgung).toBeCloseTo(667.59, 2);
+    expect(-e.monat.vor).toBeCloseTo(145.0, 2);
+  });
+
   it("nur Nachrang eingetragen: Bank bleibt der Kaufpreis", () => {
     const e = rechneEinheit(einheit, { ...annahmen, nachrangBetrag: 12282.5 });
     expect(e.darlehen).toBe(144500);

@@ -1383,6 +1383,59 @@ function Nachrang({ k, nr }: { k: Kontext; nr: number }) {
 }
 
 // ---------------------------------------------------------------------------
+// Bankangebot: mit oder ohne Nachrangdarlehen (Christian, 12.11.2026)
+// ---------------------------------------------------------------------------
+
+/** Dieselbe Wohnung ohne das Nachrangdarlehen aus dem Angebot: die Lücke trägt das Eigenkapital. */
+const ohneNachrang = (e: EinheitErgebnis, an: VergleichAnnahmen) => rechneEinheit(e.einheit, { ...an, darlehenBetrag: e.darlehen, nachrangBetrag: 0 });
+
+function AngebotTabelle({ k, e, b }: { k: Kontext; e: EinheitErgebnis; b: boolean }) {
+  const { eur, pz } = k.f;
+  const an = k.v.annahmen;
+  const f = [e, ohneNachrang(e, an)];
+  const rate = (x: EinheitErgebnis) => x.monat.zins + x.monat.tilgung + x.monat.nzins + x.monat.ntilg;
+  const z = (lbl: ReactNode, werte: ReactNode[], cls = "") => (
+    <tr className={cls}><td>{lbl}</td>{werte.map((w, i) => <td className="r" key={i}>{w}</td>)}</tr>
+  );
+  return (
+    <div style={{ marginTop: "4mm" }} data-testid="angebot-vergleich">
+      {k.B && <span className={`badge${b ? " b" : ""}`}>{b ? "B" : "A"}</span>} <b style={{ fontWeight: 500 }}>Wohnung {e.einheit.nr}</b>{" "}
+      <span className="small">Kaufpreis {eur(e.kp, 0)}, Kaufnebenkosten {eur(e.nk, 0)}</span>
+      <table className="t nrt" style={{ marginTop: "1.5mm" }}><tbody>
+        <tr><th /><th className="r">Mit<br />Nachrangdarlehen</th><th className="r">Ohne<br />Nachrangdarlehen</th></tr>
+        {z(`Bankdarlehen (${pz(an.zins)} Zins, ${pz(an.tilgung)} Tilgung)`, f.map((x) => eur(x.darlehen, 0)))}
+        {z(`Nachrangdarlehen (${pz(an.nachrangZins)} Zins, ${pz(an.nachrangTilgung)} Tilgung)`, f.map((x) => eur(x.nrBetrag, 0)))}
+        {z("Benötigtes Eigenkapital", f.map((x) => eur(x.ek, 0)))}
+        {z("Kreditrate pro Monat", f.map((x) => eur(rate(x))))}
+        {z("Hausgeldanteil und Rücklage", f.map((x) => eur(x.monat.n + x.monat.r)), "sub")}
+        {z("Kaltmiete inkl. Mietzuschuss", f.map((x) => eur(x.monat.einnahmen)), "sub")}
+        {z("1 · Zuzahlung vor Steuer", f.map((x) => eur(-x.monat.vor)), "sum")}
+        {z(genauGerechnet(an) ? "2 · Steuerersparnis (Tarif 2026)" : `2 · Steuerersparnis (${pz(an.steuer, 0)})`, f.map((x) => eur(x.monat.ersparnis)))}
+        {z("3 · Zuzahlung nach Steuer: Ihr Eigenanteil im Monat", f.map((x) => eur(-x.monat.nach)), "dk")}
+      </tbody></table>
+    </div>
+  );
+}
+
+function AngebotVergleich({ k, nr }: { k: Kontext; nr: number }) {
+  const an = k.v.annahmen;
+  return (
+    <Seite nr={nr} kick="Finanzierung: mit oder ohne Nachrangdarlehen" fuss={k.fuss}>
+      <h2>Mit oder ohne Nachrangdarlehen: <em>was das im Monat bedeutet.</em></h2>
+      <p className="lead" style={{ fontSize: "8pt" }}>
+        Links die Finanzierung laut Angebot mit Nachrangdarlehen. Rechts dieselbe Wohnung ohne Nachrangdarlehen: Den Betrag
+        bringen Sie dann aus Eigenkapital auf, dafür entfällt dessen Rate und die Zinsen sind nicht mehr als Werbungskosten absetzbar.
+      </p>
+      {k.liste.map((e, i) => <AngebotTabelle key={i} k={k} e={e} b={i > 0} />)}
+      <p className="small" style={{ marginTop: "3mm" }}>
+        Zahlen für den Monat im 1. Jahr, Steuersatz {steuerWie(an, k.f)} wie in der übrigen Rechnung. Darlehen als Annuität, jährlich
+        verrechnet; die Bank verrechnet monatlich, die Restschuld weicht deshalb leicht ab. Keine Steuer- oder Finanzierungsberatung.
+      </p>
+    </Seite>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Deckblatt im Stil der System-PDFs (pdfBranding.addCoverPage), ohne Foto
 // ---------------------------------------------------------------------------
 
@@ -1427,7 +1480,7 @@ function kontextFuer(v: KundenObjektvergleich, A: EinheitErgebnis, B: EinheitErg
     "deckblatt", ...(mitKunde ? ["ausgangslage"] : []), "wohnungen", "vergleich", "rechnungA", ...(B ? ["rechnungB"] : []),
     "entwicklung", ...(B ? ["empfehlung"] : []), "sheetA", ...(B ? ["sheetB"] : []), "hinweis", "steuer",
     // Beim Bankangebot steht die Finanzierung fest; die Vergleichsseite Erspartes/Nachrang entfällt (12.11.2026).
-    ...(finanzierungsart(v.annahmen) === "angebot" ? [] : ["nachrang"]),
+    ...(finanzierungsart(v.annahmen) !== "angebot" || A.nrBetrag > 0 ? ["nachrang"] : []),
   ];
   const nr = (s: string) => seiten.indexOf(s) + 1;
   const k: Kontext = {
@@ -1459,7 +1512,7 @@ export function KundenObjektvergleichDokument({ v, A, B = null, sprache = "de" }
           {B && <Sheet k={k} e={B} nr={nr("sheetB")} />}
           <Hinweis k={k} nr={nr("hinweis")} />
           <SteuerDetail k={k} nr={nr("steuer")} />
-          {nkArt(v.annahmen) !== "angebot" && <Nachrang k={k} nr={nr("nachrang")} />}
+          {nkArt(v.annahmen) !== "angebot" ? <Nachrang k={k} nr={nr("nachrang")} /> : A.nrBetrag > 0 ? <AngebotVergleich k={k} nr={nr("nachrang")} /> : null}
         </div>
       </SpracheKontext.Provider>
     </SeitenKontext.Provider>
@@ -1513,12 +1566,17 @@ export function EinhauserAnalyse({ v, A, B = null }: { v: KundenObjektvergleich;
             }))}
           </tbody></table>
         </section>
-        {nkArt(an) !== "angebot" && (
+        {nkArt(an) !== "angebot" ? (
           <section className="kov-karte">
             <div className="kick">Kaufnebenkosten: Erspartes oder Nachrangdarlehen</div>
             {k.liste.map((e, i) => <NachrangTabelle key={i} k={k} e={e} b={i > 0} />)}
           </section>
-        )}
+        ) : A.nrBetrag > 0 ? (
+          <section className="kov-karte">
+            <div className="kick">Finanzierung: mit oder ohne Nachrangdarlehen</div>
+            {k.liste.map((e, i) => <AngebotTabelle key={i} k={k} e={e} b={i > 0} />)}
+          </section>
+        ) : null}
       </div>
     </SeitenKontext.Provider>
   );
