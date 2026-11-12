@@ -4927,3 +4927,44 @@
   background: transparent;
   border-color: color-mix(in srgb, var(--orange-beitrag) 30%, transparent);
 }
+
+/*
+ * Eingabemaske als Liste (Christian, 13.11.2026): links die Beschreibung,
+ * rechts daneben das Feld. Eine Zeile je Angabe, Hinweise stehen unter dem
+ * Feld. Gilt nur in der Eingabespalte; auf schmalen Handys wieder untereinander.
+ */
+.investmentrechner .input-panel .field-grid,
+.investmentrechner .input-panel .field-grid.three {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+}
+.investmentrechner .input-panel .field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: 14px;
+  align-items: center;
+}
+.investmentrechner .input-panel .field > .field-label,
+.investmentrechner .input-panel .field-grid > .field > .field-label {
+  grid-column: 1;
+  grid-row: 1;
+  min-height: 0;
+  margin: 0;
+  align-content: center;
+  align-items: center;
+}
+.investmentrechner .input-panel .field > :not(.field-label) {
+  grid-column: 2;
+  min-width: 0;
+}
+.investmentrechner .input-panel .field > .field-hint {
+  margin-top: 3px;
+}
+@media (max-width: 520px) {
+  .investmentrechner .input-panel .field {
+    display: block;
+  }
+  .investmentrechner .input-panel .field > .field-label {
+    margin-bottom: 5px;
+  }
+}
