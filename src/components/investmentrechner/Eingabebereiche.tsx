@@ -1053,7 +1053,7 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
                 step="1"
                 onChange={(wert) => setzeZahl("seniorFixedRateYears", wert)}
                 tooltip="Sollzinsbindung laut Angebot. Danach steht die Restschuld, die anschließend neu finanziert wird."
-                hint={angebot.zinsbindung > 0 ? `Restschuld nach ${angebot.zinsbindung} Jahren: ${formatEuro(angebot.restBank)}` : undefined}
+                hint={angebot.zinsbindung > 0 ? `Restschuld nach ${angebot.zinsbindung} Jahren: ${formatEuroCent(angebot.restBank)}` : undefined}
               />
             )}
             {angebot && angebot.nachrang > 0 && (
@@ -1085,7 +1085,7 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
                   step="1"
                   onChange={(wert) => setzeZahl("juniorFixedRateYears", wert)}
                   tooltip="Sollzinsbindung des Nachrangdarlehens laut Angebot."
-                  hint={angebot.nachrangZinsbindung > 0 ? `Restschuld nach ${angebot.nachrangZinsbindung} Jahren: ${formatEuro(angebot.restNachrang)}` : undefined}
+                  hint={angebot.nachrangZinsbindung > 0 ? `Restschuld nach ${angebot.nachrangZinsbindung} Jahren: ${formatEuroCent(angebot.restNachrang)}` : undefined}
                 />
               </>
             )}
@@ -1371,7 +1371,7 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
             <span>
               <small>Restschuld nach {angebot.zinsbindung} J.</small>
               <strong data-testid="restschuld-angebot">
-                {formatEuro(angebot.restBank + (angebot.nachrangZinsbindung === angebot.zinsbindung ? angebot.restNachrang : 0))}
+                {formatEuroCent(angebot.restBank + (angebot.nachrangZinsbindung === angebot.zinsbindung ? angebot.restNachrang : 0))}
               </strong>
             </span>
           )}
