@@ -257,7 +257,9 @@ export function rechneEinheit(e: VergleichEinheit, a: VergleichAnnahmen): Einhei
   const darlehen = art === "angebot" ? ((a.darlehenBetrag ?? 0) > 0 ? a.darlehenBetrag! : kp) : art === "darlehen" ? kp + nk : kp;
   const nrBetrag = art === "angebot" ? Math.max(0, a.nachrangBetrag ?? 0) : art === "nachrang" ? nk : 0;
   // Beim Bankangebot ist Eigenkapital, was Kaufpreis und Nebenkosten nach beiden Darlehen offen lassen.
-  const ek = art === "angebot" ? Math.max(0, kp + nk - darlehen - nrBetrag) : art === "ek" ? nk : 0;
+  // Unter 1 € ist Rundung des Angebots (Nebenkosten 12.282,50 €, Darlehen auf volle Euro), kein Eigenkapital.
+  const rest = kp + nk - darlehen - nrBetrag;
+  const ek = art === "angebot" ? (rest < 1 ? 0 : rest) : art === "ek" ? nk : 0;
   const nrAnnuitaet = nrBetrag * (a.nachrangZins + a.nachrangTilgung);
   let nrRest = nrBetrag;
   const annuitaet = darlehen * (a.zins + a.tilgung);

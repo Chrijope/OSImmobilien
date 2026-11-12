@@ -25,8 +25,8 @@ describe("Finanzierung laut Bankangebot", () => {
     expect(e.monat.nzins + e.monat.ntilg).toBeCloseTo(216.97, 2);
     expect(e.monat.ausgaben).toBeCloseTo(962.36, 2);
     expect(-e.monat.vor).toBeCloseTo(361.97, 2);
-    // Kaufpreis 144.500 + Nebenkosten 12.282,50 − 156.782 Darlehen
-    expect(e.ek).toBeCloseTo(0.5, 2);
+    // Kaufpreis 144.500 + Nebenkosten 12.282,50 − 156.782 Darlehen: 0,50 € Rundung, kein Eigenkapital
+    expect(e.ek).toBe(0);
   });
 
   it("ohne Angebot bleibt es bei 100 % des Kaufpreises und Nebenkosten aus Eigenkapital", () => {
