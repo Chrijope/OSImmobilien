@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { berechneInvestment, standardEingabe, type InvestmentEingabe } from "./rechenkern";
 import { berechnungAusRechner } from "./ausfuehrlicheBerechnung";
-import { NACHRANG_STUFEN, nachrangFall, r2, type EinheitErgebnis } from "./kundenObjektvergleich";
+import { NACHRANG_STUFEN, nachrangFall, r2, rechneEinheit, type EinheitErgebnis } from "./kundenObjektvergleich";
 import we12we13 from "./__fixtures__/einhauser-we12-we13.json";
 import we08we13 from "./__fixtures__/einhauser-we08-we13.json";
 
@@ -57,8 +57,15 @@ function rechne(a: [Wohnung, string], b: [Wohnung, string]) {
     const input = eingabe(w, nr);
     return { input, result: berechneInvestment(input) };
   });
-  return berechnungAusRechner(objekte);
+  return alsVorlage(berechnungAusRechner(objekte));
 }
+
+/** Wie die Einhauser-Vorlage: jährlich verrechnet (der Kalkulator rechnet seit dem 12.11.2026 monatlich). */
+function alsVorlage(r: ReturnType<typeof berechnungAusRechner>) {
+  const annahmen = { ...r.v.annahmen, verrechnung: "jaehrlich" as const };
+  return { ...r, v: { ...r.v, annahmen }, A: rechneEinheit(r.A.einheit, annahmen), B: r.B ? rechneEinheit(r.B.einheit, annahmen) : null };
+}
+
 
 function pruefe(x: EinheitErgebnis, ref: Referenz) {
   expect(x.kp).toBe(ref.kaufpreis);

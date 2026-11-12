@@ -1375,8 +1375,8 @@ function Nachrang({ k, nr }: { k: Kontext; nr: number }) {
       </p>
       {k.liste.map((e, i) => <NachrangTabelle key={i} k={k} e={e} b={i > 0} />)}
       <p className="small" style={{ marginTop: "3mm" }}>
-        {t(`Zahlen für den Monat im 1. Jahr, Steuersatz ${steuerWie(an, k.f)} wie in der übrigen Rechnung. Nachrangdarlehen als Annuität mit ${nz} Zins und ${nt} anfänglicher Tilgung, jährlich verrechnet; danach entfällt die Rate. Die Zinsen über die Laufzeit sind nach Steuer angegeben (Zinsen × ${de((1 - k.A.satzWirksam) * 100, 0)} %). Konditionen beispielhaft, das Angebot des Darlehensgebers steht aus. Keine Steuer- oder Finanzierungsberatung.`,
-          `Figures per month in year 1, tax rate ${steuerWie(an, k.f)} as in the rest of the calculation. Junior loan as an annuity with ${nz} interest and ${nt} initial repayment, settled annually; the instalment ends afterwards. Interest over the term is shown after tax (interest × ${de((1 - k.A.satzWirksam) * 100, 0)}%). Terms are examples; the lender's offer is pending. No tax or financing advice.`)}
+        {t(`Zahlen für den Monat im 1. Jahr, Steuersatz ${steuerWie(an, k.f)} wie in der übrigen Rechnung. Nachrangdarlehen als Annuität mit ${nz} Zins und ${nt} anfänglicher Tilgung, monatlich verrechnet wie bei der Bank; danach entfällt die Rate. Die Zinsen über die Laufzeit sind nach Steuer angegeben (Zinsen × ${de((1 - k.A.satzWirksam) * 100, 0)} %). Konditionen beispielhaft, das Angebot des Darlehensgebers steht aus. Keine Steuer- oder Finanzierungsberatung.`,
+          `Figures per month in year 1, tax rate ${steuerWie(an, k.f)} as in the rest of the calculation. Junior loan as an annuity with ${nz} interest and ${nt} initial repayment, settled monthly as with the bank; the instalment ends afterwards. Interest over the term is shown after tax (interest × ${de((1 - k.A.satzWirksam) * 100, 0)}%). Terms are examples; the lender's offer is pending. No tax or financing advice.`)}
       </p>
     </Seite>
   );
@@ -1428,8 +1428,8 @@ function AngebotVergleich({ k, nr }: { k: Kontext; nr: number }) {
       </p>
       {k.liste.map((e, i) => <AngebotTabelle key={i} k={k} e={e} b={i > 0} />)}
       <p className="small" style={{ marginTop: "3mm" }}>
-        Zahlen für den Monat im 1. Jahr, Steuersatz {steuerWie(an, k.f)} wie in der übrigen Rechnung. Darlehen als Annuität, jährlich
-        verrechnet; die Bank verrechnet monatlich, die Restschuld weicht deshalb leicht ab. Keine Steuer- oder Finanzierungsberatung.
+        Zahlen für den Monat im 1. Jahr, Steuersatz {steuerWie(an, k.f)} wie in der übrigen Rechnung. Darlehen als Annuität, monatlich
+        verrechnet wie bei der Bank; Rate und Restschuld entsprechen dem Angebot. Keine Steuer- oder Finanzierungsberatung.
       </p>
     </Seite>
   );

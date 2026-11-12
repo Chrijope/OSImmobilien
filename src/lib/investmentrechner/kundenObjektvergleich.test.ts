@@ -3,6 +3,8 @@ import {
   NACHRANG_STUFEN, STANDARD_ANNAHMEN, empfohlen, kriterien, nachrangFall, r2, rechneEinheit, vergleichDateiname,
   type KundenObjektvergleich, type VergleichEinheit,
 } from "./kundenObjektvergleich";
+// Die Vorlagen vom Oktober 2026 sind jährlich verrechnet; der Kalkulator rechnet seit dem 12.11.2026 monatlich.
+const VORLAGE = { ...STANDARD_ANNAHMEN, verrechnung: "jaehrlich" as const };
 import basis from "./__fixtures__/objektvergleich-basis.json";
 import garage2 from "./__fixtures__/objektvergleich-garage2.json";
 import preis350 from "./__fixtures__/objektvergleich-preis350.json";
@@ -27,7 +29,7 @@ const we13 = (kp: number, garagen = 1): VergleichEinheit => ({
 type Referenz = typeof basis.WE12;
 
 function pruefe(e: VergleichEinheit, ref: Referenz) {
-  const x = rechneEinheit(e, STANDARD_ANNAHMEN);
+  const x = rechneEinheit(e, VORLAGE);
   expect(x.kp).toBe(ref.kaufpreis);
   expect(x.nk).toBeCloseTo(ref.knk, 6);
   expect(x.afaBasis).toBeCloseTo(ref.afa_basis, 6);
@@ -81,8 +83,8 @@ describe("r2", () => {
 
 describe("Kriterien und Empfehlung", () => {
   it("entsprechen der Einschätzung in der Vorlage", () => {
-    const A = rechneEinheit(we12(220000), STANDARD_ANNAHMEN);
-    const B = rechneEinheit(we13(270000), STANDARD_ANNAHMEN);
+    const A = rechneEinheit(we12(220000), VORLAGE);
+    const B = rechneEinheit(we13(270000), VORLAGE);
     expect(kriterien(A, B).map((k) => k.gewinner)).toEqual(["A", "A", "B", "B", "B", "B", "B", "="]);
     expect(empfohlen(A, B)).toBe("B");
   });
@@ -105,13 +107,13 @@ describe("häuserübergreifend", () => {
     expect(vergleichDateiname(v, "28.10.2026")).toBe("Objektvergleich Muster Hauffstraße WE 12 und Barfusstraße WE 7 (28.10.2026).pdf");
   });
   it("lässt das Kriterium „gleiches Haus“ weg", () => {
-    const A = rechneEinheit(we12(220000), STANDARD_ANNAHMEN);
-    const B = rechneEinheit(we13(270000), STANDARD_ANNAHMEN);
+    const A = rechneEinheit(we12(220000), VORLAGE);
+    const B = rechneEinheit(we13(270000), VORLAGE);
     expect(kriterien(A, B, false).some((k) => k.gewinner === "=" && k.text.startsWith("Lage"))).toBe(false);
   });
   it("rechnet mit der Zielmiete der Wohnung, wenn sie eine hat", () => {
-    const mitZiel = rechneEinheit({ ...we12(220000), mieteZielQm: 25 }, STANDARD_ANNAHMEN);
-    const ohne = rechneEinheit(we12(220000), STANDARD_ANNAHMEN);
+    const mitZiel = rechneEinheit({ ...we12(220000), mieteZielQm: 25 }, VORLAGE);
+    const ohne = rechneEinheit(we12(220000), VORLAGE);
     expect(mitZiel.monat).toEqual(ohne.monat);
     expect(mitZiel.miete30).toBeGreaterThan(ohne.miete30);
   });
@@ -119,7 +121,7 @@ describe("häuserübergreifend", () => {
 
 describe("Kaufnebenkosten über Nachrang", () => {
   // Einhauser-Fassung vom 28.10.2026 mit Nachrangseite: 5 % Zins, 1 % Tilgung, 3,2 % AfA (31,25 Jahre).
-  const an = { ...STANDARD_ANNAHMEN, zins: 0.05, tilgung: 0.01 };
+  const an = { ...VORLAGE, zins: 0.05, tilgung: 0.01 };
   it("trifft die Zuzahlung nach Steuer der Vorlage", () => {
     const x = rechneEinheit({ ...we12(209000), afaJahre: 31.25 }, an);
     expect(NACHRANG_STUFEN.map((a) => r2(-nachrangFall(x, a, an).nach))).toEqual([137.71, 234.78]);

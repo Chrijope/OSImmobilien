@@ -20,7 +20,7 @@ const WE20: VergleichEinheit = {
   u: 80.84, n: 52.5, r: 28.1, afaJahre: 18, mieteZielQm: 20,
 };
 const einzel = (extra: Partial<VergleichAnnahmen> = {}) =>
-  genau(59340, true, { zins: 0.045, tilgung: 0.015, gebaeudeanteil: 0.93, kappung: 0.15, ...extra });
+  genau(59340, true, { zins: 0.045, tilgung: 0.015, gebaeudeanteil: 0.93, kappung: 0.15, verrechnung: "jaehrlich", ...extra });
 
 describe("Differenzmethode", () => {
   it("Ersparnis ist ESt ohne minus ESt mit dem Ergebnis, ein Gewinn kostet Steuer", () => {

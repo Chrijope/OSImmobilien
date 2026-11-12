@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { berechneInvestment, grenzsteuersatz, standardEingabe, type InvestmentEingabe } from "./rechenkern";
 import { berechnungAusRechner, steuerAus } from "./ausfuehrlicheBerechnung";
 import { ohneAusgeblendeteFelder } from "./ausgeblendeteFelder";
-import { r2 } from "./kundenObjektvergleich";
+import { r2, rechneEinheit } from "./kundenObjektvergleich";
 import we08we13 from "./__fixtures__/einhauser-we08-we13.json";
 
 /*
@@ -36,8 +36,15 @@ function we13(extra: Partial<InvestmentEingabe> = {}): InvestmentEingabe {
 
 function rechne(input: InvestmentEingabe) {
   const wirksam = ohneAusgeblendeteFelder(input);
-  return berechnungAusRechner([{ input: wirksam, result: berechneInvestment(wirksam) }]);
+  return alsVorlage(berechnungAusRechner([{ input: wirksam, result: berechneInvestment(wirksam) }]));
 }
+
+/** Wie die Einhauser-Vorlage: jährlich verrechnet (der Kalkulator rechnet seit dem 12.11.2026 monatlich). */
+function alsVorlage(r: ReturnType<typeof berechnungAusRechner>) {
+  const annahmen = { ...r.v.annahmen, verrechnung: "jaehrlich" as const };
+  return { ...r, v: { ...r.v, annahmen }, A: rechneEinheit(r.A.einheit, annahmen), B: r.B ? rechneEinheit(r.B.einheit, annahmen) : null };
+}
+
 
 const MANUELL_42: Partial<InvestmentEingabe> = { taxCalculationMode: "manual", marginalTaxRate: 42 };
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { STANDARD_ANNAHMEN, finanzierungsart, rechneEinheit, type VergleichEinheit } from "./kundenObjektvergleich";
+import { STANDARD_ANNAHMEN, finanzierungsart, jahrMonatlich, r2, rechneEinheit, type VergleichEinheit } from "./kundenObjektvergleich";
 
 /*
  * Darlehen laut Finanzierungsangebot (12.11.2026): Brück, Marktstraße 6, WE 1,
@@ -49,5 +49,24 @@ describe("Finanzierung laut Bankangebot", () => {
     const e = rechneEinheit(einheit, { ...annahmen, nachrangBetrag: 12282.5 });
     expect(e.darlehen).toBe(144500);
     expect(e.ek).toBeCloseTo(0, 2);
+  });
+});
+
+describe("Restschuld wie die Bank (monatlich verrechnet)", () => {
+  const restNach = (betrag: number, zins: number, tilgung: number, jahre: number) => {
+    const rate = r2((betrag * (zins + tilgung)) / 12);
+    let rest = betrag;
+    for (let j = 0; j < jahre; j++) rest = jahrMonatlich(rest, rate, zins).rest;
+    return { rate, rest: r2(rest) };
+  };
+  it("trifft die Angebote vom 11. und 12.11.2026 auf den Cent", () => {
+    expect(restNach(130050, 0.0466, 0.015, 10)).toEqual({ rate: 667.59, rest: 105260.9 });
+    expect(restNach(26732, 0.0759, 0.0215, 5)).toEqual({ rate: 216.97, rest: 23250.53 });
+    expect(restNach(265500, 0.043, 0.015, 10)).toEqual({ rate: 1283.25, rest: 215850.62 });
+  });
+  it("rechneEinheit: Restschuld nach 10 Jahren wie im Angebot", () => {
+    const e = rechneEinheit({ ...einheit, kpWohnung: 295320 }, { ...annahmen, zins: 0.043, tilgung: 0.015, darlehenBetrag: 265500 });
+    expect(e.monat.zins + e.monat.tilgung).toBeCloseTo(1283.25, 2);
+    expect(r2(e.entw[10].rest)).toBe(215850.62);
   });
 });

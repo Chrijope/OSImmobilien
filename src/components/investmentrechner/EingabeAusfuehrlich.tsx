@@ -62,7 +62,7 @@ export function EingabeAusfuehrlich({ input, aendere, vorgaben, nummer }: Props)
       </div>
       <p className="field-hint" style={{ marginBottom: 12 }}>
         Kaufpreis, Fläche, Miete, Hausgeld, Zins und Tilgung, AfA, Gebäudeanteil, Kaufnebenkosten, Wert- und Kostensteigerung und der Steuersatz kommen aus den
-        übrigen Bereichen. Gerechnet wird jährlich, der Kaufpreis voll finanziert, die Kaufnebenkosten aus Eigenkapital.
+        übrigen Bereichen. Darlehen werden monatlich verrechnet wie bei der Bank; ohne Bankangebot ist der Kaufpreis voll finanziert und die Kaufnebenkosten kommen aus Eigenkapital.
       </p>
 
       <div className="subheading">Wohnung</div>

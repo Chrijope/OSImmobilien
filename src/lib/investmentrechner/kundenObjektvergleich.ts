@@ -64,6 +64,11 @@ export interface VergleichAnnahmen {
    */
   darlehenBetrag?: number;
   nachrangBetrag?: number;
+  /**
+   * Verrechnung der Darlehen: monatlich wie die Bank (Standard seit 12.11.2026) oder jährlich wie die
+   * Einhauser-Vorlagen vom Oktober 2026. Jährlich nur, um diese Vorlagen in Tests nachzurechnen.
+   */
+  verrechnung?: "monatlich" | "jaehrlich";
 }
 
 export type Finanzierungsart = "ek" | "nachrang" | "darlehen" | "angebot";
@@ -247,6 +252,29 @@ export function guenstigerpruefung(kinder: number, a: VergleichAnnahmen): { kind
   return { kindergeld, freibetragErsparnis, kindergeldBesser: kindergeld >= freibetragErsparnis };
 }
 
+/** Ein Jahr mit einer Jahresrate (Einhauser-Vorlagen): Zins auf die Restschuld zu Jahresbeginn. */
+function jahrJaehrlich(rest: number, jahresrate: number, zinssatz: number): { zins: number; tilgung: number; rest: number } {
+  const zins = rest * zinssatz;
+  const tilgung = Math.min(Math.max(0, jahresrate - zins), rest);
+  return { zins, tilgung, rest: rest - tilgung };
+}
+
+/**
+ * Zwölf Monatsraten eines Annuitätendarlehens wie bei der Bank: Zins jeden Monat
+ * auf die Restschuld, auf den Cent gerundet; der Rest der Rate tilgt. So stimmen
+ * Rate und Restschuld mit dem Finanzierungsangebot überein (Baufi24-Angebote vom
+ * 11. und 12.11.2026 auf den Cent). Ist das Darlehen getilgt, endet die Rate.
+ */
+export function jahrMonatlich(rest: number, rate: number, zinssatz: number): { zins: number; tilgung: number; rest: number } {
+  let zins = 0, tilgung = 0;
+  for (let m = 0; m < 12 && rest > 0.004; m++) {
+    const z = r2((rest * zinssatz) / 12);
+    const t = Math.min(Math.max(0, rate - z), rest);
+    zins += z; tilgung += t; rest = r2(rest - t);
+  }
+  return { zins, tilgung, rest };
+}
+
 export function rechneEinheit(e: VergleichEinheit, a: VergleichAnnahmen): EinheitErgebnis {
   const kp = e.kpWohnung + e.garageKp;
   const mieteSub = r2(e.mieteSubQm * e.qm);
@@ -260,9 +288,13 @@ export function rechneEinheit(e: VergleichEinheit, a: VergleichAnnahmen): Einhei
   // Unter 1 € ist Rundung des Angebots (Nebenkosten 12.282,50 €, Darlehen auf volle Euro), kein Eigenkapital.
   const offen = kp + nk - darlehen - nrBetrag;
   const ek = art === "angebot" ? (offen < 1 ? 0 : offen) : art === "ek" ? nk : 0;
-  const nrAnnuitaet = nrBetrag * (a.nachrangZins + a.nachrangTilgung);
+  // Monatsraten wie die Bank: Rate auf den Cent, Zins jeden Monat auf den Cent (seit 12.11.2026, vorher jährlich).
+  const jaehrlich = a.verrechnung === "jaehrlich";
+  const nrRate = r2((nrBetrag * (a.nachrangZins + a.nachrangTilgung)) / 12);
   let nrRest = nrBetrag;
-  const annuitaet = darlehen * (a.zins + a.tilgung);
+  const rate = r2((darlehen * (a.zins + a.tilgung)) / 12);
+  const jahresRaten = (r: number, betrag: number, z: number, t: number, monatsrate: number) =>
+    jaehrlich ? jahrJaehrlich(r, betrag * (z + t), z) : jahrMonatlich(r, monatsrate, z);
   const afaBasis = kpOhneMoebel * (1 + a.knk) * a.gebaeudeanteil;
   const afaJahr = afaBasis * (1 / e.afaJahre);
   const m0 = mieteSub / e.qm;
@@ -276,12 +308,12 @@ export function rechneEinheit(e: VergleichEinheit, a: VergleichAnnahmen): Einhei
     const mieteQm = linear(m0, e.mieteZielQm || a.mieteZielQm, j - 1, a);
     const garage = garage1 ? linear(garage1, garageZiel, j - 1, a) : 0;
     const miete = (mieteQm * e.qm + garage) * 12;
-    const zins = rest * a.zins;
-    const tilgung = Math.min(annuitaet - zins, rest);
-    rest -= tilgung;
-    const nz = nrRest * a.nachrangZins;
-    const nt = Math.min(Math.max(0, nrAnnuitaet - nz), nrRest);
-    nrRest -= nt;
+    const bank = jahresRaten(rest, darlehen, a.zins, a.tilgung, rate);
+    const zins = bank.zins, tilgung = bank.tilgung;
+    rest = bank.rest;
+    const nachrang = jahresRaten(nrRest, nrBetrag, a.nachrangZins, a.nachrangTilgung, nrRate);
+    const nz = nachrang.zins, nt = nachrang.tilgung;
+    nrRest = nachrang.rest;
     // AfA endet nach der Restnutzungsdauer, bei 31,25 Jahren (3,2 %) mit einem Viertel im 32. Jahr.
     const afa = afaJahr * Math.min(1, Math.max(0, e.afaJahre - (j - 1)));
     const steuereffekt = steuerErsparnis(miete - zins - nz - afa - kosten, a);
@@ -291,7 +323,12 @@ export function rechneEinheit(e: VergleichEinheit, a: VergleichAnnahmen): Einhei
     ruecklage *= 1 + a.kostenPa;
   }
   const j1 = J[0];
-  const m = { miete: mieteSub, garage: garage1, zins: j1.zins / 12, tilgung: j1.tilgung / 12, nzins: j1.nz / 12, ntilg: j1.nt / 12, n: e.n, r: e.r, einnahmen: 0, ausgaben: 0, vor: 0, ersparnis: 0, nach: 0 };
+  // Monatsblock: die erste Rate, aufgeteilt in Zins und Tilgung wie im Tilgungsplan der Bank. Steuer und Entwicklung
+  // rechnen mit den Summen der zwölf Monatsraten (J).
+  const z1 = Math.min(rate, r2((darlehen * a.zins) / 12)), nz1 = Math.min(nrRate, r2((nrBetrag * a.nachrangZins) / 12));
+  const m = jaehrlich
+    ? { miete: mieteSub, garage: garage1, zins: j1.zins / 12, tilgung: j1.tilgung / 12, nzins: j1.nz / 12, ntilg: j1.nt / 12, n: e.n, r: e.r, einnahmen: 0, ausgaben: 0, vor: 0, ersparnis: 0, nach: 0 }
+    : { miete: mieteSub, garage: garage1, zins: z1, tilgung: darlehen > 0 ? rate - z1 : 0, nzins: nz1, ntilg: nrBetrag > 0 ? nrRate - nz1 : 0, n: e.n, r: e.r, einnahmen: 0, ausgaben: 0, vor: 0, ersparnis: 0, nach: 0 };
   m.einnahmen = m.miete + m.garage;
   m.ausgaben = m.zins + m.tilgung + m.nzins + m.ntilg + m.n + m.r;
   m.vor = m.einnahmen - m.ausgaben;
@@ -357,17 +394,33 @@ export const NACHRANG_STUFEN = [0, 1] as const;
 /** Monat 1, wenn `anteil` der Kaufnebenkosten über ein Nachrangdarlehen läuft; dessen Zinsen sind absetzbar. */
 export function nachrangFall(e: EinheitErgebnis, anteil: number, a: VergleichAnnahmen): NachrangFall {
   const nr = Math.round(e.nk * anteil);
+  if (a.verrechnung === "jaehrlich") return nachrangFallJaehrlich(e, nr, a);
+  // Monatlich verrechnet wie der Bankkredit (seit 12.11.2026).
+  const rate = r2((nr * (a.nachrangZins + a.nachrangTilgung)) / 12);
+  const jahr1 = jahrMonatlich(nr, rate, a.nachrangZins);
+  const ergebnis = e.jahr.ergebnis - r2(jahr1.zins);
+  const ersparnis = steuerErsparnis(ergebnis, a) / 12;
+  const vor = e.monat.vor - rate;
+  // Laufzeit und Zinsen über die ganze Laufzeit.
+  let rest = nr, jahre = 0, zinsen = 0;
+  while (rest > 0.005 && jahre < 60) {
+    const j = jahrMonatlich(rest, rate, a.nachrangZins);
+    zinsen += j.zins; rest = j.rest;
+    jahre++;
+  }
+  return { nr, ek: e.nk - nr, bank: e.monat.zins + e.monat.tilgung, rate, vor, ersparnis, nach: vor + ersparnis, jahre, zinsenNetto: zinsen * (1 - e.satzWirksam) };
+}
+
+/** Nachrangseite wie in den Einhauser-Vorlagen: jährlich verrechnet. */
+function nachrangFallJaehrlich(e: EinheitErgebnis, nr: number, a: VergleichAnnahmen): NachrangFall {
   const nz = (nr * a.nachrangZins) / 12, nt = (nr * a.nachrangTilgung) / 12;
   const ergebnis = e.jahr.ergebnis - r2(nr * a.nachrangZins);
   const ersparnis = steuerErsparnis(ergebnis, a) / 12;
   const vor = e.monat.vor - nz - nt;
-  // Laufzeit und Zinsen, jährlich verrechnet wie der Bankkredit.
   let rest = nr, jahre = 0, zinsen = 0;
   while (rest > 0.005 && jahre < 60) {
-    const z = rest * a.nachrangZins;
-    zinsen += z;
-    rest -= Math.min(nr * (a.nachrangZins + a.nachrangTilgung) - z, rest);
-    jahre++;
+    const j = jahrJaehrlich(rest, nr * (a.nachrangZins + a.nachrangTilgung), a.nachrangZins);
+    zinsen += j.zins; rest = j.rest; jahre++;
   }
   return { nr, ek: e.nk - nr, bank: e.monat.zins + e.monat.tilgung, rate: nz + nt, vor, ersparnis, nach: vor + ersparnis, jahre, zinsenNetto: zinsen * (1 - e.satzWirksam) };
 }
