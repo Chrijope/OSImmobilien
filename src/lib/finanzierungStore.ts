@@ -9,7 +9,8 @@
  * Am Investment und nicht am Kunden zu haengen ist nicht kosmetisch: Ein Kunde
  * mit zwei Investments haette sonst fuer beide dieselben Bankangebote.
  */
-import { cacheGet, cacheInsert, cacheUpdate, cacheFilter } from "./dataCache";
+import { aktiveCacheRolle, cacheGet, cacheInsert, cacheSet, cacheUpdate, cacheFilter } from "./dataCache";
+import { supabase } from "@/integrations/supabase/client";
 import { isTestAccount, localGet, localSet } from "./dbStoreHelper";
 
 export type FinanzDocStatus = "none" | "uploaded" | "signed";
@@ -20,6 +21,8 @@ export interface FinanzierungsAngebot {
   laufzeit: string; anmerkungen: string; dokumente: FinanzDokument[];
   gesendet: boolean; akzeptiert: boolean; bankFinal: boolean;
   tranchen?: MischzinsTranche[];
+  /** Aus dem Zuschlag dieses Finanzierers. Er sieht nur Angebote mit seiner Kennung. */
+  finanziererId?: string;
 }
 /**
  * Der Zustand einer Finanzierung ergibt sich aus den Dokumenten, nicht aus
@@ -78,6 +81,19 @@ function dbGet(investmentId: string): FinanzierungData {
 
 function dbSave(investmentId: string, data: FinanzierungData) {
   const existing = cacheGet("finanzierungen").find((r: any) => r.kunde_id === investmentId);
+  /*
+   * Der Finanzierer sieht nur seine eigenen Angebote und darf die Zeile nicht
+   * direkt schreiben, sonst gingen die fremden verloren. Die Datenbank
+   * uebernimmt nur Aenderungen an seinen eigenen (Migration 20261030120000).
+   */
+  if (aktiveCacheRolle() === "finanzierungspartner") {
+    if (!existing) return;
+    cacheSet("finanzierungen", cacheGet("finanzierungen").map((r: any) => (r.id === existing.id ? { ...r, angebote: data.angebote } : r)));
+    void (supabase as unknown as { rpc: (f: string, a: unknown) => PromiseLike<{ error: { message?: string } | null }> })
+      .rpc("finanzierer_angebote_speichern", { _investment_id: investmentId, _angebote: data.angebote })
+      .then(({ error }) => { if (error) console.error("[Finanzierung] Speichern als Finanzierer fehlgeschlagen", error.message); });
+    return;
+  }
   const row = { kunde_id: investmentId, angebote: data.angebote, aktualisiert_am: new Date().toISOString() };
   if (existing) { cacheUpdate("finanzierungen", existing.id, row); }
   else { cacheInsert("finanzierungen", { id: crypto.randomUUID(), ...row, erstellt_am: new Date().toISOString() }); }
