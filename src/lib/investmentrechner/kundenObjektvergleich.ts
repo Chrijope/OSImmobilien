@@ -72,6 +72,8 @@ export interface VergleichAnnahmen {
   /** Zinsbindung in Jahren laut Angebot: Bankdarlehen und Nachrangdarlehen, für die Restschuld zu ihrem Ende. */
   zinsbindungJahre?: number;
   nachrangZinsbindungJahre?: number;
+  /** Zweites Finanzierungsangebot zum Vergleich auf der Angebotsseite (13.11.2026): überschreibt Darlehen, Zins und Tilgung. */
+  vergleichsangebot?: Pick<VergleichAnnahmen, "zins" | "tilgung" | "nachrangZins" | "nachrangTilgung" | "darlehenBetrag" | "nachrangBetrag" | "zinsbindungJahre" | "nachrangZinsbindungJahre">;
 }
 
 export type Finanzierungsart = "ek" | "nachrang" | "darlehen" | "angebot";

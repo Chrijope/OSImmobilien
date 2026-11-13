@@ -43,6 +43,15 @@ export interface AusfuehrlichAngaben {
   bankBetrag: number;
   /** Nachrangdarlehen laut Finanzierungsangebot in €; 0 = keins. Zins und Tilgung: `nachrangZins`, `nachrangTilgung`. */
   nachrangBetrag: number;
+  /** Vergleichsangebot (13.11.2026): Beträge in €, Zins und Tilgung als Anteil (0,0466), Zinsbindung in Jahren; 0 = keins bzw. wie Angebot 1. */
+  vaBankBetrag: number;
+  vaZins: number;
+  vaTilgung: number;
+  vaZinsbindung: number;
+  vaNachrangBetrag: number;
+  vaNachrangZins: number;
+  vaNachrangTilgung: number;
+  vaNachrangZinsbindung: number;
   verwaltung: string;
   vergleichsmieteQm: number;
   vergleichsmieteQuelle: string;
@@ -129,6 +138,14 @@ export function wirksameAngaben(input: InvestmentEingabe, vorgaben: Partial<Ausf
     nachrangTilgung: positiv(w("nachrangTilgung")) || STANDARD_ANNAHMEN.nachrangTilgung,
     bankBetrag: positiv(w("bankBetrag")),
     nachrangBetrag: positiv(w("nachrangBetrag")),
+    vaBankBetrag: positiv(w("vaBankBetrag")),
+    vaZins: positiv(w("vaZins")),
+    vaTilgung: positiv(w("vaTilgung")),
+    vaZinsbindung: positiv(w("vaZinsbindung")),
+    vaNachrangBetrag: positiv(w("vaNachrangBetrag")),
+    vaNachrangZins: positiv(w("vaNachrangZins")),
+    vaNachrangTilgung: positiv(w("vaNachrangTilgung")),
+    vaNachrangZinsbindung: positiv(w("vaNachrangZinsbindung")),
     verwaltung: w("verwaltung") ?? "",
     vergleichsmieteQm: positiv(w("vergleichsmieteQm")),
     vergleichsmieteQuelle: w("vergleichsmieteQuelle") ?? "",
@@ -221,6 +238,21 @@ export function annahmenAusRechner(input: InvestmentEingabe, result: InvestmentE
     zinsbindungJahre: Math.max(0, input.seniorFixedRateYears || 0),
     nachrangZinsbindungJahre: Math.max(0, input.juniorFixedRateYears || 0),
     ...(a.nachrangBetrag > 0 ? { nachrangBetrag: a.nachrangBetrag } : {}),
+    ...(a.vaBankBetrag > 0 || a.vaNachrangBetrag > 0 ? { vergleichsangebot: vergleichsangebotAus(input, a) } : {}),
+  };
+}
+
+/** Vergleichsangebot: leere Sätze gelten wie im ersten Angebot, ein leeres Bankdarlehen wie der Kaufpreis. */
+function vergleichsangebotAus(input: InvestmentEingabe, a: AusfuehrlichAngaben): NonNullable<VergleichAnnahmen["vergleichsangebot"]> {
+  return {
+    darlehenBetrag: a.vaBankBetrag || positiv(input.purchasePrice),
+    zins: a.vaZins || Math.max(0, input.seniorInterestRate) / 100,
+    tilgung: a.vaTilgung || Math.max(0, input.seniorRepaymentRate) / 100,
+    zinsbindungJahre: a.vaZinsbindung || Math.max(0, input.seniorFixedRateYears || 0),
+    nachrangBetrag: a.vaNachrangBetrag,
+    nachrangZins: a.vaNachrangZins || a.nachrangZins,
+    nachrangTilgung: a.vaNachrangTilgung || a.nachrangTilgung,
+    nachrangZinsbindungJahre: a.vaNachrangZinsbindung || Math.max(0, input.juniorFixedRateYears || 0),
   };
 }
 

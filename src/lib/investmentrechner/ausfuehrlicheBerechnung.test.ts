@@ -26,4 +26,15 @@ describe("berechnungAusRechner", () => {
     expect(eigen.v.kunde).toMatchObject({ netto: 3500, jahreBisRente: 20, bruttoJahr: 85000 });
     expect(eigen.A.mieteSub).toBe(1224);
   });
+
+  it("Vergleichsangebot (13.11.2026): zweite Finanzierung mit eigenen Sätzen, leere Sätze wie Angebot 1", () => {
+    const e = { ...eingabe, seniorInterestRate: 4.69, seniorRepaymentRate: 1.25, seniorFixedRateYears: 10, juniorFixedRateYears: 5,
+      ausfuehrlich: { bankBetrag: 300000, nachrangBetrag: 32000, vaBankBetrag: 300050, vaZins: 0.0466, vaTilgung: 0.015, vaNachrangBetrag: 60000 } };
+    const { v } = rechne(e);
+    expect(v.annahmen.vergleichsangebot).toEqual({
+      darlehenBetrag: 300050, zins: 0.0466, tilgung: 0.015, zinsbindungJahre: 10,
+      nachrangBetrag: 60000, nachrangZins: v.annahmen.nachrangZins, nachrangTilgung: v.annahmen.nachrangTilgung, nachrangZinsbindungJahre: 5,
+    });
+    expect(rechne(eingabe).v.annahmen.vergleichsangebot).toBeUndefined();
+  });
 });

@@ -74,4 +74,13 @@ describe("Restschuld wie die Bank (monatlich verrechnet)", () => {
     expect(e.restZinsbindung).toEqual({ jahre: 10, bank: 105260.9, nrJahre: 5, nachrang: 23250.53 });
     expect(rechneEinheit(einheit, annahmen).restZinsbindung).toBeNull();
   });
+
+  it("Vergleich der Angebote vom 13. und 12.11.2026: beide 100 % Kaufpreis, Angebot 2 mit Nebenkosten", () => {
+    const a1 = rechneEinheit(einheit, { ...annahmen, zins: 0.0469, tilgung: 0.0125, darlehenBetrag: 130000, nachrangBetrag: 14450, zinsbindungJahre: 10, nachrangZinsbindungJahre: 5 });
+    const a2 = rechneEinheit(einheit, { ...annahmen, darlehenBetrag: 130050, nachrangBetrag: 26732, zinsbindungJahre: 10, nachrangZinsbindungJahre: 5 });
+    expect(a1.monat.zins + a1.monat.tilgung + a1.monat.nzins + a1.monat.ntilg).toBeCloseTo(760.79, 2);
+    expect(a1.restZinsbindung).toEqual({ jahre: 10, bank: 109317.24, nrJahre: 5, nachrang: 12567.63 });
+    expect(a2.monat.zins + a2.monat.tilgung + a2.monat.nzins + a2.monat.ntilg).toBeCloseTo(884.56, 2);
+    expect(a2.ek).toBe(0);
+  });
 });

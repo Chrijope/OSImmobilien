@@ -930,6 +930,45 @@ export function finanzierungLautAngebot(input: InvestmentEingabe, result: Invest
   };
 }
 
+type VaFeld = "vaBankBetrag" | "vaZins" | "vaTilgung" | "vaZinsbindung" | "vaNachrangBetrag" | "vaNachrangZins" | "vaNachrangTilgung" | "vaNachrangZinsbindung";
+
+/**
+ * Zweites Finanzierungsangebot zum Vergleich (Christian, 13.11.2026): steht im PDF auf der
+ * Angebotsseite neben dem ersten, z. B. Nachrang nur bis zum Kaufpreis gegen Nachrang samt
+ * Kaufnebenkosten. Leere Sätze gelten wie im ersten Angebot.
+ */
+function EingabeVergleichsangebot({ ausf, aendere }: { ausf: NonNullable<InvestmentEingabe["ausfuehrlich"]>; aendere: EingabeProps["aendere"] }) {
+  const wert = (k: VaFeld) => positivOderNull(ausf[k]);
+  const setze = (k: VaFeld, w: number) => {
+    const neu = { ...ausf, [k]: w };
+    if (!(w > 0)) delete neu[k];
+    aendere({ ausfuehrlich: neu });
+  };
+  const pz = (k: VaFeld) => Math.round(wert(k) * 100000) / 1000;
+  const aktiv = wert("vaBankBetrag") > 0 || wert("vaNachrangBetrag") > 0;
+  return (
+    <>
+      <div className="subheading">Vergleichsangebot (optional)</div>
+      <div className="field-grid" data-testid="vergleichsangebot">
+        <Zahlenfeld label="Bankdarlehen Angebot 2" placeholder="z. B. 130.050" optional value={wert("vaBankBetrag")} suffix="€" onChange={(w) => setze("vaBankBetrag", w)}
+          tooltip="Zweites Angebot zum Vergleich. Im PDF stehen beide Angebote auf der Seite „Zwei Angebote im Vergleich“, die übrige Rechnung bleibt beim ersten Angebot." />
+        <Zahlenfeld label="Nachrangdarlehen Angebot 2" placeholder="z. B. 26.732" optional value={wert("vaNachrangBetrag")} suffix="€" onChange={(w) => setze("vaNachrangBetrag", w)}
+          tooltip="Nachrangdarlehen des zweiten Angebots, etwa wenn es zusätzlich die Kaufnebenkosten finanziert." />
+        {aktiv && (
+          <>
+            <Zahlenfeld label="Sollzins Bank Angebot 2" placeholder="leer: wie Angebot 1" optional value={pz("vaZins")} suffix="%" onChange={(w) => setze("vaZins", w / 100)} />
+            <Zahlenfeld label="Tilgung Bank Angebot 2" placeholder="leer: wie Angebot 1" optional value={pz("vaTilgung")} suffix="%" onChange={(w) => setze("vaTilgung", w / 100)} />
+            <Zahlenfeld label="Zinsbindung Bank Angebot 2" placeholder="leer: wie Angebot 1" optional value={wert("vaZinsbindung")} suffix="Jahre" step="1" onChange={(w) => setze("vaZinsbindung", w)} />
+            <Zahlenfeld label="Nachrang Sollzins Angebot 2" placeholder="leer: wie Angebot 1" optional value={pz("vaNachrangZins")} suffix="%" onChange={(w) => setze("vaNachrangZins", w / 100)} />
+            <Zahlenfeld label="Nachrang Tilgung Angebot 2" placeholder="leer: wie Angebot 1" optional value={pz("vaNachrangTilgung")} suffix="%" onChange={(w) => setze("vaNachrangTilgung", w / 100)} />
+            <Zahlenfeld label="Nachrang Zinsbindung Angebot 2" placeholder="leer: wie Angebot 1" optional value={wert("vaNachrangZinsbindung")} suffix="Jahre" step="1" onChange={(w) => setze("vaNachrangZinsbindung", w)} />
+          </>
+        )}
+      </div>
+    </>
+  );
+}
+
 export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aendere, herkunft }: EingabeProps) {
   const quelle = quelleFuer(herkunft);
   const kfw = input.kfwEnabled;
@@ -1090,6 +1129,7 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
               </>
             )}
           </div>
+          {angebot && <EingabeVergleichsangebot ausf={ausf} aendere={aendere} />}
         </>
       )}
       {/* Nachrang, zweites Bankdarlehen und KfW wirken in Analyse und PDF nicht; der Nachrang steht dort als 0/100-%-Tabelle (08.11.2026, ohne 50 % seit 09.11.2026). */}
