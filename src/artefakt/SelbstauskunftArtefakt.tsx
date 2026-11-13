@@ -41,6 +41,9 @@ function dateiname(data: SelbstauskunftData): string {
  * Gleicher Rechenkern wie im Kundenprofil (finanzierbarkeitUtils), siehe
  * finanzierungsrahmenPdf.ts.
  */
+/** Fassung ohne Finanzierungsrahmen (Build mit OHNE_FINANZIERUNGSRAHMEN=1, 13.11.2026). */
+const OHNE_RAHMEN = typeof __OHNE_FINANZIERUNGSRAHMEN__ !== "undefined" && __OHNE_FINANZIERUNGSRAHMEN__;
+
 function FinanzierungsrahmenKarte({ data }: { data: SelbstauskunftData }) {
   const { toast } = useToast();
   const [laeuft, setLaeuft] = useState(false);
@@ -189,7 +192,7 @@ export function Abschluss({ data, onNeu }: { data: SelbstauskunftData; onNeu: ()
           </div>
         </div>
       </div>
-      <FinanzierungsrahmenKarte data={data} />
+      {!OHNE_RAHMEN && <FinanzierungsrahmenKarte data={data} />}
     </div>
   );
 }

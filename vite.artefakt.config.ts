@@ -23,6 +23,8 @@ import fs from "fs";
  */
 const wurzel = __dirname;
 const NUR_SELBSTAUSKUNFT = process.env.NUR_SELBSTAUSKUNFT === "1";
+// Zweite Fassung der Selbstauskunft ohne die Karte „Finanzierungsrahmen“ am Ende (Christian, 13.11.2026).
+const OHNE_RAHMEN = process.env.OHNE_FINANZIERUNGSRAHMEN === "1";
 
 /*
  * Dateien aus public/, die zur Laufzeit über feste Pfade geholt werden:
@@ -52,7 +54,7 @@ const LAUFZEIT_DATEIEN = [
 function seitenTitel(): Plugin {
   return {
     name: "artefakt-seitentitel",
-    transformIndexHtml: (html) => (NUR_SELBSTAUSKUNFT ? html.replace(/<title>[^<]*<\/title>/, "<title>OS - Selbstauskunft</title>") : html),
+    transformIndexHtml: (html) => (NUR_SELBSTAUSKUNFT ? html.replace(/<title>[^<]*<\/title>/, `<title>OS - Selbstauskunft${OHNE_RAHMEN ? " ohne Finanzierungsrahmen" : ""}</title>`) : html),
   };
 }
 
@@ -103,6 +105,7 @@ export default defineConfig({
   define: {
     __VERSIONSNOTIZ_NR__: "0",
     __NUR_SELBSTAUSKUNFT__: JSON.stringify(NUR_SELBSTAUSKUNFT),
+    __OHNE_FINANZIERUNGSRAHMEN__: JSON.stringify(OHNE_RAHMEN),
     // PDFs der Artefakte (Selbstauskunft, Zusammenfassung) ohne OS-Logo (Christian, 29.10.2026).
     __OHNE_LOGO__: "true",
   },
@@ -121,7 +124,7 @@ export default defineConfig({
     postcss: path.join(wurzel, "postcss.config.js"),
   },
   build: {
-    outDir: path.join(wurzel, NUR_SELBSTAUSKUNFT ? "dist-artefakt-selbstauskunft" : "dist-artefakt"),
+    outDir: path.join(wurzel, NUR_SELBSTAUSKUNFT ? (OHNE_RAHMEN ? "dist-artefakt-selbstauskunft-ohne-rahmen" : "dist-artefakt-selbstauskunft") : "dist-artefakt"),
     emptyOutDir: true,
     target: "es2020",
     sourcemap: false,
