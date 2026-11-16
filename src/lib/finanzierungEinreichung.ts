@@ -12,6 +12,7 @@
  * Kennzahlen) und die wenigen Datenbankaufrufe.
  */
 import { supabase } from "@/integrations/supabase/client";
+import { finanzierungPfad } from "../../supabase/functions/_shared/finanzierung-partner-benachrichtigen";
 
 export type EinreichungStatus =
   | "eingereicht" | "in_pruefung" | "rueckfrage" | "angebot"
@@ -311,4 +312,30 @@ export async function ladeZugriffe(investmentId: string): Promise<Array<{ user_i
     .eq("investment_id", investmentId).order("am", { ascending: false }).limit(50);
   if (error) throw error;
   return data || [];
+}
+
+/**
+ * Welches Investment ein Finanzierungschat meint. Der Chat gilt je Kunde und
+ * Finanzierer, ein Kunde kann aber mehrere Kaeufe haben: Zuschlag vor
+ * laufender Einreichung vor allem anderen, sonst keins.
+ */
+export function investmentFuerFinanzierer(liste: Pick<Einreichung, "investment_id" | "finanzierer_id" | "status">[], finanziererId?: string): string | undefined {
+  const eigene = finanziererId ? liste.filter((e) => e.finanzierer_id === finanziererId) : liste;
+  return (eigene.find((e) => e.status === "zuschlag") || eigene.find(laeuft) || eigene[0])?.investment_id;
+}
+
+/**
+ * Ruecksprung aus dem Finanzierungschat in den Abschnitt Finanzierung des
+ * Kundenprofils, dort hervorgehoben. Ohne lesbare Einreichung geht es ins
+ * erste Investment.
+ */
+export async function finanzierungsZiel(kontaktId: string, investmentIds: readonly string[], finanziererId?: string): Promise<string> {
+  let investmentId: string | undefined;
+  if (investmentIds.length > 0) {
+    const { data, error } = await db.from("finanzierung_einreichungen")
+      .select("investment_id, finanzierer_id, status").in("investment_id", investmentIds);
+    if (error) console.warn("[Finanzierung] Einreichungen fuer den Ruecksprung nicht lesbar", error);
+    investmentId = investmentFuerFinanzierer(data || [], finanziererId) || investmentIds[0];
+  }
+  return investmentId ? finanzierungPfad(kontaktId, investmentId) : `/kunden/${encodeURIComponent(kontaktId)}?tab=investments#finanzierung`;
 }

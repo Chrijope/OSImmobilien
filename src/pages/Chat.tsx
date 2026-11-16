@@ -17,6 +17,7 @@ import { Search, MoreVertical, Users, VolumeX, Volume2, Archive, ArchiveRestore,
 import { cn } from "@/lib/utils";
 import { getChats, saveChats, updateChat, addMessage, getInitials, markChatAsRead, markChatAsUnread, getUnreadChatCountForChat, verlasseChat, type ChatData, type ChatParticipant } from "@/lib/chatStore";
 import { cacheGet, cacheInsert } from "@/lib/dataCache";
+import { finanzierungsZiel } from "@/lib/finanzierungEinreichung";
 import { useLiveVersion } from "@/hooks/useLiveData";
 import { ChatTeilnehmerLeiste } from "@/components/chat/ChatTeilnehmerLeiste";
 import { einladbareTeilnehmer, ladeTeilnehmerEin } from "@/lib/chatEinladung";
@@ -513,6 +514,13 @@ export default function Chat() {
     navigate(`/kunden/${activeChat.kundeId}`);
   };
 
+  // Finanzierungschat: zurueck ins Investment, Abschnitt Finanzierung hervorgehoben.
+  const zurFinanzierung = async () => {
+    if (!activeChat?.kontaktId) return;
+    const ids = ((cacheGet("investments") || []) as any[]).filter((i) => i.kunde_id === activeChat.kontaktId).map((i) => i.id as string);
+    navigate(await finanzierungsZiel(activeChat.kontaktId, ids, activeChat.finanziererId));
+  };
+
   return (
     <DashboardLayout>
       {/* Die Hoehenklasse bleibt als Rueckfall, die gemessene Hoehe gewinnt. */}
@@ -812,6 +820,11 @@ export default function Chat() {
                           </TooltipTrigger>
                           <TooltipContent>Zum Kundenprofil</TooltipContent>
                         </Tooltip>
+                      )}
+                      {activeChat.kind === "finanzierung" && activeChat.kontaktId && (
+                        <Button size="sm" variant="outline" className="h-6 px-2 text-xs shrink-0" onClick={zurFinanzierung} data-pruefung="chat-zur-finanzierung">
+                          <ExternalLink className="h-3 w-3 mr-1" /> Zur Finanzierung
+                        </Button>
                       )}
                     </div>
                     <p className="text-xs text-muted-foreground truncate">
