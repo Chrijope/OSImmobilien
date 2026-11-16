@@ -48,11 +48,11 @@ export function FinanzierungsanfrageKnopf({ investmentId, kundeName }: { investm
   return (
     <button
       className="text-xs text-primary hover:underline uppercase tracking-wide ml-3 inline-flex items-center gap-1 disabled:opacity-50"
-      title="Finanzierungsanfrage (Baufi24) mit den Angaben aus der Selbstauskunft, ohne Unterschrift"
+      title="Finanzierungsanfrage mit den Angaben aus der Selbstauskunft, ohne Unterschrift"
       disabled={laeuft}
       onClick={laden}
     >
-      📄 {laeuft ? "Wird erstellt …" : "Finanzierungsanfrage (Baufi24)"}
+      📄 {laeuft ? "Wird erstellt …" : "Finanzierungsanfrage"}
     </button>
   );
 }
