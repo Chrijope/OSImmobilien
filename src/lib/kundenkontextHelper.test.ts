@@ -157,6 +157,7 @@ describe("Der belegbare Block", () => {
       verheiratet: false,
       anzahlPersonen: 1,
       liquideMittel: 25_000,
+      kirchensteuer: null,
     });
     // Die zweite Person hängt am Kontakt, nicht an der Selbstauskunft. Der
     // flache Wert zählt sie mit, der belegbare Block nicht.

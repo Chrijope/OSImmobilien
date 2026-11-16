@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatDatum } from "@/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Building2, Eye, ExternalLink, RefreshCw, Maximize2, Minimize2, MapPin, XCircle, FileSignature, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Building2, Calculator, Eye, ExternalLink, RefreshCw, Maximize2, Minimize2, MapPin, XCircle, FileSignature, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { getObjekte } from "@/lib/objekteStore";
 import { einheitImAngebot } from "@/lib/objektKennzahlen";
 import { resolveImageUrl } from "@/lib/objekteImages";
@@ -699,8 +699,22 @@ export function FreieWohnungenCard({
   const darfObjektAendern = darfObjektPflegen && objektVonHand;
   // Die Setterin darf weder das eine noch das andere. Ohne diese Frage bliebe
   // unter ihrer Karte ein leerer Knopfstreifen stehen.
-  const objektAktionen = !darfEinheitWechseln && !darfObjektAendern ? null : (
+  // Kalkulator aus der Objektauswahl (16.11.2026): vorbelegt mit Wohnung und
+  // Selbstauskunft; das Finanzierungsangebot zieht der Vertriebspartner dort
+  // im Schritt Finanzierung selbst hinein.
+  const darfKalkulieren = darfObjektPflegen && zeigtObjekt && hatObjektAngaben;
+  const objektAktionen = !darfEinheitWechseln && !darfObjektAendern && !darfKalkulieren ? null : (
     <div className="flex gap-2 flex-wrap">
+      {darfKalkulieren && (
+        <Button
+          size="sm"
+          variant="brand"
+          className="text-xs h-8"
+          onClick={() => onNavigate(`/investmentrechner?investment=${inv.id}&neu=1`)}
+        >
+          <Calculator className="h-3 w-3 mr-1" /> Kalkulator öffnen
+        </Button>
+      )}
       {darfEinheitWechseln && (
         <Button
           size="sm"

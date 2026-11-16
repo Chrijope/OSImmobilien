@@ -170,6 +170,17 @@ export function kundenUebernahmeAus(
     }
   }
 
+  // Kirchensteuer (16.11.2026): Die Selbstauskunft fragt nur ja oder nein, den Satz kennt sie nicht.
+  if (sa.kirchensteuer === true || sa.kirchensteuer === false) {
+    aenderung.churchTaxRate = sa.kirchensteuer ? 9 : 0;
+    felder.push("churchTaxRate");
+    posten.push({
+      feld: "Kirchensteuersatz",
+      wert: sa.kirchensteuer ? "9 %" : "Keine Kirchensteuer",
+      hinweis: sa.kirchensteuer ? "Kirchensteuerpflichtig laut Selbstauskunft; in Bayern und Baden-Württemberg 8 %, bitte prüfen" : undefined,
+    });
+  }
+
   return { aenderung, felder, posten, hinweis, ohneSelbstauskunft: false };
 }
 

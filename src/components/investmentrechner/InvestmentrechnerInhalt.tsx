@@ -1421,7 +1421,7 @@ export function InvestmentrechnerInhalt({
     ...automatischeUnterlagenwerte(automatischeAntwort, objekte[0].documentData).hinweise,
   ] : quellenStatus.hinweise;
 
-  const eingabeProps = { input, result, setzeZahl, setzeText, aendere, herkunft: aktiv.herkunft };
+  const eingabeProps = { input, result, setzeZahl, setzeText, aendere, uebernimm, herkunft: aktiv.herkunft };
   /*
    * Der Satz über den Bildern, woher sie kommen. Nur beim ersten Objekt, denn
    * nur das ist die Einheit, und nur solange er stimmt: Sind alle Fotos

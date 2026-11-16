@@ -1,5 +1,5 @@
 import { useState, type ChangeEvent, type DragEvent, type ReactNode } from "react";
-import { FileText, ImagePlus, LoaderCircle, Sparkles, Trash2, TriangleAlert, Upload, X } from "lucide-react";
+import { Check, FileText, ImagePlus, Landmark, LoaderCircle, Sparkles, Trash2, TriangleAlert, Upload, X } from "lucide-react";
 import type {
   AfaMethode,
   Bankunterlagenposten,
@@ -14,7 +14,7 @@ import type {
   Tilgungsart,
   ZahlenFeld,
 } from "@/lib/investmentrechner/rechenkern";
-import type { UnterlagenDaten, UnterlagenDokument } from "@/lib/investmentrechner/unterlagenAuslesen";
+import { pdfTextAuslesen, type UnterlagenDaten, type UnterlagenDokument } from "@/lib/investmentrechner/unterlagenAuslesen";
 import {
   BUNDESLAND_AUSWAHL,
   kaufnebenkostenposten,
@@ -22,13 +22,14 @@ import {
 } from "@/lib/investmentrechner/kaufnebenkostenAuswahl";
 import { formatEuro, formatEuroCent, formatProzent } from "@/lib/investmentrechner/formatierer";
 import { unterlagenAuslesbar, type AuslesbaresFeld } from "@/lib/investmentrechner/unterlagenKiFelder";
-import { feldmarkierung, herkunftText, type Herkunft } from "@/lib/investmentrechner/herkunft";
+import { feldmarkierung, herkunftText, type Herkunft, type Herkunftseintrag } from "@/lib/investmentrechner/herkunft";
+import { angebotAlsEingabe, angebotAuslesen, bankName, type Finanzierungsangebot } from "@/lib/investmentrechner/finanzierungsangebot";
 import { OBJEKTTYP_VORSCHLAEGE } from "@/lib/investmentrechner/objekttypVorschlaege";
 import { linearerAfaSatz } from "@/lib/afaSaetze";
 import { steuerAus } from "@/lib/investmentrechner/ausfuehrlicheBerechnung";
 import { STANDARD_ANNAHMEN, jahrMonatlich, r2 } from "@/lib/investmentrechner/kundenObjektvergleich";
 import { UNWIRKSAME_FELDER_ZEIGEN } from "@/lib/investmentrechner/ausgeblendeteFelder";
-import { ausgewiesenerKaufpreis, darlehensbetrag, hausgeldAufstellung, mitStellplatz, RUECKLAGE_JE_QM_MONAT } from "@/lib/investmentrechner/rechenkern";
+import { ausgewiesenerKaufpreis, berechneInvestment, darlehensbetrag, hausgeldAufstellung, mitStellplatz, RUECKLAGE_JE_QM_MONAT } from "@/lib/investmentrechner/rechenkern";
 import { Auswahlfeld, AuswahlOderText, FeldInfo, Feldetikett, Neu, Schalterfeld, Textbereich, Textfeld, Zahlenfeld } from "./Felder";
 import { haushaltMitVorlage, haushaltsrechnung, vermoegenMitVorlage, vermoegensaufstellung } from "@/lib/investmentrechner/bankunterlagen";
 import { hausgeldHinweis, kaufpreisHinweis, Steuerprofil } from "./Auswertungen";
@@ -52,6 +53,8 @@ export interface EingabeProps {
    * sorgen die Setter in der Seite.
    */
   herkunft?: Herkunft;
+  /** Werte aus einer fremden Quelle übernehmen und ihre Herkunft vermerken, etwa aus dem Finanzierungsangebot. */
+  uebernimm?: (aenderung: Partial<InvestmentEingabe>, eintrag: Herkunftseintrag) => void;
 }
 
 /** Der Satz unter einem Feld, oder nichts. In jedem Bereich derselbe Aufruf. */
@@ -969,7 +972,218 @@ function EingabeVergleichsangebot({ ausf, aendere }: { ausf: NonNullable<Investm
   );
 }
 
-export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aendere, herkunft }: EingabeProps) {
+type AngebotStand =
+  | { status: "leer" }
+  | { status: "liest"; datei: string }
+  | { status: "fehler"; datei: string; meldung: string }
+  | { status: "erkannt" | "uebernommen"; datei: string; angebot: Finanzierungsangebot };
+
+/** Abweichung unter einem Euro bzw. 0,01 Prozentpunkten gilt als gleich (Rundung im Angebot). */
+const gleich = (a: number, b: number, toleranz = 1) => Math.abs(a - b) < toleranz;
+
+function gueltigkeitHinweis(gueltigBis: string): string | null {
+  const [tag, monat, jahr] = gueltigBis.split(".").map(Number);
+  if (!tag || !monat || !jahr) return null;
+  const tage = Math.ceil((new Date(jahr, monat - 1, tag, 23, 59).getTime() - Date.now()) / 86_400_000);
+  if (tage < 0) return `Abgelaufen am ${gueltigBis}`;
+  return tage <= 3 ? `Gültig nur noch bis ${gueltigBis}` : null;
+}
+
+/**
+ * Finanzierungsangebot per Drag & Drop (16.11.2026). Der Vertriebspartner
+ * zieht das Angebot hinein, das er dem Kunden vorstellen will. Es wird nur im
+ * Browser gelesen (finanzierungsangebot.ts), angezeigt und erst auf Klick in
+ * Bankdarlehen und „Darlehen laut Angebot“ übernommen. Kaufpreis,
+ * Kaufnebenkosten, Rate und Restschuld werden gegen den Rechner abgeglichen.
+ */
+function AngebotUpload({ input, result, uebernimm }: Pick<EingabeProps, "input" | "result"> & { uebernimm: NonNullable<EingabeProps["uebernimm"]> }) {
+  const [stand, setStand] = useState<AngebotStand>({ status: "leer" });
+  const [ziehen, setZiehen] = useState(false);
+
+  const lesen = async (datei: File | undefined) => {
+    if (!datei) return;
+    if (!(datei.type === "application/pdf" || datei.name.toLowerCase().endsWith(".pdf"))) {
+      setStand({ status: "fehler", datei: datei.name, meldung: "Bitte das Angebot als PDF hineinziehen." });
+      return;
+    }
+    setStand({ status: "liest", datei: datei.name });
+    try {
+      const { seiten } = await pdfTextAuslesen(datei);
+      const angebot = angebotAuslesen(seiten);
+      setStand(
+        angebot
+          ? { status: "erkannt", datei: datei.name, angebot }
+          : {
+              status: "fehler",
+              datei: datei.name,
+              meldung: "In der PDF ist keine Darlehenstabelle zu erkennen. Ist es ein eingescanntes Angebot oder ein anderes Format, bitte die Werte unten von Hand eintragen.",
+            },
+      );
+    } catch (fehler) {
+      console.error("Finanzierungsangebot nicht lesbar:", fehler);
+      setStand({ status: "fehler", datei: datei.name, meldung: "Die PDF ließ sich nicht lesen. Bitte die Werte unten von Hand eintragen." });
+    }
+  };
+
+  const beimAblegen = (event: DragEvent<HTMLLabelElement>) => {
+    event.preventDefault();
+    setZiehen(false);
+    void lesen(event.dataTransfer.files?.[0]);
+  };
+
+  const angebot = stand.status === "erkannt" || stand.status === "uebernommen" ? stand.angebot : null;
+  const bank = angebot?.darlehen.find((d) => !d.nachrang);
+  const nachrang = angebot?.darlehen.find((d) => d.nachrang);
+  // Abgleich mit dem Rechner, so als wäre das Angebot schon übernommen.
+  const probe = angebot ? { ...input, ...angebotAlsEingabe(angebot, input.ausfuehrlich) } : null;
+  const probeFinanzierung = probe ? finanzierungLautAngebot(probe, berechneInvestment(probe)) : null;
+  const knkAngebot = angebot ? angebot.notarGrundbuch + angebot.grunderwerbsteuer : 0;
+  const quelle = angebot ? `Aus dem Finanzierungsangebot${bank ? ` (${bankName(bank)}` : " ("}${angebot.datum ? `, ${angebot.datum})` : ")"}` : "";
+  const gueltig = angebot ? gueltigkeitHinweis(angebot.gueltigBis) : null;
+
+  type Zeile = { label: string; wert: string; text: string; abweichend?: boolean };
+  const zeilen: Zeile[] = [];
+  if (angebot) {
+    if (angebot.kaufpreis > 0) {
+      const ok = gleich(angebot.kaufpreis, input.purchasePrice);
+      zeilen.push({
+        label: "Kaufpreis",
+        wert: formatEuro(angebot.kaufpreis),
+        text: ok ? "Stimmt mit dem Objekt überein." : `Im Rechner ${formatEuro(input.purchasePrice)}. Der Kaufpreis bleibt stehen; mit der Bank klären, welcher gilt.`,
+        abweichend: !ok,
+      });
+    }
+    if (knkAngebot > 0) {
+      const ok = gleich(knkAngebot, result.purchaseCosts, 2);
+      zeilen.push({
+        label: "Kaufnebenkosten",
+        wert: formatEuroCent(knkAngebot),
+        text: ok
+          ? `Notar und Grundbuch ${formatEuroCent(angebot.notarGrundbuch)}, Grunderwerbsteuer ${formatEuroCent(angebot.grunderwerbsteuer)}; stimmt mit dem Rechner überein.`
+          : `Im Rechner ${formatEuroCent(result.purchaseCosts)}. Die Sätze bleiben stehen; bei Bedarf unter Objekt & Kaufpreis anpassen.`,
+        abweichend: !ok,
+      });
+    }
+    for (const d of [bank, nachrang]) {
+      if (!d) continue;
+      zeilen.push({
+        label: `${d.nachrang ? "Nachrangdarlehen" : "Bankdarlehen"} · ${bankName(d)}`,
+        wert: formatEuro(d.betrag),
+        text: `Sollzins ${formatProzent(d.sollzins / 100)}, Tilgung ${d.tilgung > 0 ? formatProzent(d.tilgung / 100) : "nicht genannt"}, Zinsbindung ${d.zinsbindungJahre} ${d.zinsbindungJahre === 1 ? "Jahr" : "Jahre"}, effektiv ${formatProzent(d.effektivzins / 100)}`,
+      });
+    }
+    if (angebot.gesamtrate > 0 && probeFinanzierung) {
+      const ok = gleich(angebot.gesamtrate, probeFinanzierung.rate, 0.05);
+      zeilen.push({
+        label: "Monatsrate",
+        wert: formatEuroCent(angebot.gesamtrate),
+        text: ok ? "Der Rechner kommt auf dieselbe Rate." : `Der Rechner kommt auf ${formatEuroCent(probeFinanzierung.rate)}.`,
+        abweichend: !ok,
+      });
+    }
+    if (bank && bank.restschuld > 0 && probeFinanzierung) {
+      const ok = gleich(bank.restschuld, probeFinanzierung.restBank);
+      zeilen.push({
+        label: `Restschuld nach ${bank.zinsbindungJahre} Jahren`,
+        wert: formatEuroCent(bank.restschuld),
+        text: ok ? "Der Rechner kommt auf dieselbe Restschuld." : `Der Rechner kommt auf ${formatEuroCent(probeFinanzierung.restBank)}.`,
+        abweichend: !ok,
+      });
+    }
+  }
+
+  return (
+    <div className="documents-section unterlagen-upload" data-testid="angebot-upload">
+      <label
+        className={`document-upload ${stand.status === "liest" ? "is-reading" : ""} ${ziehen ? "is-dragging" : ""}`}
+        onDragOver={(event) => {
+          event.preventDefault();
+          setZiehen(true);
+        }}
+        onDragLeave={() => setZiehen(false)}
+        onDrop={beimAblegen}
+      >
+        <input
+          type="file"
+          accept="application/pdf,.pdf"
+          disabled={stand.status === "liest"}
+          onChange={(event: ChangeEvent<HTMLInputElement>) => {
+            void lesen(event.target.files?.[0]);
+            event.target.value = "";
+          }}
+        />
+        {stand.status === "liest" ? <LoaderCircle className="spin" size={26} /> : <Landmark size={26} />}
+        <strong>
+          {stand.status === "liest" ? "Angebot wird gelesen …" : "Finanzierungsangebot hierher ziehen"}
+          <FeldInfo text="Das Angebot der Bank oder des Vermittlers, das du dem Kunden vorstellen willst. Es wird nur in diesem Browser gelesen, nichts wird hochgeladen. Übernommen wird erst auf Klick." />
+        </strong>
+        <span>PDF · oder klicken und auswählen · wird nur im Browser gelesen</span>
+      </label>
+
+      {stand.status === "fehler" && (
+        <p className="knk-hinweis" role="alert">
+          <TriangleAlert size={12} aria-hidden="true" /> {stand.datei}: {stand.meldung}
+        </p>
+      )}
+
+      {angebot && (
+        <section className="ki-uebernahme" aria-label="Aus dem Finanzierungsangebot gelesen">
+          <div className="ki-uebernahme-kopf">
+            <div>
+              <strong>{stand.status === "uebernommen" ? "Angebot übernommen" : "Aus dem Angebot erkannt"}</strong>
+              <small>
+                {"datei" in stand ? stand.datei : ""}
+                {angebot.datum ? ` vom ${angebot.datum}` : ""}
+                {gueltig ? ` · ${gueltig}` : angebot.gueltigBis ? ` · gültig bis ${angebot.gueltigBis}` : ""}
+              </small>
+            </div>
+            <button type="button" aria-label="Angebot verwerfen" onClick={() => setStand({ status: "leer" })}>
+              <X size={14} />
+            </button>
+          </div>
+          <ul className="ki-vorschlaege">
+            {zeilen.map((z) => (
+              <li key={z.label} className={z.abweichend ? "abweichend" : ""}>
+                <span aria-hidden="true">{z.abweichend ? <TriangleAlert size={14} /> : <Check size={14} />}</span>
+                <span className="angebot-zeile">
+                  <span className="ki-feld">{z.label}</span>
+                  <span className="ki-werte">
+                    <b>{z.wert}</b>
+                  </span>
+                  <small>{z.text}</small>
+                </span>
+              </li>
+            ))}
+          </ul>
+          {angebot.hinweise.length > 0 && (
+            <ul className="ki-hinweise">
+              {angebot.hinweise.map((h) => (
+                <li key={h}>{h}</li>
+              ))}
+            </ul>
+          )}
+          {stand.status === "erkannt" ? (
+            <button
+              type="button"
+              className="button ki-auslesen full-width"
+              disabled={!bank && !nachrang}
+              onClick={() => {
+                uebernimm(angebotAlsEingabe(angebot, input.ausfuehrlich), { quelle: "unterlagen", text: quelle });
+                setStand({ ...stand, status: "uebernommen" });
+              }}
+            >
+              <Check size={16} /> Darlehen in den Rechner übernehmen
+            </button>
+          ) : (
+            <p className="field-hint">Die Werte stehen jetzt bei Bankdarlehen und „Darlehen laut Angebot“ und lassen sich dort ändern.</p>
+          )}
+        </section>
+      )}
+    </div>
+  );
+}
+
+export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aendere, herkunft, uebernimm }: EingabeProps) {
   const quelle = quelleFuer(herkunft);
   const kfw = input.kfwEnabled;
   const kfwAnlauf = result.kfwAnlaufJahre;
@@ -992,6 +1206,7 @@ export function EingabeFinanzierung({ input, result, setzeZahl, setzeText, aende
   return (
     <div className="input-section">
       <Bereichstitel nummer="04" titel="Finanzierung" untertitel="Wie finanziert wird: Darlehen eintragen, das Eigenkapital ist der Rest" />
+      {!UNWIRKSAME_FELDER_ZEIGEN && uebernimm && <AngebotUpload input={input} result={result} uebernimm={uebernimm} />}
       <div className="subheading">Bankdarlehen</div>
       {/* Analyse und PDF finanzieren 100 % des Kaufpreises, außer es steht ein Bankangebot darunter (08.11. und 12.11.2026). */}
       {!UNWIRKSAME_FELDER_ZEIGEN && !angebot && (

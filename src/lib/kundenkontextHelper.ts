@@ -43,6 +43,15 @@ import {
  * dieser Satz muss stimmen. Deshalb dieser eigene Block, der leer bleibt,
  * solange keine Selbstauskunft vorliegt.
  */
+/** „ja“/„nein“ aus der Selbstauskunft, erst bei Person 1, dann auf der Wurzel; sonst null. */
+export function kirchensteuerAusSa(sa: unknown): boolean | null {
+  if (!sa || typeof sa !== "object") return null;
+  const wurzel = sa as Record<string, unknown>;
+  const person1 = wurzel.person1 && typeof wurzel.person1 === "object" ? (wurzel.person1 as Record<string, unknown>) : {};
+  const roh = String(person1.kirchensteuer ?? wurzel.kirchensteuer ?? "").trim().toLowerCase();
+  return roh === "ja" ? true : roh === "nein" ? false : null;
+}
+
 export interface AusSelbstauskunft {
   bruttoJahrHaushalt: number;       // € summiert beider Personen, 0 ohne Angabe
   zvE: number;                       // € laut SA, sonst geschätzt aus deren Brutto
@@ -51,6 +60,8 @@ export interface AusSelbstauskunft {
   verheiratet: boolean;             // aus dem Familienstand der SA
   anzahlPersonen: 1 | 2;            // führt die SA eine zweite Person?
   liquideMittel: number;            // € aus dem Vermögensteil der SA
+  /** Kirchensteuerpflichtig laut SA (Person 1): true „ja“, false „nein“, null ohne Angabe. */
+  kirchensteuer?: boolean | null;
 }
 
 export interface Kundenkontext {
@@ -194,6 +205,7 @@ export function loadKundenkontext(
         verheiratet: getVerheiratetFromSA(sa),
         anzahlPersonen: sa.person2 ? 2 : 1,
         liquideMittel: liquideMittelAus(sa.vermoegen),
+        kirchensteuer: kirchensteuerAusSa(sa),
       }
     : null;
 

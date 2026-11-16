@@ -41,7 +41,9 @@ function einzelneDatei(): Plugin {
       for (const [name, datei] of Object.entries(buendel)) {
         if (datei.type === "chunk" && name.endsWith(".js")) {
           // `</script` im Code würde das Skript-Element vorzeitig schließen.
-          const code = datei.code.replace(/<\/script/gi, "<\\/script");
+          // Vites Platzhalter fürs Vorladen nachgeladener Teile wird sonst erst nach diesem Schritt ersetzt;
+          // so bliebe er stehen und pdf.js (dynamischer Import) bräche mit „__VITE_PRELOAD__ is not defined“ ab.
+          const code = datei.code.replace(/__VITE_PRELOAD__/g, "void 0").replace(/<\/script/gi, "<\\/script");
           text = text.replace(new RegExp(`<script[^>]*src="[^"]*${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}"[^>]*></script>`), () => `<script type="module">${code}</script>`);
           delete buendel[name];
         } else if (datei.type === "asset" && name.endsWith(".css")) {

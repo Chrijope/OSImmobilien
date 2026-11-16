@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import type { Kundenkontext } from "@/lib/kundenkontextHelper";
+import { kirchensteuerAusSa, type Kundenkontext } from "@/lib/kundenkontextHelper";
 import { kundenschritt, kundenUebernahmeAus, steuerklasseAusSa } from "@/lib/investmentrechner/kundenUebernahme";
 import { herkunftText, setzeHerkunft } from "@/lib/investmentrechner/herkunft";
 
@@ -277,5 +277,26 @@ describe("zvE von 0 aus der Selbstauskunft", () => {
     expect(u.aenderung.taxableIncomeCustomer).toBe(0);
     expect(u.aenderung.taxableIncomeSpouse).toBe(0);
     expect(u.felder).toEqual(expect.arrayContaining(["taxableIncomeCustomer", "taxableIncomeSpouse"]));
+  });
+});
+
+describe("Kirchensteuer aus der Selbstauskunft (16.11.2026)", () => {
+  const mit = (kirchensteuer: boolean | null) =>
+    kontext({ ausSelbstauskunft: { bruttoJahrHaushalt: 90_000, zvE: 63_000, zvEAngegeben: false, verheiratet: false, anzahlPersonen: 1, liquideMittel: 0, kirchensteuer } });
+
+  it("setzt 9 % bei „ja“ und 0 bei „nein“", () => {
+    expect(kundenUebernahmeAus(mit(true), undefined).aenderung.churchTaxRate).toBe(9);
+    expect(kundenUebernahmeAus(mit(false), undefined).aenderung.churchTaxRate).toBe(0);
+    expect(kundenUebernahmeAus(mit(true), undefined).felder).toContain("churchTaxRate");
+  });
+
+  it("lässt den Satz ohne Angabe unberührt", () => {
+    expect("churchTaxRate" in kundenUebernahmeAus(mit(null), undefined).aenderung).toBe(false);
+  });
+
+  it("liest „ja“ und „nein“ bei Person 1 und auf der Wurzel", () => {
+    expect(kirchensteuerAusSa({ person1: { kirchensteuer: "ja" } })).toBe(true);
+    expect(kirchensteuerAusSa({ kirchensteuer: "nein" })).toBe(false);
+    expect(kirchensteuerAusSa({ person1: {} })).toBeNull();
   });
 });

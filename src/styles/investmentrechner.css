@@ -890,6 +890,16 @@
   border-color: var(--green);
   transform: translateY(-1px);
 }
+/* Finanzierungsangebot wird über das Feld gezogen (16.11.2026). */
+.investmentrechner .document-upload.is-dragging {
+  border-color: var(--green);
+  background: var(--gruen-zart);
+}
+.investmentrechner .angebot-zeile {
+  gap: 3px;
+  min-width: 0;
+  display: grid;
+}
 .investmentrechner .document-upload.is-reading {
   cursor: progress;
   opacity: 0.8;
