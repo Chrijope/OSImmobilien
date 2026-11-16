@@ -63,6 +63,7 @@ export const VORLAGEN_ZIELGRUPPE: Readonly<Record<string, Zielgruppe>> = {
   'unterlagen-pruefung-ergebnis': 'kunde',
   'aftersales-beratung-signatur': 'kunde',
   'mietzuzahlung-signatur': 'kunde',
+  'finanzierungsanfrage-signatur': 'kunde',
   'notartermin-auswahl': 'kunde',
   'notartermin-bestaetigung-kunde': 'kunde',
   'notartermin-geplant': 'kunde',

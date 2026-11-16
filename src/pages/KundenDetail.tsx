@@ -191,7 +191,7 @@ import { EinblickReihe } from "@/components/kunden/EinblickReihe";
 import { useEinblickTeamleiter } from "@/hooks/useEinblickTeamleiter";
 import { laufendeFinanziererJeInvestment } from "@/lib/finanzierungEinreichung";
 import { useToast } from "@/hooks/use-toast";
-import { FinanzierungsanfrageKnopf } from "@/components/kunden/FinanzierungsanfrageKnopf";
+import { FinanzierungsanfrageKarte } from "@/components/finanzierung/FinanzierungsanfrageKarte";
 import { selbstauskunftFortschrittProzent } from "@/components/selbstauskunft/SelbstauskunftForm";
 import { hatAngefangenenStand } from "@/lib/selbstauskunftEinladung";
 // Startpunkt der Ladezeitmessung der Selbstauskunft, siehe src/lib/saLadezeit.ts.
@@ -8844,7 +8844,6 @@ export default function KundenDetail() {
                                         </button>
                                       );
                                     })()}
-                                    <FinanzierungsanfrageKnopf investmentId={inv.id} kundeName={`${kunde.vorname} ${kunde.nachname}`} />
                                     {id && (
                                       <SaPartialSignaturePill
                                         kontaktId={id}
@@ -8892,7 +8891,6 @@ export default function KundenDetail() {
                                         </button>
                                       );
                                     })()}
-                                    <FinanzierungsanfrageKnopf investmentId={inv.id} kundeName={`${kunde.vorname} ${kunde.nachname}`} />
                                     {id && (
                                       <SaPartialSignaturePill
                                         kontaktId={id}
@@ -10172,6 +10170,14 @@ export default function KundenDetail() {
                 wohnungId={inv.wohnungId}
                 objektTitel={inv.objektTitel}
                 weNr={inv.weNr}
+              />
+              {/*
+                Finanzierungsanfrage zur Unterschrift (Christian, 16.11.2026):
+                senden dürfen dieselben Rollen wie beim Finanzierungspartner.
+              */}
+              <FinanzierungsanfrageKarte
+                investmentId={inv.id}
+                darfSenden={darfFinanzierungspartnerMelden(user.role) && (user.role !== "vertriebspartner" || darfKundeBearbeiten)}
               />
               {/*
                 Einreichungen bei mehreren Finanzierern (Christian, 27.10.2026):

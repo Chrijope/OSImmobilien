@@ -112,6 +112,10 @@ verify_jwt = false
 [functions.finalize-mietzuzahlung]
 verify_jwt = false
 
+# Finanzierungsanfrage (16.11.2026): Ablage nach der Kundenunterschrift, Zugang über den Token.
+[functions.finalize-finanzierungsanfrage]
+verify_jwt = false
+
 [functions.auth-email-hook]
 verify_jwt = false
 
@@ -529,6 +533,10 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.send-mietzuzahlung-signatur]
+verify_jwt = true
+
+# Finanzierungsanfrage zur Unterschrift (16.11.2026): Versand aus dem Investment, Bereich Finanzierung.
+[functions.send-finanzierungsanfrage-signatur]
 verify_jwt = true
 
 [functions.send-review-result]

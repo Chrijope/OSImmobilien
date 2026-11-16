@@ -46,6 +46,7 @@ import { SelbstauskunftForm, loescheLokalenSaEntwurf } from "@/components/selbst
 import { Smartphone, Check } from "lucide-react";
 import { istBeratungsprotokoll } from "@/lib/beratungsprotokoll";
 import { CookieEinstellungenLink } from "@/components/cookie/CookieEinstellungenLink";
+import { faDatum, faPerson, faUnterschriftenSetzen, istFaPersonTyp, type FaPersonTyp, type PdfDokument } from "../../supabase/functions/_shared/finanzierungsanfrage";
 
 type Status = "loading" | "ready" | "expired" | "ueberholt" | "rv_aufgehoben" | "signed" | "already_signed" | "error" | "submitting" | "finalizing";
 
@@ -61,14 +62,18 @@ export default function SignaturSeite() {
   const isAftersalesVp = signatureType === "aftersales_vp";
   // Vereinbarung über eine Mietzuzahlung (30.10.2026): nur der Kunde unterschreibt, Vertragspartner 2 ist fest unterzeichnet.
   const isMietzuzahlung = signatureType === "mietzuzahlung_kunde";
+  // Finanzierungsanfrage (16.11.2026): jeder Käufer mit eigenem Link, Ablage über finalize-finanzierungsanfrage.
+  const isFinanzierungsanfrage = istFaPersonTyp(signatureType);
   // Nur die Selbstauskunft ist vor der Unterschrift durch den Kunden korrigierbar.
-  const istSaKorrigierbar = !isReservierung && !isVertrag && !isVertragKurz && !isAftersalesKunde && !isAftersalesVp && !isMietzuzahlung && !isMobileMode;
+  const istSaKorrigierbar = !isReservierung && !isVertrag && !isVertragKurz && !isAftersalesKunde && !isAftersalesVp && !isMietzuzahlung && !isFinanzierungsanfrage && !isMobileMode;
   const docLabel = isReservierung
     ? "Reservierungsvereinbarung"
     : isAftersalesKunde || isAftersalesVp
     ? "Beratungsdokument"
     : isMietzuzahlung
     ? "Mietzuzahlung"
+    : isFinanzierungsanfrage
+    ? "Finanzierungsanfrage"
     : isVertrag || isVertragKurz
     ? "Vertrag"
     : "Selbstauskunft";
@@ -131,7 +136,7 @@ export default function SignaturSeite() {
   // Das Beratungsprotokoll duzt auf Deutsch (17.10.2026), die übrigen Dokumente siezen.
   const t: SignaturSeitenTexte = isAftersalesKunde && sprache === "de" ? SIGNATUR_SEITE_TEXTE_DU : SIGNATUR_SEITE_TEXTE[sprache];
   const englisch = sprache === "en";
-  const dok: SignaturDokument = isReservierung ? "reservierung" : isAftersalesKunde ? "aftersales" : isMietzuzahlung ? "mietzuzahlung" : "selbstauskunft";
+  const dok: SignaturDokument = isReservierung ? "reservierung" : isAftersalesKunde ? "aftersales" : isMietzuzahlung ? "mietzuzahlung" : isFinanzierungsanfrage ? "finanzierungsanfrage" : "selbstauskunft";
   const anzeigeTitel = istKundenseite ? dokumentTitel(dok, sprache) : docLabel;
   // Die englische Fassung der Wahl zum Beginn, mit denselben Nummern wie die deutsche.
   const rvAufbauEn = isReservierung && englisch ? vertragsAufbau(rvOptionen, "en") : null;
@@ -333,6 +338,14 @@ export default function SignaturSeite() {
     const generatePreview = async () => {
       try {
         const saData = request.sa_data;
+        if (isFinanzierungsanfrage) {
+          // Aus demselben Stand wie das beim Versand abgelegte PDF, deshalb inhaltsgleich.
+          const fa = saData.finanzierungsanfrage || {};
+          const { erzeugeFinanzierungsanfrage } = await import("@/lib/finanzierungsanfrage");
+          const bytes = await erzeugeFinanzierungsanfrage(fa.sa, fa.objekt || null);
+          setPdfBlobUrl(URL.createObjectURL(new Blob([bytes], { type: "application/pdf" })));
+          return;
+        }
         let doc;
         if (isReservierung) {
           const { generateReservierungPDF } = await import("@/lib/reservierungPdf");
@@ -375,7 +388,7 @@ export default function SignaturSeite() {
         return null;
       });
     };
-  }, [request, isReservierung, isVertrag, isVertragKurz, isAftersalesKunde, isAftersalesVp, isMietzuzahlung, widerrufWahl, sprache]);
+  }, [request, isReservierung, isVertrag, isVertragKurz, isAftersalesKunde, isAftersalesVp, isMietzuzahlung, isFinanzierungsanfrage, widerrufWahl, sprache]);
 
   // Canvas drawing
   const getPos = useCallback((e: React.MouseEvent | React.TouchEvent) => {
@@ -467,7 +480,7 @@ export default function SignaturSeite() {
           en: vertragsAufbau(rvOpt, "en").widerrufWahlen[wahlIndex]?.satz || widerrufWahl,
         }
         : undefined,
-      ort: isReservierung || isMietzuzahlung ? ort : "",
+      ort: isReservierung || isMietzuzahlung ? ort : isFinanzierungsanfrage ? String(request.sa_data?.finanzierungsanfrage?.ort || "") : "",
       fassung: isReservierung
         ? fassungsVermerk(request.sa_data)
         : englisch ? `Erklärungen ${SA_RECHTSTEXT_FASSUNG_EN}` : undefined,
@@ -497,6 +510,43 @@ export default function SignaturSeite() {
     }
 
     setStatus("finalizing");
+
+    /*
+     * Finanzierungsanfrage: Die Function trägt die Unterschrift ein und legt
+     * mit der letzten das vollständige PDF ab. Die Unterschriften der anderen
+     * Käufer kennt diese Seite nicht; die Vorschau zeigt deshalb nur die eigene.
+     */
+    if (isFinanzierungsanfrage) {
+      try {
+        const { data: ergebnis, error: abschlussFehler } = await supabase.functions.invoke("finalize-finanzierungsanfrage", { body: { token } });
+        if (abschlussFehler) console.error("Finanzierungsanfrage konnte nicht abgeschlossen werden:", abschlussFehler);
+        else if (ergebnis && typeof ergebnis.totalRequests === "number") {
+          setAllSignedInfo({ allSigned: !!ergebnis.allSigned, totalRequests: ergebnis.totalRequests, signedCount: ergebnis.signedCount });
+        }
+      } catch (err) {
+        console.error("Finanzierungsanfrage konnte nicht abgeschlossen werden:", err);
+      }
+      try {
+        const fa = request.sa_data?.finanzierungsanfrage || {};
+        const { erzeugeFinanzierungsanfrage } = await import("@/lib/finanzierungsanfrage");
+        const { PDFDocument } = await import("pdf-lib");
+        const doc = await PDFDocument.load(await erzeugeFinanzierungsanfrage(fa.sa, fa.objekt || null));
+        await faUnterschriftenSetzen(doc as unknown as PdfDokument, {
+          ort: String(fa.ort || ""),
+          datum: faDatum(),
+          unterschriften: { [faPerson(signatureType as FaPersonTyp)]: signatureData },
+        });
+        const url = URL.createObjectURL(new Blob([await doc.save()], { type: "application/pdf" }));
+        setPdfBlobUrl((prev) => {
+          if (prev && prev.startsWith("blob:")) URL.revokeObjectURL(prev);
+          return url;
+        });
+      } catch (err) {
+        console.error("Vorschau der unterschriebenen Finanzierungsanfrage fehlgeschlagen:", err);
+      }
+      setStatus("signed");
+      return;
+    }
     /*
      * Was `finalize-reservierung` zurückgibt, wenn alle unterschrieben haben:
      * die Unterschriften aller Käufer und den Datensatz. Daraus entsteht
@@ -710,11 +760,11 @@ export default function SignaturSeite() {
 
   // ─── SA Data Summary (text fallback when PDF fails) ───
   const saDataSummary = useMemo(() => {
-    if (!request?.sa_data) return null;
+    if (!request?.sa_data || isFinanzierungsanfrage) return null;
     const d = request.sa_data;
     const hasP2 = isReservierung ? !!(d.hatPerson2 && d.p2Vorname) : !!(d.person2 && d.person2Data?.vorname);
     return { data: d, hasP2, p2: hasP2 ? (isReservierung ? { vorname: d.p2Vorname, nachname: d.p2Nachname, geburtsdatum: d.p2Geburtsdatum } : d.person2Data) : null };
-  }, [request, isReservierung]);
+  }, [request, isReservierung, isFinanzierungsanfrage]);
 
   // ─── Render ────────────────────────────────────────────
   return (
@@ -1032,7 +1082,7 @@ export default function SignaturSeite() {
                     ? <>{t.rolleKaeufer}: <strong>{request.name}</strong></>
                     : isAftersalesKunde || isMietzuzahlung
                     ? <>{t.rolleKunde}: <strong>{request.name}</strong></>
-                    : <>{t.rollePerson(request.person_type === "person1" ? 1 : 2)}: <strong>{request.name}</strong></>}
+                    : <>{t.rollePerson(request.person_type === "person1" || request.person_type === "finanzierungsanfrage_p1" ? 1 : 2)}: <strong>{request.name}</strong></>}
                 </p>
               </div>
 

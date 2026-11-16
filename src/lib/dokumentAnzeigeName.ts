@@ -71,6 +71,7 @@ export const DOKUMENT_NAMEN_EN: Readonly<Record<string, string>> = {
   Finanzierungsangebot: "Financing offer",
   Kaufnebenkosten: "Incidental purchase costs",
   Beratungsdokument: "Consultation record",
+  Finanzierungsanfrage: "Financing request",
 };
 
 /** Teile in „Nachweis: …“, die aus Auswahllisten der Selbstauskunft stammen. */

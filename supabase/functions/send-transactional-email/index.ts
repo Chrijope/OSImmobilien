@@ -348,6 +348,7 @@ Deno.serve(async (req) => {
     'vertrag-signatur',
     'aftersales-beratung-signatur',
     'mietzuzahlung-signatur',
+    'finanzierungsanfrage-signatur',
     'activation-invite',
     'document-reminder',
     // Der Kunde schickt seine Anlage-V-Aufstellung an seinen Steuerberater.
