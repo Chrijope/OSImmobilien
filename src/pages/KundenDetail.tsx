@@ -191,6 +191,7 @@ import { EinblickReihe } from "@/components/kunden/EinblickReihe";
 import { useEinblickTeamleiter } from "@/hooks/useEinblickTeamleiter";
 import { laufendeFinanziererJeInvestment } from "@/lib/finanzierungEinreichung";
 import { useToast } from "@/hooks/use-toast";
+import { FinanzierungsanfrageKnopf } from "@/components/kunden/FinanzierungsanfrageKnopf";
 import { selbstauskunftFortschrittProzent } from "@/components/selbstauskunft/SelbstauskunftForm";
 import { hatAngefangenenStand } from "@/lib/selbstauskunftEinladung";
 // Startpunkt der Ladezeitmessung der Selbstauskunft, siehe src/lib/saLadezeit.ts.
@@ -8843,6 +8844,7 @@ export default function KundenDetail() {
                                         </button>
                                       );
                                     })()}
+                                    <FinanzierungsanfrageKnopf investmentId={inv.id} kundeName={`${kunde.vorname} ${kunde.nachname}`} />
                                     {id && (
                                       <SaPartialSignaturePill
                                         kontaktId={id}
@@ -8890,6 +8892,7 @@ export default function KundenDetail() {
                                         </button>
                                       );
                                     })()}
+                                    <FinanzierungsanfrageKnopf investmentId={inv.id} kundeName={`${kunde.vorname} ${kunde.nachname}`} />
                                     {id && (
                                       <SaPartialSignaturePill
                                         kontaktId={id}
