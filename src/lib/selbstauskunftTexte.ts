@@ -236,6 +236,25 @@ export const SA_UI_EN: Readonly<Record<string, string>> = {
   "In Probezeit": "On probation",
   Befristet: "Fixed-term",
   "Befristet bis": "Fixed-term until",
+  // Seit 16.11.2026 (Baufi24-Finanzierungsanfrage)
+  "Das Land, in dem Sie geboren sind. Die Bank fragt es für die Finanzierungsprüfung ab.":
+    "The country in which you were born. The bank asks for it when assessing the financing.",
+  "Durchschnittlicher monatlicher Nettobetrag aus Bonus, Provision oder Zulagen, die nicht fest vereinbart sind. Nicht zusätzlich im Netto-Gehalt enthalten.":
+    "Average monthly net amount from bonuses, commission or allowances that are not fixed by contract. Do not include it in the net salary as well.",
+  "Ja, wenn Sie nach dem Kauf selbst einziehen und Ihre heutige Miete wegfällt. Bei einer vermieteten Kapitalanlage in der Regel Nein.":
+    "Yes if you will move in yourself after the purchase and your current rent ends. For a let investment property, usually No.",
+  "Geburtsland": "Country of birth",
+  "z. B. Deutschland": "e.g. Germany",
+  "Art der Anstellung": "Type of employment",
+  "Art der Selbstständigkeit": "Type of self-employment",
+  "Probezeit endet am": "Probation ends on",
+  "Variable Bezüge (netto)": "Variable pay (net)",
+  "Altersvorsorge": "Retirement provision",
+  "Freiwillig. Die Beträge stehen in Ihrer jährlichen Renteninformation.": "Optional. The amounts are shown in your annual pension statement.",
+  "Voraussichtlicher Rentenbeginn": "Expected retirement date",
+  "Rentenanspruch gesetzlich (monatlich)": "State pension entitlement (monthly)",
+  "Rentenanspruch privat (monatlich)": "Private pension entitlement (monthly)",
+  "Miete entfällt nach dem Kauf": "Rent ends after the purchase",
 
   /* ── Schritt 3: Ausgaben ──────────────────────────────────── */
   "Ausgaben: Angaben Person 1": "Expenses: Person 1",

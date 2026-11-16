@@ -91,7 +91,7 @@ const grundStand = {
   vorname: "Jane", nachname: "Doe", geburtsdatum: "01.02.1985",
   strasse: "Musterweg", hausnummer: "1", plz: "80331", ort: "München",
   telefon: "+49 151 1234567", email: "jane@example.test",
-  wohnhaftSeit: "Mehr als 5 Jahre", familienstand: "Verheiratet",
+  wohnhaftSeit: "Mehr als 5 Jahre", familienstand: "Verheiratet", geburtsland: "Deutschland",
   steuerklasse: "4", kirchensteuer: "nein",
   beschaeftigungsart: "angestellt",
   anstellung: { branche: "IT", firma: "Acme", berufsbezeichnung: "Engineer", angestelltSeit: "01.01.2015", probezeit: "nein" },
@@ -239,7 +239,7 @@ describe("Selbstauskunft: Datenschutz und Pflichtfragen", { timeout: 30000 }, ()
       person2: true,
       person2Data: {
         ...EMPTY_PERSON,
-        vorname: "John", nachname: "Doe", geburtsdatum: "01.01.1984", familienstand: "Verheiratet",
+        vorname: "John", nachname: "Doe", geburtsdatum: "01.01.1984", familienstand: "Verheiratet", geburtsland: "Deutschland",
         steuerklasse: "4", kirchensteuer: "nein", beschaeftigungsart: "angestellt", bruttoJahr: "50.000",
         anstellung: { branche: "IT", firma: "Acme", berufsbezeichnung: "Engineer", angestelltSeit: "01.01.2016", probezeit: "nein" },
         einkommen: { netto: "2.500", gewerbe: "", miet: "", zinsen: "", rente: "", kindergeld: "0", sonstige: "" },

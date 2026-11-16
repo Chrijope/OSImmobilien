@@ -180,6 +180,7 @@ export function bankunterlagenAusSa(
 
   const einkuenfte = [
     ...personen.flatMap((p, i) => posten(`Nettoeinkommen Person ${i + 1}`, num(obj(p.einkommen).netto))),
+    ...posten("Variable Bezüge", beide((p) => obj(p.einkommen).variabel)),
     ...posten("Einkünfte aus Selbstständigkeit", beide((p) => obj(p.einkommen).gewerbe)),
     ...posten("Mieteinnahmen bestehender Immobilien", beide((p) => obj(p.einkommen).miet)),
     ...posten("Renten", beide((p) => obj(p.einkommen).rente)),

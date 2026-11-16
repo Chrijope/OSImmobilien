@@ -82,6 +82,14 @@ export const SA_PDF_BESCHRIFTUNG_EN: Readonly<Record<string, string>> = {
   "Zu verst. Einkommen p. a.": "Taxable income p.a.",
   "Zu versteuerndes Einkommen p. a., gemeinsam (Zusammenveranlagung)": "Taxable income p.a., joint (joint assessment)",
   Wohnsituation: "Housing situation",
+  "Miete entfällt nach Kauf": "Rent ends after purchase",
+  Geburtsland: "Country of birth",
+  Tätigkeit: "Occupation type",
+  "Probezeit bis": "Probation ends",
+  "Rentenbeginn (voraussichtl.)": "Expected retirement date",
+  "Rentenanspruch gesetzl. mtl.": "State pension entitlement, monthly",
+  "Rentenanspruch privat mtl.": "Private pension entitlement, monthly",
+  "Variable Bezüge": "Variable pay",
   "Fahrzeuge im Haushalt": "Vehicles in household",
   Kaltmiete: "Net cold rent",
   Wohnnebenkosten: "Utilities",
@@ -840,6 +848,7 @@ export async function generateSelbstauskunftPDF(
     : ` (${[extra1 && `AS 1 ${extra1}`, extra2 && `AS 2 ${extra2}`].filter(Boolean).join(", ")})`;
   const incomeFields: [string, string, string?][] = [
     [`Gehalt / Lohn${gehaltZusatz}`, data.einkommen.netto, p2?.einkommen?.netto],
+    ["Variable Bezüge", data.einkommen.variabel || "", p2?.einkommen?.variabel],
     ["Selbst. Tätigkeit", data.einkommen.gewerbe, p2?.einkommen?.gewerbe],
     ["Rente / Pension", data.einkommen.rente, p2?.einkommen?.rente],
     ["Mieteinnahmen", data.einkommen.miet, p2?.einkommen?.miet],
@@ -993,6 +1002,7 @@ export async function generateSelbstauskunftPDF(
     const persoenlich: Feld[] = [
       { label: "Geburtsdatum", wert: p.geburtsdatum },
       { label: "Staatsangehörigkeit", wert: staatsangeh(p) },
+      ...(irgendwer((q) => q.geburtsland) ? [{ label: "Geburtsland", wert: p.geburtsland || "–" }] : []),
       ...(irgendwer((q) => q.geburtsname) ? [{ label: "Geburtsname", wert: p.geburtsname }] : []),
       // Gespeichert ist der deutsche Wert („Verheiratet“); bei Englisch steht die Übersetzung daneben.
       { label: "Familienstand", wert: wert(p.familienstand) },
@@ -1022,11 +1032,13 @@ export async function generateSelbstauskunftPDF(
     unterTitel("Beschäftigung");
     const beruf: Feld[] = [
       { label: "Art der Tätigkeit", wert: wert(p.beschaeftigungsart) || "–" },
+      ...(irgendwer((q) => q.taetigkeit) ? [{ label: "Tätigkeit", wert: wert(p.taetigkeit) || "–" }] : []),
       { label: "Beruf", wert: p.anstellung?.berufsbezeichnung },
       { label: "Arbeitgeber", wert: p.anstellung?.firma },
       { label: "Branche", wert: p.anstellung?.branche },
       { label: "Angestellt seit", wert: p.anstellung?.angestelltSeit },
       { label: "Probezeit", wert: jaNein(p.anstellung?.probezeit) },
+      ...(irgendwer((q) => q.probezeitBis) ? [{ label: "Probezeit bis", wert: p.probezeitBis || "–" }] : []),
     ];
     if (irgendwer((q) => q.arbeitsvertragArt)) {
       beruf.push({ label: "Vertragsart", wert: av(p.arbeitsvertragArt) });
@@ -1034,6 +1046,9 @@ export async function generateSelbstauskunftPDF(
     }
     if (irgendwer((q) => q.bruttoJahr)) beruf.push({ label: "Bruttoeinkommen / Jahr", wert: eurFmt(p.bruttoJahr) });
     if (irgendwer((q) => q.monatsgehaelter)) beruf.push({ label: "Gehälter / Jahr", wert: p.monatsgehaelter || "12" });
+    if (irgendwer((q) => q.rentenbeginn)) beruf.push({ label: "Rentenbeginn (voraussichtl.)", wert: p.rentenbeginn || "–" });
+    if (irgendwer((q) => q.rentenanspruchGesetzlich)) beruf.push({ label: "Rentenanspruch gesetzl. mtl.", wert: eurFmt(p.rentenanspruchGesetzlich) });
+    if (irgendwer((q) => q.rentenanspruchPrivat)) beruf.push({ label: "Rentenanspruch privat mtl.", wert: eurFmt(p.rentenanspruchPrivat) });
     paare(beruf);
 
     if (irgendwer((q) => q.selbstaendigkeit?.firma)) {
@@ -1143,6 +1158,9 @@ export async function generateSelbstauskunftPDF(
     const wohnen: Feld = { label: "Wohnsituation", wert: beide(wert((data as any).mietart), p2 ? wert((p2 as any).mietart) : undefined) };
     // Die Anzahl der Fahrzeuge ist eine Angabe und kein Betrag.
     rasterZeile(wohnen, kfz1 || kfz2 ? { label: "Fahrzeuge im Haushalt", wert: beide(kfz1, kfz2) } : undefined);
+    if (data.mieteEntfaellt || p2?.mieteEntfaellt) {
+      rasterZeile({ label: "Miete entfällt nach Kauf", wert: beide(jaNein(data.mieteEntfaellt), p2 ? jaNein(p2.mieteEntfaellt) : undefined) });
+    }
   }
   {
     // Wofuer die sonstigen Ausgaben anfallen, grau unter ihrer Zeile.

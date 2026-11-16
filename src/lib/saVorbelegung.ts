@@ -62,18 +62,19 @@ export const SA_ABSCHNITTSFELDER: Record<number, string[]> = {
     // Die Steuer-ID fehlt bewusst: Sie kommt aus den Stammdaten und aus einer
     // vorhandenen Reservierung, ändert sich nie und wäre nur Lärm.
     "familienstand", "wohnhaftSeit", "mobilfunk",
-    "steuerklasse", "kirchensteuer", "gueterstand", "kinder",
+    "steuerklasse", "kirchensteuer", "gueterstand", "kinder", "geburtsland",
   ],
   2: [
     "beschaeftigungsart", "anstellung", "selbstaendigkeit", "arbeitsvertragArt",
     "befristetBis", "bruttoJahr", "zvEJahr", "monatsgehaelter", "einkommen",
-    "gehalt13", "gehalt14", "bankkonten",
+    "gehalt13", "gehalt14", "bankkonten", "taetigkeit", "probezeitBis",
+    "rentenbeginn", "rentenanspruchGesetzlich", "rentenanspruchPrivat",
   ],
   3: [
     "mietart", "mieteWarm", "nebenkosten", "lebenshaltungskosten", "privateKV",
     "versicherungsbeitraege", "sonstigeAusgaben", "sonstigeAusgabenWofuer",
     "unterhalt", "kfzAnzahl", "kfzKosten",
-    "versBU", "versRiester", "versAV", "versWeitere",
+    "versBU", "versRiester", "versAV", "versWeitere", "mieteEntfaellt",
   ],
   4: ["vermoegenswerte", "immobilien"],
   5: ["kredite", "buergschaften"],

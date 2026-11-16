@@ -71,7 +71,7 @@ const vollerStand = {
   vorname: "Jane", nachname: "Doe", geburtsdatum: "01.02.1985",
   strasse: "Musterweg", hausnummer: "1", plz: "80331", ort: "München",
   telefon: "+49 151 1234567", email: "jane@example.test",
-  wohnhaftSeit: "Mehr als 5 Jahre", familienstand: "Verheiratet",
+  wohnhaftSeit: "Mehr als 5 Jahre", familienstand: "Verheiratet", geburtsland: "Deutschland",
   steuerklasse: "4", kirchensteuer: "nein",
   beschaeftigungsart: "angestellt",
   anstellung: { branche: "IT", firma: "Acme", berufsbezeichnung: "Engineer", angestelltSeit: "01.01.2015", probezeit: "nein" },
@@ -289,7 +289,7 @@ describe("Selbstauskunft, zu versteuerndes Jahreseinkommen (05.10.2026)", { time
         prefillSaData={{
           ...vollerStand,
           person2: true,
-          person2Data: { ...EMPTY_PERSON, vorname: "John", nachname: "Doe", geburtsdatum: "03.04.1984", familienstand: "Verheiratet", steuerklasse: "4", kirchensteuer: "nein", beschaeftigungsart: "hausfrau" },
+          person2Data: { ...EMPTY_PERSON, vorname: "John", nachname: "Doe", geburtsdatum: "03.04.1984", familienstand: "Verheiratet", geburtsland: "Deutschland", steuerklasse: "4", kirchensteuer: "nein", beschaeftigungsart: "hausfrau" },
         }}
         customerMode saToken="abc" onHinweisSchritt={() => {}} />,
     );

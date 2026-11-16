@@ -32,7 +32,7 @@ const sumEinkommen = (e: any): number => {
   return (
     parseDE(e.netto) + parseDE(e.gewerbe) + parseDE(e.miet) +
     parseDE(e.zinsen) + parseDE(e.rente) + parseDE(e.kindergeld) +
-    parseDE(e.sonstige)
+    parseDE(e.sonstige) + parseDE(e.variabel)
   );
 };
 

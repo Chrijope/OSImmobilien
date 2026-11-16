@@ -21,7 +21,8 @@ export function extractEinkuenfte(data: any) {
     renten: income ? parseFinanzNum(income.rente) : parseFinanzNum(data?.renten),
     mieteinnahmen: income ? parseFinanzNum(income.miet) : parseFinanzNum(data?.mieteinnahmen),
     zinsen: income ? parseFinanzNum(income.zinsen) : parseFinanzNum(data?.zinsen),
-    sonstige: income ? parseFinanzNum(income.sonstige) : parseFinanzNum(data?.sonstigeEinkuenfte),
+    // Variable Bezüge gibt es seit 16.11.2026 als eigenes Feld; vorher standen sie unter Sonstige.
+    sonstige: income ? parseFinanzNum(income.sonstige) + parseFinanzNum(income.variabel) : parseFinanzNum(data?.sonstigeEinkuenfte),
     kindergeld: income ? parseFinanzNum(income.kindergeld) : parseFinanzNum(data?.kindergeld),
   };
 }

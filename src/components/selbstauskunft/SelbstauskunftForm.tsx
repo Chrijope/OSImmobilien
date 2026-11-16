@@ -83,6 +83,7 @@ import {
 import { FormProgress } from "@/components/ui/form-progress";
 import { saLadeschrittEnde } from "@/lib/saLadezeit";
 import { hatGueterstand } from "@/lib/familienstand";
+import { SA_BRANCHEN, SA_TAETIGKEITEN, type BankListenEintrag } from "@/lib/saBankListen";
 
 // Steuer-ID Formatter (3/3/5)
 function formatSteuerIdInput(raw: string): string {
@@ -150,7 +151,7 @@ export interface PersonData {
   anstellung: { branche: string; firma: string; berufsbezeichnung: string; angestelltSeit: string; probezeit: string };
   selbstaendigkeit: { branche: string; firma: string; selbstaendigSeit: string; anzahlMitarbeiter: string };
   bankkonten: { konto: string; institut: string; iban: string }[];
-  einkommen: { netto: string; gewerbe: string; miet: string; zinsen: string; rente: string; kindergeld: string; sonstige: string };
+  einkommen: { netto: string; gewerbe: string; miet: string; zinsen: string; rente: string; kindergeld: string; sonstige: string; variabel?: string };
   gehalt13?: boolean;
   gehalt14?: boolean;
   mietart: string; mieteWarm: string;
@@ -169,6 +170,16 @@ export interface PersonData {
   monatsgehaelter?: string;            // "12" | "13" | "14"
   arbeitsvertragArt?: string;          // "unbefristet" | "probezeit" | "befristet"
   befristetBis?: string;
+  // Seit 16.11.2026 für die Baufi24-Finanzierungsanfrage, alle freiwillig im Typ.
+  geburtsland?: string;
+  /** Feinere Art der Tätigkeit, Liste in saBankListen.ts. */
+  taetigkeit?: string;
+  probezeitBis?: string;
+  rentenbeginn?: string;
+  rentenanspruchGesetzlich?: string;
+  rentenanspruchPrivat?: string;
+  /** "ja" | "nein": Fällt die heutige Miete nach dem Kauf weg? */
+  mieteEntfaellt?: string;
   nebenkosten?: string;
   unterhalt?: string;
   kfzAnzahl?: string;
@@ -224,7 +235,7 @@ export interface SelbstauskunftData {
   anstellung: { branche: string; firma: string; berufsbezeichnung: string; angestelltSeit: string; probezeit: string };
   selbstaendigkeit: { branche: string; firma: string; selbstaendigSeit: string; anzahlMitarbeiter: string };
   bankkonten: { konto: string; institut: string; iban: string }[];
-  einkommen: { netto: string; gewerbe: string; miet: string; zinsen: string; rente: string; kindergeld: string; sonstige: string };
+  einkommen: { netto: string; gewerbe: string; miet: string; zinsen: string; rente: string; kindergeld: string; sonstige: string; variabel?: string };
   gehalt13?: boolean;
   gehalt14?: boolean;
   mietart: string; mieteWarm: string;
@@ -245,6 +256,16 @@ export interface SelbstauskunftData {
   monatsgehaelter?: string;
   arbeitsvertragArt?: string;
   befristetBis?: string;
+  // Seit 16.11.2026 für die Baufi24-Finanzierungsanfrage, alle freiwillig im Typ.
+  geburtsland?: string;
+  /** Feinere Art der Tätigkeit, Liste in saBankListen.ts. */
+  taetigkeit?: string;
+  probezeitBis?: string;
+  rentenbeginn?: string;
+  rentenanspruchGesetzlich?: string;
+  rentenanspruchPrivat?: string;
+  /** "ja" | "nein": Fällt die heutige Miete nach dem Kauf weg? */
+  mieteEntfaellt?: string;
   nebenkosten?: string;
   unterhalt?: string;
   kfzAnzahl?: string;
@@ -899,6 +920,9 @@ const FELD_HILFEN: Record<string, string> = {
   "Telefon": "Festnetznummer. Wenn keine vorhanden ist, reicht die Mobilnummer im Feld daneben.",
   "Mobilfunk": "Mobilnummer für Rückfragen.",
   "E-Mailadresse": "An diese Adresse gehen Rückfragen und am Ende der Link zur Unterschrift.",
+  "Geburtsland": "Das Land, in dem Sie geboren sind. Die Bank fragt es für die Finanzierungsprüfung ab.",
+  "Variable Bezüge (netto)": "Durchschnittlicher monatlicher Nettobetrag aus Bonus, Provision oder Zulagen, die nicht fest vereinbart sind. Nicht zusätzlich im Netto-Gehalt enthalten.",
+  "Miete entfällt nach dem Kauf": "Ja, wenn Sie nach dem Kauf selbst einziehen und Ihre heutige Miete wegfällt. Bei einer vermieteten Kapitalanlage in der Regel Nein.",
   "Familienstand": "Der aktuelle Familienstand. Bei Verheirateten fragt die Bank zusätzlich den Güterstand ab.",
   "Seit wann wohnhaft an obiger Anschrift?": "Wie lange Sie schon an der oben angegebenen Adresse wohnen.",
   "Name": "Vor- und Nachname des Kindes.",
@@ -1111,6 +1135,27 @@ function Field({ label, tooltip, children, className, required, error, hint, fil
   );
 }
 
+/**
+ * Auswahl aus einer festen Bankliste (Branche, Art der Tätigkeit).
+ *
+ * Steht ein älterer Freitext im Feld, der in keiner Liste vorkommt, bleibt er
+ * als eigene Zeile wählbar. So geht beim Öffnen nichts verloren, bis der
+ * Kunde einen Listenwert wählt.
+ */
+function BankListenAuswahl({ value, liste, onChange }: { value: string; liste: BankListenEintrag[]; onChange: (v: string) => void }) {
+  const { t, w } = useSaText();
+  const alt = value.trim() && !liste.some(e => e.label === value) ? value : "";
+  return (
+    <Select value={value || undefined} onValueChange={onChange}>
+      <SelectTrigger><SelectValue placeholder={t("– Bitte wählen –")} /></SelectTrigger>
+      <SelectContent>
+        {alt && <SelectItem value={alt}>{alt}</SelectItem>}
+        {liste.map(e => <SelectItem key={e.code} value={e.label}>{w(e.label)}</SelectItem>)}
+      </SelectContent>
+    </Select>
+  );
+}
+
 // ─── Validation per step ─────────────────────────────────────
 function validateStep(step: number, data: SelbstauskunftData): Set<string> {
   const errs = new Set<string>();
@@ -1136,6 +1181,7 @@ function validateStep(step: number, data: SelbstauskunftData): Set<string> {
       else if (!isValidEmail(data.email)) errs.add("email");
       if (!data.wohnhaftSeit) errs.add("wohnhaftSeit");
       if (!data.familienstand.trim()) errs.add("familienstand");
+      if (!(data.geburtsland || "").trim()) errs.add("geburtsland");
       if (data.staatsangehoerigkeit === "andere" && !data.staatsangehoerigkeitAndere.trim()) errs.add("staatsangehoerigkeitAndere");
       if (!(data.steuerklasse || "").trim()) errs.add("steuerklasse");
       if (!(data.kirchensteuer || "").trim()) errs.add("kirchensteuer");
@@ -1147,6 +1193,7 @@ function validateStep(step: number, data: SelbstauskunftData): Set<string> {
         if (!p2.nachname.trim()) errs.add("p2_nachname");
         if (!p2.geburtsdatum.trim()) errs.add("p2_geburtsdatum");
         if (!p2.familienstand.trim()) errs.add("p2_familienstand");
+        if (!(p2.geburtsland || "").trim()) errs.add("p2_geburtsland");
         if (!(p2.steuerklasse || "").trim()) errs.add("p2_steuerklasse");
         if (!(p2.kirchensteuer || "").trim()) errs.add("p2_kirchensteuer");
       }
@@ -1160,6 +1207,7 @@ function validateStep(step: number, data: SelbstauskunftData): Set<string> {
         if (!data.anstellung.berufsbezeichnung.trim()) errs.add("anstellung_beruf");
         if (!data.anstellung.angestelltSeit.trim()) errs.add("anstellung_seit");
         if (!data.anstellung.probezeit) errs.add("probezeit");
+        if (data.anstellung.probezeit === "ja" && !(data.probezeitBis || "").trim()) errs.add("probezeitBis");
       }
       if (data.beschaeftigungsart === "selbstaendig") {
         if (!data.einkommen.gewerbe.trim()) errs.add("gewerbe");
@@ -1191,6 +1239,7 @@ function validateStep(step: number, data: SelbstauskunftData): Set<string> {
           if (!p2.anstellung.firma.trim()) errs.add("p2_anstellung_firma");
           if (!p2.anstellung.berufsbezeichnung.trim()) errs.add("p2_anstellung_beruf");
           if (!p2.anstellung.angestelltSeit.trim()) errs.add("p2_anstellung_seit");
+          if (p2.anstellung.probezeit === "ja" && !(p2.probezeitBis || "").trim()) errs.add("p2_probezeitBis");
         }
         if (p2.beschaeftigungsart === "selbstaendig") {
           if (!p2.selbstaendigkeit.branche.trim()) errs.add("p2_selbst_branche");
@@ -2323,6 +2372,9 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
         <Field label="Geburtsdatum" required error={errors.has("geburtsdatum")} filled={!!data.geburtsdatum.trim()}>
           <DatePicker value={data.geburtsdatum} onChange={v => update("geburtsdatum", v)} error={errors.has("geburtsdatum")} />
         </Field>
+        <Field label="Geburtsland" required error={errors.has("geburtsland")} filled={!!(data.geburtsland || "").trim()} uebernommen={istUebernommen("geburtsland")}>
+          <Input value={data.geburtsland || ""} onChange={e => { update("geburtsland", e.target.value); clearError("geburtsland"); }} placeholder={t("z. B. Deutschland")} />
+        </Field>
         {!ohneSteuerIdUndIban && (
         <Field label="Steuer-ID" error={errors.has("steuerId")} filled={!!data.steuerId.trim()}>
           <Input
@@ -2377,7 +2429,7 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
           }}>
             <SelectTrigger><SelectValue placeholder={t("– Bitte wählen –")} /></SelectTrigger>
             <SelectContent>
-              {["Ledig", "Verheiratet", "Geschieden", "Verwitwet", "Eingetragene Lebenspartnerschaft"].map(f => (
+              {["Ledig", "Verheiratet", "Verheiratet, getrennt lebend", "Geschieden", "Verwitwet", "Eingetragene Lebenspartnerschaft"].map(f => (
                 <SelectItem key={f} value={f}>{w(f)}</SelectItem>
               ))}
             </SelectContent>
@@ -2445,6 +2497,9 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
             <Field label="Geburtsdatum" required error={errors.has("p2_geburtsdatum")} filled={!!data.person2Data.geburtsdatum.trim()}>
               <DatePicker value={data.person2Data.geburtsdatum} onChange={v => { updateP2("geburtsdatum", v); clearError("p2_geburtsdatum"); }} error={errors.has("p2_geburtsdatum")} />
             </Field>
+            <Field label="Geburtsland" required error={errors.has("p2_geburtsland")} filled={!!(data.person2Data.geburtsland || "").trim()} uebernommen={istUebernommen("person2Data.geburtsland")}>
+              <Input value={data.person2Data.geburtsland || ""} onChange={e => { updateP2("geburtsland", e.target.value); clearError("p2_geburtsland"); }} placeholder={t("z. B. Deutschland")} />
+            </Field>
             {!ohneSteuerIdUndIban && (
             <Field label="Steuer-ID" error={errors.has("p2_steuerId")}>
               <Input
@@ -2496,7 +2551,7 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
               <Select value={data.person2Data.familienstand} onValueChange={v => { updateP2("familienstand", v); clearError("p2_familienstand"); }}>
                 <SelectTrigger><SelectValue placeholder={t("– Bitte wählen –")} /></SelectTrigger>
                 <SelectContent>
-                  {["Ledig", "Verheiratet", "Geschieden", "Verwitwet", "Eingetragene Lebenspartnerschaft"].map(f => (
+                  {["Ledig", "Verheiratet", "Verheiratet, getrennt lebend", "Geschieden", "Verwitwet", "Eingetragene Lebenspartnerschaft"].map(f => (
                     <SelectItem key={f} value={f}>{w(f)}</SelectItem>
                   ))}
                 </SelectContent>
@@ -2589,7 +2644,7 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
       </p>
       <RadioGroup
         value={data.beschaeftigungsart}
-        onValueChange={v => { update("beschaeftigungsart", v); clearError("beschaeftigungsart"); }}
+        onValueChange={v => { update("beschaeftigungsart", v); update("taetigkeit", ""); clearError("beschaeftigungsart"); }}
         className={cn("flex gap-6 mb-6", errors.has("beschaeftigungsart") && "[&_button]:border-destructive", istUebernommen("beschaeftigungsart") && UEBERNOMMEN_RAHMEN)}
       >
         <div className="flex items-center gap-1.5">
@@ -2606,8 +2661,11 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
         <>
           <h2 className="text-xl font-bold mb-4">{t("Anstellung")}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+            <Field label="Art der Anstellung" uebernommen={istUebernommen("taetigkeit")}>
+              <BankListenAuswahl value={data.taetigkeit || ""} liste={SA_TAETIGKEITEN.angestellt} onChange={v => update("taetigkeit", v)} />
+            </Field>
             <Field label="Branche" required error={errors.has("anstellung_branche")} filled={!!data.anstellung.branche.trim()} uebernommen={istUebernommen("anstellung.branche")}>
-              <Input value={data.anstellung.branche} onChange={e => { update("anstellung", { ...data.anstellung, branche: e.target.value }); clearError("anstellung_branche"); }} />
+              <BankListenAuswahl value={data.anstellung.branche} liste={SA_BRANCHEN} onChange={v => { update("anstellung", { ...data.anstellung, branche: v }); clearError("anstellung_branche"); }} />
             </Field>
             <Field label="Firma" required error={errors.has("anstellung_firma")} filled={!!data.anstellung.firma.trim()} uebernommen={istUebernommen("anstellung.firma")}>
               <Input value={data.anstellung.firma} onChange={e => { update("anstellung", { ...data.anstellung, firma: e.target.value }); clearError("anstellung_firma"); }} />
@@ -2625,6 +2683,11 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
               <div className="flex items-center gap-1.5"><RadioGroupItem value="nein" id="prob-n" /><label htmlFor="prob-n" className="text-sm">{t("Nein")}</label></div>
               <div className="flex items-center gap-1.5"><RadioGroupItem value="ja" id="prob-j" /><label htmlFor="prob-j" className="text-sm">{t("Ja")}</label></div>
             </RadioGroup>
+            {data.anstellung.probezeit === "ja" && (
+              <Field label="Probezeit endet am" className="mt-3 max-w-xs" required error={errors.has("probezeitBis")} filled={!!(data.probezeitBis || "").trim()} uebernommen={istUebernommen("probezeitBis")}>
+                <DatePickerField value={data.probezeitBis || ""} onChange={v => { update("probezeitBis", v); clearError("probezeitBis"); }} error={errors.has("probezeitBis")} fromYear={new Date().getFullYear()} toYear={new Date().getFullYear() + 2} />
+              </Field>
+            )}
           </div>
         </>
       )}
@@ -2633,8 +2696,11 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
         <>
           <h2 className="text-xl font-bold mb-4">{t("Selbstständigkeit")}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+            <Field label="Art der Selbstständigkeit" uebernommen={istUebernommen("taetigkeit")}>
+              <BankListenAuswahl value={data.taetigkeit || ""} liste={SA_TAETIGKEITEN.selbstaendig} onChange={v => update("taetigkeit", v)} />
+            </Field>
             <Field label="Branche" required error={errors.has("selbst_branche")} filled={!!data.selbstaendigkeit.branche.trim()} uebernommen={istUebernommen("selbstaendigkeit.branche")}>
-              <Input value={data.selbstaendigkeit.branche} onChange={e => { update("selbstaendigkeit", { ...data.selbstaendigkeit, branche: e.target.value }); clearError("selbst_branche"); }} />
+              <BankListenAuswahl value={data.selbstaendigkeit.branche} liste={SA_BRANCHEN} onChange={v => { update("selbstaendigkeit", { ...data.selbstaendigkeit, branche: v }); clearError("selbst_branche"); }} />
             </Field>
             <Field label="Firma" required error={errors.has("selbst_firma")} filled={!!data.selbstaendigkeit.firma.trim()} uebernommen={istUebernommen("selbstaendigkeit.firma")}>
               <Input value={data.selbstaendigkeit.firma} onChange={e => { update("selbstaendigkeit", { ...data.selbstaendigkeit, firma: e.target.value }); clearError("selbst_firma"); }} />
@@ -2684,6 +2750,11 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
         {data.beschaeftigungsart === "angestellt" && (
            <Field label="Netto-Gehalt" required error={errors.has("netto")} filled={!!data.einkommen.netto.trim()} uebernommen={istUebernommen("einkommen.netto")}>
             <Input value={betragAus(data.einkommen.netto)} onChange={e => { update("einkommen", { ...data.einkommen, netto: betragEin(e.target.value) }); clearError("netto"); }} inputMode="decimal" placeholder={t("0,00")} />
+          </Field>
+        )}
+        {data.beschaeftigungsart === "angestellt" && (
+          <Field label="Variable Bezüge (netto)" uebernommen={istUebernommen("einkommen.variabel")}>
+            <Input value={betragAus(data.einkommen.variabel || "")} onChange={e => update("einkommen", { ...data.einkommen, variabel: betragEin(e.target.value) })} inputMode="decimal" placeholder={t("0,00")} />
           </Field>
         )}
         {data.beschaeftigungsart === "selbstaendig" && (
@@ -2754,7 +2825,7 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
           </p>
           <RadioGroup
             value={data.person2Data.beschaeftigungsart}
-            onValueChange={v => { updateP2("beschaeftigungsart", v); clearError("p2_beschaeftigungsart"); }}
+            onValueChange={v => { updateP2("beschaeftigungsart", v); updateP2("taetigkeit", ""); clearError("p2_beschaeftigungsart"); }}
             className={cn("flex gap-6 mb-6", errors.has("p2_beschaeftigungsart") && "[&_button]:border-destructive", istUebernommen("person2Data.beschaeftigungsart") && UEBERNOMMEN_RAHMEN)}
           >
             <div className="flex items-center gap-1.5">
@@ -2774,8 +2845,11 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
           {data.person2Data.beschaeftigungsart === "angestellt" && (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mb-4">
+                <Field label="Art der Anstellung" uebernommen={istUebernommen("person2Data.taetigkeit")}>
+                  <BankListenAuswahl value={data.person2Data.taetigkeit || ""} liste={SA_TAETIGKEITEN.angestellt} onChange={v => updateP2("taetigkeit", v)} />
+                </Field>
                 <Field label="Branche" required error={errors.has("p2_anstellung_branche")} filled={!!data.person2Data.anstellung.branche.trim()} uebernommen={istUebernommen("person2Data.anstellung.branche")}>
-                  <Input value={data.person2Data.anstellung.branche} onChange={e => { updateP2("anstellung", { ...data.person2Data.anstellung, branche: e.target.value }); clearError("p2_anstellung_branche"); }} />
+                  <BankListenAuswahl value={data.person2Data.anstellung.branche} liste={SA_BRANCHEN} onChange={v => { updateP2("anstellung", { ...data.person2Data.anstellung, branche: v }); clearError("p2_anstellung_branche"); }} />
                 </Field>
                 <Field label="Firma" required error={errors.has("p2_anstellung_firma")} filled={!!data.person2Data.anstellung.firma.trim()} uebernommen={istUebernommen("person2Data.anstellung.firma")}>
                   <Input value={data.person2Data.anstellung.firma} onChange={e => { updateP2("anstellung", { ...data.person2Data.anstellung, firma: e.target.value }); clearError("p2_anstellung_firma"); }} />
@@ -2793,14 +2867,22 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
                   <div className="flex items-center gap-1.5"><RadioGroupItem value="nein" id="prob-n-p2" /><label htmlFor="prob-n-p2" className="text-sm">{t("Nein")}</label></div>
                   <div className="flex items-center gap-1.5"><RadioGroupItem value="ja" id="prob-j-p2" /><label htmlFor="prob-j-p2" className="text-sm">{t("Ja")}</label></div>
                 </RadioGroup>
+                {data.person2Data.anstellung.probezeit === "ja" && (
+                  <Field label="Probezeit endet am" className="mt-3 max-w-xs" required error={errors.has("p2_probezeitBis")} filled={!!(data.person2Data.probezeitBis || "").trim()} uebernommen={istUebernommen("person2Data.probezeitBis")}>
+                    <DatePickerField value={data.person2Data.probezeitBis || ""} onChange={v => { updateP2("probezeitBis", v); clearError("p2_probezeitBis"); }} error={errors.has("p2_probezeitBis")} fromYear={new Date().getFullYear()} toYear={new Date().getFullYear() + 2} />
+                  </Field>
+                )}
               </div>
             </>
           )}
 
           {data.person2Data.beschaeftigungsart === "selbstaendig" && (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mb-4">
+              <Field label="Art der Selbstständigkeit" uebernommen={istUebernommen("person2Data.taetigkeit")}>
+                <BankListenAuswahl value={data.person2Data.taetigkeit || ""} liste={SA_TAETIGKEITEN.selbstaendig} onChange={v => updateP2("taetigkeit", v)} />
+              </Field>
               <Field label="Branche" required error={errors.has("p2_selbst_branche")} filled={!!data.person2Data.selbstaendigkeit.branche.trim()} uebernommen={istUebernommen("person2Data.selbstaendigkeit.branche")}>
-                <Input value={data.person2Data.selbstaendigkeit.branche} onChange={e => { updateP2("selbstaendigkeit", { ...data.person2Data.selbstaendigkeit, branche: e.target.value }); clearError("p2_selbst_branche"); }} />
+                <BankListenAuswahl value={data.person2Data.selbstaendigkeit.branche} liste={SA_BRANCHEN} onChange={v => { updateP2("selbstaendigkeit", { ...data.person2Data.selbstaendigkeit, branche: v }); clearError("p2_selbst_branche"); }} />
               </Field>
               <Field label="Firma" required error={errors.has("p2_selbst_firma")} filled={!!data.person2Data.selbstaendigkeit.firma.trim()} uebernommen={istUebernommen("person2Data.selbstaendigkeit.firma")}>
                 <Input value={data.person2Data.selbstaendigkeit.firma} onChange={e => { updateP2("selbstaendigkeit", { ...data.person2Data.selbstaendigkeit, firma: e.target.value }); clearError("p2_selbst_firma"); }} />
@@ -2849,6 +2931,11 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
             {data.person2Data.beschaeftigungsart === "angestellt" && (
               <Field label="Netto-Gehalt" error={errors.has("p2_netto")} uebernommen={istUebernommen("person2Data.einkommen.netto")}>
                 <Input value={betragAus(data.person2Data.einkommen.netto)} onChange={e => { updateP2("einkommen", { ...data.person2Data.einkommen, netto: betragEin(e.target.value) }); clearError("p2_netto"); }} inputMode="decimal" placeholder={t("0,00")} />
+              </Field>
+            )}
+            {data.person2Data.beschaeftigungsart === "angestellt" && (
+              <Field label="Variable Bezüge (netto)" uebernommen={istUebernommen("person2Data.einkommen.variabel")}>
+                <Input value={betragAus(data.person2Data.einkommen.variabel || "")} onChange={e => updateP2("einkommen", { ...data.person2Data.einkommen, variabel: betragEin(e.target.value) })} inputMode="decimal" placeholder={t("0,00")} />
               </Field>
             )}
             {data.person2Data.beschaeftigungsart === "selbstaendig" && (
@@ -2964,6 +3051,43 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
           )}
         </div>
       )}
+
+      {/*
+        Altersvorsorge, seit 16.11.2026. Freiwillig. Banken fragen danach, wenn
+        das Darlehen in den Ruhestand hineinläuft; die Werte stehen in der
+        jährlichen Renteninformation.
+      */}
+      <div className="mt-8 p-4 rounded-lg border bg-muted/30">
+        <h3 className="font-bold mb-1">{t("Altersvorsorge")}</h3>
+        <p className="text-xs text-muted-foreground mb-4">{t("Freiwillig. Die Beträge stehen in Ihrer jährlichen Renteninformation.")}</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-4">
+              <Field label="Voraussichtlicher Rentenbeginn" uebernommen={istUebernommen("rentenbeginn")}>
+                <DatePickerField value={data.rentenbeginn || ""} onChange={v => update("rentenbeginn", v)} fromYear={new Date().getFullYear()} toYear={new Date().getFullYear() + 50} />
+              </Field>
+              <Field label="Rentenanspruch gesetzlich (monatlich)" uebernommen={istUebernommen("rentenanspruchGesetzlich")}>
+                <Input value={betragAus(data.rentenanspruchGesetzlich || "")} onChange={e => update("rentenanspruchGesetzlich", betragEin(e.target.value))} inputMode="decimal" placeholder={t("0,00")} />
+              </Field>
+              <Field label="Rentenanspruch privat (monatlich)" uebernommen={istUebernommen("rentenanspruchPrivat")}>
+                <Input value={betragAus(data.rentenanspruchPrivat || "")} onChange={e => update("rentenanspruchPrivat", betragEin(e.target.value))} inputMode="decimal" placeholder={t("0,00")} />
+              </Field>
+            </div>
+        {data.person2 && (
+          <div className="mt-4 pt-4 border-t">
+            <p className="text-xs font-semibold text-primary mb-2">{t("Person 2")}</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-4">
+              <Field label="Voraussichtlicher Rentenbeginn" uebernommen={istUebernommen("person2Data.rentenbeginn")}>
+                <DatePickerField value={data.person2Data.rentenbeginn || ""} onChange={v => updateP2("rentenbeginn", v)} fromYear={new Date().getFullYear()} toYear={new Date().getFullYear() + 50} />
+              </Field>
+              <Field label="Rentenanspruch gesetzlich (monatlich)" uebernommen={istUebernommen("person2Data.rentenanspruchGesetzlich")}>
+                <Input value={betragAus(data.person2Data.rentenanspruchGesetzlich || "")} onChange={e => updateP2("rentenanspruchGesetzlich", betragEin(e.target.value))} inputMode="decimal" placeholder={t("0,00")} />
+              </Field>
+              <Field label="Rentenanspruch privat (monatlich)" uebernommen={istUebernommen("person2Data.rentenanspruchPrivat")}>
+                <Input value={betragAus(data.person2Data.rentenanspruchPrivat || "")} onChange={e => updateP2("rentenanspruchPrivat", betragEin(e.target.value))} inputMode="decimal" placeholder={t("0,00")} />
+              </Field>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 
@@ -3263,11 +3387,20 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
             </SelectContent>
           </Select>
         </Field>
-        {data.mietart === "Zur Miete" && (
+        {data.mietart === "Zur Miete" && (<>
           <Field label="Kaltmiete" required error={errors.has("mieteWarm")} filled={!!data.mieteWarm.trim()} uebernommen={istUebernommen("mieteWarm")}>
             <Input value={betragAus(data.mieteWarm)} onChange={e => { update("mieteWarm", betragEin(e.target.value)); clearError("mieteWarm"); }} inputMode="decimal" placeholder={t("0,00")} />
           </Field>
-        )}
+          <Field label="Miete entfällt nach dem Kauf" uebernommen={istUebernommen("mieteEntfaellt")}>
+            <Select value={data.mieteEntfaellt || undefined} onValueChange={v => update("mieteEntfaellt", v)}>
+              <SelectTrigger><SelectValue placeholder={t("– Bitte wählen –")} /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="nein">{t("Nein")}</SelectItem>
+                <SelectItem value="ja">{t("Ja")}</SelectItem>
+              </SelectContent>
+            </Select>
+          </Field>
+        </>)}
         <Field
           label="Lebenshaltungskosten"
           bankHinweis={BANK_HINWEISE.lebenshaltung}
@@ -3325,11 +3458,20 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
                 </SelectContent>
               </Select>
             </Field>
-            {data.person2Data.mietart === "Zur Miete" && (
+            {data.person2Data.mietart === "Zur Miete" && (<>
               <Field label="Kaltmiete" required error={errors.has("p2_mieteWarm")} filled={!!data.person2Data.mieteWarm.trim()} uebernommen={istUebernommen("person2Data.mieteWarm")}>
                 <Input value={betragAus(data.person2Data.mieteWarm)} onChange={e => { updateP2("mieteWarm", betragEin(e.target.value)); clearError("p2_mieteWarm"); }} inputMode="decimal" placeholder={t("0,00")} />
               </Field>
-            )}
+              <Field label="Miete entfällt nach dem Kauf" uebernommen={istUebernommen("person2Data.mieteEntfaellt")}>
+                <Select value={data.person2Data.mieteEntfaellt || undefined} onValueChange={v => updateP2("mieteEntfaellt", v)}>
+                  <SelectTrigger><SelectValue placeholder={t("– Bitte wählen –")} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="nein">{t("Nein")}</SelectItem>
+                    <SelectItem value="ja">{t("Ja")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </Field>
+            </>)}
             <Field label="Lebenshaltungskosten" bankHinweis={BANK_HINWEISE.lebenshaltung} uebernommen={istUebernommen("person2Data.lebenshaltungskosten")}>
               <Input value={betragAus(data.person2Data.lebenshaltungskosten)} onChange={e => updateP2("lebenshaltungskosten", betragEin(e.target.value))} inputMode="decimal" placeholder={t("0,00")} />
             </Field>
@@ -3415,7 +3557,7 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
       {(() => {
         const p = (v?: string) => parseFloat((v || "").replace(/\./g, "").replace(",", ".")) || 0;
         // P1 Einnahmen
-        const einP1 = p(data.einkommen.netto) + p(data.einkommen.gewerbe) + p(data.einkommen.miet) + p(data.einkommen.zinsen) + p(data.einkommen.rente) + p(data.einkommen.sonstige);
+        const einP1 = p(data.einkommen.netto) + p(data.einkommen.gewerbe) + p(data.einkommen.miet) + p(data.einkommen.zinsen) + p(data.einkommen.rente) + p(data.einkommen.sonstige) + p(data.einkommen.variabel);
         // P1 Ausgaben
         const lh1 = p(data.lebenshaltungskosten);
         const detailP1 = p(data.nebenkosten) + p(data.unterhalt) + p(data.kfzKosten) + p(data.versBU) + p(data.versRiester) + p(data.versAV) + p(data.versWeitere);
@@ -3424,7 +3566,7 @@ export function SelbstauskunftForm({ kundeId, sprache = "de", investmentId: prop
         let einP2 = 0, ausP2 = 0;
         if (data.person2) {
           const d2 = data.person2Data;
-          einP2 = p(d2.einkommen.netto) + p(d2.einkommen.gewerbe) + p(d2.einkommen.miet) + p(d2.einkommen.zinsen) + p(d2.einkommen.rente) + p(d2.einkommen.sonstige);
+          einP2 = p(d2.einkommen.netto) + p(d2.einkommen.gewerbe) + p(d2.einkommen.miet) + p(d2.einkommen.zinsen) + p(d2.einkommen.rente) + p(d2.einkommen.sonstige) + p(d2.einkommen.variabel);
           const lh2 = p(d2.lebenshaltungskosten);
           const detailP2 = p(d2.nebenkosten) + p(d2.unterhalt) + p(d2.kfzKosten) + p(d2.versBU) + p(d2.versRiester) + p(d2.versAV) + p(d2.versWeitere);
           ausP2 = (d2.mietart === "Zur Miete" ? p(d2.mieteWarm) : 0) + lh2 + p(d2.privateKV) + detailP2 + p(d2.sonstigeAusgaben) + d2.kredite.reduce((s, k) => s + p(k.rate), 0);
